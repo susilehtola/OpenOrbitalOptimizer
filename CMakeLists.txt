@@ -26,8 +26,9 @@ link_libraries(${LAPACK_LIBRARIES})
 
 # Find Armadillo
 option(ARMA_DONT_USE_WRAPPER "Do not use Armadillo wrapper" ON)
-find_package(Armadillo REQUIRED)
-include_directories(${ARMADILLO_INCLUDE_DIRS})
+#find_package(Armadillo REQUIRED)
+#include_directories(${ARMADILLO_INCLUDE_DIRS})
+include_directories("/home/work/armadillo/include")
 if(ARMA_DONT_USE_WRAPPER)
   add_definitions(-DARMA_DONT_USE_WRAPPER)
 else()
