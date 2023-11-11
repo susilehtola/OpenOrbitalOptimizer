@@ -123,7 +123,13 @@ namespace OpenOrbitalOptimizer {
   arma::Col<Tocc> SCFSolver<Torb, Tocc>::orbital_gradient(const FockMatrix<Torb> & fock) {
     // Get the degrees of freedom
     auto dof_list = degrees_of_freedom();
-    arma::Col<Tocc> orb_grad(dof_list.size());
+    arma::Col<Tocc> orb_grad;
+
+    if constexpr (arma::is_real<Torb>::value) {
+      orb_grad.zeros(dof_list.size());
+    } else {
+      orb_grad.zeros(2*dof_list.size());
+    }
     
     // Extract the orbital gradient
     for(size_t idof = 0; idof < dof_list.size(); idof++) {
@@ -131,8 +137,17 @@ namespace OpenOrbitalOptimizer {
       auto iblock = std::get<0>(dof);
       auto iorb = std::get<1>(dof);
       auto jorb = std::get<2>(dof);
-      orb_grad(idof) = fock[iblock](iorb,jorb);
+      orb_grad(idof) = std::real(fock[iblock](iorb,jorb));
     }
+    if constexpr (!arma::is_real<Torb>::value) {
+        for(size_t idof = 0; idof < dof_list.size(); idof++) {
+          auto dof(dof_list[idof]);
+          auto iblock = std::get<0>(dof);
+          auto iorb = std::get<1>(dof);
+          auto jorb = std::get<2>(dof);
+          orb_grad(dof_list.size() + idof) = std::imag(fock[iblock](iorb,jorb));
+        }
+      }
     return orb_grad;
   }
 
@@ -163,6 +178,15 @@ namespace OpenOrbitalOptimizer {
         auto idof = std::get<2>(dof);
         kappa(iorb,jorb) = angle(idof);
       }
+      // imaginary parameters
+      if constexpr (!arma::is_real<Torb>::value) {
+          for(auto dof: blocked_dof[iblock]) {
+            auto iorb = std::get<0>(dof);
+            auto jorb = std::get<1>(dof);
+            auto idof = std::get<2>(dof);
+            kappa(iorb,jorb) += Torb(0.0,angle(dof_list.size()+idof));
+          }
+        }
       // Antisymmetrize
       kappa -= arma::trans(kappa);
 
