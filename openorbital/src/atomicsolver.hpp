@@ -1,9 +1,10 @@
 #include "scfsolver.hpp"
 #include <armadillo>
 #include <cassert>
+#include <memory>
 
-namespace openorbital {
-  namespace atomicsolver {
+namespace OpenOrbitalOptimizer {
+  namespace AtomicSolver {
 
     enum RadialBasisType {
       STOBASIS,
@@ -53,13 +54,13 @@ namespace openorbital {
 #endif      
       /// Type of this radial basis
       RadialBasisType type_;
-      /// Get radial basis type
-      RadialBasisType get_type() const {return type_;}
       /// Coulomb integral
       virtual double Rmnv(int m, int n, int v, double x, double y) const {throw std::logic_error("Not implemented!\n");}
 
     public:
       RadialBasis(int angular_momentum) : angular_momentum_(angular_momentum) {};
+      /// Get radial basis type
+      RadialBasisType get_type() const {return type_;}
       /// Evaluate overlap matrix
       virtual arma::mat overlap() const=0;
       /// Evaluate kinetic energy matrix
@@ -70,6 +71,10 @@ namespace openorbital {
       virtual arma::mat eval_f(const arma::vec & x) const {throw std::logic_error("Not implemented!\n");};
       /// Evaluate radial basis functions' derivatives
       virtual arma::mat eval_df(const arma::vec & x) const {throw std::logic_error("Not implemented!\n");};
+      /// Build Coulomb matrix
+      virtual arma::mat coulomb(const std::shared_ptr<const RadialBasis> & other, const arma::mat & Pother) const=0;
+      /// Return number of basis functions
+      virtual size_t nbf() const=0;
     };
 
     class STOBasis : public RadialBasis {
@@ -82,7 +87,7 @@ namespace openorbital {
       /// Evaluate two-electron integral
       inline double Rmnv(int m, int n, int v, double x, double y) const {
         double value = std::tgamma(m+n)/(x*y*std::pow(x+y,m+n-1))*(1+Enk(m+n-1,n-v-1,y/x)+Enk(m+n-1,m-v-1,x/y));
-        printf("Rmnv(%i,%i,%i,%e,%e) = %e\n",m,n,v,x,y,value);
+        //printf("Rmnv(%i,%i,%i,%e,%e) = %e\n",m,n,v,x,y,value);
         return value;
       }
     public:
@@ -99,7 +104,7 @@ namespace openorbital {
           for(size_t j=0;j<=i;j++) {
             // Pitzer, page 244
             S(i,j) = S(j,i) = Vn(n_(i)+n_(j), zeta_(i)+zeta_(j));
-            printf("S(%i,%i) %e\n",i,j,S(i,j));
+            //printf("S(%i,%i) %e\n",i,j,S(i,j));
           }
         return S;
       };
@@ -114,7 +119,7 @@ namespace openorbital {
                                                      - (Wn(n_(i)-am, zeta_(i)) + Wn(n_(j)-am, zeta_(j))) * Vn(n_(i)+n_(j)-1, zeta_(i)+zeta_(j))
                                                      + Vn(n_(i)+n_(j), zeta_(i) + zeta_(j))
                                                      );
-            printf("T(%i,%i) %e\n",i,j,T(i,j));
+            //printf("T(%i,%i) %e\n",i,j,T(i,j));
           }
         return T;
       }
@@ -125,7 +130,7 @@ namespace openorbital {
           for(size_t j=0;j<=i;j++) {
             // Pitzer, page 244
             V(i,j) = V(j,i) = Vn(n_(i)+n_(j)-1, zeta_(i)+zeta_(j));
-            printf("V(%i,%i) %e\n",i,j,V(i,j));
+            //printf("V(%i,%i) %e\n",i,j,V(i,j));
           }
         return V;
       }
@@ -138,6 +143,19 @@ namespace openorbital {
           }
         }
         return f;
+      }
+      /// Evaluate basis functions
+      arma::mat eval_df(const arma::vec & x) const override {
+        arma::mat df(x.n_elem, zeta_.n_elem, arma::fill::zeros);
+        for(size_t iz=0; iz<zeta_.n_elem; iz++) {
+          for(size_t ix=0; ix<x.n_elem; ix++) {
+            df(ix,iz) = -zeta_(iz) * std::pow(x(ix),n_(iz)-1) * std::exp(-zeta_(iz)*x(ix));
+            if(n_(iz)>1) {
+              df(ix,iz) += (n_(iz)-1) * std::pow(x(ix),n_(iz)-2) * std::exp(-zeta_(iz)*x(ix));
+            }
+          }
+        }
+        return df;
       }
       /// Evaluate Coulomb matrix
       arma::mat coulomb(const STOBasis & other, const arma::mat & Pother) const {
@@ -152,6 +170,16 @@ namespace openorbital {
           }
         return J;
       }
+      /// Wrapper for the above
+      arma::mat coulomb(const std::shared_ptr<const RadialBasis> & other, const arma::mat & Pother) const override {
+        assert(other->get_type() == STOBASIS);
+        auto pother = std::dynamic_pointer_cast<const STOBasis>(other);
+        return coulomb(*pother, Pother);
+      }
+      /// Return number of basis functions
+      size_t nbf() const override {
+        return zeta_.n_elem;
+      }
     };
 
     class GTOBasis : public RadialBasis {
@@ -164,7 +192,7 @@ namespace openorbital {
       /// Evaluate two-electron integral
       inline double Rmnv(int m, int n, int v, double x, double y) const {
         double value = std::tgamma((m+n-1)/2.0)/(x*y*std::pow(x+y,(m+n-3)/2.0))*(1+Enk(0.5*(m+n-3),0.5*(n-v-2),y/x)+Enk(0.5*(m+n-3),0.5*(m-v-2),x/y))/4.0;
-        printf("Rmnv(%i,%i,%i,%e,%e) = %e\n",m,n,v,x,y,value);
+        //printf("Rmnv(%i,%i,%i,%e,%e) = %e\n",m,n,v,x,y,value);
         return value;
       }
     public:
@@ -208,6 +236,29 @@ namespace openorbital {
           }
         return V;
       }
+      /// Evaluate basis functions
+      arma::mat eval_f(const arma::vec & x) const override {
+        arma::mat f(x.n_elem, zeta_.n_elem, arma::fill::zeros);
+        for(size_t iz=0; iz<zeta_.n_elem; iz++) {
+          for(size_t ix=0; ix<x.n_elem; ix++) {
+            f(ix,iz) = std::pow(x(ix),n_(iz)-1) * std::exp(-zeta_(iz)*x(ix)*x(ix));
+          }
+        }
+        return f;
+      }
+      /// Evaluate basis functions
+      arma::mat eval_df(const arma::vec & x) const override {
+        arma::mat df(x.n_elem, zeta_.n_elem, arma::fill::zeros);
+        for(size_t iz=0; iz<zeta_.n_elem; iz++) {
+          for(size_t ix=0; ix<x.n_elem; ix++) {
+            df(ix,iz) = -2.0 * zeta_(iz) * x(ix) * std::pow(x(ix),n_(iz)-1) * std::exp(-zeta_(iz)*x(ix)*x(ix));
+            if(n_(iz)>1) {
+              df(ix,iz) += (n_(iz)-1) * std::pow(x(ix),n_(iz)-2) * std::exp(-zeta_(iz)*x(ix)*x(ix));
+            }
+          }
+        }
+        return df;
+      }
       /// Evaluate Coulomb matrix
       arma::mat coulomb(const GTOBasis & other, const arma::mat & Pother) const {
         arma::mat J(zeta_.n_elem, zeta_.n_elem, arma::fill::zeros);
@@ -220,6 +271,16 @@ namespace openorbital {
             J(i,j) = J(j,i) = Jij;
           }
         return J;
+      }
+      /// Wrapper for the above
+      arma::mat coulomb(const std::shared_ptr<const RadialBasis> & other, const arma::mat & Pother) const override {
+        assert(other->get_type() == GTOBASIS);
+        auto pother = std::dynamic_pointer_cast<const GTOBasis>(other);
+        return coulomb(*pother, Pother);
+      }
+      /// Return number of basis functions
+      size_t nbf() const override {
+        return zeta_.n_elem;
       }
     };
   }
