@@ -1,9 +1,8 @@
 #include "scfsolver.hpp"
+#include "cg_optimizer.hpp"
 #include <algorithm>
 #include <cfloat>
 
-#define OPTIM_ENABLE_ARMA_WRAPPERS
-#include "optim.hpp"
 
 namespace OpenOrbitalOptimizer {
   using namespace OpenOrbitalOptimizer;
@@ -785,14 +784,13 @@ namespace OpenOrbitalOptimizer {
     auto linear_term = adiis_linear_term();
     auto quadratic_term = adiis_quadratic_term();
 
-    // OptimLib doesn't support float, so these routines are all in double precision.
     // Function to compute weights from the parameters
-    std::function<arma::vec(const arma::vec & x)> x_to_weight = [](const arma::vec & x) { return arma::square(x)/arma::dot(x,x); };
+    std::function<arma::Col<Tbase>(const arma::Col<Tbase> & x)> x_to_weight = [](const arma::Col<Tbase> & x) { return arma::square(x)/arma::dot(x,x); };
     // and its Jacobian
-    std::function<arma::mat(const arma::vec & x)> x_to_weight_jacobian = [x_to_weight](const arma::vec & x) {
+    std::function<arma::Mat<Tbase>(const arma::Col<Tbase> & x)> x_to_weight_jacobian = [x_to_weight](const arma::Col<Tbase> & x) {
       auto w(x_to_weight(x));
       auto xnorm = arma::norm(x,2);
-      arma::mat jac(x.n_elem,x.n_elem,arma::fill::zeros);
+      arma::Mat<Tbase> jac(x.n_elem,x.n_elem,arma::fill::zeros);
       for(size_t i=0;i<x.n_elem;i++) {
         for(size_t j=0;j<x.n_elem;j++) {
           jac(i,j) -= w(j)*2.0*x(i)/xnorm;
@@ -804,33 +802,19 @@ namespace OpenOrbitalOptimizer {
     };
 
     // Function to compute the ADIIS energy and gradient
-    std::function<Tbase(const arma::vec & x, arma::vec *grad, void *opt_data)> adiis_energy_gradient = [linear_term, quadratic_term, x_to_weight, x_to_weight_jacobian](const arma::vec & x, arma::vec *grad, void *opt_data) {
-      (void) opt_data;
+    std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> adiis_energy_gradient = [linear_term, quadratic_term, x_to_weight, x_to_weight_jacobian](const arma::Col<Tbase> & x) {
       auto w(x_to_weight(x));
-      arma::vec g = x_to_weight_jacobian(x)*(linear_term + quadratic_term*w);
-      if(grad!=nullptr) {
-        *grad = g;
-      }
-
-      //linear_term.print("Linear term");
-      //quadratic_term.print("Quadratic term");
-      //g.print("Gradient");
-
+      arma::Col<Tbase> g = x_to_weight_jacobian(x)*(linear_term + quadratic_term*w);
       auto fval = arma::dot(linear_term, w) + 0.5*arma::dot(w, quadratic_term*w);
-      //printf("fval = %e\n",fval);
-      return fval;
+
+      return std::make_pair(fval, g);
     };
 
     // Optimization
-    arma::vec x(orbital_history_.size(),arma::fill::ones);
-    bool success = optim::bfgs(x, adiis_energy_gradient, nullptr);
-    if (success) {
-      std::cout << "ADIIS optimization successful\n";
-    } else {
-      std::cout << "ADIIS optimization failed\n";
-    }
+    arma::Col<Tbase> x(orbital_history_.size(),arma::fill::ones);
+    x = cg_optimize<Tbase>(x, adiis_energy_gradient);
 
-    return arma::conv_to<arma::Col<Tbase>>::from(x_to_weight(x));
+    return x_to_weight(x);
   }
 
   template<typename Torb, typename Tbase>
