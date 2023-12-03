@@ -780,14 +780,24 @@ namespace OpenOrbitalOptimizer {
 
   public:
     /// Constructor
-    SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) {
+    SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions) {
       // Run sanity checks
-      size_t num_expected_blocks = arma::sum(number_of_blocks_per_particle_type_);
-      if(maximum_occupation_.size() != num_expected_blocks)
-        throw std::logic_error("Vector of maximum occupation is not of expected length!\n");
-      if(number_of_particles_.size() != number_of_blocks_per_particle_type_.size())
-        throw std::logic_error("Vector of number of particles is not of expected length!\n");
-      number_of_blocks_ = num_expected_blocks;
+      number_of_blocks_ = arma::sum(number_of_blocks_per_particle_type_);
+      if(maximum_occupation_.size() != number_of_blocks_) {
+        std::ostringstream oss;
+        oss << "Vector of maximum occupation is not of expected length! Got " << maximum_occupation_.size() << " elements, expected " << number_of_blocks_ << "!\n";
+        throw std::logic_error(oss.str());
+      }
+      if(number_of_particles_.size() != number_of_blocks_per_particle_type_.size()) {
+        std::ostringstream oss;
+        oss << "Vector of number of particles is not of expected length! Got " << number_of_particles_.size() << " elements, expected " << number_of_blocks_per_particle_type_ << "!\n";
+        throw std::logic_error(oss.str());
+      }
+      if(block_descriptions_.size() != number_of_blocks_) {
+        std::ostringstream oss;
+        oss << "Vector of block descriptions is not of expected length! Got " << block_descriptions_.size() << " elements, expected " << number_of_blocks_ << "!\n";
+        throw std::logic_error(oss.str());
+      }
     }
 
     /// Initialize the solver with a guess Fock matrix
