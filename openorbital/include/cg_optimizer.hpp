@@ -43,7 +43,7 @@ namespace OpenOrbitalOptimizer {
         };
 
         /// Perform brute force line search
-        auto step_lengths = arma::logspace<arma::Col<T>>(-16.0,6.0,23);
+        auto step_lengths = arma::logspace<arma::Col<T>>(-6.0,6.0,13);
         arma::Col<T> function_values(step_lengths.n_elem);
         for(size_t i=0;i<step_lengths.n_elem;i++)
           function_values[i] = evaluate_step(step_lengths(i));
