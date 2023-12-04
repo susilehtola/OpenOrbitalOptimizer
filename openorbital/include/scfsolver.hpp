@@ -730,16 +730,20 @@ namespace OpenOrbitalOptimizer {
 #endif
 
       // Line search
+      bool search_success = false;
       for(size_t itrial=0; itrial<10; itrial++) {
         printf("Trial iteration %i\n",itrial);
+        fflush(stdout);
 
         // Evaluate the energy
         auto trial_energy = evaluate_step(step);
-        if(trial_energy < initial_energy)
+        if(trial_energy < initial_energy) {
           // We already decreased the energy! Don't do anything more,
           // because our expansion point has already changed and going
           // further would make no sense.
+          search_success = true;
           break;
+        }
 
         // Now we can fit a second order polynomial y = a x^2 + dE x +
         // initial_energy to our data: we know the initial value and the slope, and
@@ -748,6 +752,7 @@ namespace OpenOrbitalOptimizer {
         auto a = (trial_energy - dE*step - initial_energy)/(step*step);
 
         printf("a = %e\n",a);
+        fflush(stdout);
 
         // To be realistic, the parabola should open up
         auto fit_okay = a>0.0;
@@ -766,15 +771,21 @@ namespace OpenOrbitalOptimizer {
           if(fit_okay) {
             auto observed_energy = evaluate_step(predicted_step);
             printf("Predicted energy % .10f observed energy % .10f difference %e\n", predicted_energy, observed_energy,predicted_energy-observed_energy);
+            fflush(stdout);
 
             if(observed_energy < initial_energy) {
+              search_success=true;
               break;
             } else {
               printf("Error: energy did not decrease in line search! Decreasing trial step size\n");
-              step /= 2.0;
+              fflush(stdout);
+              step = std::min(predicted_step, step/2.0);
             }
           }
         }
+      }
+      if(not search_success) {
+        throw std::runtime_error("Failed to find suitable step size.\n");
       }
     }
 
