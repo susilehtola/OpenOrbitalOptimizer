@@ -108,13 +108,13 @@ namespace OpenOrbitalOptimizer {
       auto & density_matrix = entry.first;
       return density_matrix.first[iblock] * arma::diagmat(density_matrix.second[iblock]) * arma::trans(density_matrix.first[iblock]);
     }
-    
+
     /// Get a block of the orbital occupations for the ihist:th entry
     arma::Mat<Torb> get_orbital_block(size_t ihist, size_t iblock) const {
       auto & entry = orbital_history_[ihist];
       return entry.first.first[iblock];
     }
-    
+
     /// Get a block of the orbital occupations for the ihist:th entry
     arma::Col<Tbase> get_orbital_occupation_block(size_t ihist, size_t iblock) const {
       auto entry = orbital_history_[ihist];
@@ -137,7 +137,7 @@ namespace OpenOrbitalOptimizer {
           return arma::join_cols(arma::vectorise(arma::real(mat)),arma::vectorise(arma::imag(mat)));
         }
       };
-      
+
       // Form error vectors
       std::vector<arma::Col<Tbase>> error_vectors(orbital_history_[ihist].second.second.size());
       for(size_t iblock = 0; iblock<number_of_blocks_;iblock++) {
@@ -316,7 +316,7 @@ namespace OpenOrbitalOptimizer {
 
       return x_to_weight(x);
     }
-    
+
     /// Form <D_i - D_0 | F_i - F_0>
     arma::Col<Tbase> adiis_linear_term() const {
       arma::Col<Tbase> ret(orbital_history_.size(),arma::fill::zeros);
@@ -423,7 +423,7 @@ namespace OpenOrbitalOptimizer {
       }
 
       // Extrapolation was a success if either worked
-      return ref_success || occ_success;
+      return ref_success or occ_success;
     }
 
     /// Form list of rotation angles
@@ -445,7 +445,7 @@ namespace OpenOrbitalOptimizer {
 
       return dofs;
     }
-    
+
     /// Formulate the orbital gradient vector
     arma::Col<Tbase> orbital_gradient_vector() const {
       // Get the degrees of freedom
@@ -559,7 +559,7 @@ namespace OpenOrbitalOptimizer {
 
       return kappa;
     }
-    
+
     /// Determine maximum step size
     Tbase maximum_rotation_step(const arma::Col<Tbase> & x) const {
       // Get the rotation matrices
@@ -579,7 +579,7 @@ namespace OpenOrbitalOptimizer {
 
       return maximum_step;
     }
-    
+
     /// Rotate the orbitals through the given parameters
     Orbitals<Torb> rotate_orbitals(const arma::Col<Tbase> & x) const {
       auto kappa(form_rotation_matrices(x));
@@ -757,7 +757,7 @@ namespace OpenOrbitalOptimizer {
 
           // To be reliable, the predicted optimal step should also be
           // in [0.0, step]
-          if(predicted_step < 0.0 || predicted_step > step)
+          if(predicted_step < 0.0 or predicted_step > step)
             fit_okay = false;
           if(predicted_step == step)
             // Nothing to do since the step was already evaluated!
@@ -809,7 +809,7 @@ namespace OpenOrbitalOptimizer {
       auto orbital_occupations = determine_occupations(orbital_energies_);
       initialize_with_orbitals(orbitals, orbital_occupations);
     }
-    
+
     /// Initialize with precomputed orbitals and occupations
     void initialize_with_orbitals(const Orbitals<Torb> & orbitals, const OrbitalOccupations<Tbase> & orbital_occupations) {
       add_entry(std::make_pair(orbitals, orbital_occupations));
@@ -822,7 +822,7 @@ namespace OpenOrbitalOptimizer {
       printf("Evaluated energy % .10f\n",fock.first);
       return add_entry(density, fock);
     }
-    
+
     /// Add entry to history, return value is True if energy was lowered
     bool add_entry(const DensityMatrix<Torb, Tbase> & density, const FockBuilderReturn<Torb, Tbase> & fock) {
       // Make a pair
@@ -863,7 +863,7 @@ namespace OpenOrbitalOptimizer {
 
       return diagonalized_fock;
     }
-    
+
     /// Computes Aufbau occupations based on the current orbital energies
     OrbitalOccupations<Tbase> determine_occupations(const OrbitalEnergies<Tbase> & orbital_energies) const {
       // Allocate the return
@@ -943,13 +943,22 @@ namespace OpenOrbitalOptimizer {
           c2diis_w.print("C2DIIS weights");
           arma::Col<Tbase> c1diis_w(c1diis_weights());
           c1diis_w.print("C1DIIS weights");
-          arma::Col<Tbase> adiis_w(adiis_weights());
-          adiis_w.print("ADIIS weights");
+          arma::Col<Tbase> adiis_w;
+          bool adiis_ok = true;
+          try {
+            adiis_w = adiis_weights();
+            adiis_w.print("ADIIS weights");
+          } catch(std::logic_error) {
+            // Bad weights
+            adiis_ok = false;
+            adiis_w.clear();
+          };
 
           arma::Mat<Tbase> diis_errmat(diis_error_matrix());
           printf("C1DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*c1diis_w,error_norm_.c_str()));
           printf("C2DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*c2diis_w,error_norm_.c_str()));
-          printf("ADIIS extrapolated error norm %e\n",arma::norm(diis_errmat*adiis_w,error_norm_.c_str()));
+          if(adiis_ok)
+            printf("ADIIS extrapolated error norm %e\n",arma::norm(diis_errmat*adiis_w,error_norm_.c_str()));
 
           // Form DIIS weights
           arma::Col<Tbase> diis_weights(orbital_history_.size(), arma::fill::zeros);
@@ -958,16 +967,24 @@ namespace OpenOrbitalOptimizer {
             diis_weights = c2diis_w;
             //printf("C1DIIS extrapolation\n");
             //diis_weights = c1diis_w;
-          } else if(diis_error < diis_epsilon_) {
-            printf("Mixed DIIS and ADIIS\n");
-            double adiis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
-            double c2diis_coeff = 1.0 - adiis_coeff;
-            diis_weights = adiis_coeff * adiis_w + c2diis_coeff * c2diis_w;
           } else {
-            diis_weights = adiis_w;
+            if(not adiis_ok) {
+              printf("Large gradient and ADIIS minimization failed, taking a steepest descent step instead.\n");
+              steepest_descent_step();
+              continue;
+            }
+
+            if(diis_error < diis_epsilon_) {
+              printf("Mixed DIIS and ADIIS\n");
+              double adiis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
+              double c2diis_coeff = 1.0 - adiis_coeff;
+              diis_weights = adiis_coeff * adiis_w + c2diis_coeff * c2diis_w;
+            } else {
+              diis_weights = adiis_w;
+            }
           }
           diis_weights.print("Extrapolation weigths");
-
+          
           // Perform extrapolation. If it does not lower the energy, we do
           // a scaled steepest descent step, instead.
           old_energy = orbital_history_[0].second.first;
