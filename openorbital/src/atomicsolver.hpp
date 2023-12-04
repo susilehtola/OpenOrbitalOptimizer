@@ -10,16 +10,16 @@ namespace OpenOrbitalOptimizer {
       STOBASIS,
       GTOBASIS
     };
-    
+
     class RadialBasis {
     protected:
       /// Angular momentum of the function
       int angular_momentum_;
-      
+
       inline double Vn(double n, double x) const {
         return std::tgamma(n+1)/std::pow(x,n+1);
       }
-  
+
       inline double Wn(int n, double x) const {
         return (n-1)/x;
       }
@@ -43,7 +43,7 @@ namespace OpenOrbitalOptimizer {
         double binomial = (std::tgamma(n+1.0)/std::tgamma(n-k+1.0))/std::tgamma(k+1.0);
         return binomial;
       }
-      
+
       inline double Enk(double n, double k, double x) const {
         double E=0.0;
         for(int j=0;j<k;j++)
@@ -51,7 +51,7 @@ namespace OpenOrbitalOptimizer {
         E /= binomial(n,k)*std::pow(x,k);
         return E;
       }
-#endif      
+#endif
       /// Type of this radial basis
       RadialBasisType type_;
       /// Coulomb integral
@@ -90,6 +90,14 @@ namespace OpenOrbitalOptimizer {
         //printf("Rmnv(%i,%i,%i,%e,%e) = %e\n",m,n,v,x,y,value);
         return value;
       }
+      /// Pairs of basis functions
+      std::vector<std::pair<size_t,size_t>> basis_function_pairs() const {
+        std::vector<std::pair<size_t,size_t>> list;
+        for(size_t i=0;i<zeta_.n_elem;i++)
+          for(size_t j=0;j<=i;j++)
+            list.push_back(std::make_pair(i,j));
+        return list;
+      }
     public:
       /// Constructor
       STOBasis(const arma::vec & zeta, const arma::ivec & n, int angular_momentum) : zeta_(zeta), n_(n), RadialBasis(angular_momentum) {
@@ -99,44 +107,54 @@ namespace OpenOrbitalOptimizer {
       }
       /// Evaluate overlap matrix
       arma::mat overlap() const override {
+        auto list(basis_function_pairs());
         arma::mat S(zeta_.n_elem, zeta_.n_elem);
-        for(size_t i=0;i<zeta_.n_elem;i++)
-          for(size_t j=0;j<=i;j++) {
-            // Pitzer, page 244
-            S(i,j) = S(j,i) = Vn(n_(i)+n_(j), zeta_(i)+zeta_(j));
-            //printf("S(%i,%i) %e\n",i,j,S(i,j));
-          }
+#pragma omp parallel for
+        for(auto pair: list) {
+          size_t i=pair.first;
+          size_t j=pair.second;
+          // Pitzer, page 244
+          S(i,j) = S(j,i) = Vn(n_(i)+n_(j), zeta_(i)+zeta_(j));
+          //printf("S(%i,%i) %e\n",i,j,S(i,j));
+        }
         return S;
       };
       /// Evaluate kinetic energy matrix
       arma::mat kinetic(int am) const override {
+        auto list(basis_function_pairs());
         arma::mat T(zeta_.n_elem, zeta_.n_elem);
-        for(size_t i=0;i<zeta_.n_elem;i++)
-          for(size_t j=0;j<=i;j++) {
-            // Pitzer, page 244
-            T(i,j) = T(j,i) = 0.5*zeta_(i)*zeta_(j)*(
-                                                     Wn(n_(i)-am, zeta_(i)) * Wn(n_(j)-am, zeta_(j)) * Vn(n_(i)+n_(j)-2, zeta_(i)+zeta_(j))
-                                                     - (Wn(n_(i)-am, zeta_(i)) + Wn(n_(j)-am, zeta_(j))) * Vn(n_(i)+n_(j)-1, zeta_(i)+zeta_(j))
-                                                     + Vn(n_(i)+n_(j), zeta_(i) + zeta_(j))
-                                                     );
-            //printf("T(%i,%i) %e\n",i,j,T(i,j));
-          }
+#pragma omp parallel for
+        for(auto pair: list) {
+          size_t i=pair.first;
+          size_t j=pair.second;
+          // Pitzer, page 244
+          T(i,j) = T(j,i) = 0.5*zeta_(i)*zeta_(j)*(
+                                                   Wn(n_(i)-am, zeta_(i)) * Wn(n_(j)-am, zeta_(j)) * Vn(n_(i)+n_(j)-2, zeta_(i)+zeta_(j))
+                                                   - (Wn(n_(i)-am, zeta_(i)) + Wn(n_(j)-am, zeta_(j))) * Vn(n_(i)+n_(j)-1, zeta_(i)+zeta_(j))
+                                                   + Vn(n_(i)+n_(j), zeta_(i) + zeta_(j))
+                                                   );
+          //printf("T(%i,%i) %e\n",i,j,T(i,j));
+        }
         return T;
       }
       /// Evaluate nuclear attraction matrix
       arma::mat nuclear_attraction() const override {
+        auto list(basis_function_pairs());
         arma::mat V(zeta_.n_elem, zeta_.n_elem);
-        for(size_t i=0;i<zeta_.n_elem;i++)
-          for(size_t j=0;j<=i;j++) {
-            // Pitzer, page 244
-            V(i,j) = V(j,i) = Vn(n_(i)+n_(j)-1, zeta_(i)+zeta_(j));
-            //printf("V(%i,%i) %e\n",i,j,V(i,j));
-          }
+#pragma omp parallel for
+        for(auto pair: list) {
+          size_t i=pair.first;
+          size_t j=pair.second;
+          // Pitzer, page 244
+          V(i,j) = V(j,i) = Vn(n_(i)+n_(j)-1, zeta_(i)+zeta_(j));
+          //printf("V(%i,%i) %e\n",i,j,V(i,j));
+        }
         return V;
       }
       /// Evaluate basis functions
       arma::mat eval_f(const arma::vec & x) const override {
         arma::mat f(x.n_elem, zeta_.n_elem, arma::fill::zeros);
+#pragma omp parallel for collapse(2)
         for(size_t iz=0; iz<zeta_.n_elem; iz++) {
           for(size_t ix=0; ix<x.n_elem; ix++) {
             f(ix,iz) = std::pow(x(ix),n_(iz)-1) * std::exp(-zeta_(iz)*x(ix));
@@ -147,6 +165,7 @@ namespace OpenOrbitalOptimizer {
       /// Evaluate basis functions
       arma::mat eval_df(const arma::vec & x) const override {
         arma::mat df(x.n_elem, zeta_.n_elem, arma::fill::zeros);
+#pragma omp parallel for collapse(2)
         for(size_t iz=0; iz<zeta_.n_elem; iz++) {
           for(size_t ix=0; ix<x.n_elem; ix++) {
             df(ix,iz) = -zeta_(iz) * std::pow(x(ix),n_(iz)-1) * std::exp(-zeta_(iz)*x(ix));
@@ -159,15 +178,19 @@ namespace OpenOrbitalOptimizer {
       }
       /// Evaluate Coulomb matrix
       arma::mat coulomb(const STOBasis & other, const arma::mat & Pother) const {
+        auto list(basis_function_pairs());
+
         arma::mat J(zeta_.n_elem, zeta_.n_elem, arma::fill::zeros);
-        for(size_t j=0;j<zeta_.n_elem;j++)
-          for(size_t i=0;i<zeta_.n_elem;i++) {
-            double Jij = 0.0;
-            for(size_t l=0;l<Pother.n_cols;l++)
-              for(size_t k=0;k<Pother.n_rows;k++)
-                Jij += Pother(k,l) * Rmnv(n_(i)+n_(j), other.n_(k)+other.n_(l), 0, zeta_(i)+zeta_(j), other.zeta_(k)+other.zeta_(l));
-            J(i,j) = J(j,i) = Jij;
-          }
+#pragma omp parallel for
+        for(auto pair: list) {
+          size_t i=pair.first;
+          size_t j=pair.second;
+          double Jij = 0.0;
+          for(size_t l=0;l<Pother.n_cols;l++)
+            for(size_t k=0;k<Pother.n_rows;k++)
+              Jij += Pother(k,l) * Rmnv(n_(i)+n_(j), other.n_(k)+other.n_(l), 0, zeta_(i)+zeta_(j), other.zeta_(k)+other.zeta_(l));
+          J(i,j) = J(j,i) = Jij;
+        }
         return J;
       }
       /// Wrapper for the above
@@ -195,6 +218,14 @@ namespace OpenOrbitalOptimizer {
         //printf("Rmnv(%i,%i,%i,%e,%e) = %e\n",m,n,v,x,y,value);
         return value;
       }
+      /// Pairs of basis functions
+      std::vector<std::pair<size_t,size_t>> basis_function_pairs() const {
+        std::vector<std::pair<size_t,size_t>> list;
+        for(size_t i=0;i<zeta_.n_elem;i++)
+          for(size_t j=0;j<=i;j++)
+            list.push_back(std::make_pair(i,j));
+        return list;
+      }
     public:
       /// Constructor
       GTOBasis(const arma::vec & zeta, const arma::ivec & n, int angular_momentum) : zeta_(zeta), n_(n), RadialBasis(angular_momentum) {
@@ -204,41 +235,51 @@ namespace OpenOrbitalOptimizer {
       };
       /// Evaluate overlap matrix
       arma::mat overlap() const override {
+        auto list(basis_function_pairs());
         arma::mat S(zeta_.n_elem, zeta_.n_elem);
-        for(size_t i=0;i<zeta_.n_elem;i++)
-          for(size_t j=0;j<=i;j++) {
-            // Pitzer, page 244. Factor one half is missing in paper
-            S(i,j) = S(j,i) = 0.5*Vn(0.5*(n_(i)+n_(j)-1),zeta_(i)+zeta_(j));
-          }
+#pragma omp parallel for
+        for(auto pair: list) {
+          size_t i=pair.first;
+          size_t j=pair.second;
+          // Pitzer, page 244. Factor one half is missing in paper
+          S(i,j) = S(j,i) = 0.5*Vn(0.5*(n_(i)+n_(j)-1),zeta_(i)+zeta_(j));
+        }
         return S;
       };
       /// Evaluate kinetic energy matrix
       arma::mat kinetic(int l) const override {
+        auto list(basis_function_pairs());
         arma::mat T(zeta_.n_elem, zeta_.n_elem);
-        for(size_t i=0;i<zeta_.n_elem;i++)
-          for(size_t j=0;j<=i;j++) {
-            // Pitzer, page 244. Factor one half is missing in paper
-            T(i,j) = T(j,i) = zeta_(i)*zeta_(j)*(
-                                                     Wn(n_(i)-l,2*zeta_(i)) * Wn(n_(j)-l,2*zeta_(j)) * Vn(0.5*(n_(i)+n_(j)-3),zeta_(i)+zeta_(j))
-                                                     - (Wn(n_(i)-l,2*zeta_(i)) + Wn(n_(j)-l,2*zeta_(j))) * Vn(0.5*(n_(i)+n_(j)-1),zeta_(i)+zeta_(j))
-                                                     + Vn(0.5*(n_(i)+n_(j)+1),zeta_(i)+zeta_(j))
-                                                     );
-          }
+#pragma omp parallel for
+        for(auto pair: list) {
+          size_t i=pair.first;
+          size_t j=pair.second;
+          // Pitzer, page 244. Factor one half is missing in paper
+          T(i,j) = T(j,i) = zeta_(i)*zeta_(j)*(
+                                               Wn(n_(i)-l,2*zeta_(i)) * Wn(n_(j)-l,2*zeta_(j)) * Vn(0.5*(n_(i)+n_(j)-3),zeta_(i)+zeta_(j))
+                                               - (Wn(n_(i)-l,2*zeta_(i)) + Wn(n_(j)-l,2*zeta_(j))) * Vn(0.5*(n_(i)+n_(j)-1),zeta_(i)+zeta_(j))
+                                               + Vn(0.5*(n_(i)+n_(j)+1),zeta_(i)+zeta_(j))
+                                               );
+        }
         return T;
       }
       /// Evaluate nuclear attraction matrix
       arma::mat nuclear_attraction() const override {
+        auto list(basis_function_pairs());
         arma::mat V(zeta_.n_elem, zeta_.n_elem);
-        for(size_t i=0;i<zeta_.n_elem;i++)
-          for(size_t j=0;j<=i;j++) {
-            // Pitzer, page 244. Factor one half is missing in paper
-            V(i,j) = V(j,i) = 0.5*Vn(0.5*(n_(i)+n_(j)-2),zeta_(i)+zeta_(j));
-          }
+#pragma omp parallel for
+        for(auto pair: list) {
+          size_t i=pair.first;
+          size_t j=pair.second;
+          // Pitzer, page 244. Factor one half is missing in paper
+          V(i,j) = V(j,i) = 0.5*Vn(0.5*(n_(i)+n_(j)-2),zeta_(i)+zeta_(j));
+        }
         return V;
       }
       /// Evaluate basis functions
       arma::mat eval_f(const arma::vec & x) const override {
         arma::mat f(x.n_elem, zeta_.n_elem, arma::fill::zeros);
+#pragma omp parallel for collapse(2)
         for(size_t iz=0; iz<zeta_.n_elem; iz++) {
           for(size_t ix=0; ix<x.n_elem; ix++) {
             f(ix,iz) = std::pow(x(ix),n_(iz)-1) * std::exp(-zeta_(iz)*x(ix)*x(ix));
@@ -249,6 +290,7 @@ namespace OpenOrbitalOptimizer {
       /// Evaluate basis functions
       arma::mat eval_df(const arma::vec & x) const override {
         arma::mat df(x.n_elem, zeta_.n_elem, arma::fill::zeros);
+#pragma omp parallel for collapse(2)
         for(size_t iz=0; iz<zeta_.n_elem; iz++) {
           for(size_t ix=0; ix<x.n_elem; ix++) {
             df(ix,iz) = -2.0 * zeta_(iz) * x(ix) * std::pow(x(ix),n_(iz)-1) * std::exp(-zeta_(iz)*x(ix)*x(ix));
@@ -261,15 +303,19 @@ namespace OpenOrbitalOptimizer {
       }
       /// Evaluate Coulomb matrix
       arma::mat coulomb(const GTOBasis & other, const arma::mat & Pother) const {
+        auto list(basis_function_pairs());
+
         arma::mat J(zeta_.n_elem, zeta_.n_elem, arma::fill::zeros);
-        for(size_t j=0;j<zeta_.n_elem;j++)
-          for(size_t i=0;i<zeta_.n_elem;i++) {
-            double Jij = 0.0;
-            for(size_t l=0;l<Pother.n_cols;l++)
-              for(size_t k=0;k<Pother.n_rows;k++)
-                Jij += Pother(k,l) * Rmnv(n_(i)+n_(j), other.n_(k)+other.n_(l), 0, zeta_(i)+zeta_(j), other.zeta_(k)+other.zeta_(l));
-            J(i,j) = J(j,i) = Jij;
-          }
+#pragma omp parallel for
+        for(auto pair: list) {
+          size_t i=pair.first;
+          size_t j=pair.second;
+          double Jij = 0.0;
+          for(size_t l=0;l<Pother.n_cols;l++)
+            for(size_t k=0;k<Pother.n_rows;k++)
+              Jij += Pother(k,l) * Rmnv(n_(i)+n_(j), other.n_(k)+other.n_(l), 0, zeta_(i)+zeta_(j), other.zeta_(k)+other.zeta_(l));
+          J(i,j) = J(j,i) = Jij;
+        }
         return J;
       }
       /// Wrapper for the above
