@@ -100,6 +100,8 @@ namespace OpenOrbitalOptimizer {
     const double convergence_threshold_ = 1e-7;
     /// Norm to use: rms
     const std::string error_norm_ = "fro";
+    /// ADIIS/EDIIS regularization parameter
+    const double adiis_regularization_parameter_ = 1e-3;
 
     /* Internal functions */
     /// Get a block of the density matrix for the ihist:th entry
@@ -302,10 +304,17 @@ namespace OpenOrbitalOptimizer {
       };
 
       // Function to compute the ADIIS energy and gradient
-      std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> adiis_energy_gradient = [linear_term, quadratic_term, x_to_weight, x_to_weight_jacobian](const arma::Col<Tbase> & x) {
+      const double regularization_parameter = adiis_regularization_parameter_;
+      std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> adiis_energy_gradient = [linear_term, quadratic_term, x_to_weight, x_to_weight_jacobian, regularization_parameter](const arma::Col<Tbase> & x) {
         auto w(x_to_weight(x));
         arma::Col<Tbase> g = x_to_weight_jacobian(x)*(linear_term + quadratic_term*w);
         auto fval = arma::dot(linear_term, w) + 0.5*arma::dot(w, quadratic_term*w);
+
+        // Add regularization
+        if(regularization_parameter != 0.0) {
+          fval += regularization_parameter * arma::dot(x,x);
+          g += 2 * regularization_parameter * x;
+        }
 
         return std::make_pair(fval, g);
       };
