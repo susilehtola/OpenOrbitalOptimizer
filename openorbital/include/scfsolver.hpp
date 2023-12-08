@@ -771,7 +771,7 @@ namespace OpenOrbitalOptimizer {
         fflush(stdout);
 
         // To be realistic, the parabola should open up
-        auto fit_okay = a>0.0;
+        auto fit_okay = std::isnormal(a) and a>0.0;
         if(fit_okay) {
           auto predicted_step = -dE/(2.0*a);
           auto predicted_energy = a * predicted_step*predicted_step + dE*predicted_step + initial_energy;
@@ -795,7 +795,7 @@ namespace OpenOrbitalOptimizer {
             } else {
               printf("Error: energy did not decrease in line search! Decreasing trial step size\n");
               fflush(stdout);
-              step = std::min(predicted_step, step/2.0);
+              step = std::min(10.0*predicted_step, step/2.0);
             }
           }
         }
@@ -1011,7 +1011,7 @@ namespace OpenOrbitalOptimizer {
             }
           }
           diis_weights.print("Extrapolation weigths");
-          
+
           // Perform extrapolation. If it does not lower the energy, we do
           // a scaled steepest descent step, instead.
           old_energy = orbital_history_[0].second.first;
