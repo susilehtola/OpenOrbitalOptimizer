@@ -1,9 +1,9 @@
+cmake_minimum_required(VERSION 3.12)
 project (liborbopt)
 set(PROJECT_TYPE C CXX)
 set(C_STANDARD 99)
 set(CXX_STANDARD 17)
 
-cmake_minimum_required(VERSION 3.12)
 # Enable Fortran for LAPACK
 enable_language (Fortran)
 
@@ -28,7 +28,9 @@ link_libraries(${LAPACK_LIBRARIES})
 option(ARMA_DONT_USE_WRAPPER "Do not use Armadillo wrapper" ON)
 #find_package(Armadillo REQUIRED)
 #include_directories(${ARMADILLO_INCLUDE_DIRS})
+include_directories(".")
 include_directories("/home/work/armadillo/include")
+include_directories("/home/work/IntegratorXX/include")
 if(ARMA_DONT_USE_WRAPPER)
   add_definitions(-DARMA_DONT_USE_WRAPPER)
 else()
