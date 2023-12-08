@@ -100,6 +100,9 @@ namespace OpenOrbitalOptimizer {
     const double convergence_threshold_ = 1e-7;
     /// Norm to use: rms
     const std::string error_norm_ = "fro";
+
+    /// Minimal normalized projection of preconditioned search direction onto gradient
+    const double minimal_gradient_projection_ = 1e-3;
     /// ADIIS/EDIIS regularization parameter
     const double adiis_regularization_parameter_ = 1e-3;
 
@@ -649,6 +652,10 @@ namespace OpenOrbitalOptimizer {
       // Ensure that the search direction is down-hill
       if(arma::dot(search_direction, gradient) > 0.0) {
         printf("Warning - preconditioned search direction was not downhill, resetting it\n");
+        search_direction = -gradient;
+      }
+      if(arma::dot(search_direction, gradient) < minimal_gradient_projection_*std::sqrt(arma::norm(search_direction,2)*arma::norm(gradient, 2))) {
+        printf("Warning - preconditioned search direction did not have sufficiently large projection on gradient, resetting it\n");
         search_direction = -gradient;
       }
 
