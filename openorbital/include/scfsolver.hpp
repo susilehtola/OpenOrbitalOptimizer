@@ -445,6 +445,18 @@ namespace OpenOrbitalOptimizer {
       auto & reference_solution = orbital_history_[0];
       auto & reference_occupations = reference_solution.first.second;
 
+      // List occupied-occupied rotations, in case some orbitals are not fully occupied
+      for(size_t iblock = 0; iblock < reference_occupations.size(); iblock++) {
+        arma::uvec occupied_indices = arma::find(reference_occupations[iblock] > 0.0);
+        for(size_t io1 = 0; io1 < occupied_indices.size(); io1++)
+          for(size_t io2 = 0; io2 < io1; io2++) {
+            auto o1 = occupied_indices[io1];
+            auto o2 = occupied_indices[io2];
+            if(reference_occupations[iblock][o1] != reference_occupations[iblock][o2])
+              dofs.push_back(std::make_tuple(iblock, o1, o2));
+          }
+      }
+
       // List occupied-virtual rotations
       for(size_t iblock = 0; iblock < reference_occupations.size(); iblock++) {
         // Find the occupied and virtual blocks
