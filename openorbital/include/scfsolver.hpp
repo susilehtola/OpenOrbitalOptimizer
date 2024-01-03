@@ -392,6 +392,38 @@ namespace OpenOrbitalOptimizer {
       return extrapolated_fock;
     }
 
+    /// Compute maximum overlap orbital occupations
+    OrbitalOccupations<Tbase> determine_maximum_overlap_occupations(const OrbitalOccupations<Tbase> & reference_occupations, const Orbitals<Torb> & C_reference, const Orbitals<Torb> & C_new) {
+      OrbitalOccupations<Tbase> new_occupations(reference_occupations);
+      for(size_t iblock=0; iblock<new_occupations.size(); iblock++) {
+        // Initialize
+        new_occupations[iblock].zeros();
+
+        // Magnitude of the overlap between the new orbitals and the reference ones
+        arma::Mat<Tbase> orbital_projections(arma::abs(C_new[iblock].t()*C_reference[iblock]));
+
+        // Occupy the orbitals in in descending occupation, even if there are gaps in the occupation numbers
+        arma::uvec occupation_order(arma::sort_index(reference_occupations[iblock], "descend"));
+        for(size_t iorb=0; iorb<occupation_order.n_elem; iorb++) {
+          // Index of reference orbital
+          auto iref = occupation_order(iorb);
+          // Projections for this orbital
+          auto projection = orbital_projections.col(iref);
+          // Find the maximum index
+          auto maximal_projection_index = arma::index_max(projection);
+          auto maximal_projection = projection(maximal_projection_index);
+          // Store projection
+          new_occupations[iblock][maximal_projection_index] = reference_occupations[iblock](iref);
+          // and reset the corresponding row so that the orbital can't be reused
+          orbital_projections.row(maximal_projection_index).zeros();
+
+          printf("Symmetry %i: reference orbital %i with occupation %.3f matches new orbital %i with projection %e\n",(int) iblock, (int) iref, reference_occupations[iblock](iref), (int) maximal_projection_index, maximal_projection);
+        }
+      }
+
+      return new_occupations;
+    }
+
     /// Attempt extrapolation with given weights
     bool attempt_extrapolation(const arma::Col<Tbase> & weights) {
       // Get the extrapolated Fock matrix
@@ -404,18 +436,23 @@ namespace OpenOrbitalOptimizer {
 
       // Determine new occupations
       auto new_occupations = determine_occupations(new_orbital_energies);
-      // this needs to be a copy!
-      auto reference_occupations = orbital_history_[0].first.second;
 
-      printf("attempt_extrapolation: occupation difference %e\n",occupation_difference(reference_occupations, new_occupations));
+      // Reference calculation
+      auto & reference_solution = orbital_history_[0];
+      auto & reference_orbitals = reference_solution.first.first;
+      auto & reference_occupations = reference_solution.first.second;
+      // Occupations corresponding to the reference orbitals
+      auto maximum_overlap_occupations = determine_maximum_overlap_occupations(reference_occupations, reference_orbitals, new_orbitals);
+
+      printf("attempt_extrapolation: occupation difference %e\n",occupation_difference(maximum_overlap_occupations, new_occupations));
 
       // Try first updating the orbitals, but not the occupations
-      bool ref_success = add_entry(std::make_pair(new_orbitals, reference_occupations));
+      bool ref_success = add_entry(std::make_pair(new_orbitals, maximum_overlap_occupations));
 
       // If occupations have changed, also check if updating the
       // occupations lowers the energy
       bool occ_success = false;
-      if(occupation_difference(reference_occupations, new_occupations) > occupation_change_threshold_) {
+      if(occupation_difference(maximum_overlap_occupations, new_occupations) > occupation_change_threshold_) {
         occ_success = add_entry(std::make_pair(new_orbitals, new_occupations));
         if(occ_success)
           printf("Changing occupations decreased energy\n");
