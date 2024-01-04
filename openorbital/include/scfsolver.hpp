@@ -78,13 +78,24 @@ namespace OpenOrbitalOptimizer {
     /// Descriptions of the blocks
     std::vector<std::string> block_descriptions_;
 
+    /** (Optional) fixed number of particles in each symmetry, affects
+        the way occupations are assigned in Aufbau. These are used if
+        the array has the expected size.
+    */
+    arma::Col<Tbase> fixed_number_of_particles_per_block_;
+    /// (Optional) freeze occupations altogether to their previous values
+    bool frozen_occupations_;
+
+    /// Verbosity level: 0 for silent, higher values for more info
+    int verbosity_;
+
     /* Internal data section */
     /// The number of blocks
     size_t number_of_blocks_;
     /// The orbital history used for convergence acceleration
     OrbitalHistory<Torb, Tbase> orbital_history_;
     /// Orbital energies, updated each iteration from the lowest-energy solution
-    OrbitalEnergies<Tbase> orbital_energies_;
+    OrbitalOccupations<Tbase> orbital_occupations_;
 
     /// Maximum number of iterations
     const size_t maximum_iterations_ = 128;
@@ -267,7 +278,8 @@ namespace OpenOrbitalOptimizer {
       // Sort the solutions in the extrapolated error
       arma::uvec sortidx;
       sortidx = arma::sort_index(error_norms);
-      error_norms(sortidx).print("Sorted C2DIIS errors");
+      if(verbosity_ >= 10)
+        error_norms(sortidx).print("Sorted C2DIIS errors");
 
       arma::Col<Tbase> diis_weights;
       for(auto index: sortidx) {
@@ -275,7 +287,8 @@ namespace OpenOrbitalOptimizer {
         // Skip solutions that have extrapolated error in the same order
         // of magnitude as the used floating point precision
         if(error_norms(index) >= 5*std::numeric_limits<Tbase>::epsilon()) {
-          printf("Using C2DIIS solution index %i\n",index);
+          if(verbosity_ >= 10)
+            printf("Using C2DIIS solution index %i\n",index);
           break;
         }
       }
@@ -414,7 +427,7 @@ namespace OpenOrbitalOptimizer {
           // and reset the corresponding row so that the orbital can't be reused
           orbital_projections.row(maximal_projection_index).zeros();
 
-          printf("Symmetry %i: reference orbital %i with occupation %.3f matches new orbital %i with projection %e\n",(int) iblock, (int) iorb, reference_occupations[iblock](iorb), (int) maximal_projection_index, maximal_projection);
+          //printf("Symmetry %i: reference orbital %i with occupation %.3f matches new orbital %i with projection %e\n",(int) iblock, (int) iorb, reference_occupations[iblock](iorb), (int) maximal_projection_index, maximal_projection);
         }
       }
 
@@ -432,29 +445,37 @@ namespace OpenOrbitalOptimizer {
       auto & new_orbital_energies = diagonalized_fock.second;
 
       // Determine new occupations
-      auto new_occupations = determine_occupations(new_orbital_energies);
+      auto new_occupations = update_occupations(new_orbital_energies);
 
       // Reference calculation
       auto & reference_solution = orbital_history_[0];
       auto & reference_orbitals = reference_solution.first.first;
-      auto & reference_occupations = reference_solution.first.second;
+      auto reference_occupations = reference_solution.first.second;
       // Occupations corresponding to the reference orbitals
       auto maximum_overlap_occupations = determine_maximum_overlap_occupations(reference_occupations, reference_orbitals, new_orbitals);
 
-      printf("attempt_extrapolation: occupation difference %e\n",occupation_difference(maximum_overlap_occupations, new_occupations));
-
       // Try first updating the orbitals, but not the occupations
-      bool ref_success = add_entry(std::make_pair(new_orbitals, maximum_overlap_occupations));
+      bool ref_success = add_entry(std::make_pair(new_orbitals, reference_occupations));
 
-      // If occupations have changed, also check if updating the
-      // occupations lowers the energy
+      // If that did not succeed, try maximum overlap occupations; it
+      // might be that the orbitals changed order
+      if(not frozen_occupations_ and not ref_success and occupation_difference(maximum_overlap_occupations, reference_occupations) > occupation_change_threshold_) {
+        if(verbosity_ >= 10)
+          printf("attempt_extrapolation: occupation difference to maximum overlap orbitals %e\n",occupation_difference(reference_occupations, new_occupations));
+        ref_success = add_entry(std::make_pair(new_orbitals, maximum_overlap_occupations));
+      }
+
+      // Finally, if occupations have changed, also check if updating
+      // the occupations lowers the energy
       bool occ_success = false;
-      if(occupation_difference(maximum_overlap_occupations, new_occupations) > occupation_change_threshold_) {
+      if(occupation_difference(reference_occupations, new_occupations) > occupation_change_threshold_) {
         occ_success = add_entry(std::make_pair(new_orbitals, new_occupations));
-        if(occ_success)
-          printf("Changing occupations decreased energy\n");
-        else
-          printf("Changing occupations failed to decrease energy\n");
+        if(verbosity_>=5) {
+          if(occ_success)
+            printf("Changing occupations decreased energy\n");
+          else
+            printf("Changing occupations failed to decrease energy\n");
+        }
       }
 
       // Clean up history from incorrect occupation data
@@ -465,6 +486,7 @@ namespace OpenOrbitalOptimizer {
             nremoved++;
             orbital_history_.erase(orbital_history_.begin()+ihist);
           }
+        if(verbosity_>=10)
         printf("Removed %i entries corresponding to bad occupations\n",nremoved);
       }
 
@@ -697,11 +719,13 @@ namespace OpenOrbitalOptimizer {
 
       // Ensure that the search direction is down-hill
       if(arma::dot(search_direction, gradient) > 0.0) {
-        printf("Warning - preconditioned search direction was not downhill, resetting it\n");
+        if(verbosity_>=5)
+          printf("Warning - preconditioned search direction was not downhill, resetting it\n");
         search_direction = -gradient;
       }
       if(arma::dot(search_direction, gradient) < minimal_gradient_projection_*std::sqrt(arma::norm(search_direction,2)*arma::norm(gradient, 2))) {
-        printf("Warning - preconditioned search direction did not have sufficiently large projection on gradient, resetting it\n");
+        if(verbosity_>=5)
+          printf("Warning - preconditioned search direction did not have sufficiently large projection on gradient, resetting it\n");
         search_direction = -gradient;
       }
 
@@ -715,7 +739,8 @@ namespace OpenOrbitalOptimizer {
         // We can add the evaluated Fock matrix to the history
         if(length!=0.0)
           add_entry(entry.first, entry.second);
-        printf("Evaluated step %e with energy %.10f\n", length, entry.second.first);
+        if(verbosity_>=5)
+          printf("Evaluated step %e with energy %.10f\n", length, entry.second.first);
         return entry.second.first;
       };
       std::function<Tbase(Tbase)> scan_step = [this, search_direction](Tbase length){
@@ -738,7 +763,7 @@ namespace OpenOrbitalOptimizer {
       static int iter=0;
       arma::Col<Tbase> ttest(arma::linspace<arma::Col<Tbase>>(0.0,1.0,51)*Tmu);
 
-
+#if 0
       arma::Mat<Tbase> data(ttest.n_elem, 2);
       data.col(0)=ttest;
       for(size_t i=0;i<ttest.n_elem;i++)
@@ -748,7 +773,6 @@ namespace OpenOrbitalOptimizer {
       data.save(oss.str(),arma::raw_ascii);
       iter++;
 
-#if 0
       // Test the routines
       auto dof_list = degrees_of_freedom();
       auto g(search_direction);
@@ -784,7 +808,6 @@ namespace OpenOrbitalOptimizer {
         printf("g(%3i), block %i orbitals %i-%i, % e vs % e (two-point   % e) difference % e ratio % e\n",i,iblock, iorb, jorb, gradient(i),g(i),twop,gradient(i)-g(i),gradient(i)/g(i));
         printf("h(%3i), block %i orbitals %i-%i, % e vs % e (three-point % e) difference % e ratio % e\n",i,iblock, iorb, jorb, diagonal_hessian(i),h4diff,h2diff,diagonal_hessian(i)-h4diff,diagonal_hessian(i)/h4diff);
         fflush(stdout);
-
       }
       gradient.print("Analytic gradient");
       g.print("Finite difference gradient");
@@ -794,8 +817,10 @@ namespace OpenOrbitalOptimizer {
       // Line search
       bool search_success = false;
       for(size_t itrial=0; itrial<10; itrial++) {
-        printf("Trial iteration %i\n",itrial);
-        fflush(stdout);
+        if(verbosity_>=5) {
+          printf("Trial iteration %i\n",itrial);
+          fflush(stdout);
+        }
 
         // Evaluate the energy
         auto trial_energy = evaluate_step(step);
@@ -813,8 +838,10 @@ namespace OpenOrbitalOptimizer {
         auto dE = arma::dot(gradient, search_direction);
         auto a = (trial_energy - dE*step - initial_energy)/(step*step);
 
-        printf("a = %e\n",a);
-        fflush(stdout);
+        if(verbosity_>=10) {
+          printf("a = %e\n",a);
+          fflush(stdout);
+        }
 
         // To be realistic, the parabola should open up
         auto fit_okay = std::isnormal(a) and a>0.0;
@@ -832,15 +859,19 @@ namespace OpenOrbitalOptimizer {
 
           if(fit_okay) {
             auto observed_energy = evaluate_step(predicted_step);
-            printf("Predicted energy % .10f observed energy % .10f difference %e\n", predicted_energy, observed_energy,predicted_energy-observed_energy);
-            fflush(stdout);
+            if(verbosity_>=5) {
+              printf("Predicted energy % .10f observed energy % .10f difference %e\n", predicted_energy, observed_energy,predicted_energy-observed_energy);
+              fflush(stdout);
+            }
 
             if(observed_energy < initial_energy) {
               search_success=true;
               break;
             } else {
-              printf("Error: energy did not decrease in line search! Decreasing trial step size\n");
-              fflush(stdout);
+              if(verbosity_>=5) {
+                printf("Error: energy did not decrease in line search! Decreasing trial step size\n");
+                fflush(stdout);
+              }
               step = std::min(10.0*predicted_step, step/2.0);
             }
           }
@@ -853,7 +884,7 @@ namespace OpenOrbitalOptimizer {
 
   public:
     /// Constructor
-    SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions) {
+    SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions), verbosity_(5) {
       // Run sanity checks
       number_of_blocks_ = arma::sum(number_of_blocks_per_particle_type_);
       if(maximum_occupation_.size() != number_of_blocks_) {
@@ -878,21 +909,42 @@ namespace OpenOrbitalOptimizer {
       // Compute orbitals
       auto diagonalized_fock = compute_orbitals(fock_guess);
       const auto & orbitals = diagonalized_fock.first;
-      orbital_energies_ = diagonalized_fock.second;
-      auto orbital_occupations = determine_occupations(orbital_energies_);
-      initialize_with_orbitals(orbitals, orbital_occupations);
+      const auto & orbital_energies = diagonalized_fock.second;
+
+      // Disable frozen occupations for the initialization
+      frozen_occupations_ = false;
+      orbital_occupations_ = update_occupations(orbital_energies);
+      initialize_with_orbitals(orbitals, orbital_occupations_);
     }
 
     /// Initialize with precomputed orbitals and occupations
     void initialize_with_orbitals(const Orbitals<Torb> & orbitals, const OrbitalOccupations<Tbase> & orbital_occupations) {
+      orbital_history_.clear();
       add_entry(std::make_pair(orbitals, orbital_occupations));
+    }
+
+    /// Fix the number of occupied orbitals per block
+    void set_fixed_number_of_particles_per_block(const arma::Col<Tbase> & number_of_particles_per_block) {
+      fixed_number_of_particles_per_block_ = number_of_particles_per_block;
+    }
+
+    /// Get frozen occupations
+    bool get_frozen_occupations() const {
+      return frozen_occupations_;
+    }
+
+    /// Set frozen occupations
+    void set_frozen_occupations(bool frozen) {
+      frozen_occupations_ = frozen;
     }
 
     /// Add entry to history, return value is True if energy was lowered
     bool add_entry(const DensityMatrix<Torb, Tbase> & density) {
       // Compute the Fock matrix
       auto fock = fock_builder_(density);
-      printf("Evaluated energy % .10f\n",fock.first);
+      if(verbosity_>=5) {
+        printf("Evaluated energy % .10f\n",fock.first);
+      }
       return add_entry(density, fock);
     }
 
@@ -930,24 +982,28 @@ namespace OpenOrbitalOptimizer {
         auto fsymm(0.5*(fock[iblock]+fock[iblock].t()));
         arma::eig_sym(diagonalized_fock.second[iblock], diagonalized_fock.first[iblock], fsymm);
 
-        diagonalized_fock.second[iblock].t().print(block_descriptions_[iblock] + " orbital energies");
+        if(verbosity_>=10) {
+          diagonalized_fock.second[iblock].t().print(block_descriptions_[iblock] + " orbital energies");
+        }
         fflush(stdout);
       }
 
       return diagonalized_fock;
     }
 
-    /// Computes Aufbau occupations based on the current orbital energies
-    OrbitalOccupations<Tbase> determine_occupations(const OrbitalEnergies<Tbase> & orbital_energies) const {
-      // Allocate the return
-      OrbitalOccupations<Tbase> occupations(orbital_energies.size());
-      for(size_t iblock=0; iblock<orbital_energies.size(); iblock++)
-        occupations[iblock].zeros(orbital_energies[iblock].size());
+    /// Determines the offset for the blocks of the iparticle:th particle
+    arma::uword particle_block_offset(size_t iparticle) const {
+      return (iparticle>0) ? arma::sum(number_of_blocks_per_particle_type_.subvec(0,iparticle-1)) : 0;
+    }
+
+    /// Determine number of particles in each block
+    arma::Col<Tbase> determine_number_of_particles_by_aufbau(const OrbitalEnergies<Tbase> & orbital_energies) const {
+      arma::Col<Tbase> number_of_particles(number_of_blocks_, arma::fill::zeros);
 
       // Loop over particle types
       for(size_t particle_type = 0; particle_type < number_of_blocks_per_particle_type_.size(); particle_type++) {
         // Compute the offset in the block array
-        size_t block_offset = (particle_type>0) ? arma::sum(number_of_blocks_per_particle_type_.subvec(0,particle_type-1)) : 0;
+        size_t block_offset = particle_block_offset(particle_type);
 
         // Collect the orbital energies with the block index and the in-block index for this particle type
         std::vector<std::tuple<Tbase, size_t, size_t>> all_energies;
@@ -965,12 +1021,40 @@ namespace OpenOrbitalOptimizer {
           // Increase number of occupied orbitals
           auto iblock = std::get<1>(fill_orbital);
           auto iorb = std::get<2>(fill_orbital);
-          occupations[iblock](iorb) = std::min(maximum_occupation_(iblock), num_left);
-          // It is probably safer to do this for the sake of floating
-          // point accuracy, since comparison to zero can be difficult
-          if(num_left <= maximum_occupation_(iblock))
+          // Compute how many particles fit this orbital
+          auto fill = std::min(maximum_occupation_(iblock), num_left);
+          number_of_particles(iblock) += fill;
+          num_left -= fill;
+          // This should be sufficently tolerant to roundoff error
+          if(num_left <= 10*std::numeric_limits<Tbase>::epsilon())
             break;
-          num_left -= occupations[iblock](iorb);
+        }
+      }
+
+      return number_of_particles;
+    }
+
+    /// Determines occupations based on the current orbital energies
+    OrbitalOccupations<Tbase> update_occupations(const OrbitalEnergies<Tbase> & orbital_energies) const {
+      if(frozen_occupations_)
+        return orbital_history_[0].first.second;
+
+      // Number of particles per block
+      arma::Col<Tbase> number_of_particles = (fixed_number_of_particles_per_block_.n_elem == number_of_blocks_) ? fixed_number_of_particles_per_block_ : determine_number_of_particles_by_aufbau(orbital_energies);
+
+      // Determine the number of occupied orbitals
+      OrbitalOccupations<Tbase> occupations(orbital_energies.size());
+      for(size_t iblock=0; iblock<orbital_energies.size(); iblock++) {
+        occupations[iblock].zeros(orbital_energies[iblock].size());
+
+        Tbase num_left = number_of_particles(iblock);
+        for(size_t iorb=0; iorb < occupations[iblock].n_elem; iorb++) {
+          auto fill = std::min(maximum_occupation_(iblock), num_left);
+          occupations[iblock](iorb) = fill;
+          num_left -= fill;
+          // This should be sufficently tolerant to roundoff error
+          if(num_left <= 10*std::numeric_limits<Tbase>::epsilon())
+            break;
         }
       }
 
@@ -980,10 +1064,6 @@ namespace OpenOrbitalOptimizer {
         if(occ_diff > occupation_change_threshold_) {
           std::cout << "Warning: occupations changed by " << occ_diff << " from previous iteration\n";
         }
-      }
-
-      for(size_t l=0;l<occupations.size();l++) {
-        occupations[l].t().print(block_descriptions_[l] + " occupations");
       }
 
       return occupations;
@@ -996,11 +1076,22 @@ namespace OpenOrbitalOptimizer {
         // Compute DIIS error
         double diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
 
-        printf("\n\nIteration %i: energy % .10f change %e DIIS error vector %s norm %e\n", orbital_history_[0].second.first, orbital_history_[0].second.first-old_energy, iteration, error_norm_.c_str(), diis_error);
-        printf("History size %i\n",orbital_history_.size());
+        if(verbosity_>=5) {
+          printf("\n\nIteration %i: energy % .10f change %e DIIS error vector %s norm %e\n", iteration, orbital_history_[0].second.first, orbital_history_[0].second.first-old_energy, error_norm_.c_str(), diis_error);
+          printf("History size %i\n",orbital_history_.size());
+        }
         if(diis_error < convergence_threshold_) {
-          printf("Converged!\n");
+          printf("Converged to energy % .10f!\n", orbital_history_[0].second.first);
           break;
+        }
+
+        if(verbosity_>=5) {
+          auto & reference_solution = orbital_history_[0];
+          auto & occupations = reference_solution.first.second;
+          for(size_t l=0;l<occupations.size();l++) {
+            arma::uvec occ_idx(arma::find(occupations[l]>=1e-6));
+            occupations[l].subvec(0,arma::max(occ_idx)).t().print(block_descriptions_[l] + " occupations");
+          }
         }
 
         if(iteration == 1) {
@@ -1013,14 +1104,14 @@ namespace OpenOrbitalOptimizer {
           // Form DIIS and ADIIS weights
           //arma::Col<Tbase> c2diis_w(c2diis_weights());
           arma::Col<Tbase> c2diis_w(c2diis_weights());
-          c2diis_w.print("C2DIIS weights");
+          if(verbosity_>=10) c2diis_w.print("C2DIIS weights");
           arma::Col<Tbase> c1diis_w(c1diis_weights());
-          c1diis_w.print("C1DIIS weights");
+          if(verbosity_>=10) c1diis_w.print("C1DIIS weights");
           arma::Col<Tbase> adiis_w;
           bool adiis_ok = true;
           try {
             adiis_w = adiis_weights();
-            adiis_w.print("ADIIS weights");
+            if(verbosity_>=10) adiis_w.print("ADIIS weights");
           } catch(std::logic_error) {
             // Bad weights
             adiis_ok = false;
@@ -1028,27 +1119,29 @@ namespace OpenOrbitalOptimizer {
           };
 
           arma::Mat<Tbase> diis_errmat(diis_error_matrix());
-          printf("C1DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*c1diis_w,error_norm_.c_str()));
-          printf("C2DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*c2diis_w,error_norm_.c_str()));
-          if(adiis_ok)
-            printf("ADIIS extrapolated error norm %e\n",arma::norm(diis_errmat*adiis_w,error_norm_.c_str()));
+          if(verbosity_>=5) {
+            printf("C1DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*c1diis_w,error_norm_.c_str()));
+            printf("C2DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*c2diis_w,error_norm_.c_str()));
+            if(adiis_ok)
+              printf("ADIIS extrapolated error norm %e\n",arma::norm(diis_errmat*adiis_w,error_norm_.c_str()));
+          }
 
           // Form DIIS weights
           arma::Col<Tbase> diis_weights(orbital_history_.size(), arma::fill::zeros);
           if(diis_error < diis_threshold_) {
-            printf("C2DIIS extrapolation\n");
+            if(verbosity_>=5) printf("C2DIIS extrapolation\n");
             diis_weights = c2diis_w;
             //printf("C1DIIS extrapolation\n");
             //diis_weights = c1diis_w;
           } else {
             if(not adiis_ok) {
-              printf("Large gradient and ADIIS minimization failed, taking a steepest descent step instead.\n");
+              if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, taking a steepest descent step instead.\n");
               steepest_descent_step();
               continue;
             }
 
             if(diis_error < diis_epsilon_) {
-              printf("Mixed DIIS and ADIIS\n");
+              if(verbosity_>=10) printf("Mixed DIIS and ADIIS\n");
               double adiis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
               double c2diis_coeff = 1.0 - adiis_coeff;
               diis_weights = adiis_coeff * adiis_w + c2diis_coeff * c2diis_w;
@@ -1056,13 +1149,14 @@ namespace OpenOrbitalOptimizer {
               diis_weights = adiis_w;
             }
           }
-          diis_weights.print("Extrapolation weigths");
+          if(verbosity_>=10)
+            diis_weights.print("Extrapolation weigths");
 
           // Perform extrapolation. If it does not lower the energy, we do
           // a scaled steepest descent step, instead.
           old_energy = orbital_history_[0].second.first;
           if(!attempt_extrapolation(diis_weights)) {
-            printf("Warning: did not go down in energy!\n");
+            if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
             steepest_descent_step();
           }
         }
