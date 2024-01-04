@@ -402,22 +402,19 @@ namespace OpenOrbitalOptimizer {
         // Magnitude of the overlap between the new orbitals and the reference ones
         arma::Mat<Tbase> orbital_projections(arma::abs(C_new[iblock].t()*C_reference[iblock]));
 
-        // Occupy the orbitals in in descending occupation, even if there are gaps in the occupation numbers
-        arma::uvec occupation_order(arma::sort_index(reference_occupations[iblock], "descend"));
-        for(size_t iorb=0; iorb<occupation_order.n_elem; iorb++) {
-          // Index of reference orbital
-          auto iref = occupation_order(iorb);
+        // Occupy the orbitals in ascending energy, especially if there are unoccupied orbitals in-between
+        for(size_t iorb=0; iorb<reference_occupations[iblock].n_elem; iorb++) {
           // Projections for this orbital
-          auto projection = orbital_projections.col(iref);
+          auto projection = orbital_projections.col(iorb);
           // Find the maximum index
           auto maximal_projection_index = arma::index_max(projection);
           auto maximal_projection = projection(maximal_projection_index);
           // Store projection
-          new_occupations[iblock][maximal_projection_index] = reference_occupations[iblock](iref);
+          new_occupations[iblock][maximal_projection_index] = reference_occupations[iblock](iorb);
           // and reset the corresponding row so that the orbital can't be reused
           orbital_projections.row(maximal_projection_index).zeros();
 
-          printf("Symmetry %i: reference orbital %i with occupation %.3f matches new orbital %i with projection %e\n",(int) iblock, (int) iref, reference_occupations[iblock](iref), (int) maximal_projection_index, maximal_projection);
+          printf("Symmetry %i: reference orbital %i with occupation %.3f matches new orbital %i with projection %e\n",(int) iblock, (int) iorb, reference_occupations[iblock](iorb), (int) maximal_projection_index, maximal_projection);
         }
       }
 
