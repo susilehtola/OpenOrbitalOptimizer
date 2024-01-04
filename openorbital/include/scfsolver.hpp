@@ -1162,5 +1162,225 @@ namespace OpenOrbitalOptimizer {
         }
       }
     }
+
+    /// Get the SCF solution
+    DensityMatrix<Torb, Tbase> get_solution() const {
+      return orbital_history_[0].first;
+    }
+
+    /// Get the Fock matrix
+    FockBuilderReturn<Torb, Tbase> get_fock_build() const {
+      return orbital_history_[0].second;
+    }
+
+    /// Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search
+    void brute_force_search_for_lowest_configuration() {
+      // Make sure we have a solution
+      if(orbital_history_.size() == 0)
+        run();
+      else {
+        double diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+        if(diis_error >= diis_threshold_)
+          run();
+      }
+
+      // Get the reference orbitals and orbital occupations
+      auto & reference_solution = orbital_history_[0];
+      auto reference_orbitals = reference_solution.first.first;
+      auto reference_occupations = reference_solution.first.second;
+      auto reference_energy = reference_solution.second.first;
+      auto reference_fock = reference_solution.second.second;
+
+      // We also need the orbital energies below
+      auto diagonalized_fock = compute_orbitals(reference_fock);
+      const auto & orbital_energies = diagonalized_fock.second;
+
+      verbosity_ = 0;
+      frozen_occupations_ = false;
+      while(true) {
+        // Count the number of particles in each block
+        arma::Col<Tbase> number_of_particles_per_block(number_of_blocks_);
+        for(size_t iblock=0; iblock<number_of_particles_per_block.size(); iblock++)
+          number_of_particles_per_block[iblock] = arma::sum(reference_occupations[iblock]);
+        number_of_particles_per_block.t().print("Number of particles per block");
+
+        // List of occupations and resulting energies
+        std::vector<std::pair<arma::Col<Tbase>,Tbase>> list_of_energies;
+
+        // Loop over particle types. We have a double loop, since finding the lowest state in UHF probably requires this
+        for(size_t iparticle=0; iparticle<number_of_blocks_per_particle_type_.n_elem; iparticle++) {
+          size_t iblock_start = particle_block_offset(iparticle);
+          size_t iblock_end = iblock_start + number_of_blocks_per_particle_type_(iparticle);
+
+          // One-particle moves
+          for(size_t iblock_source = iblock_start; iblock_source < iblock_end; iblock_source++)
+            for(size_t iblock_target = iblock_start; iblock_target < iblock_end; iblock_target++) {
+              if(iblock_source == iblock_target)
+                continue;
+
+              // Maximum number to move
+              Tbase num_i_source = number_of_particles_per_block[iblock_source];
+              Tbase i_target_capacity = reference_occupations[iblock_target].n_elem*maximum_occupation_[iblock_target];
+              Tbase i_target_capacity_left = i_target_capacity - arma::sum(reference_occupations[iblock_target]);
+              int num_i_max = std::ceil(std::min(num_i_source, i_target_capacity_left));
+              num_i_max = std::min(num_i_max, (int) std::round(std::min(maximum_occupation_[iblock_source], maximum_occupation_[iblock_target])));
+
+              // Generate trials by moving particles
+              for(int imove=1; imove<=num_i_max; imove++) {
+                // Modify the occupations
+                auto trial_number(number_of_particles_per_block);
+                Tbase i_moved = std::min((Tbase) imove, trial_number(iblock_source));
+                trial_number(iblock_source) -= i_moved;
+                trial_number(iblock_target) += i_moved;
+
+                if(trial_number(iblock_source) < 0.0 or trial_number(iblock_target) > i_target_capacity)
+                  continue;
+
+                fixed_number_of_particles_per_block_ = trial_number;
+
+                printf("isource = %i itarget = %i imoved = %f\n", iblock_source, iblock_target, i_moved);
+                trial_number.t().print("trial number of particles");
+                fflush(stdout);
+
+                // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
+                auto trial_occupations = update_occupations(orbital_energies);
+                initialize_with_orbitals(reference_orbitals, trial_occupations);
+                try {
+                  run();
+                } catch(...) {};
+                // Add the result to the list
+                list_of_energies.push_back(std::make_pair(trial_number, orbital_history_[0].second.first));
+                // Reset the restriction
+                arma::Col<Tbase> dummy;
+                fixed_number_of_particles_per_block_ = dummy;
+              }
+            }
+
+          for(size_t jparticle=0; jparticle<=iparticle; jparticle++) {
+            size_t jblock_start = particle_block_offset(jparticle);
+            size_t jblock_end = jblock_start + number_of_blocks_per_particle_type_(jparticle);
+
+            // Loop over blocks of particles
+            for(size_t iblock_source = iblock_start; iblock_source < iblock_end; iblock_source++)
+              for(size_t iblock_target = iblock_start; iblock_target < iblock_end; iblock_target++) {
+
+                bool same_particle = (iparticle == jparticle);
+                size_t jblock_source_end = same_particle ? iblock_source+1 : jblock_end;
+                size_t jblock_target_end = same_particle ? iblock_target+1 : jblock_end;
+                printf("iparticle= %i jparticle= %i isource=%i itarget=%i\n",iparticle,jparticle,iblock_source,iblock_target);
+
+                for(size_t jblock_source = jblock_start; jblock_source < jblock_source_end; jblock_source++)
+                  for(size_t jblock_target = jblock_start; jblock_target < jblock_target_end; jblock_target++) {
+                    // Skip trivial cases
+                    if(iblock_source == iblock_target and jblock_source == jblock_target)
+                      continue;
+                    if(iblock_source == jblock_target and jblock_source == iblock_target)
+                      continue;
+                    // Skip one-particle cases
+                    if(iblock_source == jblock_source and iblock_target == jblock_target)
+                      continue;
+
+                    // Maximum number to move
+                    Tbase num_i_source = number_of_particles_per_block[iblock_source];
+                    Tbase i_target_capacity = reference_occupations[iblock_target].n_elem*maximum_occupation_[iblock_target];
+                    Tbase i_target_capacity_left = i_target_capacity - arma::sum(reference_occupations[iblock_target]);
+                    int num_i_max = std::ceil(std::min(num_i_source, i_target_capacity_left));
+                    num_i_max = std::min(num_i_max, (int) std::round(std::min(maximum_occupation_[iblock_source], maximum_occupation_[iblock_target])));
+
+                    Tbase num_j_source = number_of_particles_per_block[jblock_source];
+                    Tbase j_target_capacity = reference_occupations[jblock_target].n_elem*maximum_occupation_[jblock_target];
+                    Tbase j_target_capacity_left = j_target_capacity - arma::sum(reference_occupations[jblock_target]);
+                    int num_j_max = std::ceil(std::min(num_j_source, j_target_capacity_left));
+                    num_j_max = std::min(num_j_max, (int) std::round(std::min(maximum_occupation_[jblock_source], maximum_occupation_[jblock_target])));
+
+                    printf("i: source %f capacity left %f num max %i\n",num_i_source,i_target_capacity_left,num_i_max);
+                    printf("j: source %f capacity left %f num max %i\n",num_j_source,j_target_capacity_left,num_j_max);
+                    fflush(stdout);
+
+                    // Generate trials by moving particles
+                    for(int imove=1; imove<=num_i_max; imove++)
+                      for(int jmove=1; jmove<=num_j_max; jmove++) {
+                        // These also lead to degeneracies
+                        if(iblock_source == iblock_target and imove > 0)
+                          continue;
+                        if(iblock_source == iblock_target and jmove == 0)
+                          continue;
+                        if(jblock_source == jblock_target and jmove > 0)
+                          continue;
+                        if(jblock_source == jblock_target and imove == 0)
+                          continue;
+
+                        // Modify the occupations
+                        auto trial_number(number_of_particles_per_block);
+                        Tbase i_moved = std::min((Tbase) imove, trial_number(iblock_source));
+                        trial_number(iblock_source) -= i_moved;
+                        trial_number(iblock_target) += i_moved;
+                        Tbase j_moved = std::min((Tbase) jmove, trial_number(jblock_source));
+                        trial_number(jblock_source) -= j_moved;
+                        trial_number(jblock_target) += j_moved;
+
+                        if(trial_number(iblock_source) < 0.0 or trial_number(jblock_source) < 0.0)
+                          continue;
+                        if(trial_number(iblock_target) > i_target_capacity)
+                          continue;
+                        if(trial_number(jblock_target) > j_target_capacity)
+                          continue;
+
+                        fixed_number_of_particles_per_block_ = trial_number;
+
+                        printf("isource = %i itarget = %i imoved = %f\n", iblock_source, iblock_target, i_moved);
+                        printf("jsource = %i jtarget = %i jmoved = %f\n", jblock_source, jblock_target, j_moved);
+                        trial_number.t().print("trial number of particles");
+                        fflush(stdout);
+
+                        // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
+                        auto trial_occupations = update_occupations(orbital_energies);
+                        initialize_with_orbitals(reference_orbitals, trial_occupations);
+                        try {
+                          run();
+                        } catch(...) {};
+                        // Add the result to the list
+                        list_of_energies.push_back(std::make_pair(trial_number, orbital_history_[0].second.first));
+                        // Reset the restriction
+                        arma::Col<Tbase> dummy;
+                        fixed_number_of_particles_per_block_ = dummy;
+                      }
+                  }
+              }
+          }
+        }
+
+        // Sort the list in ascending order
+        std::sort(list_of_energies.begin(), list_of_energies.end(), [](const std::pair<arma::Col<Tbase>,Tbase> & a, const std::pair<arma::Col<Tbase>,Tbase> & b) {return a.second < b.second;});
+
+        printf("Configurations\n");
+        for(size_t iconf=0;iconf<list_of_energies.size();iconf++) {
+          printf("%4i E= % .10f with occupations\n",(int) iconf, list_of_energies[iconf].second);
+          list_of_energies[iconf].first.t().print();
+        }
+
+        if(list_of_energies[0].second < reference_energy) {
+          printf("Energy changed by %e by improved reference\n", list_of_energies[0].second - reference_energy);
+
+          // Update the reference
+          fixed_number_of_particles_per_block_ = list_of_energies[0].first;
+          auto trial_occupations = update_occupations(orbital_energies);
+          initialize_with_orbitals(reference_orbitals, trial_occupations);
+          run();
+
+          reference_solution = orbital_history_[0];
+          reference_orbitals = reference_solution.first.first;
+          reference_occupations = reference_solution.first.second;
+          reference_energy = reference_solution.second.first;
+          reference_fock = reference_solution.second.second;
+        } else {
+          // Restore the reference calculation
+          initialize_with_orbitals(reference_orbitals, reference_occupations);
+          run();
+          printf("Search converged!\n");
+          break;
+        }
+      }
+    }
   };
 }
