@@ -1090,7 +1090,8 @@ namespace OpenOrbitalOptimizer {
           auto & occupations = reference_solution.first.second;
           for(size_t l=0;l<occupations.size();l++) {
             arma::uvec occ_idx(arma::find(occupations[l]>=1e-6));
-            occupations[l].subvec(0,arma::max(occ_idx)).t().print(block_descriptions_[l] + " occupations");
+            if(occ_idx.n_elem)
+              occupations[l].subvec(0,arma::max(occ_idx)).t().print(block_descriptions_[l] + " occupations");
           }
         }
 
