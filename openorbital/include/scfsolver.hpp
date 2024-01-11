@@ -938,6 +938,16 @@ namespace OpenOrbitalOptimizer {
       frozen_occupations_ = frozen;
     }
 
+    /// Get verbosity
+    int get_verbosity() const {
+      return verbosity_;
+    }
+
+    /// Set verbosity
+    void set_verbosity(int verbosity) {
+      verbosity_ = verbosity;
+    }
+
     /// Add entry to history, return value is True if energy was lowered
     bool add_entry(const DensityMatrix<Torb, Tbase> & density) {
       // Compute the Fock matrix
