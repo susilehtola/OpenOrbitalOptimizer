@@ -77,6 +77,14 @@ namespace OpenOrbitalOptimizer {
     std::tuple<double,std::vector<arma::mat>> build_xc_unpolarized(const std::vector<std::shared_ptr<const RadialBasis>> & basis, const std::vector<arma::mat> & P, size_t N, int func_id) {
       assert(basis.size() == P.size());
 
+      // Handle case of no functional
+      if(func_id==-1) {
+        std::vector<arma::mat> F(basis.size());
+        for(size_t l=0;l<basis.size();l++)
+          F[l].zeros(basis[l]->nbf(),basis[l]->nbf());
+        return std::make_tuple(0.0,F);
+      }
+
       // Get radial grid
       IntegratorXX::TreutlerAhlrichs<double,double> quad(N);
       arma::vec w(arma::conv_to<arma::vec>::from(quad.weights()));
@@ -149,6 +157,16 @@ namespace OpenOrbitalOptimizer {
     std::tuple<double,std::vector<arma::mat>,std::vector<arma::mat>> build_xc_polarized(const std::vector<std::shared_ptr<const RadialBasis>> & basis, const std::vector<arma::mat> & Pa, const std::vector<arma::mat> & Pb, size_t N, int func_id) {
       assert(basis.size() == Pa.size());
       assert(basis.size() == Pb.size());
+
+      // Handle case of no functional
+      if(func_id==-1) {
+        std::vector<arma::mat> Fa(basis.size()), Fb(basis.size());
+        for(size_t l=0;l<basis.size();l++) {
+          Fa[l].zeros(basis[l]->nbf(),basis[l]->nbf());
+          Fb[l].zeros(basis[l]->nbf(),basis[l]->nbf());
+        }
+        return std::make_tuple(0.0,Fa,Fb);
+      }
 
       // Get radial grid
       IntegratorXX::TreutlerAhlrichs<double,double> quad(N);
@@ -382,308 +400,299 @@ namespace OpenOrbitalOptimizer {
 
       return std::make_tuple(E,J);
     }
-  }
-}
 
-void restricted_scf(int Z, int Q, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, bool core_excitation) {
-  // Form the orthogonal orbital basis
-  std::vector<arma::mat> X(radial_basis.size());
-  for(size_t i=0;i<X.size();i++) {
-    // Overlap matrix
-    arma::mat S(radial_basis[i]->overlap());
+    std::vector<arma::mat> form_X(double linear_dependency_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis) {
+      std::vector<arma::mat> X(radial_basis.size());
+      for(size_t i=0;i<X.size();i++) {
+        // Overlap matrix
+        arma::mat S(radial_basis[i]->overlap());
 
-    // Normalization
-    arma::vec normlz(arma::pow(arma::diagvec(S),-0.5));
-    arma::mat Snorm(arma::diagmat(normlz)*S*arma::diagmat(normlz));
+        // Normalization
+        arma::vec normlz(arma::pow(arma::diagvec(S),-0.5));
+        arma::mat Snorm(arma::diagmat(normlz)*S*arma::diagmat(normlz));
 
-    // Compute X using canonical orthogonalization
-    arma::vec sval;
-    arma::mat svec;
-    arma::eig_sym(sval, svec, Snorm);
-    arma::uvec sidx(arma::find(sval>=linear_dependency_threshold));
-    X[i] = svec.cols(sidx) * arma::diagmat(arma::pow(sval(sidx), -0.5));
-    //sval.print("S eigenvalues");
-    // Apply normalization
-    X[i] = arma::diagmat(normlz) * X[i];
-  }
-
-  // Form the core Hamiltonian
-  std::vector<arma::mat> T(radial_basis.size()), V(radial_basis.size());
-  for(size_t i=0;i<X.size();i++) {
-    T[i] = radial_basis[i]->kinetic(i);
-    V[i] = - Z*radial_basis[i]->nuclear_attraction();
-  }
-
-  // Number of blocks per particle type
-  arma::uvec number_of_blocks_per_particle_type({radial_basis.size()});
-
-  arma::vec maximum_occupation(radial_basis.size());
-  for(size_t l=0;l<radial_basis.size();l++)
-    maximum_occupation[l] = 2*(2*l+1);
-
-  arma::vec number_of_particles({(double) (Z-Q)});
-
-  std::vector<std::string> block_descriptions({radial_basis.size()});
-  for(size_t l=0;l<radial_basis.size();l++) {
-    std::ostringstream oss;
-    oss << "l=" << l;
-    block_descriptions[l] = oss.str();
-  }
-
-  // Form the Fock matrix guess
-  OpenOrbitalOptimizer::FockMatrix<double> fock_guess(radial_basis.size());
-  for(size_t i=0;i<X.size();i++)
-    fock_guess[i] = X[i].t() * (T[i]+V[i]) * X[i];
-
-  // Fock builder
-  OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, X, Ngrid, x_func_id, c_func_id, T, V](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
-    const auto & orbitals = dm.first;
-    const auto & occupations = dm.second;
-
-    // Form the density matrix in the original basis
-    std::vector<arma::mat> P(orbitals.size());
-    for(size_t l=0;l<P.size();l++) {
-      // In the orthonormal basis it is
-      P[l] = orbitals[l] * arma::diagmat(occupations[l]) * orbitals[l].t();
-      // and in the non-orthonormal basis it is
-      P[l] = X[l] * P[l] * X[l].t();
+        // Compute X using canonical orthogonalization
+        arma::vec sval;
+        arma::mat svec;
+        arma::eig_sym(sval, svec, Snorm);
+        arma::uvec sidx(arma::find(sval>=linear_dependency_threshold));
+        X[i] = svec.cols(sidx) * arma::diagmat(arma::pow(sval(sidx), -0.5));
+        //sval.print("S eigenvalues");
+        // Apply normalization
+        X[i] = arma::diagmat(normlz) * X[i];
+      }
+      return X;
     }
 
-    // Form the non-orthonormal basis Fock matrix. Build coulomb
-    auto coulomb = OpenOrbitalOptimizer::AtomicSolver::build_J(radial_basis, P);
-    // Build exchange
-    auto exchange = OpenOrbitalOptimizer::AtomicSolver::build_xc_unpolarized(radial_basis, P, Ngrid, x_func_id);
-    // and correlation
-    auto correlation = OpenOrbitalOptimizer::AtomicSolver::build_xc_unpolarized(radial_basis, P, Ngrid, c_func_id);
-
-    // Collect the Fock matrix in the orthonormal basis
-    std::vector<arma::mat> fock(orbitals.size());
-    for(size_t l=0; l<fock.size(); l++) {
-      fock[l] = X[l].t() * (T[l] + V[l] + std::get<1>(coulomb)[l] + std::get<1>(exchange)[l] + std::get<1>(correlation)[l]) * X[l];
-
-      arma::Mat J(std::get<1>(coulomb)[l]);
-      arma::Mat K(std::get<1>(exchange)[l]);
-      double nucasymm(arma::norm(V[l]-V[l].t(),2));
-      double kinasymm(arma::norm(T[l]-T[l].t(),2));
-      double coulasymm(arma::norm(J-J.t(),2));
-      double exchasymm(arma::norm(K-K.t(),2));
-      //printf("l=%i V asymm %e T asymm %e J asymm %e K asymm %e\n",l,nucasymm,kinasymm,coulasymm,exchasymm);
+    std::vector<std::pair<arma::mat, arma::mat>> form_core_hamiltonian(const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, double Z, double particle_mass = 1.0) {
+      std::vector<std::pair<arma::mat, arma::mat>> Hcore(radial_basis.size());
+      for(size_t i=0;i<radial_basis.size();i++) {
+        arma::mat T = radial_basis[i]->kinetic(i) / particle_mass;
+        arma::mat V = - Z*radial_basis[i]->nuclear_attraction();
+        Hcore[i] = std::make_pair(T,V);
+      }
+      return Hcore;
     }
 
-    // Calculate energy terms
-    double Ekin = 0.0;
-    for(size_t l=0;l<P.size();l++)
-      Ekin += arma::trace(T[l]*P[l]);
+    OpenOrbitalOptimizer::SCFSolver<double, double> restricted_scf(int Z, int Q, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
+      // Form the orthogonal orbital basis
+      std::vector<arma::mat> X(form_X(linear_dependency_threshold, radial_basis));
 
-    double Enuc = 0.0;
-    for(size_t l=0;l<P.size();l++)
-      Enuc += arma::trace(V[l]*P[l]);
+      // and the core Hamiltonian
+      std::vector<std::pair<arma::mat, arma::mat>> Hcore(form_core_hamiltonian(radial_basis, Z));
 
-    double Ej = std::get<0>(coulomb);
-    double Ex = std::get<0>(exchange);
-    double Ec = std::get<0>(correlation);
-    double Etot = Ekin+Enuc+Ej+Ex+Ec;
+      // Number of blocks per particle type
+      arma::uvec number_of_blocks_per_particle_type({radial_basis.size()});
+
+      arma::vec maximum_occupation(radial_basis.size());
+      for(size_t l=0;l<radial_basis.size();l++)
+        maximum_occupation[l] = 2*(2*l+1);
+
+      arma::vec number_of_particles({(double) (Z-Q)});
+
+      std::vector<std::string> block_descriptions({radial_basis.size()});
+      for(size_t l=0;l<radial_basis.size();l++) {
+        std::ostringstream oss;
+        oss << "l=" << l;
+        block_descriptions[l] = oss.str();
+      }
+
+      // Form the Fock matrix guess
+      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(radial_basis.size());
+      for(size_t i=0;i<X.size();i++)
+        fock_guess[i] = X[i].t() * (Hcore[i].first+Hcore[i].second) * X[i];
+
+      // Fock builder
+      OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, X, Ngrid, x_func_id, c_func_id, Hcore](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
+        const auto & orbitals = dm.first;
+        const auto & occupations = dm.second;
+
+        // Form the density matrix in the original basis
+        std::vector<arma::mat> P(orbitals.size());
+        for(size_t l=0;l<P.size();l++) {
+          // In the orthonormal basis it is
+          P[l] = orbitals[l] * arma::diagmat(occupations[l]) * orbitals[l].t();
+          // and in the non-orthonormal basis it is
+          P[l] = X[l] * P[l] * X[l].t();
+        }
+
+        // Form the non-orthonormal basis Fock matrix. Build coulomb
+        auto coulomb = OpenOrbitalOptimizer::AtomicSolver::build_J(radial_basis, P);
+        // Build exchange
+        auto exchange = OpenOrbitalOptimizer::AtomicSolver::build_xc_unpolarized(radial_basis, P, Ngrid, x_func_id);
+        // and correlation
+        auto correlation = OpenOrbitalOptimizer::AtomicSolver::build_xc_unpolarized(radial_basis, P, Ngrid, c_func_id);
+
+        // Collect the Fock matrix in the orthonormal basis
+        std::vector<arma::mat> fock(orbitals.size());
+        for(size_t l=0; l<fock.size(); l++) {
+          fock[l] = X[l].t() * (Hcore[l].first + Hcore[l].second + std::get<1>(coulomb)[l] + std::get<1>(exchange)[l] + std::get<1>(correlation)[l]) * X[l];
+
+          arma::Mat J(std::get<1>(coulomb)[l]);
+          arma::Mat K(std::get<1>(exchange)[l]);
+          double kinasymm(arma::norm(Hcore[l].first-Hcore[l].first.t(),2));
+          double nucasymm(arma::norm(Hcore[l].second-Hcore[l].second.t(),2));
+          double coulasymm(arma::norm(J-J.t(),2));
+          double exchasymm(arma::norm(K-K.t(),2));
+          //printf("l=%i V asymm %e T asymm %e J asymm %e K asymm %e\n",l,nucasymm,kinasymm,coulasymm,exchasymm);
+        }
+
+        // Calculate energy terms
+        double Ekin = 0.0;
+        for(size_t l=0;l<P.size();l++)
+          Ekin += arma::trace(Hcore[l].first*P[l]);
+
+        double Enuc = 0.0;
+        for(size_t l=0;l<P.size();l++)
+          Enuc += arma::trace(Hcore[l].second*P[l]);
+
+        double Ej = std::get<0>(coulomb);
+        double Ex = std::get<0>(exchange);
+        double Ec = std::get<0>(correlation);
+        double Etot = Ekin+Enuc+Ej+Ex+Ec;
 
 #if 0
-    printf("Kinetic energy  % .10f\n",Ekin);
-    printf("Nuclear energy  % .10f\n",Enuc);
-    printf("Coulomb energy  % .10f\n",Ej);
-    printf("Exchange energy % .10f\n",Ex);
-    printf("Correlation energy % .10f\n",Ec);
-    printf("Total energy    % .10f\n",Etot);
+        printf("Kinetic energy  % .10f\n",Ekin);
+        printf("Nuclear energy  % .10f\n",Enuc);
+        printf("Coulomb energy  % .10f\n",Ej);
+        printf("Exchange energy % .10f\n",Ex);
+        printf("Correlation energy % .10f\n",Ec);
+        printf("Total energy    % .10f\n",Etot);
 #endif
 
-    return std::make_pair(Etot, fock);
-  };
+        return std::make_pair(Etot, fock);
+      };
 
-  // Initialize SCF solver
-  OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
-  scfsolver.initialize_with_fock(fock_guess);
-  scfsolver.run();
-  // scfsolver.brute_force_search_for_lowest_configuration();
+      // Initialize SCF solver
+      OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
+      scfsolver.set_verbosity(verbosity);
+      scfsolver.initialize_with_fock(fock_guess);
+      scfsolver.run();
+      // scfsolver.brute_force_search_for_lowest_configuration();
 
-  if(core_excitation) {
-    // Form core-excited state
-    auto density_matrix = scfsolver.get_solution();
-    auto orbitals =  density_matrix.first;
-    auto occupations =  density_matrix.second;
-    auto fock_build = scfsolver.get_fock_build();
+      if(core_excitation) {
+        // Form core-excited state
+        auto density_matrix = scfsolver.get_solution();
+        auto orbitals =  density_matrix.first;
+        auto occupations =  density_matrix.second;
+        auto fock_build = scfsolver.get_fock_build();
 
-    // Decrease occupation of 1s orbital
-    occupations[0](0) = 0.0;
-    scfsolver.set_frozen_occupations(true);
-    scfsolver.initialize_with_orbitals(orbitals, occupations);
-    scfsolver.run();
-    auto core_hole_fock_build = scfsolver.get_fock_build();
-    printf("1s double ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
-  }
-}
+        // Decrease occupation of 1s orbital
+        occupations[0](0) = 0.0;
+        scfsolver.set_frozen_occupations(true);
+        scfsolver.initialize_with_orbitals(orbitals, occupations);
+        scfsolver.run();
+        auto core_hole_fock_build = scfsolver.get_fock_build();
+        printf("1s double ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
+      }
 
-void unrestricted_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, bool core_excitation) {
-  // Form the orthogonal orbital basis
-  std::vector<arma::mat> X(2*radial_basis.size());
-  for(size_t i=0;i<radial_basis.size();i++) {
-    // Overlap matrix
-    arma::mat S(radial_basis[i]->overlap());
-
-    // Normalization
-    arma::vec normlz(arma::pow(arma::diagvec(S),-0.5));
-    arma::mat Snorm(arma::diagmat(normlz)*S*arma::diagmat(normlz));
-
-    // Compute X using canonical orthogonalization
-    arma::vec sval;
-    arma::mat svec;
-    arma::eig_sym(sval, svec, Snorm);
-    arma::uvec sidx(arma::find(sval>=linear_dependency_threshold));
-    X[i] = svec.cols(sidx) * arma::diagmat(arma::pow(sval(sidx), -0.5));
-    //sval.print("S eigenvalues");
-    // Apply normalization
-    X[i] = arma::diagmat(normlz) * X[i];
-  }
-
-  // Form the core Hamiltonian
-  std::vector<arma::mat> T(2*radial_basis.size()), V(2*radial_basis.size());
-  for(size_t i=0;i<radial_basis.size();i++) {
-    T[i] = radial_basis[i]->kinetic(i);
-    V[i] = - Z*radial_basis[i]->nuclear_attraction();
-  }
-
-  // Repeat blocks for second spin channel
-  for(size_t i=0;i<radial_basis.size();i++) {
-    X[i+radial_basis.size()] = X[i];
-    T[i+radial_basis.size()] = T[i];
-    V[i+radial_basis.size()] = V[i];
-  }
-
-  // Number of blocks per particle type
-  arma::uvec number_of_blocks_per_particle_type({radial_basis.size(),radial_basis.size()});
-
-  arma::vec maximum_occupation(2*radial_basis.size());
-  for(size_t l=0;l<radial_basis.size();l++)
-    maximum_occupation[l] = 2*l+1;
-  for(size_t i=0;i<radial_basis.size();i++) {
-    maximum_occupation[i+radial_basis.size()] = maximum_occupation[i];
-  }
-
-  bool even_number_of_electrons = ((Z-Q)%2==0);
-  bool even_multiplicity = (((M-1)%2)==0);
-  if(even_number_of_electrons != even_multiplicity) {
-    std::ostringstream oss;
-    oss << "Cannot have multiplicity " << M << " with " << Z-Q << " electrons!\n";
-    throw std::logic_error(oss.str());
-  }
-
-  int Nela = (Z-Q+M-1)/2;
-  int Nelb = (Z-Q)-Nela;
-  printf("Nela = %i Nelb = %i\n",Nela,Nelb);
-  assert(Nela>0);
-  assert(Nelb>=0);
-  arma::vec number_of_particles({(double) Nela,(double) Nelb});
-
-  std::vector<std::string> block_descriptions({2*radial_basis.size()});
-  for(size_t l=0;l<radial_basis.size();l++) {
-    std::ostringstream oss;
-    oss << "alpha l=" << l;
-    block_descriptions[l] = oss.str();
-  }
-  for(size_t l=0;l<radial_basis.size();l++) {
-    std::ostringstream oss;
-    oss << "beta l=" << l;
-    block_descriptions[l+radial_basis.size()] = oss.str();
-  }
-
-  // Form the Fock matrix guess
-  OpenOrbitalOptimizer::FockMatrix<double> fock_guess(X.size());
-  for(size_t i=0;i<X.size();i++)
-    fock_guess[i] = X[i].t() * (T[i]+V[i]) * X[i];
-
-  // Fock builder
-  OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, X, Ngrid, x_func_id, c_func_id, T, V](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
-    const auto & orbitals = dm.first;
-    const auto & occupations = dm.second;
-
-    // Form the spin-up and spin-down density matrices in the original basis
-    assert(orbitals.size()%2==0);
-    size_t Nblocks = orbitals.size()/2;
-    std::vector<arma::mat> Pa(Nblocks), Pb(Nblocks), Ptot(Nblocks);
-    for(size_t iblock=0;iblock<Nblocks;iblock++) {
-      size_t ablock = iblock;
-      // In the orthonormal basis it is
-      Pa[iblock] = orbitals[ablock] * arma::diagmat(occupations[ablock]) * orbitals[ablock].t();
-      // and in the non-orthonormal basis it is
-      Pa[iblock] = X[iblock] * Pa[iblock] * X[iblock].t();
-      size_t bblock = iblock+Nblocks;
-      // In the orthonormal basis it is
-      Pb[iblock] = orbitals[bblock] * arma::diagmat(occupations[bblock]) * orbitals[bblock].t();
-      // and in the non-orthonormal basis it is
-      Pb[iblock] = X[iblock] * Pb[iblock] * X[iblock].t();
-
-      // Since we use same X for both spin channels, total density is
-      Ptot[iblock] = Pa[iblock] + Pb[iblock];
+      return scfsolver;
     }
 
-    // Form the non-orthonormal basis Fock matrix. Build coulomb
-    auto coulomb = OpenOrbitalOptimizer::AtomicSolver::build_J(radial_basis, Ptot);
-    // Build exchange
-    auto exchange = OpenOrbitalOptimizer::AtomicSolver::build_xc_polarized(radial_basis, Pa, Pb, Ngrid, x_func_id);
-    // and correlation
-    auto correlation = OpenOrbitalOptimizer::AtomicSolver::build_xc_polarized(radial_basis, Pa, Pb, Ngrid, c_func_id);
+    OpenOrbitalOptimizer::SCFSolver<double, double> unrestricted_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
+      // Form the orthogonal orbital basis
+      std::vector<arma::mat> X(form_X(linear_dependency_threshold, radial_basis));
 
-    // Collect the Fock matrix in the orthonormal basis
-    std::vector<arma::mat> fock(orbitals.size());
-    for(size_t iblock=0; iblock<Nblocks; iblock++) {
-      // Spin-up Fock
-      size_t ablock = iblock, bblock = iblock+Nblocks;
-      fock[ablock] = X[ablock].t() * (T[ablock] + V[ablock] + std::get<1>(coulomb)[iblock] + std::get<1>(exchange)[iblock] + std::get<1>(correlation)[iblock]) * X[ablock];
-      fock[bblock] = X[bblock].t() * (T[bblock] + V[bblock] + std::get<1>(coulomb)[iblock] + std::get<2>(exchange)[iblock] + std::get<2>(correlation)[iblock]) * X[bblock];
-    }
+      // Form the core Hamiltonian
+      std::vector<std::pair<arma::mat,arma::mat>> Hcore(form_core_hamiltonian(radial_basis, Z));
 
-    // Calculate energy terms
-    double Ekin = 0.0;
-    for(size_t l=0;l<Ptot.size();l++)
-      Ekin += arma::trace(T[l]*Ptot[l]);
+      // Number of blocks per particle type
+      arma::uvec number_of_blocks_per_particle_type({radial_basis.size(),radial_basis.size()});
 
-    double Enuc = 0.0;
-    for(size_t l=0;l<Ptot.size();l++)
-      Enuc += arma::trace(V[l]*Ptot[l]);
+      arma::vec maximum_occupation(2*radial_basis.size());
+      for(size_t l=0;l<radial_basis.size();l++)
+        maximum_occupation[l] = 2*l+1;
+      for(size_t i=0;i<radial_basis.size();i++) {
+        maximum_occupation[i+radial_basis.size()] = maximum_occupation[i];
+      }
 
-    double Ej = std::get<0>(coulomb);
-    double Ex = std::get<0>(exchange);
-    double Ec = std::get<0>(correlation);
-    double Etot = Ekin+Enuc+Ej+Ex+Ec;
+      bool even_number_of_electrons = ((Z-Q)%2==0);
+      bool even_multiplicity = (((M-1)%2)==0);
+      if(even_number_of_electrons != even_multiplicity) {
+        std::ostringstream oss;
+        oss << "Cannot have multiplicity " << M << " with " << Z-Q << " electrons!\n";
+        throw std::logic_error(oss.str());
+      }
+
+      int Nela = (Z-Q+M-1)/2;
+      int Nelb = (Z-Q)-Nela;
+      printf("Nela = %i Nelb = %i\n",Nela,Nelb);
+      assert(Nela>0);
+      assert(Nelb>=0);
+      arma::vec number_of_particles({(double) Nela,(double) Nelb});
+
+      std::vector<std::string> block_descriptions({2*radial_basis.size()});
+      for(size_t l=0;l<radial_basis.size();l++) {
+        std::ostringstream oss;
+        oss << "alpha l=" << l;
+        block_descriptions[l] = oss.str();
+      }
+      for(size_t l=0;l<radial_basis.size();l++) {
+        std::ostringstream oss;
+        oss << "beta l=" << l;
+        block_descriptions[l+radial_basis.size()] = oss.str();
+      }
+
+      // Form the Fock matrix guess
+      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(X.size());
+      for(size_t i=0;i<X.size();i++)
+        fock_guess[i] = X[i].t() * (Hcore[i].first+Hcore[i].second) * X[i];
+      // Repeat for the other spin channel
+      for(size_t i=0;i<X.size();i++)
+        fock_guess.push_back(fock_guess[i]);
+
+      // Fock builder
+      OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, X, Ngrid, x_func_id, c_func_id, Hcore](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
+        const auto & orbitals = dm.first;
+        const auto & occupations = dm.second;
+
+        // Form the spin-up and spin-down density matrices in the original basis
+        assert(orbitals.size()%2==0);
+        size_t Nblocks = orbitals.size()/2;
+        std::vector<arma::mat> Pa(Nblocks), Pb(Nblocks), Ptot(Nblocks);
+        for(size_t iblock=0;iblock<Nblocks;iblock++) {
+          size_t ablock = iblock;
+          // In the orthonormal basis it is
+          Pa[iblock] = orbitals[ablock] * arma::diagmat(occupations[ablock]) * orbitals[ablock].t();
+          // and in the non-orthonormal basis it is
+          Pa[iblock] = X[iblock] * Pa[iblock] * X[iblock].t();
+          size_t bblock = iblock+Nblocks;
+          // In the orthonormal basis it is
+          Pb[iblock] = orbitals[bblock] * arma::diagmat(occupations[bblock]) * orbitals[bblock].t();
+          // and in the non-orthonormal basis it is
+          Pb[iblock] = X[iblock] * Pb[iblock] * X[iblock].t();
+
+          // Since we use same X for both spin channels, total density is
+          Ptot[iblock] = Pa[iblock] + Pb[iblock];
+        }
+
+        // Form the non-orthonormal basis Fock matrix. Build coulomb
+        auto coulomb = OpenOrbitalOptimizer::AtomicSolver::build_J(radial_basis, Ptot);
+        // Build exchange
+        auto exchange = OpenOrbitalOptimizer::AtomicSolver::build_xc_polarized(radial_basis, Pa, Pb, Ngrid, x_func_id);
+        // and correlation
+        auto correlation = OpenOrbitalOptimizer::AtomicSolver::build_xc_polarized(radial_basis, Pa, Pb, Ngrid, c_func_id);
+
+        // Collect the Fock matrix in the orthonormal basis
+        std::vector<arma::mat> fock(orbitals.size());
+        for(size_t iblock=0; iblock<Nblocks; iblock++) {
+          // Spin-up Fock
+          size_t ablock = iblock, bblock = iblock+Nblocks;
+          fock[ablock] = X[iblock].t() * (Hcore[iblock].first + Hcore[iblock].second + std::get<1>(coulomb)[iblock] + std::get<1>(exchange)[iblock] + std::get<1>(correlation)[iblock]) * X[iblock];
+          fock[bblock] = X[iblock].t() * (Hcore[iblock].first + Hcore[iblock].second + std::get<1>(coulomb)[iblock] + std::get<2>(exchange)[iblock] + std::get<2>(correlation)[iblock]) * X[iblock];
+        }
+
+        // Calculate energy terms
+        double Ekin = 0.0;
+        for(size_t l=0;l<Ptot.size();l++)
+          Ekin += arma::trace(Hcore[l].first*Ptot[l]);
+
+        double Enuc = 0.0;
+        for(size_t l=0;l<Ptot.size();l++)
+          Enuc += arma::trace(Hcore[l].second*Ptot[l]);
+
+        double Ej = std::get<0>(coulomb);
+        double Ex = std::get<0>(exchange);
+        double Ec = std::get<0>(correlation);
+        double Etot = Ekin+Enuc+Ej+Ex+Ec;
 
 #if 0
-    printf("Kinetic energy     % .10f\n",Ekin);
-    printf("Nuclear energy     % .10f\n",Enuc);
-    printf("Coulomb energy     % .10f\n",Ej);
-    printf("Exchange energy    % .10f\n",Ex);
-    printf("Correlation energy % .10f\n",Ec);
-    printf("Total energy       % .10f\n",Etot);
+        printf("Kinetic energy     % .10f\n",Ekin);
+        printf("Nuclear energy     % .10f\n",Enuc);
+        printf("Coulomb energy     % .10f\n",Ej);
+        printf("Exchange energy    % .10f\n",Ex);
+        printf("Correlation energy % .10f\n",Ec);
+        printf("Total energy       % .10f\n",Etot);
 #endif
 
-    return std::make_pair(Etot, fock);
-  };
+        return std::make_pair(Etot, fock);
+      };
 
-  // Initialize SCF solver
-  OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
-  scfsolver.initialize_with_fock(fock_guess);
-  scfsolver.run();
-  //scfsolver.brute_force_search_for_lowest_configuration();
+      // Initialize SCF solver
+      OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
+      scfsolver.set_verbosity(verbosity);
+      scfsolver.initialize_with_fock(fock_guess);
+      scfsolver.run();
+      //scfsolver.brute_force_search_for_lowest_configuration();
 
-  if(core_excitation) {
-    // Form core-excited state
-    auto density_matrix = scfsolver.get_solution();
-    auto orbitals =  density_matrix.first;
-    auto occupations =  density_matrix.second;
-    auto fock_build = scfsolver.get_fock_build();
+      if(core_excitation) {
+        // Form core-excited state
+        auto density_matrix = scfsolver.get_solution();
+        auto orbitals =  density_matrix.first;
+        auto occupations =  density_matrix.second;
+        auto fock_build = scfsolver.get_fock_build();
 
-    // Decrease occupation of 1s orbital
-    occupations[0](0) = 0.0;
-    scfsolver.set_frozen_occupations(true);
-    scfsolver.initialize_with_orbitals(orbitals, occupations);
-    scfsolver.run();
-    auto core_hole_fock_build = scfsolver.get_fock_build();
-    printf("1s ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
+        // Decrease occupation of 1s orbital
+        occupations[0](0) = 0.0;
+        scfsolver.set_frozen_occupations(true);
+        scfsolver.initialize_with_orbitals(orbitals, occupations);
+        scfsolver.run();
+        auto core_hole_fock_build = scfsolver.get_fock_build();
+        printf("1s ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
+      }
+
+      return scfsolver;
+    }
   }
 }
 
@@ -771,26 +780,43 @@ std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasi
   }
 
   // Collect the exponents per shell
-  std::vector<std::vector<double>> shell_exponents;
+  std::vector<std::vector<std::pair<int, double>>> functions;
   for (auto & [shell_key, shell_value] : data["elements"][Z_string]["electron_shells"].items()) {
+    bool cartesian = false;
+    for(auto & [type_key, type_value]: shell_value["function_type"].items()) {
+      std::cout << "function type " << type_value << std::endl;
+      if(std::string(type_value).compare("gto_cartesian")==0) {
+        std::cout << "function type is cartesian" << std::endl;
+        cartesian=true;
+      }
+    }
+
     for(auto & [am_key, am_value]: shell_value["angular_momentum"].items()) {
-      int am = am_value;
-      if(shell_exponents.size()<=am)
-        shell_exponents.resize(am+1);
-      for(auto & [expn_key, expn_value]: shell_value["exponents"].items()) {
-        std::string expn(expn_value);
-        shell_exponents[am].push_back(std::stod(expn));
+      int amval = am_value;
+      int min_am = cartesian ? 0 : amval;
+      for(int am = amval; am>=min_am; am-=2) {
+        if(functions.size()<=am)
+          functions.resize(am+1);
+        for(auto & [expn_key, expn_value]: shell_value["exponents"].items()) {
+          std::string expn(expn_value);
+          functions[am].push_back(std::make_pair(amval+1, std::stod(expn)));
+        }
       }
     }
   }
   // Sort them
-  for(auto shell : shell_exponents)
-    std::stable_sort(shell.begin(), shell.end());
+  for(size_t am=0; am<functions.size(); am++) {
+    std::stable_sort(functions[am].begin(), functions[am].end(), [](const std::pair<int, double> & a, const std::pair<int, double> & b) {if(a.first < b.first) {return true;}; if(a.first > b.first) {return false;}; if(a.second > b.second) {return true;}; if(a.second < b.second) {return false;}; return false;});
+  }
 
   std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> radial_basis;
-  for(size_t am=0; am<shell_exponents.size(); am++) {
-    arma::vec exponents = arma::conv_to<arma::vec>::from(shell_exponents[am]);
-    arma::ivec n_values = (am+1)*arma::ones<arma::ivec>(exponents.n_elem);
+  for(size_t am=0; am<functions.size(); am++) {
+    arma::vec exponents(functions[am].size());
+    arma::ivec n_values(functions[am].size());
+    for(size_t i=0; i<functions[am].size(); i++) {
+      n_values(i) = functions[am][i].first;
+      exponents(i) = functions[am][i].second;
+    }
     radial_basis.push_back(std::make_shared<const OpenOrbitalOptimizer::AtomicSolver::GTOBasis>(exponents, n_values, am));
 
     std::cout << "am = " << am << " exponents";
@@ -810,6 +836,7 @@ int main(int argc, char **argv) {
   parser.add<int>("M", 0, "atom's spin multiplicity", true);
   parser.add<int>("restricted", 0, "spin restricted operation? -1 for auto", false, -1);
   parser.add<int>("Ngrid", 0, "number of radial grid points", false, 2500);
+  parser.add<int>("verbosity", 0, "level of verbosity", false, 5);
   parser.add<std::string>("xfunc", 0, "exchange functional", true);
   parser.add<std::string>("cfunc", 0, "correlation functional", true);
   parser.add<std::string>("epcfunc", 0, "electron-proton correlation functional", false, "");
@@ -830,6 +857,7 @@ int main(int argc, char **argv) {
 
   double linear_dependency_threshold = parser.get<double>("lindepthresh");
   int Ngrid = parser.get<int>("Ngrid");
+  int verbosity = parser.get<int>("verbosity");
   bool slater = parser.get<bool>("sto");
   bool core_excitation = parser.get<bool>("excitecore");
   std::string basisfile = parser.get<std::string>("basis");
@@ -865,9 +893,9 @@ int main(int argc, char **argv) {
   }
 
   if(M==1) {
-    restricted_scf(Z, Q, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, radial_basis, core_excitation);
+    restricted_scf(Z, Q, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, radial_basis, verbosity, core_excitation);
   } else {
-    unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, radial_basis, core_excitation);
+    unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, radial_basis, verbosity, core_excitation);
   }
   return 0;
 }
