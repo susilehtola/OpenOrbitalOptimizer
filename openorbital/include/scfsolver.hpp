@@ -723,9 +723,11 @@ namespace OpenOrbitalOptimizer {
           printf("Warning - preconditioned search direction was not downhill, resetting it\n");
         search_direction = -gradient;
       }
-      if(arma::dot(search_direction, gradient) < minimal_gradient_projection_*std::sqrt(arma::norm(search_direction,2)*arma::norm(gradient, 2))) {
-        if(verbosity_>=5)
-          printf("Warning - preconditioned search direction did not have sufficiently large projection on gradient, resetting it\n");
+      double normalized_projection = arma::dot(search_direction, -gradient) / std::sqrt(arma::norm(search_direction,2)*arma::norm(gradient, 2));
+      if(normalized_projection < minimal_gradient_projection_) {
+        if(verbosity_>=5) {
+          printf("Warning - projection of preconditioned search direction on negative gradient %e is too small, resetting it\n",normalized_projection);
+        }
         search_direction = -gradient;
       }
 
