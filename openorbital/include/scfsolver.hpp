@@ -98,19 +98,21 @@ namespace OpenOrbitalOptimizer {
     OrbitalOccupations<Tbase> orbital_occupations_;
 
     /// Maximum number of iterations
-    const size_t maximum_iterations_ = 128;
+    size_t maximum_iterations_ = 128;
     /// Start to mix in DIIS at this error threshold
-    const double diis_epsilon_ = 1e-1;
+    double diis_epsilon_ = 1e-1;
     /// Threshold for pure DIIS
-    const double diis_threshold_ = 1e-2;
+    double diis_threshold_ = 1e-2;
     /// Threshold for a change in occupations
-    const double occupation_change_threshold_ = 1e-6;
+    double occupation_change_threshold_ = 1e-6;
     /// History length
-    const double maximum_history_length_ = 7;
+    int maximum_history_length_ = 7;
     /// Convergence threshold for orbital gradient
-    const double convergence_threshold_ = 1e-7;
+    double convergence_threshold_ = 1e-7;
+    /// Threshold that determines an acceptable increase in energy due to finite numerical precision
+    double energy_update_threshold_ = 1e-8;
     /// Norm to use: rms
-    const std::string error_norm_ = "fro";
+    std::string error_norm_ = "fro";
 
     /// Minimal normalized projection of preconditioned search direction onto gradient
     const double minimal_gradient_projection_ = 1e-3;
@@ -950,6 +952,16 @@ namespace OpenOrbitalOptimizer {
       verbosity_ = verbosity;
     }
 
+    /// Get convergence threshold
+    double get_convergence_threshold() const {
+      return convergence_threshold_;
+    }
+
+    /// Set verbosity
+    void set_convergence_threshold(double convergence_threshold) {
+      convergence_threshold_ = convergence_threshold;
+    }
+
     /// Add entry to history, return value is True if energy was lowered
     bool add_entry(const DensityMatrix<Torb, Tbase> & density) {
       // Compute the Fock matrix
@@ -970,7 +982,7 @@ namespace OpenOrbitalOptimizer {
         return true;
       else {
         // Otherwise we have to check if we lowered the energy
-        bool return_value = fock.first < orbital_history_[0].second.first;
+        bool return_value = fock.first-orbital_history_[0].second.first < energy_update_threshold_;
         // and now we resort the stack in increasing energy
         std::sort(orbital_history_.begin(), orbital_history_.end(), [](const OrbitalHistoryEntry<Torb, Tbase> & a, const OrbitalHistoryEntry<Torb, Tbase> & b) {return a.second.first < b.second.first;});
         // Drop last entry if we are over the history length limit
