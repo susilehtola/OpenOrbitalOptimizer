@@ -110,7 +110,7 @@ namespace OpenOrbitalOptimizer {
     /// Convergence threshold for orbital gradient
     double convergence_threshold_ = 1e-7;
     /// Threshold that determines an acceptable increase in energy due to finite numerical precision
-    double energy_update_threshold_ = 1e-8;
+    double energy_update_threshold_ = 1e-9;
     /// Norm to use: rms
     std::string error_norm_ = "fro";
 
@@ -305,7 +305,7 @@ namespace OpenOrbitalOptimizer {
       auto quadratic_term = adiis_quadratic_term();
 
       // Function to compute weights from the parameters
-      std::function<arma::Col<Tbase>(const arma::Col<Tbase> & x)> x_to_weight = [](const arma::Col<Tbase> & x) { return arma::square(x)/arma::dot(x,x); };
+      std::function<arma::Col<Tbase>(const arma::Col<Tbase> & x)> x_to_weight = [](const arma::Col<Tbase> & x) { arma::Col<Tbase> w=arma::square(x)/arma::dot(x,x); return w; };
       // and its Jacobian
       std::function<arma::Mat<Tbase>(const arma::Col<Tbase> & x)> x_to_weight_jacobian = [x_to_weight](const arma::Col<Tbase> & x) {
         auto w(x_to_weight(x));
@@ -556,6 +556,10 @@ namespace OpenOrbitalOptimizer {
           orb_grad(dof_list.size() + idof) = 2*std::imag(fock_mo(iorb,jorb))*(occ_block(jorb)-occ_block(iorb));
         }
       }
+
+      if(orb_grad.has_nan())
+        throw std::logic_error("Orbital gradient has NaNs");
+
       return orb_grad;
     }
 
@@ -592,10 +596,18 @@ namespace OpenOrbitalOptimizer {
 
     /// Formulate the diagonal orbital Hessian
     arma::Col<Tbase> precondition_search_direction(const arma::Col<Tbase> & gradient, const arma::Col<Tbase> & diagonal_hessian, double shift=0.1) const {
+      if(gradient.n_elem != diagonal_hessian.n_elem)
+        throw std::logic_error("precondition_search_direction: gradient and diagonal hessian have different size!\n");
+
       // Build positive definite diagonal Hessian
-      auto positive_hessian(diagonal_hessian-arma::min(diagonal_hessian)+shift);
+      arma::Col<Tbase> positive_hessian(diagonal_hessian);
+      positive_hessian += (-arma::min(diagonal_hessian)+shift)*arma::ones<arma::Col<Tbase>>(positive_hessian.n_elem);
       // and divide the gradient by its square root
-      return gradient/arma::sqrt(positive_hessian);
+      arma::Col<Tbase> preconditioned_direction = gradient/arma::sqrt(positive_hessian);
+      if(preconditioned_direction.has_nan())
+        throw std::logic_error("Preconditioned search direction has NaNs");
+
+      return preconditioned_direction;
     }
 
     /// Rotation matrices
@@ -649,6 +661,8 @@ namespace OpenOrbitalOptimizer {
 
       Tbase maximum_step = std::numeric_limits<Tbase>::max();
       for(size_t iblock=0; iblock < kappa.size(); iblock++) {
+        if(kappa[iblock].n_elem==0)
+          continue;
         arma::Col<Tbase> eval;
         arma::Mat<std::complex<Tbase>> evec;
         arma::Mat<std::complex<Tbase>> kappa_imag(kappa[iblock]*std::complex<Tbase>(0.0,-1.0));
