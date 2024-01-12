@@ -26,15 +26,25 @@ link_libraries(${LAPACK_LIBRARIES})
 
 # Find Armadillo
 option(ARMA_DONT_USE_WRAPPER "Do not use Armadillo wrapper" ON)
+include_directories(".")
+
+# TBD: detect Armadillo, Libxc, IntegratorXX for atomic binary
 #find_package(Armadillo REQUIRED)
 #include_directories(${ARMADILLO_INCLUDE_DIRS})
-include_directories(".")
 include_directories("/home/work/armadillo/include")
+include_directories("/home/work/libxc/install/include")
+link_libraries("-L/home/work/libxc/install/lib")
 include_directories("/home/work/IntegratorXX/include")
+
 if(ARMA_DONT_USE_WRAPPER)
   add_definitions(-DARMA_DONT_USE_WRAPPER)
 else()
   link_libraries(${ARMADILLO_LIBRARIES})
+endif()
+
+# If we are doing a release build, turn off Armadillo bounds check
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_definitions(-DARMA_NO_DEBUG)
 endif()
 
 # Descend into subdirectory
