@@ -115,7 +115,7 @@ namespace OpenOrbitalOptimizer {
     std::string error_norm_ = "fro";
 
     /// Minimal normalized projection of preconditioned search direction onto gradient
-    const double minimal_gradient_projection_ = 1e-3;
+    const double minimal_gradient_projection_ = 1e-4;
     /// ADIIS/EDIIS regularization parameter
     const double adiis_regularization_parameter_ = 1e-3;
 
@@ -602,12 +602,31 @@ namespace OpenOrbitalOptimizer {
       // Build positive definite diagonal Hessian
       arma::Col<Tbase> positive_hessian(diagonal_hessian);
       positive_hessian += (-arma::min(diagonal_hessian)+shift)*arma::ones<arma::Col<Tbase>>(positive_hessian.n_elem);
-      // and divide the gradient by its square root
-      arma::Col<Tbase> preconditioned_direction = gradient/arma::sqrt(positive_hessian);
-      if(preconditioned_direction.has_nan())
-        throw std::logic_error("Preconditioned search direction has NaNs");
 
-      return preconditioned_direction;
+      Tbase normalized_projection;
+      Tbase maximum_spread = arma::max(positive_hessian);
+      arma::Col<Tbase> preconditioned_direction;
+      while(true) {
+        // Normalize the largest values
+        arma::Col<Tbase> normalized_hessian(positive_hessian);
+        arma::uvec idx(arma::find(normalized_hessian>maximum_spread));
+        normalized_hessian(idx) = maximum_spread*arma::ones<arma::Col<Tbase>>(idx.n_elem);
+
+        // and divide the gradient by its square root
+        preconditioned_direction = gradient/arma::sqrt(normalized_hessian);
+        if(preconditioned_direction.has_nan())
+          throw std::logic_error("Preconditioned search direction has NaNs");
+
+        normalized_projection = arma::dot(preconditioned_direction, gradient) / std::sqrt(arma::norm(preconditioned_direction,2)*arma::norm(gradient, 2));
+        if(normalized_projection >= minimal_gradient_projection_) {
+          return preconditioned_direction;
+        } else {
+          if(verbosity_>=5) {
+            printf("Warning - projection of preconditioned search direction on negative gradient %e is too small, decreasing spread of Hessian values from %e by factor 10\n",normalized_projection,maximum_spread);
+          }
+          maximum_spread /= 10;
+        }
+      }
     }
 
     /// Rotation matrices
@@ -654,7 +673,7 @@ namespace OpenOrbitalOptimizer {
       return kappa;
     }
 
-    /// Determine maximum step size
+    /// Determine maximum step size; doi:10.1016/j.sigpro.2009.03.015
     Tbase maximum_rotation_step(const arma::Col<Tbase> & x) const {
       // Get the rotation matrices
       auto kappa(form_rotation_matrices(x));
@@ -734,17 +753,8 @@ namespace OpenOrbitalOptimizer {
       auto search_direction = precondition_search_direction(-gradient, diagonal_hessian);
 
       // Ensure that the search direction is down-hill
-      if(arma::dot(search_direction, gradient) > 0.0) {
-        if(verbosity_>=5)
-          printf("Warning - preconditioned search direction was not downhill, resetting it\n");
-        search_direction = -gradient;
-      }
-      double normalized_projection = arma::dot(search_direction, -gradient) / std::sqrt(arma::norm(search_direction,2)*arma::norm(gradient, 2));
-      if(normalized_projection < minimal_gradient_projection_) {
-        if(verbosity_>=5) {
-          printf("Warning - projection of preconditioned search direction on negative gradient %e is too small, resetting it\n",normalized_projection);
-        }
-        search_direction = -gradient;
+      if(arma::dot(search_direction, gradient) >= 0.0) {
+        throw std::logic_error("Search direction is not down-hill?\n");
       }
 
       // Helper to evaluate steps
@@ -1096,11 +1106,20 @@ namespace OpenOrbitalOptimizer {
         }
       }
 
-      if(orbital_history_.size()) {
+      if(orbital_history_.size() and verbosity_>=0) {
         // Check if occupations have changed
-        double occ_diff = occupation_difference(orbital_history_[0].first.second, occupations);
+        const auto & old_occupations = orbital_history_[0].first.second;
+        double occ_diff = occupation_difference(old_occupations, occupations);
         if(occ_diff > occupation_change_threshold_) {
           std::cout << "Warning: occupations changed by " << occ_diff << " from previous iteration\n";
+          if(verbosity_>=0) {
+            for(size_t iblock=0; iblock < occupations.size(); iblock++) {
+              for(size_t iorb=0; iorb < occupations[iblock].n_elem; iorb++) {
+                if(occupations[iblock][iorb] != old_occupations[iblock][iorb])
+                  printf("iblock= %i iorb= %i new= %e old= %e\n",iblock,iorb,occupations[iblock][iorb],old_occupations[iblock][iorb]);
+              }
+            }
+          }
         }
       }
 
