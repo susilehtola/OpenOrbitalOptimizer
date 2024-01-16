@@ -1017,7 +1017,7 @@ namespace OpenOrbitalOptimizer {
       // Diagonalize all blocks
       for(size_t iblock = 0; iblock < fock.size(); iblock++) {
         // Symmetrize Fock matrix
-        auto fsymm(0.5*(fock[iblock]+fock[iblock].t()));
+        arma::Mat<Torb> fsymm(0.5*(fock[iblock]+fock[iblock].t()));
         arma::eig_sym(diagonalized_fock.second[iblock], diagonalized_fock.first[iblock], fsymm);
 
         if(verbosity_>=10) {
