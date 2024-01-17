@@ -111,8 +111,8 @@ namespace OpenOrbitalOptimizer {
     double convergence_threshold_ = 1e-7;
     /// Threshold that determines an acceptable increase in energy due to finite numerical precision
     double energy_update_threshold_ = 1e-9;
-    /// Norm to use by default: rms
-    std::string error_norm_ = "fro";
+    /// Norm to use by default: maximum element (Pulay 1982)
+    std::string error_norm_ = "inf";
 
     /// Minimal normalized projection of preconditioned search direction onto gradient
     const double minimal_gradient_projection_ = 1e-4;
