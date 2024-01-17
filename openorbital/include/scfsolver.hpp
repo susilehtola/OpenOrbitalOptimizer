@@ -1145,6 +1145,20 @@ namespace OpenOrbitalOptimizer {
         if(orbital_history_.size() > maximum_history_length_)
           orbital_history_.pop_back();
 
+        // Figure out the need for a reset
+        arma::Mat<Tbase> Bmat(diis_error_matrix());
+
+        arma::Col<Tbase> Bval;
+        arma::Mat<Tbase> Bvec;
+        arma::eig_sym(Bval,Bvec,Bmat);
+        if(arma::min(Bval) < 10*std::numeric_limits<Tbase>::epsilon()) {
+          if(verbosity_)
+            printf("Minimal eigenvalue of DIIS error matrix is %e, resetting history\n",arma::min(Bval));
+          while(orbital_history_.size() > 1)
+            orbital_history_.pop_back();
+        }
+
+
         return return_value;
       }
     }
