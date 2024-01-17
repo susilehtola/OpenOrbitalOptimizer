@@ -111,7 +111,7 @@ namespace OpenOrbitalOptimizer {
     double convergence_threshold_ = 1e-7;
     /// Threshold that determines an acceptable increase in energy due to finite numerical precision
     double energy_update_threshold_ = 1e-9;
-    /// Norm to use: rms
+    /// Norm to use by default: rms
     std::string error_norm_ = "fro";
 
     /// Minimal normalized projection of preconditioned search direction onto gradient
@@ -984,6 +984,20 @@ namespace OpenOrbitalOptimizer {
     /// Set verbosity
     void set_convergence_threshold(double convergence_threshold) {
       convergence_threshold_ = convergence_threshold;
+    }
+
+    /// Get the used error norm
+    std::string get_error_norm() const {
+      return error_norm_;
+    }
+
+    /// Set the used error norm
+    void set_error_norm(const std::string & error_norm) {
+      // Check that the norm is a valid option to Armadillo
+      arma::vec test(1,arma::fill::ones);
+      (void) arma::norm(test,error_norm.c_str());
+      // store it
+      error_norm_ = error_norm;
     }
 
     /// Add entry to history, return value is True if energy was lowered
