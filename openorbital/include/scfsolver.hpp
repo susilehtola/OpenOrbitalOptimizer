@@ -175,8 +175,10 @@ namespace OpenOrbitalOptimizer {
       arma::Col<Tbase> return_vector(nelem);
       size_t ioff=0;
       for(auto & block: error_vectors) {
-        return_vector.subvec(ioff,ioff+block.size()-1) = block;
-        ioff += block.size();
+        if(block.size()>0) {
+          return_vector.subvec(ioff,ioff+block.size()-1) = block;
+          ioff += block.size();
+        }
       }
       return return_vector;
     }
