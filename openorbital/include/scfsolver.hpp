@@ -1098,6 +1098,26 @@ namespace OpenOrbitalOptimizer {
       error_norm_ = error_norm;
     }
 
+    /// Get the maximum number of iterations
+    size_t get_maximum_iterations() const {
+      return maximum_iterations_;
+    }
+
+    /// Set the maximum number of iterations
+    void set_maximum_iterations(size_t maxit) {
+      maximum_iterations_ = maxit;
+    }
+
+    /// Get maximum_history_length
+    int get_maximum_history_length() const {
+      return maximum_history_length_;
+    }
+
+    /// Set maximum_history_length
+    void set_maximum_history_length(int maximum_history_length) {
+      maximum_history_length_ = maximum_history_length;
+    }
+
     /// Add entry to history, return value is True if energy was lowered
     bool add_entry(const DensityMatrix<Torb, Tbase> & density) {
       // Compute the Fock matrix
