@@ -250,7 +250,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Calculate C2-DIIS weights
-    arma::Col<Tbase> c2diis_weights(double rejection_threshold = 10.0) const {
+    arma::Mat<Tbase> c2diis_candidate_weights() const {
       // Set up the DIIS error matrix
       arma::Mat<Tbase> B(diis_error_matrix());
 
@@ -264,12 +264,22 @@ namespace OpenOrbitalOptimizer {
       for(size_t icol=0;icol<evec.n_cols;icol++)
         candidate_solutions.col(icol) /= arma::sum(candidate_solutions.col(icol));
 
+      return candidate_solutions;
+    }
+
+    /// Calculate C2-DIIS weights
+    arma::Col<Tbase> c2diis_weights(double rejection_threshold = 10.0) const {
+      // Set up the DIIS error matrix
+      arma::Mat<Tbase> B(diis_error_matrix());
+      // Get the candidate solutions
+      arma::Mat<Tbase> candidate_solutions = c2diis_candidate_weights();
+
       // Find best solution that satisfies rejection threshold. Error
       // norms for the extrapolated vectors
-      arma::Col<Tbase> error_norms(evec.n_cols,arma::fill::ones);
+      arma::Col<Tbase> error_norms(candidate_solutions.n_cols,arma::fill::ones);
       error_norms *= std::numeric_limits<Tbase>::max();
 
-      for(size_t icol=0; icol < evec.n_cols; icol++) {
+      for(size_t icol=0; icol < candidate_solutions.n_cols; icol++) {
         arma::Col<Tbase> soln = candidate_solutions.col(icol);
         // Skip solutions that have large elements
         if(arma::max(arma::abs(soln)) >= rejection_threshold)
@@ -380,6 +390,38 @@ namespace OpenOrbitalOptimizer {
       return 0.5*(ret+ret.t());
     }
 
+    /** Minimal Error Sampling Algorithm (MESA), doi:10.14288/1.0372885 */
+    arma::Col<Tbase> minimal_error_sampling_algorithm() const {
+      // Get C2-DIIS weights
+      arma::Mat<Tbase> c2_diis_w(c2diis_candidate_weights());
+      arma::Col<Tbase> c1_diis_w(c1diis_weights());
+      arma::Col<Tbase> adiis_w(adiis_weights());
+
+      // Candidates
+      arma::Mat<Tbase> candidate_w(c2_diis_w.n_rows, c2_diis_w.n_cols+3, arma::fill::zeros);
+      candidate_w.cols(0,c2_diis_w.n_cols-1)=c2_diis_w;
+      size_t icol=c2_diis_w.n_cols;
+
+      candidate_w.col(icol++) = c1_diis_w;
+      candidate_w.col(icol++) = adiis_w;
+
+      // Last try: just the reference state
+      candidate_w(0,icol) = 1.0;
+      icol++;
+
+      arma::Col<Tbase> density_projections(candidate_w.n_cols, arma::fill::zeros);
+      for(size_t iw=0;iw<candidate_w.n_cols;iw++) {
+        density_projections(iw) = density_projection(candidate_w.col(iw));
+      }
+      density_projections.t().print("Density projections");
+
+      arma::uword idx;
+      density_projections.max(idx);
+      printf("Max density %e with trial %i\n",density_projections(idx),idx);
+
+      return candidate_w.col(idx);
+    }
+
     /// Computes the difference between orbital occupations
     Tbase occupation_difference(const OrbitalOccupations<Tbase> & old_occ, const OrbitalOccupations<Tbase> & new_occ) const {
       Tbase diff = 0.0;
@@ -410,7 +452,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Compute maximum overlap orbital occupations
-    OrbitalOccupations<Tbase> determine_maximum_overlap_occupations(const OrbitalOccupations<Tbase> & reference_occupations, const Orbitals<Torb> & C_reference, const Orbitals<Torb> & C_new) {
+    OrbitalOccupations<Tbase> determine_maximum_overlap_occupations(const OrbitalOccupations<Tbase> & reference_occupations, const Orbitals<Torb> & C_reference, const Orbitals<Torb> & C_new) const {
       OrbitalOccupations<Tbase> new_occupations(reference_occupations);
       for(size_t iblock=0; iblock<new_occupations.size(); iblock++) {
         // Initialize
@@ -436,6 +478,60 @@ namespace OpenOrbitalOptimizer {
       }
 
       return new_occupations;
+    }
+
+    /// Compute density overlap between two sets of orbitals and occupations
+    Tbase density_overlap(const Orbitals<Torb> & lorb, const OrbitalOccupations<Tbase> & locc, const Orbitals<Torb> & rorb, const OrbitalOccupations<Tbase> & rocc) const {
+      if(lorb.size() != rorb.size() or lorb.size() != locc.size() or lorb.size() != rocc.size())
+        throw std::logic_error("Inconsistent orbitals!\n");
+
+      Tbase ovl=0.0;
+      for(size_t iblock=0; iblock<lorb.size(); iblock++) {
+        // Get orbital coefficients and occupations
+        const auto & lC = lorb[iblock];
+        const auto & lo = locc[iblock];
+        const auto & rC = rorb[iblock];
+        const auto & ro = rocc[iblock];
+        // Compute projection
+        arma::Mat<Torb> Pl(lC*arma::diagmat(lo)*lC.t());
+        arma::Mat<Torb> Pr(rC*arma::diagmat(ro)*rC.t());
+        ovl += arma::trace(Pl*Pr);
+      }
+      return ovl;
+    }
+
+    /// Compute density change with given weights
+    Tbase density_projection(const arma::Col<Tbase> & weights) const {
+      // Get the extrapolated Fock matrix
+      auto fock(extrapolate_fock(weights));
+
+      // Diagonalize the extrapolated Fock matrix
+      auto diagonalized_fock = compute_orbitals(fock);
+      auto & new_orbitals = diagonalized_fock.first;
+      auto & new_orbital_energies = diagonalized_fock.second;
+
+      // Determine new occupations
+      auto new_occupations = update_occupations(new_orbital_energies);
+
+      // Reference calculation
+      auto & reference_solution = orbital_history_[0];
+      auto & reference_orbitals = reference_solution.first.first;
+      auto reference_occupations = reference_solution.first.second;
+      // Occupations corresponding to the reference orbitals
+      auto maximum_overlap_occupations = determine_maximum_overlap_occupations(reference_occupations, reference_orbitals, new_orbitals);
+
+      Tbase ref_overlap = density_overlap(new_orbitals, reference_occupations, reference_orbitals, reference_occupations);
+      Tbase mom_overlap = 0.0;
+      if(occupation_difference(maximum_overlap_occupations, reference_occupations) > occupation_change_threshold_) {
+        mom_overlap = density_overlap(new_orbitals, maximum_overlap_occupations, reference_orbitals, reference_occupations);
+      }
+
+      Tbase occ_overlap = 0.0;
+      if(occupation_difference(reference_occupations, new_occupations) > occupation_change_threshold_) {
+        occ_overlap = density_overlap(new_orbitals, new_occupations, reference_orbitals, reference_occupations);
+      }
+
+      return std::max(std::max(ref_overlap, mom_overlap), occ_overlap);
     }
 
     /// Attempt extrapolation with given weights
