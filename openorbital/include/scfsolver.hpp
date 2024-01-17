@@ -857,16 +857,17 @@ namespace OpenOrbitalOptimizer {
 
       // Helper to evaluate steps
       std::function<Tbase(Tbase)> evaluate_step = [this, search_direction](Tbase length){
+        Tbase reference_energy(orbital_history_[0].second.first);
         if(length==0.0)
           // We just get the reference energy
-          return orbital_history_[0].second.first;
+          return reference_energy;
         auto p(search_direction*length);
         auto entry = evaluate_rotation(p);
         // We can add the evaluated Fock matrix to the history
         if(length!=0.0)
           add_entry(entry.first, entry.second);
         if(verbosity_>=5)
-          printf("Evaluated step %e with energy %.10f\n", length, entry.second.first);
+          printf("Evaluated step %e with energy %.10f change from reference %e\n", length, entry.second.first, entry.second.first-reference_energy);
         return entry.second.first;
       };
       std::function<Tbase(Tbase)> scan_step = [this, search_direction](Tbase length){
