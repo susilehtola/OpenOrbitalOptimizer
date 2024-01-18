@@ -1127,7 +1127,8 @@ namespace OpenOrbitalOptimizer {
       // Compute the Fock matrix
       auto fock = fock_builder_(density);
       if(verbosity_>=5) {
-        printf("Evaluated energy % .10f\n",fock.first);
+        auto reference_energy = orbital_history_.size()>0 ? orbital_history_[0].second.first : 0.0;
+        printf("Evaluated energy % .10f (change from lowest %e)\n", fock.first, fock.first-reference_energy);
       }
       return add_entry(density, fock);
     }
