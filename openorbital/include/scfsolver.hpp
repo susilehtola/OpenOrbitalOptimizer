@@ -860,7 +860,9 @@ namespace OpenOrbitalOptimizer {
           return reference_energy;
         auto p(search_direction*length);
         auto entry = evaluate_rotation(p);
-        // We can add the evaluated Fock matrix to the history
+        // Adding the matrices to the DIIS history turns out to be a
+        // bad idea, since the matrices are too linearly dependent. We
+        // take care of this by resetting the history at the end.
         if(length!=0.0)
           add_entry(entry.first, entry.second);
         if(verbosity_>=5)
@@ -1001,6 +1003,10 @@ namespace OpenOrbitalOptimizer {
           }
         }
       }
+      // We reset the DIIS history, since the line searches can add
+      // lots of linear depedence in the DIIS history. Moreover, a
+      // reset makes sense since DIIS failed to lower the energy!
+      reset_history();
       if(not search_success) {
         throw std::runtime_error("Failed to find suitable step size.\n");
       }
@@ -1152,13 +1158,19 @@ namespace OpenOrbitalOptimizer {
         if(arma::min(Bval) < 10*std::numeric_limits<Tbase>::epsilon()) {
           if(verbosity_)
             printf("Minimal eigenvalue of DIIS error matrix is %e, resetting history\n",arma::min(Bval));
-          while(orbital_history_.size() > 1)
-            orbital_history_.pop_back();
+          reset_history();
+        } else if(verbosity_>10) {
+          printf("Minimal eigenvalue of DIIS error matrix is %e\n",arma::min(Bval));
         }
-
 
         return return_value;
       }
+    }
+
+    /// Reset the DIIS history
+    void reset_history() {
+      while(orbital_history_.size() > 1)
+        orbital_history_.pop_back();
     }
 
     /// Computes orbitals and orbital energies by diagonalizing the Fock matrix
