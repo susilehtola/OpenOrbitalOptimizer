@@ -208,7 +208,6 @@ namespace OpenOrbitalOptimizer {
     arma::Col<Tbase> c1diis_weights() const {
       // Set up the DIIS error matrix
       size_t N=orbital_history_.size();
-      arma::Mat<Tbase> B(diis_error_matrix());
 
       /*
         The C1-DIIS method is equivalent to solving the group of linear
@@ -223,27 +222,19 @@ namespace OpenOrbitalOptimizer {
         reverted to the form
         B w = 1              (2)
 
-        which can easily be solved using SVD techniques.
-
-        Finally, the weights are renormalized to satisfy
-        \sum_i w_i = 1
-        which takes care of the Lagrange multipliers.
+        which can easily be solved. The weights just need to be
+        renormalized to satisfy \sum_i w_i = 1 to take care of the
+        Lagrange multipliers.
       */
 
+      arma::Mat<Tbase> B(diis_error_matrix());
+
       // Right-hand side of equation is
-      arma::vec rh(N);
-      rh.ones();
+      arma::vec rh(N, arma::fill::ones);
 
-      // Solve C1-DIIS eigenproblem
-      arma::Mat<Tbase> Bvec;
-      arma::Col<Tbase> Bval;
-      arma::eig_sym(Bval, Bvec, B);
-
-      // Form solution
-      arma::Col<Tbase> diis_weights(N,arma::fill::zeros);
-      for(size_t i=0;i<N;i++)
-        if(Bval(i)!=0.0)
-          diis_weights += arma::dot(Bvec.col(i),rh)/Bval(i) * Bvec.col(i);
+      // Solve the equation
+      arma::Col<Tbase> diis_weights;
+      arma::solve(diis_weights, B, rh);
 
       // Sanity check for no elements: use even weights
       if(arma::sum(arma::abs(diis_weights))==0.0)
