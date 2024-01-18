@@ -147,7 +147,7 @@ namespace OpenOrbitalOptimizer {
 
     /// Form DIIS error vector for ihist:th entry
     arma::Col<Tbase> diis_error_vector(size_t ihist) const {
-      /// Helper function
+      // Helper function
       std::function<arma::Col<Tbase>(const arma::Mat<Torb> &)> extract_error_vector=[](const arma::Mat<Torb> & mat) {
         if constexpr (arma::is_real<Torb>::value) {
           return arma::vectorise(mat);
@@ -157,14 +157,17 @@ namespace OpenOrbitalOptimizer {
       };
 
       // Form error vectors
-      std::vector<arma::Col<Tbase>> error_vectors(orbital_history_[ihist].second.second.size());
+      std::vector<arma::Col<Tbase>> error_vectors(number_of_blocks_);
       for(size_t iblock = 0; iblock<number_of_blocks_;iblock++) {
         // Error is measured by FPS-SPF = FP - PF, since we have a unit metric.
         auto F = get_fock_matrix_block(ihist, iblock);
         auto P = get_density_matrix_block(ihist, iblock);
         auto FP = F*P;
         error_vectors[iblock] = extract_error_vector(FP - arma::trans(FP));
-        //printf("ihist %i block %i density norm %e error vector norm %e\n",ihist,iblock,arma::norm(P, error_norm_.c_str()), arma::norm(error_vectors[iblock],error_norm_.c_str()));
+        if(verbosity_>=20)
+          printf("ihist %i block %i density norm %e error vector norm %e\n",ihist,iblock,arma::norm(P, error_norm_.c_str()), arma::norm(error_vectors[iblock],error_norm_.c_str()));
+        if(verbosity_>=30)
+          error_vectors[iblock].print();
       }
 
       // Compound error vector
@@ -180,6 +183,9 @@ namespace OpenOrbitalOptimizer {
           ioff += block.size();
         }
       }
+      if(ioff!=nelem)
+        throw std::logic_error("Indexing error!\n");
+
       return return_vector;
     }
 
