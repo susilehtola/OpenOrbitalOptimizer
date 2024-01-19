@@ -537,7 +537,7 @@ namespace OpenOrbitalOptimizer {
       scfsolver.set_convergence_threshold(convergence_threshold);
       scfsolver.initialize_with_fock(fock_guess);
       scfsolver.run();
-      scfsolver.brute_force_search_for_lowest_configuration();
+      //scfsolver.brute_force_search_for_lowest_configuration();
 
       if(core_excitation) {
         // Form core-excited state
@@ -681,7 +681,7 @@ namespace OpenOrbitalOptimizer {
       scfsolver.set_convergence_threshold(convergence_threshold);
       scfsolver.initialize_with_fock(fock_guess);
       scfsolver.run();
-      scfsolver.brute_force_search_for_lowest_configuration();
+      //scfsolver.brute_force_search_for_lowest_configuration();
 
       if(core_excitation) {
         // Form core-excited state
