@@ -100,24 +100,28 @@ namespace OpenOrbitalOptimizer {
     /// Maximum number of iterations
     size_t maximum_iterations_ = 128;
     /// Start to mix in DIIS at this error threshold
-    double diis_epsilon_ = 1e-1;
+    Tbase diis_epsilon_ = 1e-1;
     /// Threshold for pure DIIS
-    double diis_threshold_ = 1e-2;
+    Tbase diis_threshold_ = 1e-2;
     /// Threshold for a change in occupations
-    double occupation_change_threshold_ = 1e-6;
+    Tbase occupation_change_threshold_ = 1e-6;
     /// History length
     int maximum_history_length_ = 7;
     /// Convergence threshold for orbital gradient
-    double convergence_threshold_ = 1e-7;
+    Tbase convergence_threshold_ = 1e-7;
     /// Threshold that determines an acceptable increase in energy due to finite numerical precision
-    double energy_update_threshold_ = 1e-9;
+    Tbase energy_update_threshold_ = 1e-9;
+    /// Threshold for the ratio of linear dependence
+    Tbase linear_dependence_ratio_ = std::sqrt(std::numeric_limits<Tbase>::epsilon());
     /// Norm to use by default: maximum element (Pulay 1982)
     std::string error_norm_ = "inf";
 
     /// Minimal normalized projection of preconditioned search direction onto gradient
-    const double minimal_gradient_projection_ = 1e-4;
+    Tbase minimal_gradient_projection_ = 1e-4;
     /// ADIIS/EDIIS regularization parameter
-    const double adiis_regularization_parameter_ = 1e-3;
+    Tbase adiis_regularization_parameter_ = 1e-3;
+    /// Threshold for detection of occupied orbitals
+    Tbase occupied_threshold_ = 1e-6;
 
     /* Internal functions */
     /// Get a block of the density matrix for the ihist:th entry
@@ -230,7 +234,7 @@ namespace OpenOrbitalOptimizer {
       arma::Mat<Tbase> B(diis_error_matrix());
 
       // Right-hand side of equation is
-      arma::vec rh(N, arma::fill::ones);
+      arma::Col<Tbase> rh(N, arma::fill::ones);
 
       // Solve the equation
       arma::Col<Tbase> diis_weights;
@@ -265,7 +269,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Calculate C2-DIIS weights
-    arma::Col<Tbase> c2diis_weights(double rejection_threshold = 10.0) const {
+    arma::Col<Tbase> c2diis_weights(Tbase rejection_threshold = 10.0) const {
       // Set up the DIIS error matrix
       arma::Mat<Tbase> B(diis_error_matrix());
       // Get the candidate solutions
@@ -331,7 +335,7 @@ namespace OpenOrbitalOptimizer {
       };
 
       // Function to compute the ADIIS energy and gradient
-      const double regularization_parameter = adiis_regularization_parameter_;
+      const Tbase regularization_parameter = adiis_regularization_parameter_;
       std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> adiis_energy_gradient = [linear_term, quadratic_term, x_to_weight, x_to_weight_jacobian, regularization_parameter](const arma::Col<Tbase> & x) {
         auto w(x_to_weight(x));
         arma::Col<Tbase> g = x_to_weight_jacobian(x)*(linear_term + quadratic_term*w);
@@ -492,7 +496,7 @@ namespace OpenOrbitalOptimizer {
         // Compute projection
         arma::Mat<Torb> Pl(lC*arma::diagmat(lo)*lC.t());
         arma::Mat<Torb> Pr(rC*arma::diagmat(ro)*rC.t());
-        ovl += arma::trace(Pl*Pr);
+        ovl += std::real(arma::trace(Pl*Pr));
       }
       return ovl;
     }
@@ -690,7 +694,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Formulate the diagonal orbital Hessian
-    arma::Col<Tbase> precondition_search_direction(const arma::Col<Tbase> & gradient, const arma::Col<Tbase> & diagonal_hessian, double shift=0.1) const {
+    arma::Col<Tbase> precondition_search_direction(const arma::Col<Tbase> & gradient, const arma::Col<Tbase> & diagonal_hessian, Tbase shift=0.1) const {
       if(gradient.n_elem != diagonal_hessian.n_elem)
         throw std::logic_error("precondition_search_direction: gradient and diagonal hessian have different size!\n");
 
@@ -783,7 +787,8 @@ namespace OpenOrbitalOptimizer {
         arma::eig_sym(eval, evec, kappa_imag);
 
         // Assume objective function is 4th order in orbitals
-        Tbase block_maximum = 0.5*M_PI/arma::abs(eval).max();
+        Tbase block_maximum = 0.5*M_PI/arma::max(arma::abs(eval));
+        // The maximum allowed step is determined as the minimum of the block-wise steps
         maximum_step = std::min(maximum_step, block_maximum);
       }
 
@@ -876,7 +881,7 @@ namespace OpenOrbitalOptimizer {
       };
 
       // Determine the maximal step size
-      double Tmu = maximum_rotation_step(search_direction);
+      Tbase Tmu = maximum_rotation_step(search_direction);
       // This step is a whole quasiperiod. Since we are going downhill,
       // the minimum would be at Tmu/4. However, since the function is
       // nonlinear, the minimum is found at a shorter distance. We use
@@ -908,10 +913,10 @@ namespace OpenOrbitalOptimizer {
         auto iorb = std::get<1>(dof);
         auto jorb = std::get<2>(dof);
 
-        double hh=cbrt(DBL_EPSILON);
-        //double hh=1e-10;
+        Tbase hh=cbrt(DBL_EPSILON);
+        //Tbase hh=1e-10;
 
-        std::function<Tbase(Tbase)> eval = [this, search_direction, i](double xi){
+        std::function<Tbase(Tbase)> eval = [this, search_direction, i](Tbase xi){
           auto p(search_direction);
           p.zeros();
           p(i) = xi;
@@ -923,12 +928,12 @@ namespace OpenOrbitalOptimizer {
         auto Ei = eval(hh);
         auto E2i = eval(2*hh);
 
-        double twop = (Ei-initial_energy)/hh;
-        double threep = (Ei-Emi)/(2*hh);
+        Tbase twop = (Ei-initial_energy)/hh;
+        Tbase threep = (Ei-Emi)/(2*hh);
         printf("i=%i twop=%e threep=%e\n",i,twop,threep);
 
-        double h2diff = (Ei - 2*initial_energy + Emi)/(hh*hh);
-        double h4diff = (-1/12.0*E2mi +4.0/3.0*Emi - 5.0/2.0*initial_energy + 4.0/3.0*Ei -1./12.0*E2i)/(hh*hh);
+        Tbase h2diff = (Ei - 2*initial_energy + Emi)/(hh*hh);
+        Tbase h4diff = (-1/12.0*E2mi +4.0/3.0*Emi - 5.0/2.0*initial_energy + 4.0/3.0*Ei -1./12.0*E2i)/(hh*hh);
 
         g(i) = threep;
         printf("g(%3i), block %i orbitals %i-%i, % e vs % e (two-point   % e) difference % e ratio % e\n",i,iblock, iorb, jorb, gradient(i),g(i),twop,gradient(i)-g(i),gradient(i)/g(i));
@@ -1012,6 +1017,24 @@ namespace OpenOrbitalOptimizer {
       }
     }
 
+    /// List of occupied orbitals
+    std::vector<arma::uvec> occupied_orbitals(const OrbitalOccupations<Tbase> & occupations) {
+      std::vector<arma::uvec> occ_idx(occupations.size());
+      for(size_t l=0;l<occupations.size();l++) {
+        occ_idx[l]=arma::find(occupations[l]>=occupied_threshold_);
+      }
+      return occ_idx;
+    }
+
+    /// List of occupied orbitals
+    std::vector<arma::uvec> unoccupied_orbitals(const OrbitalOccupations<Tbase> & occupations) {
+      std::vector<arma::uvec> virt_idx(occupations.size());
+      for(size_t l=0;l<occupations.size();l++) {
+        virt_idx[l]=arma::find(occupations[l]<occupied_threshold_);
+      }
+      return virt_idx;
+    }
+
   public:
     /// Constructor
     SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions), verbosity_(5) {
@@ -1079,12 +1102,12 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Get convergence threshold
-    double get_convergence_threshold() const {
+    Tbase get_convergence_threshold() const {
       return convergence_threshold_;
     }
 
     /// Set verbosity
-    void set_convergence_threshold(double convergence_threshold) {
+    void set_convergence_threshold(Tbase convergence_threshold) {
       convergence_threshold_ = convergence_threshold;
     }
 
@@ -1266,7 +1289,7 @@ namespace OpenOrbitalOptimizer {
       if(orbital_history_.size() and verbosity_>=0) {
         // Check if occupations have changed
         const auto & old_occupations = orbital_history_[0].first.second;
-        double occ_diff = occupation_difference(old_occupations, occupations);
+        Tbase occ_diff = occupation_difference(old_occupations, occupations);
         if(occ_diff > occupation_change_threshold_) {
           std::cout << "Warning: occupations changed by " << occ_diff << " from previous iteration\n";
           if(verbosity_>=0) {
@@ -1284,11 +1307,11 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Run the SCF
-    void run() {
-      double old_energy = orbital_history_[0].second.first;
+    void run(bool init_with_steepest_descent=false) {
+      Tbase old_energy = orbital_history_[0].second.first;
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
-        double diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+        Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
 
         if(verbosity_>=5) {
           printf("\n\nIteration %i: energy % .10f change %e DIIS error vector %s norm %e\n", iteration, orbital_history_[0].second.first, orbital_history_[0].second.first-old_energy, error_norm_.c_str(), diis_error);
@@ -1300,19 +1323,19 @@ namespace OpenOrbitalOptimizer {
         }
 
         if(verbosity_>=5) {
-          auto & reference_solution = orbital_history_[0];
-          auto & occupations = reference_solution.first.second;
-          for(size_t l=0;l<occupations.size();l++) {
-            arma::uvec occ_idx(arma::find(occupations[l]>=1e-6));
-            if(occ_idx.n_elem)
-              occupations[l].subvec(0,arma::max(occ_idx)).t().print(block_descriptions_[l] + " occupations");
+          const auto & reference_solution = orbital_history_[0];
+          const auto & occupations = reference_solution.first.second;
+          auto occ_idx(occupied_orbitals(occupations));
+          for(size_t l=0;l<occ_idx.size();l++) {
+            if(occ_idx[l].n_elem)
+              occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
           }
         }
 
-        if(iteration == 1) {
+        if(init_with_steepest_descent and iteration == 1) {
           // The orbitals can be bad, so start with a steepest descent
           // step to give DIIS a better starting point
-          double old_energy = orbital_history_[0].second.first;
+          Tbase old_energy = orbital_history_[0].second.first;
           steepest_descent_step();
 
         } else {
@@ -1357,9 +1380,9 @@ namespace OpenOrbitalOptimizer {
 
             if(diis_error < diis_epsilon_) {
               if(verbosity_>=10) printf("Mixed DIIS and ADIIS\n");
-              double adiis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
-              double c2diis_coeff = 1.0 - adiis_coeff;
-              diis_weights = adiis_coeff * adiis_w + c2diis_coeff * c2diis_w;
+              Tbase adiis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
+              Tbase diis_coeff = 1.0 - adiis_coeff;
+              diis_weights = adiis_coeff * adiis_w + diis_coeff * diis_weights;
             } else {
               diis_weights = adiis_w;
             }
@@ -1394,13 +1417,13 @@ namespace OpenOrbitalOptimizer {
       if(orbital_history_.size() == 0)
         run();
       else {
-        double diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+        Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
         if(diis_error >= diis_threshold_)
           run();
       }
 
       // Get the reference orbitals and orbital occupations
-      auto & reference_solution = orbital_history_[0];
+      auto reference_solution = orbital_history_[0];
       auto reference_orbitals = reference_solution.first.first;
       auto reference_occupations = reference_solution.first.second;
       auto reference_energy = reference_solution.second.first;
