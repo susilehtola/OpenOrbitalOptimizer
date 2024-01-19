@@ -312,11 +312,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Calculate ADIIS weights
-    arma::Col<Tbase> adiis_weights() const {
-      // Form linear and quadratic terms
-      auto linear_term = adiis_linear_term();
-      auto quadratic_term = adiis_quadratic_term();
-
+    arma::Col<Tbase> aediis_weights(const arma::Mat<Tbase> & linear_term, const arma::Mat<Tbase> & quadratic_term) const {
       // Function to compute weights from the parameters
       std::function<arma::Col<Tbase>(const arma::Col<Tbase> & x)> x_to_weight = [](const arma::Col<Tbase> & x) { arma::Col<Tbase> w=arma::square(x)/arma::dot(x,x); return w; };
       // and its Jacobian
@@ -334,9 +330,9 @@ namespace OpenOrbitalOptimizer {
         return jac;
       };
 
-      // Function to compute the ADIIS energy and gradient
+      // Function to compute the energy and gradient
       const Tbase regularization_parameter = adiis_regularization_parameter_;
-      std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> adiis_energy_gradient = [linear_term, quadratic_term, x_to_weight, x_to_weight_jacobian, regularization_parameter](const arma::Col<Tbase> & x) {
+      std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> aediis_energy_gradient = [linear_term, quadratic_term, x_to_weight, x_to_weight_jacobian, regularization_parameter](const arma::Col<Tbase> & x) {
         auto w(x_to_weight(x));
         arma::Col<Tbase> g = x_to_weight_jacobian(x)*(linear_term + quadratic_term*w);
         auto fval = arma::dot(linear_term, w) + 0.5*arma::dot(w, quadratic_term*w);
@@ -352,12 +348,12 @@ namespace OpenOrbitalOptimizer {
 
       // Optimization
       arma::Col<Tbase> x(orbital_history_.size(),arma::fill::ones);
-      x = ConjugateGradients::cg_optimize<Tbase>(x, adiis_energy_gradient);
+      x = ConjugateGradients::cg_optimize<Tbase>(x, aediis_energy_gradient);
 
       return x_to_weight(x);
     }
 
-    /// Form <D_i - D_0 | F_i - F_0>
+    /// ADIIS linear term: <D_i - D_0 | F_i - F_0>
     arma::Col<Tbase> adiis_linear_term() const {
       arma::Col<Tbase> ret(orbital_history_.size(),arma::fill::zeros);
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
@@ -371,8 +367,18 @@ namespace OpenOrbitalOptimizer {
       }
       return ret;
     }
-    /// Form <D_i - D_j | F_i - F_j>
-    arma::Mat<Tbase> adiis_quadratic_term() const {
+
+    /// EDIIS linear term: list of energies
+    arma::Col<Tbase> ediis_linear_term() const {
+      arma::Col<Tbase> ret(orbital_history_.size(),arma::fill::zeros);
+      for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
+        ret(ihist) = orbital_history_[ihist].second.first;
+      }
+      return ret;
+    }
+
+    /// ADIIS/EDIIS quadratic term: <D_i - D_j | F_i - F_j>
+    arma::Mat<Tbase> aediis_quadratic_term() const {
       arma::Mat<Tbase> ret(orbital_history_.size(),orbital_history_.size(),arma::fill::zeros);
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
         const auto & Dn = get_density_matrix_block(0, iblock);
@@ -389,6 +395,16 @@ namespace OpenOrbitalOptimizer {
       }
       // Only the symmetric part matters!
       return 0.5*(ret+ret.t());
+    }
+
+    /// Calculate ADIIS weights
+    arma::Col<Tbase> adiis_weights() const {
+      return aediis_weights(adiis_linear_term(), aediis_quadratic_term());
+    }
+
+    /// Calculate EDIIS weights
+    arma::Col<Tbase> ediis_weights() const {
+      return aediis_weights(ediis_linear_term(), -aediis_quadratic_term());
     }
 
     /** Minimal Error Sampling Algorithm (MESA), doi:10.14288/1.0372885 */
@@ -1347,6 +1363,8 @@ namespace OpenOrbitalOptimizer {
           if(verbosity_>=10) c1diis_w.print("C1DIIS weights");
           arma::Col<Tbase> adiis_w;
           bool adiis_ok = true;
+          arma::Col<Tbase> ediis_w;
+          bool ediis_ok = true;
           try {
             adiis_w = adiis_weights();
             if(verbosity_>=10) adiis_w.print("ADIIS weights");
@@ -1355,6 +1373,14 @@ namespace OpenOrbitalOptimizer {
             adiis_ok = false;
             adiis_w.clear();
           };
+          try {
+            ediis_w = ediis_weights();
+            if(verbosity_>=10) adiis_w.print("EDIIS weights");
+          } catch(std::logic_error) {
+            // Bad weights
+            ediis_ok = false;
+            ediis_w.clear();
+          };
 
           arma::Mat<Tbase> diis_errmat(diis_error_matrix());
           if(verbosity_>=5) {
@@ -1362,6 +1388,8 @@ namespace OpenOrbitalOptimizer {
             printf("C2DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*c2diis_w,error_norm_.c_str()));
             if(adiis_ok)
               printf("ADIIS extrapolated error norm %e\n",arma::norm(diis_errmat*adiis_w,error_norm_.c_str()));
+            if(ediis_ok)
+              printf("EDIIS extrapolated error norm %e\n",arma::norm(diis_errmat*ediis_w,error_norm_.c_str()));
           }
 
           // Form DIIS weights
