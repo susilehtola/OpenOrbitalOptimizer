@@ -1075,6 +1075,9 @@ namespace OpenOrbitalOptimizer {
 
     /// Initialize the solver with a guess Fock matrix
     void initialize_with_fock(const FockMatrix<Torb> & fock_guess) {
+      if(fock_guess.size() != number_of_blocks_)
+        throw std::logic_error("Fed in Fock matrix does not have the required number of blocks!\n");
+
       // Compute orbitals
       auto diagonalized_fock = compute_orbitals(fock_guess);
       const auto & orbitals = diagonalized_fock.first;
@@ -1088,6 +1091,10 @@ namespace OpenOrbitalOptimizer {
 
     /// Initialize with precomputed orbitals and occupations
     void initialize_with_orbitals(const Orbitals<Torb> & orbitals, const OrbitalOccupations<Tbase> & orbital_occupations) {
+      if(orbitals.size() != orbital_occupations.size())
+        throw std::logic_error("Fed in orbitals and orbital occupations are not consistent!\n");
+      if(orbitals.size() != number_of_blocks_)
+        throw std::logic_error("Fed in orbitals and orbital occupations do not have the required number of blocks!\n");
       orbital_history_.clear();
       add_entry(std::make_pair(orbitals, orbital_occupations));
     }
