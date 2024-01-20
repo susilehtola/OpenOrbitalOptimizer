@@ -338,6 +338,7 @@ namespace OpenOrbitalOptimizer {
       bool mgga = std::get<1>(ggamgga);
 
 #if 0
+      printf("proton radius %.10f\n",angfac*arma::dot(w, arma::pow(r,3)%rho.col(0)));
       printf("quadrature of proton   density yields %.10f\n",angfac*arma::dot(w, arma::square(r)%rho.col(0)));
       printf("quadrature of electron density yields %.10f\n",angfac*arma::dot(w, arma::square(r)%rho.col(1)));
       printf("quadrature of proton   tau yields %.10f\n",angfac*arma::dot(w, arma::square(r)%tau.col(0)));
