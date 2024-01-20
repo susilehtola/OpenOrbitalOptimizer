@@ -1288,7 +1288,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Run the SCF
-    void run(bool init_with_steepest_descent=false) {
+    void run(bool steepest_descent=false) {
       Tbase old_energy = get_energy();
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
@@ -1317,7 +1317,7 @@ namespace OpenOrbitalOptimizer {
           }
         }
 
-        if(init_with_steepest_descent and iteration == 1) {
+        if(steepest_descent and iteration == 1) {
           // The orbitals can be bad, so start with a steepest descent
           // step to give DIIS a better starting point
           Tbase old_energy = get_energy();
@@ -1385,7 +1385,7 @@ namespace OpenOrbitalOptimizer {
           // Perform extrapolation. If it does not lower the energy, we do
           // a scaled steepest descent step, instead.
           old_energy = get_energy();
-          if(!attempt_extrapolation(diis_weights)) {
+          if(!attempt_extrapolation(diis_weights) and steepest_descent) {
             if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
             steepest_descent_step();
           }
