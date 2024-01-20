@@ -103,6 +103,9 @@ namespace OpenOrbitalOptimizer {
     Tbase diis_epsilon_ = 1e-1;
     /// Threshold for pure DIIS
     Tbase diis_threshold_ = 1e-2;
+    /// Damping factor for DIIS diagonal; Hamilton and Pulay 1986
+    Tbase diis_diagonal_damping_ = 0.02;
+
     /// Threshold for a change in occupations
     Tbase occupation_change_threshold_ = 1e-6;
     /// History length
@@ -237,6 +240,9 @@ namespace OpenOrbitalOptimizer {
       arma::Mat<Tbase> B(N+1,N+1,arma::fill::value(-1.0));
       B.submat(0,0,N-1,N-1)=diis_error_matrix();
       B(N,N)=0.0;
+
+      // Apply the diagonal damping
+      B.submat(0,0,N-1,N-1).diag() *= 1.0+diis_diagonal_damping_;
 
       // To improve numerical conditioning, scale entries of error
       // matrix such that the last diagonal element is one; Eckert et
