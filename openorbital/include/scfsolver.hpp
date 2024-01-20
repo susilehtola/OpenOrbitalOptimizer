@@ -193,17 +193,17 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Vectorise
-    arma::Col<Torb> vectorise(const std::vector<arma::Mat<Torb>> & mat) const {
+    arma::Col<Tbase> vectorise(const std::vector<arma::Mat<Torb>> & mat) const {
       // Compute length of return vector
       size_t N=0;
 
-      std::vector<arma::Col<Torb>> vectors(mat.size());
+      std::vector<arma::Col<Tbase>> vectors(mat.size());
       for(size_t iblock=0;iblock<mat.size();iblock++) {
         vectors[iblock]=vectorise(mat[iblock]);
         N += vectors[iblock].n_elem;
       }
 
-      arma::Col<Torb> v(N,arma::fill::zeros);
+      arma::Col<Tbase> v(N,arma::fill::zeros);
       size_t ioff=0;
       for(size_t iblock=0;iblock<vectors.size();iblock++) {
         v.subvec(ioff,ioff+vectors[iblock].n_elem-1)=vectors[iblock];
@@ -227,9 +227,10 @@ namespace OpenOrbitalOptimizer {
           oss << "Matricise error: expected " << 2*nrows*ncols << " elements for " << nrows << " x " << ncols << " complex matrix, but got " << vec.n_elem << " instead!\n";
           throw std::logic_error(oss.str());
         }
-        arma::Mat<Torb> mat(nrows, ncols, arma::fill::zeros);
-        mat += std::complex(1.0,0.0)*arma::Mat<Tbase>(vec.memptr(), nrows, ncols);
-        mat += std::complex(0.0,1.0)*arma::Mat<Tbase>(vec.memptr()+nrows*ncols, nrows, ncols);
+
+        arma::Mat<Tbase> real(vec.memptr(), nrows, ncols);
+        arma::Mat<Tbase> imag(vec.memptr()+nrows*ncols, nrows, ncols);
+        arma::Mat<Torb> mat(real*std::complex<Tbase>(1.0,0.0) + imag*std::complex<Tbase>(0.0,1.0));
         return mat;
       }
     }
@@ -434,7 +435,7 @@ namespace OpenOrbitalOptimizer {
         const arma::Mat<Torb> xm = get_fock_matrix_block(m, iblock);
         for(size_t i=0;i<N;i++) {
           arma::Mat<Torb> dxi = get_fock_matrix_block(i+1, iblock) - xm;
-          ret(i) -= arma::trace(dxi * fm);
+          ret(i) -= std::real(arma::trace(dxi * fm));
         }
       }
       return ret;
@@ -454,7 +455,7 @@ namespace OpenOrbitalOptimizer {
           for(size_t j=0;j<N;j++) {
             const auto fj = diis_residual(j+1, iblock);
             const auto & xi = get_fock_matrix_block(i+1, iblock);
-            ret(i,j) += arma::trace((xi-xm)*(fj-fm));
+            ret(i,j) += std::real(arma::trace((xi-xm)*(fj-fm)));
           }
         }
       }
@@ -972,7 +973,7 @@ namespace OpenOrbitalOptimizer {
       arma::Col<Tbase> b = kain_linear_term();
 
       // Solve linear equation
-      arma::vec c;
+      arma::Col<Tbase> c;
       arma::solve(c,A,b);
 
       // Form the components of the update
