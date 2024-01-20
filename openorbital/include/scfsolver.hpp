@@ -164,6 +164,15 @@ namespace OpenOrbitalOptimizer {
       return std::get<2>(orbital_history_[ihist]);
     }
 
+    /// Matrix dimensions
+    arma::uvec matrix_dimension() const {
+      const auto & fock = std::get<1>(orbital_history_[0]).second;
+      arma::uvec dim(fock.size());
+      for(size_t i=0;i<fock.size();i++)
+        dim(i) = fock[i].n_cols;
+      return dim;
+    }
+
     /// Get a block of the density matrix for the ihist:th entry
     FockMatrix<Torb> get_fock_matrix(size_t ihist=0) const {
       return std::get<1>(orbital_history_[ihist]).second;
@@ -174,27 +183,96 @@ namespace OpenOrbitalOptimizer {
       return std::get<1>(orbital_history_[ihist]).second[iblock];
     }
 
+    /// Vectorise
+    arma::Col<Tbase> vectorise(const arma::Mat<Torb> & mat) const {
+      if constexpr (arma::is_real<Torb>::value) {
+        return arma::vectorise(mat);
+      } else {
+        return arma::join_cols(arma::vectorise(arma::real(mat)),arma::vectorise(arma::imag(mat)));
+      }
+    }
+
+    /// Vectorise
+    arma::Col<Torb> vectorise(const std::vector<arma::Mat<Torb>> & mat) const {
+      // Compute length of return vector
+      size_t N=0;
+
+      std::vector<arma::Col<Torb>> vectors(mat.size());
+      for(size_t iblock=0;iblock<mat.size();iblock++) {
+        vectors[iblock]=vectorise(mat[iblock]);
+        N += vectors[iblock].n_elem;
+      }
+
+      arma::Col<Torb> v(N,arma::fill::zeros);
+      size_t ioff=0;
+      for(size_t iblock=0;iblock<vectors.size();iblock++) {
+        v.subvec(ioff,ioff+vectors[iblock].n_elem-1)=vectors[iblock];
+        ioff += vectors[iblock].n_elem;
+      }
+
+      return v;
+    }
+
+    arma::Mat<Torb> matricise(const arma::Col<Tbase> & vec, size_t nrows, size_t ncols) const {
+      if constexpr (arma::is_real<Torb>::value) {
+        if(vec.n_elem != nrows*ncols) {
+          std::ostringstream oss;
+          oss << "Matricise error: expected " << nrows*ncols << " elements for " << nrows << " x " << ncols << " real matrix, but got " << vec.n_elem << " instead!\n";
+          throw std::logic_error(oss.str());
+        }
+        return arma::Mat<Torb>(vec.memptr(), nrows, ncols);
+      } else {
+        if(vec.n_elem != 2*nrows*ncols) {
+          std::ostringstream oss;
+          oss << "Matricise error: expected " << 2*nrows*ncols << " elements for " << nrows << " x " << ncols << " complex matrix, but got " << vec.n_elem << " instead!\n";
+          throw std::logic_error(oss.str());
+        }
+        arma::Mat<Torb> mat(nrows, ncols, arma::fill::zeros);
+        mat += std::complex(1.0,0.0)*arma::Mat<Tbase>(vec.memptr(), nrows, ncols);
+        mat += std::complex(0.0,1.0)*arma::Mat<Tbase>(vec.memptr()+nrows*ncols, nrows, ncols);
+        return mat;
+      }
+    }
+
+    std::vector<arma::Mat<Torb>> matricise(const arma::Col<Tbase> & vec, const arma::uvec & dim) const {
+      std::vector<arma::Mat<Torb>> mat(dim.n_elem);
+      size_t ioff = 0;
+      for(size_t iblock=0; iblock<dim.n_elem; iblock++) {
+        size_t size = dim(iblock)*dim(iblock);
+        if constexpr (not arma::is_real<Torb>::value) {
+          size *= 2;
+        }
+        mat[iblock] = matricise(vec.subvec(ioff, ioff+size-1), dim(iblock), dim(iblock));
+      }
+      return mat;
+    }
+
+    /// Compute DIIS residual
+    arma::Mat<Torb> diis_residual(size_t ihist, size_t iblock) const {
+      // Error is measured by FPS-SPF = FP - PF, since we have a unit metric.
+      auto F = get_fock_matrix_block(ihist, iblock);
+      auto P = get_density_matrix_block(ihist, iblock);
+      arma::Mat<Torb> PF = P*F;
+      PF -= arma::trans(PF);
+      return PF;
+    }
+
+    /// Compute DIIS residual
+    std::vector<arma::Mat<Torb>> diis_residual(size_t ihist) const {
+      std::vector<arma::Mat<Torb>> residuals(number_of_blocks_);
+      for(size_t iblock=0; iblock<number_of_blocks_; iblock++)
+        residuals[iblock] = diis_residual(ihist, iblock);
+      return residuals;
+    }
+
     /// Form DIIS error vector for ihist:th entry
     arma::Col<Tbase> diis_error_vector(size_t ihist) const {
-      // Helper function
-      std::function<arma::Col<Tbase>(const arma::Mat<Torb> &)> extract_error_vector=[](const arma::Mat<Torb> & mat) {
-        if constexpr (arma::is_real<Torb>::value) {
-          return arma::vectorise(mat);
-        } else {
-          return arma::join_cols(arma::vectorise(arma::real(mat)),arma::vectorise(arma::imag(mat)));
-        }
-      };
-
       // Form error vectors
       std::vector<arma::Col<Tbase>> error_vectors(number_of_blocks_);
       for(size_t iblock = 0; iblock<number_of_blocks_;iblock++) {
-        // Error is measured by FPS-SPF = FP - PF, since we have a unit metric.
-        auto F = get_fock_matrix_block(ihist, iblock);
-        auto P = get_density_matrix_block(ihist, iblock);
-        auto FP = F*P;
-        error_vectors[iblock] = extract_error_vector(FP - arma::trans(FP));
+        error_vectors[iblock] = vectorise(diis_residual(ihist, iblock));
         if(verbosity_>=20)
-          printf("ihist %i block %i density norm %e error vector norm %e\n",ihist,iblock,arma::norm(P, error_norm_.c_str()), arma::norm(error_vectors[iblock],error_norm_.c_str()));
+          printf("ihist %i block %i error vector norm %e\n",ihist,iblock,arma::norm(error_vectors[iblock],error_norm_.c_str()));
         if(verbosity_>=30)
           error_vectors[iblock].print();
       }
@@ -221,7 +299,7 @@ namespace OpenOrbitalOptimizer {
     /// Form DIIS error matrix
     arma::Mat<Tbase> diis_error_matrix() const {
       // The error matrix is given by the orbital gradient dot products
-      size_t N=orbital_history_.size();
+      const size_t N=orbital_history_.size();
       arma::Mat<Tbase> B(N,N,arma::fill::zeros);
       for(size_t ihist=0; ihist<N; ihist++) {
         arma::Col<Tbase> ei = diis_error_vector(ihist);
@@ -236,7 +314,7 @@ namespace OpenOrbitalOptimizer {
     /// Calculate DIIS weights
     arma::Col<Tbase> diis_weights() const {
       // Set up the DIIS error matrix
-      size_t N=orbital_history_.size();
+      const size_t N=orbital_history_.size();
       arma::Mat<Tbase> B(N+1,N+1,arma::fill::value(-1.0));
       B.submat(0,0,N-1,N-1)=diis_error_matrix();
       B(N,N)=0.0;
@@ -346,6 +424,67 @@ namespace OpenOrbitalOptimizer {
       return 0.5*(ret+ret.t());
     }
 
+    /// KAIN linear term: difference of Fock matrices multiplied by residual
+    arma::Col<Tbase> kain_linear_term() const {
+      const size_t N=orbital_history_.size()-1;
+      size_t m=0;
+      arma::Col<Tbase> ret(N,arma::fill::zeros);
+      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+        const arma::Mat<Torb> fm = diis_residual(m, iblock);
+        const arma::Mat<Torb> xm = get_fock_matrix_block(m, iblock);
+        for(size_t i=0;i<N;i++) {
+          arma::Mat<Torb> dxi = get_fock_matrix_block(i+1, iblock) - xm;
+          ret(i) -= arma::trace(dxi * fm);
+        }
+      }
+      return ret;
+    }
+
+    /// KAIN quadratic term
+    arma::Mat<Tbase> kain_quadratic_term() const {
+      const size_t N=orbital_history_.size()-1;
+      size_t m=0;
+
+      arma::Mat<Tbase> ret(N,N,arma::fill::zeros);
+      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+        // DIIS residual
+        const auto fm = diis_residual(m, iblock);
+        const auto & xm = get_fock_matrix_block(m, iblock);
+        for(size_t i=0;i<N;i++) {
+          for(size_t j=0;j<N;j++) {
+            const auto fj = diis_residual(j+1, iblock);
+            const auto & xi = get_fock_matrix_block(i+1, iblock);
+            ret(i,j) += arma::trace((xi-xm)*(fj-fm));
+          }
+        }
+      }
+      return ret;
+    }
+
+    /// Assemble KAIN update
+    FockMatrix<Torb> kain_update(const arma::Col<Tbase> & c) {
+      const size_t N=orbital_history_.size()-1;
+      if(N != c.n_elem)
+        throw std::logic_error("KAIN vector has wrong size!\n");
+
+      FockMatrix<Torb> fock(number_of_blocks_);
+      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+        // Initialize
+        fock[iblock] = get_fock_matrix_block(0, iblock);
+        fock[iblock].zeros();
+
+        // Update within the subspace
+        for(size_t j=0; j<N; j++)
+          fock[iblock] += c(j) * (get_fock_matrix_block(j+1, iblock) - get_fock_matrix_block(0, iblock));
+
+        // Update in the complement space
+        for(size_t j=0; j<N; j++)
+          fock[iblock] -= c(j) * (diis_residual(j+1,iblock) - diis_residual(0,iblock));
+        fock[iblock] -= diis_residual(0,iblock);
+      }
+      return fock;
+    }
+
     /// Calculate ADIIS weights
     arma::Col<Tbase> adiis_weights() const {
       return aediis_weights(adiis_linear_term(), aediis_quadratic_term());
@@ -359,7 +498,7 @@ namespace OpenOrbitalOptimizer {
     /** Minimal Error Sampling Algorithm (MESA), doi:10.14288/1.0372885 */
     arma::Col<Tbase> minimal_error_sampling_algorithm() const {
       // Get various extrapolation weights
-      size_t N = orbital_history_.size();
+      const size_t N = orbital_history_.size();
       arma::Col<Tbase> diis_w(diis_weights());
       arma::Col<Tbase> adiis_w(adiis_weights());
       arma::Col<Tbase> ediis_w(ediis_weights());
@@ -502,8 +641,12 @@ namespace OpenOrbitalOptimizer {
     bool attempt_extrapolation(const arma::Col<Tbase> & weights) {
       // Get the extrapolated Fock matrix
       auto fock(extrapolate_fock(weights));
+      return attempt_fock(fock);
+    }
 
-      // Diagonalize the extrapolated Fock matrix
+    /// See if given Fock matrix reduces the energy
+    bool attempt_fock(const FockMatrix<Torb> & fock) {
+      // Diagonalize the Fock matrix
       auto diagonalized_fock = compute_orbitals(fock);
       auto new_orbitals = diagonalized_fock.first;
       auto new_orbital_energies = diagonalized_fock.second;
@@ -806,6 +949,59 @@ namespace OpenOrbitalOptimizer {
       auto density_matrix = std::make_pair(new_orbitals, reference_occupations);
       auto fock = fock_builder_(density_matrix);
       return make_history_entry(density_matrix, fock);
+    }
+    /// Krylov subspace accelerated inexact Newton; Harrison 2004
+    void kain_step() {
+      // Step restriction
+      static Tbase step_factor = 1.0;
+
+      // Get the matrix dimension
+      arma::uvec dim = matrix_dimension();
+
+      // check that vectorization routines works
+      {
+        auto fock_input = get_fock_matrix(0);
+        auto fock_vector = vectorise(fock_input);
+        auto fock_matrix = matricise(fock_vector, dim);
+        auto fock_revector = vectorise(fock_matrix);
+        printf("debug: vector-matrix-vector difference norm %e\n",arma::norm(fock_revector-fock_vector,"fro"));
+      }
+
+      // Compute subspace matrix elements
+      arma::Mat<Tbase> A = kain_quadratic_term();
+      arma::Col<Tbase> b = kain_linear_term();
+
+      // Solve linear equation
+      arma::vec c;
+      arma::solve(c,A,b);
+
+      // Form the components of the update
+      auto fock_matrix = get_fock_matrix();
+      auto fock_increment = kain_update(c);
+
+      // Step length loop
+      Tbase factor = step_factor;
+      while(true) {
+        printf("KAIN loop, step length factor = %e\n",factor);
+
+        // Assemble trial Fock matrix
+        auto trial_fock = fock_matrix;
+        for(size_t iblock = 0; iblock<trial_fock.size(); iblock++)
+          trial_fock[iblock] += factor*fock_increment[iblock];
+
+        // If energy was lowered, stop
+        if(attempt_fock(trial_fock)) {
+          // If the update was successful on the first try, increase the trust radius
+          if(factor == step_factor)
+            step_factor *= 2.0;
+          else
+            // Reset the trust radius
+            step_factor = factor;
+          return;
+        }
+        // otherwise reduce step length
+        factor /= 2.0;
+      }
     }
     /// Take a steepest descent step
     void steepest_descent_step() {
@@ -1316,7 +1512,7 @@ namespace OpenOrbitalOptimizer {
         if(steepest_descent and iteration == 1) {
           // The orbitals can be bad, so start with a steepest descent
           // step to give DIIS a better starting point
-          Tbase old_energy = get_energy();
+          old_energy = get_energy();
           steepest_descent_step();
 
         } else {
@@ -1358,7 +1554,10 @@ namespace OpenOrbitalOptimizer {
           if(diis_error > diis_threshold_) {
             if(not adiis_ok) {
               if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, taking a steepest descent step instead.\n");
-              steepest_descent_step();
+              if(steepest_descent)
+                steepest_descent_step();
+              else
+                kain_step();
               continue;
             }
 
@@ -1381,9 +1580,13 @@ namespace OpenOrbitalOptimizer {
           // Perform extrapolation. If it does not lower the energy, we do
           // a scaled steepest descent step, instead.
           old_energy = get_energy();
-          if(!attempt_extrapolation(diis_weights) and steepest_descent) {
+          if(!attempt_extrapolation(diis_weights)) {
             if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
-            steepest_descent_step();
+            if(steepest_descent) {
+              steepest_descent_step();
+            } else {
+              kain_step();
+            }
           }
         }
       }
