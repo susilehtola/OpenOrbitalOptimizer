@@ -1299,10 +1299,6 @@ namespace OpenOrbitalOptimizer {
           printf("\n\nIteration %i: energy % .10f change %e DIIS error vector %s norm %e\n", iteration, get_energy(), dE, error_norm_.c_str(), diis_error);
           printf("History size %i\n",orbital_history_.size());
         }
-        if(dE == 0.0) {
-          printf("Resetting history since energy did not change from previous iteration.\n");
-          reset_history();
-        }
         if(diis_error < convergence_threshold_) {
           printf("Converged to energy % .10f!\n", get_energy());
           break;
