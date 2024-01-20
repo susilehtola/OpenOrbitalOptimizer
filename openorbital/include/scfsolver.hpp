@@ -57,7 +57,7 @@ namespace OpenOrbitalOptimizer {
   /// The history of orbital optimization is defined by the orbitals
   /// and their occupations - together the density matrix - and the
   /// resulting energy and Fock matrix
-  template<typename Torb, typename Tbase> using OrbitalHistoryEntry = std::pair<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>>;
+  template<typename Torb, typename Tbase> using OrbitalHistoryEntry = std::tuple<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>, size_t>;
   /// The history is then a vector
   template<typename Torb, typename Tbase> using OrbitalHistory = std::vector<OrbitalHistoryEntry<Torb, Tbase>>;
 
@@ -110,7 +110,7 @@ namespace OpenOrbitalOptimizer {
     /// Convergence threshold for orbital gradient
     Tbase convergence_threshold_ = 1e-7;
     /// Threshold that determines an acceptable increase in energy due to finite numerical precision
-    Tbase energy_update_threshold_ = 1e-8;
+    Tbase energy_update_threshold_ = 1e-9;
     /// Threshold for the ratio of linear dependence
     Tbase linear_dependence_ratio_ = std::sqrt(std::numeric_limits<Tbase>::epsilon());
     /// Norm to use by default: maximum element (Pulay 1982)
@@ -126,27 +126,49 @@ namespace OpenOrbitalOptimizer {
     /* Internal functions */
     /// Get a block of the density matrix for the ihist:th entry
     arma::Mat<Torb> get_density_matrix_block(size_t ihist, size_t iblock) const {
-      auto & entry = orbital_history_[ihist];
-      auto & density_matrix = entry.first;
-      return density_matrix.first[iblock] * arma::diagmat(density_matrix.second[iblock]) * arma::trans(density_matrix.first[iblock]);
+      const auto orbitals = get_orbital_block(ihist, iblock);
+      const auto occupations = get_orbital_occupation_block(ihist, iblock);
+      return orbitals * arma::diagmat(occupations) * arma::trans(orbitals);
+    }
+
+    /// Get the orbitals
+    Orbitals<Torb> get_orbitals(size_t ihist=0) const {
+      return std::get<0>(orbital_history_[ihist]).first;
     }
 
     /// Get a block of the orbital occupations for the ihist:th entry
-    arma::Mat<Torb> get_orbital_block(size_t ihist, size_t iblock) const {
-      auto & entry = orbital_history_[ihist];
-      return entry.first.first[iblock];
+    OrbitalBlock<Torb> get_orbital_block(size_t ihist, size_t iblock) const {
+      return std::get<0>(orbital_history_[ihist]).first[iblock];
+    }
+
+    /// Get the orbital occupations
+    OrbitalOccupations<Tbase> get_orbital_occupations(size_t ihist=0) const {
+      return std::get<0>(orbital_history_[ihist]).second;
     }
 
     /// Get a block of the orbital occupations for the ihist:th entry
-    arma::Col<Tbase> get_orbital_occupation_block(size_t ihist, size_t iblock) const {
-      auto entry = orbital_history_[ihist];
-      return entry.first.second[iblock];
+    OrbitalBlockOccupations<Tbase> get_orbital_occupation_block(size_t ihist, size_t iblock) const {
+      return std::get<0>(orbital_history_[ihist]).second[iblock];
+    }
+
+    /// Get the energy for the entry
+    Tbase get_energy(size_t ihist=0) const {
+      return std::get<1>(orbital_history_[ihist]).first;
+    }
+
+    /// Get the energy for the entry
+    size_t get_index(size_t ihist=0) const {
+      return std::get<2>(orbital_history_[ihist]);
+    }
+
+    /// Get a block of the density matrix for the ihist:th entry
+    FockMatrix<Torb> get_fock_matrix(size_t ihist=0) const {
+      return std::get<1>(orbital_history_[ihist]).second;
     }
 
     /// Get a block of the density matrix for the ihist:th entry
     arma::Mat<Torb> get_fock_matrix_block(size_t ihist, size_t iblock) const {
-      auto entry = orbital_history_[ihist];
-      return entry.second.second[iblock];
+      return std::get<1>(orbital_history_[ihist]).second[iblock];
     }
 
     /// Form DIIS error vector for ihist:th entry
@@ -293,7 +315,7 @@ namespace OpenOrbitalOptimizer {
     arma::Col<Tbase> ediis_linear_term() const {
       arma::Col<Tbase> ret(orbital_history_.size(),arma::fill::zeros);
       for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
-        ret(ihist) = orbital_history_[ihist].second.first;
+        ret(ihist) = get_energy(ihist);
       }
       return ret;
     }
@@ -376,13 +398,13 @@ namespace OpenOrbitalOptimizer {
       }
 
       // Form DIIS extrapolated Fock matrix
-      FockMatrix<Torb> extrapolated_fock(orbital_history_[0].second.second);
+      FockMatrix<Torb> extrapolated_fock(get_fock_matrix());
       for(size_t iblock = 0; iblock < extrapolated_fock.size(); iblock++) {
         // Apply the DIIS weight
         extrapolated_fock[iblock] *= weights(0);
         // and add the other blocks
         for(size_t ihist=1; ihist < orbital_history_.size(); ihist++)
-          extrapolated_fock[iblock] += weights(ihist) * orbital_history_[ihist].second.second[iblock];
+          extrapolated_fock[iblock] += weights(ihist) * get_fock_matrix_block(ihist, iblock);
       }
 
       return extrapolated_fock;
@@ -451,9 +473,8 @@ namespace OpenOrbitalOptimizer {
       auto new_occupations = update_occupations(new_orbital_energies);
 
       // Reference calculation
-      auto & reference_solution = orbital_history_[0];
-      auto & reference_orbitals = reference_solution.first.first;
-      auto reference_occupations = reference_solution.first.second;
+      const auto reference_orbitals = get_orbitals();
+      const auto reference_occupations = get_orbital_occupations();
       // Occupations corresponding to the reference orbitals
       auto maximum_overlap_occupations = determine_maximum_overlap_occupations(reference_occupations, reference_orbitals, new_orbitals);
 
@@ -478,16 +499,16 @@ namespace OpenOrbitalOptimizer {
 
       // Diagonalize the extrapolated Fock matrix
       auto diagonalized_fock = compute_orbitals(fock);
-      auto & new_orbitals = diagonalized_fock.first;
-      auto & new_orbital_energies = diagonalized_fock.second;
+      auto new_orbitals = diagonalized_fock.first;
+      auto new_orbital_energies = diagonalized_fock.second;
 
       // Determine new occupations
       auto new_occupations = update_occupations(new_orbital_energies);
 
       // Reference calculation
-      auto & reference_solution = orbital_history_[0];
-      auto & reference_orbitals = reference_solution.first.first;
-      auto reference_occupations = reference_solution.first.second;
+      auto reference_solution = orbital_history_[0];
+      auto reference_orbitals = get_orbitals();
+      auto reference_occupations = get_orbital_occupations();
       // Occupations corresponding to the reference orbitals
       auto maximum_overlap_occupations = determine_maximum_overlap_occupations(reference_occupations, reference_orbitals, new_orbitals);
 
@@ -517,9 +538,10 @@ namespace OpenOrbitalOptimizer {
 
       // Clean up history from incorrect occupation data
       if(occ_success) {
+        reference_occupations = get_orbital_occupations();
         size_t nremoved=0;
         for(size_t ihist=orbital_history_.size()-1;ihist>0;ihist--)
-          if(occupation_difference(orbital_history_[0].first.second, orbital_history_[ihist].first.second) > occupation_change_threshold_) {
+          if(occupation_difference(reference_occupations, get_orbital_occupations(ihist)) > occupation_change_threshold_) {
             nremoved++;
             orbital_history_.erase(orbital_history_.begin()+ihist);
           }
@@ -535,8 +557,7 @@ namespace OpenOrbitalOptimizer {
     std::vector<OrbitalRotation> degrees_of_freedom() const {
       std::vector<OrbitalRotation> dofs;
       // Reference calculation
-      auto & reference_solution = orbital_history_[0];
-      auto & reference_occupations = reference_solution.first.second;
+      const auto reference_occupations = get_orbital_occupations();
 
       // List occupied-occupied rotations, in case some orbitals are not fully occupied
       for(size_t iblock = 0; iblock < reference_occupations.size(); iblock++) {
@@ -666,7 +687,7 @@ namespace OpenOrbitalOptimizer {
 
     /// Rotation matrices
     Orbitals<Torb> form_rotation_matrices(const arma::Col<Tbase> & x) const {
-      const Orbitals<Torb> & reference_orbitals(orbital_history_[0].first.first);
+      const Orbitals<Torb> reference_orbitals(get_orbitals());
 
       // Get the degrees of freedom
       auto dof_list = degrees_of_freedom();
@@ -736,7 +757,7 @@ namespace OpenOrbitalOptimizer {
       auto kappa(form_rotation_matrices(x));
 
       // Rotate the orbitals
-      Orbitals<Torb> new_orbitals(orbital_history_[0].first.first);
+      Orbitals<Torb> new_orbitals(get_orbitals());
       for(size_t iblock=0; iblock < new_orbitals.size(); iblock++) {
         // Exponentiated kappa
         arma::Mat<Torb> expkappa;
@@ -764,21 +785,26 @@ namespace OpenOrbitalOptimizer {
 
       return new_orbitals;
     }
+    /// Make an orbital history entry
+    OrbitalHistoryEntry<Torb, Tbase> make_history_entry(const DensityMatrix<Torb, Tbase> & density_matrix, const FockBuilderReturn<Torb, Tbase> & fock) const {
+      static size_t index=0;
+      return std::make_tuple(density_matrix, fock, index++);
+    }
     /// Evaluate the energy with a given orbital rotation vector
     OrbitalHistoryEntry<Torb, Tbase> evaluate_rotation(const arma::Col<Tbase> & x) const {
       // Rotate orbitals
       auto new_orbitals(rotate_orbitals(x));
       // Compute the Fock matrix
-      auto reference_occupations = orbital_history_[0].first.second;
+      auto reference_occupations = get_orbital_occupations();
 
       auto density_matrix = std::make_pair(new_orbitals, reference_occupations);
       auto fock = fock_builder_(density_matrix);
-      return std::make_pair(density_matrix, fock);
+      return make_history_entry(density_matrix, fock);
     }
     /// Take a steepest descent step
     void steepest_descent_step() {
       // Reference energy
-      auto reference_energy = orbital_history_[0].second.first;
+      auto reference_energy = get_energy();
 
       // Get the orbital gradient
       auto gradient = orbital_gradient_vector();
@@ -795,7 +821,7 @@ namespace OpenOrbitalOptimizer {
 
       // Helper to evaluate steps
       std::function<Tbase(Tbase)> evaluate_step = [this, search_direction](Tbase length){
-        Tbase reference_energy(orbital_history_[0].second.first);
+        Tbase reference_energy(get_energy());
         if(length==0.0)
           // We just get the reference energy
           return reference_energy;
@@ -805,15 +831,15 @@ namespace OpenOrbitalOptimizer {
         // bad idea, since the matrices are too linearly dependent. We
         // take care of this by resetting the history at the end.
         if(length!=0.0)
-          add_entry(entry.first, entry.second);
+          add_entry(std::get<0>(entry), std::get<1>(entry));
         if(verbosity_>=5)
-          printf("Evaluated step %e with energy %.10f change from reference %e\n", length, entry.second.first, entry.second.first-reference_energy);
-        return entry.second.first;
+          printf("Evaluated step %e with energy %.10f change from reference %e\n", length, std::get<1>(entry).first, std::get<1>(entry).first-reference_energy);
+        return std::get<1>(entry).first;
       };
       std::function<Tbase(Tbase)> scan_step = [this, search_direction](Tbase length){
         auto p(search_direction*length);
         auto entry = evaluate_rotation(p);
-        return entry.second.first;
+        return std::get<1>(entry).first;
       };
 
       // Determine the maximal step size
@@ -856,7 +882,8 @@ namespace OpenOrbitalOptimizer {
           auto p(search_direction);
           p.zeros();
           p(i) = xi;
-          return evaluate_rotation(p);
+          auto entry = evaluate_rotation(p);
+          return std::get<1>(entry).first;
         };
 
         auto E2mi = eval(-2*hh);
@@ -1089,7 +1116,7 @@ namespace OpenOrbitalOptimizer {
       // Compute the Fock matrix
       auto fock = fock_builder_(density);
       if(verbosity_>=5) {
-        auto reference_energy = orbital_history_.size()>0 ? orbital_history_[0].second.first : 0.0;
+        auto reference_energy = orbital_history_.size()>0 ? get_energy() : 0.0;
         printf("Evaluated energy % .10f (change from lowest %e)\n", fock.first, fock.first-reference_energy);
       }
       return add_entry(density, fock);
@@ -1098,16 +1125,30 @@ namespace OpenOrbitalOptimizer {
     /// Add entry to history, return value is True if energy was lowered
     bool add_entry(const DensityMatrix<Torb, Tbase> & density, const FockBuilderReturn<Torb, Tbase> & fock) {
       // Make a pair
-      orbital_history_.push_back(std::make_pair(density, fock));
+      orbital_history_.push_back(make_history_entry(density, fock));
 
       if(orbital_history_.size()==1)
         // First try is a success by definition
         return true;
       else {
         // Otherwise we have to check if we lowered the energy
-        bool return_value = fock.first-orbital_history_[0].second.first < energy_update_threshold_;
-        // and now we resort the stack in increasing energy
-        std::sort(orbital_history_.begin(), orbital_history_.end(), [](const OrbitalHistoryEntry<Torb, Tbase> & a, const OrbitalHistoryEntry<Torb, Tbase> & b) {return a.second.first < b.second.first;});
+        bool return_value = fock.first-get_energy() < energy_update_threshold_;
+
+        // Now, we first sort the stack in increasing energy to get
+        // the lowest energy solution at the beginning
+        std::sort(orbital_history_.begin(), orbital_history_.end(), [](const OrbitalHistoryEntry<Torb, Tbase> & a, const OrbitalHistoryEntry<Torb, Tbase> & b) {return std::get<1>(a).first < std::get<1>(b).first;});
+
+        // and then the rest of the stack in decreasing iteration
+        // number so that we always remove the oldest vector (lowest
+        // index)
+        std::sort(orbital_history_.begin()+1, orbital_history_.end(), [](const OrbitalHistoryEntry<Torb, Tbase> & a, const OrbitalHistoryEntry<Torb, Tbase> & b) {return std::get<2>(a) > std::get<2>(b);});
+
+        if(verbosity_>=20) {
+          printf("Orbital history\n");
+          for(size_t ihist=0;ihist<orbital_history_.size();ihist++)
+            printf("%2i % .9f % e % i\n",ihist,get_energy(ihist),get_energy(ihist)-get_energy(),get_index(ihist));
+        }
+
         // Drop last entry if we are over the history length limit
         if(orbital_history_.size() > maximum_history_length_)
           orbital_history_.pop_back();
@@ -1190,7 +1231,7 @@ namespace OpenOrbitalOptimizer {
     /// Determines occupations based on the current orbital energies
     OrbitalOccupations<Tbase> update_occupations(const OrbitalEnergies<Tbase> & orbital_energies) const {
       if(frozen_occupations_)
-        return orbital_history_[0].first.second;
+        return get_orbital_occupations();
 
       // Number of particles per block
       arma::Col<Tbase> number_of_particles = (fixed_number_of_particles_per_block_.n_elem == number_of_blocks_) ? fixed_number_of_particles_per_block_ : determine_number_of_particles_by_aufbau(orbital_energies);
@@ -1213,7 +1254,7 @@ namespace OpenOrbitalOptimizer {
 
       if(orbital_history_.size() and verbosity_>=0) {
         // Check if occupations have changed
-        const auto & old_occupations = orbital_history_[0].first.second;
+        const auto old_occupations = get_orbital_occupations();
         Tbase occ_diff = occupation_difference(old_occupations, occupations);
         if(occ_diff > occupation_change_threshold_) {
           std::cout << "Warning: occupations changed by " << occ_diff << " from previous iteration\n";
@@ -1233,23 +1274,27 @@ namespace OpenOrbitalOptimizer {
 
     /// Run the SCF
     void run(bool init_with_steepest_descent=false) {
-      Tbase old_energy = orbital_history_[0].second.first;
+      Tbase old_energy = get_energy();
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
         Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+        Tbase dE = get_energy() - old_energy;
 
         if(verbosity_>=5) {
-          printf("\n\nIteration %i: energy % .10f change %e DIIS error vector %s norm %e\n", iteration, orbital_history_[0].second.first, orbital_history_[0].second.first-old_energy, error_norm_.c_str(), diis_error);
+          printf("\n\nIteration %i: energy % .10f change %e DIIS error vector %s norm %e\n", iteration, get_energy(), dE, error_norm_.c_str(), diis_error);
           printf("History size %i\n",orbital_history_.size());
         }
+        if(dE == 0.0) {
+          printf("Resetting history since energy did not change from previous iteration.\n");
+          reset_history();
+        }
         if(diis_error < convergence_threshold_) {
-          printf("Converged to energy % .10f!\n", orbital_history_[0].second.first);
+          printf("Converged to energy % .10f!\n", get_energy());
           break;
         }
 
         if(verbosity_>=5) {
-          const auto & reference_solution = orbital_history_[0];
-          const auto & occupations = reference_solution.first.second;
+          const auto occupations = get_orbital_occupations();
           auto occ_idx(occupied_orbitals(occupations));
           for(size_t l=0;l<occ_idx.size();l++) {
             if(occ_idx[l].n_elem)
@@ -1260,7 +1305,7 @@ namespace OpenOrbitalOptimizer {
         if(init_with_steepest_descent and iteration == 1) {
           // The orbitals can be bad, so start with a steepest descent
           // step to give DIIS a better starting point
-          Tbase old_energy = orbital_history_[0].second.first;
+          Tbase old_energy = get_energy();
           steepest_descent_step();
 
         } else {
@@ -1324,7 +1369,7 @@ namespace OpenOrbitalOptimizer {
 
           // Perform extrapolation. If it does not lower the energy, we do
           // a scaled steepest descent step, instead.
-          old_energy = orbital_history_[0].second.first;
+          old_energy = get_energy();
           if(!attempt_extrapolation(diis_weights)) {
             if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
             steepest_descent_step();
@@ -1334,13 +1379,13 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Get the SCF solution
-    DensityMatrix<Torb, Tbase> get_solution() const {
-      return orbital_history_[0].first;
+    DensityMatrix<Torb, Tbase> get_solution(size_t ihist=0) const {
+      return std::get<0>(orbital_history_[ihist]);
     }
 
     /// Get the Fock matrix
-    FockBuilderReturn<Torb, Tbase> get_fock_build() const {
-      return orbital_history_[0].second;
+    FockBuilderReturn<Torb, Tbase> get_fock_build(size_t ihist=0) const {
+      return std::get<1>(orbital_history_[ihist]);
     }
 
     /// Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search
@@ -1356,10 +1401,10 @@ namespace OpenOrbitalOptimizer {
 
       // Get the reference orbitals and orbital occupations
       auto reference_solution = orbital_history_[0];
-      auto reference_orbitals = reference_solution.first.first;
-      auto reference_occupations = reference_solution.first.second;
-      auto reference_energy = reference_solution.second.first;
-      auto reference_fock = reference_solution.second.second;
+      auto reference_orbitals = get_orbitals();
+      auto reference_occupations = get_orbital_occupations();
+      auto reference_energy = get_energy();
+      auto reference_fock = get_fock_matrix();
 
       // We also need the orbital energies below
       auto diagonalized_fock = compute_orbitals(reference_fock);
@@ -1419,7 +1464,7 @@ namespace OpenOrbitalOptimizer {
                   run();
                 } catch(...) {};
                 // Add the result to the list
-                list_of_energies.push_back(std::make_pair(trial_number, orbital_history_[0].second.first));
+                list_of_energies.push_back(std::make_pair(trial_number, get_energy()));
                 // Reset the restriction
                 arma::Col<Tbase> dummy;
                 fixed_number_of_particles_per_block_ = dummy;
@@ -1510,7 +1555,7 @@ namespace OpenOrbitalOptimizer {
                           run();
                         } catch(...) {};
                         // Add the result to the list
-                        list_of_energies.push_back(std::make_pair(trial_number, orbital_history_[0].second.first));
+                        list_of_energies.push_back(std::make_pair(trial_number, get_energy()));
                         // Reset the restriction
                         arma::Col<Tbase> dummy;
                         fixed_number_of_particles_per_block_ = dummy;
@@ -1539,10 +1584,10 @@ namespace OpenOrbitalOptimizer {
           run();
 
           reference_solution = orbital_history_[0];
-          reference_orbitals = reference_solution.first.first;
-          reference_occupations = reference_solution.first.second;
-          reference_energy = reference_solution.second.first;
-          reference_fock = reference_solution.second.second;
+          reference_orbitals = get_orbitals();
+          reference_occupations = get_orbital_occupations();
+          reference_energy = get_energy();
+          reference_fock = get_fock_matrix();
         } else {
           // Restore the reference calculation
           initialize_with_orbitals(reference_orbitals, reference_occupations);
