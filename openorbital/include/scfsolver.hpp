@@ -110,7 +110,7 @@ namespace OpenOrbitalOptimizer {
     /// Convergence threshold for orbital gradient
     Tbase convergence_threshold_ = 1e-7;
     /// Threshold that determines an acceptable increase in energy due to finite numerical precision
-    Tbase energy_update_threshold_ = 1e-9;
+    Tbase energy_update_threshold_ = 1e-8;
     /// Threshold for the ratio of linear dependence
     Tbase linear_dependence_ratio_ = std::sqrt(std::numeric_limits<Tbase>::epsilon());
     /// Norm to use by default: maximum element (Pulay 1982)
@@ -208,109 +208,30 @@ namespace OpenOrbitalOptimizer {
       return B;
     }
 
-    /// Calculate C1-DIIS weights
-    arma::Col<Tbase> c1diis_weights() const {
+    /// Calculate DIIS weights
+    arma::Col<Tbase> diis_weights() const {
       // Set up the DIIS error matrix
       size_t N=orbital_history_.size();
+      arma::Mat<Tbase> B(N+1,N+1,arma::fill::value(-1.0));
+      B.submat(0,0,N-1,N-1)=diis_error_matrix();
+      B(N,N)=0.0;
 
-      /*
-        The C1-DIIS method is equivalent to solving the group of linear
-        equations
-        B w = lambda 1       (1)
-
-        where B is the error matrix, w are the DIIS weights, lambda is the
-        Lagrange multiplier that guarantees that the weights sum to unity,
-        and 1 stands for a unit vector (1 1 ... 1)^T.
-
-        By rescaling the weights as w -> w/lambda, equation (1) is
-        reverted to the form
-        B w = 1              (2)
-
-        which can easily be solved. The weights just need to be
-        renormalized to satisfy \sum_i w_i = 1 to take care of the
-        Lagrange multipliers.
-      */
-
-      arma::Mat<Tbase> B(diis_error_matrix());
+      // To improve numerical conditioning, scale entries of error
+      // matrix such that the last diagonal element is one; Eckert et
+      // al, J. Comput. Chem 18. 1473-1483 (1997)
+      B.submat(0,0,N-1,N-1) /= B(0,0);
 
       // Right-hand side of equation is
-      arma::Col<Tbase> rh(N, arma::fill::ones);
+      arma::Col<Tbase> rh(N+1, arma::fill::zeros);
+      rh(N)=-1.0;
 
       // Solve the equation
       arma::Col<Tbase> diis_weights;
       arma::solve(diis_weights, B, rh);
-
-      // Sanity check for no elements: use even weights
-      if(arma::sum(arma::abs(diis_weights))==0.0)
-        diis_weights.ones();
-
-      // Normalize solution
-      diis_weights/=arma::sum(diis_weights);
+      diis_weights=diis_weights.subvec(0,N-1);
 
       return diis_weights;
     }
-
-    /// Calculate C2-DIIS weights
-    arma::Mat<Tbase> c2diis_candidate_weights() const {
-      // Set up the DIIS error matrix
-      arma::Mat<Tbase> B(diis_error_matrix());
-
-      // Solve C2-DIIS eigenproblem
-      arma::Mat<Tbase> evec;
-      arma::Col<Tbase> eval;
-      arma::eig_sym(eval, evec, B);
-
-      // Normalize solution vectors
-      arma::Mat<Tbase> candidate_solutions(evec);
-      for(size_t icol=0;icol<evec.n_cols;icol++)
-        candidate_solutions.col(icol) /= arma::sum(candidate_solutions.col(icol));
-
-      return candidate_solutions;
-    }
-
-    /// Calculate C2-DIIS weights
-    arma::Col<Tbase> c2diis_weights(Tbase rejection_threshold = 10.0) const {
-      // Set up the DIIS error matrix
-      arma::Mat<Tbase> B(diis_error_matrix());
-      // Get the candidate solutions
-      arma::Mat<Tbase> candidate_solutions = c2diis_candidate_weights();
-
-      // Find best solution that satisfies rejection threshold. Error
-      // norms for the extrapolated vectors
-      arma::Col<Tbase> error_norms(candidate_solutions.n_cols,arma::fill::ones);
-      error_norms *= std::numeric_limits<Tbase>::max();
-
-      for(size_t icol=0; icol < candidate_solutions.n_cols; icol++) {
-        arma::Col<Tbase> soln = candidate_solutions.col(icol);
-        // Skip solutions that have large elements
-        if(arma::max(arma::abs(soln)) >= rejection_threshold)
-          continue;
-        // Compute extrapolated error
-        arma::Col<Tbase> extrapolated_error = B * soln;
-        error_norms(icol) = arma::norm(extrapolated_error, 2);
-      }
-
-      // Sort the solutions in the extrapolated error
-      arma::uvec sortidx;
-      sortidx = arma::sort_index(error_norms);
-      if(verbosity_ >= 10)
-        error_norms(sortidx).print("Sorted C2DIIS errors");
-
-      arma::Col<Tbase> diis_weights;
-      for(auto index: sortidx) {
-        diis_weights = candidate_solutions.col(index);
-        // Skip solutions that have extrapolated error in the same order
-        // of magnitude as the used floating point precision
-        if(error_norms(index) >= 5*std::numeric_limits<Tbase>::epsilon()) {
-          if(verbosity_ >= 10)
-            printf("Using C2DIIS solution index %i\n",index);
-          break;
-        }
-      }
-
-      return diis_weights;
-    }
-
     /// Calculate ADIIS weights
     arma::Col<Tbase> aediis_weights(const arma::Mat<Tbase> & linear_term, const arma::Mat<Tbase> & quadratic_term) const {
       // Function to compute weights from the parameters
@@ -409,22 +330,21 @@ namespace OpenOrbitalOptimizer {
 
     /** Minimal Error Sampling Algorithm (MESA), doi:10.14288/1.0372885 */
     arma::Col<Tbase> minimal_error_sampling_algorithm() const {
-      // Get C2-DIIS weights
-      arma::Mat<Tbase> c2_diis_w(c2diis_candidate_weights());
-      arma::Col<Tbase> c1_diis_w(c1diis_weights());
+      // Get various extrapolation weights
+      size_t N = orbital_history_.size();
+      arma::Col<Tbase> diis_w(diis_weights());
       arma::Col<Tbase> adiis_w(adiis_weights());
+      arma::Col<Tbase> ediis_w(ediis_weights());
 
       // Candidates
-      arma::Mat<Tbase> candidate_w(c2_diis_w.n_rows, c2_diis_w.n_cols+3, arma::fill::zeros);
-      candidate_w.cols(0,c2_diis_w.n_cols-1)=c2_diis_w;
-      size_t icol=c2_diis_w.n_cols;
-
-      candidate_w.col(icol++) = c1_diis_w;
+      arma::Mat<Tbase> candidate_w(N, 4, arma::fill::zeros);
+      size_t icol=0;
+      candidate_w.col(icol++) = diis_w;
       candidate_w.col(icol++) = adiis_w;
+      candidate_w.col(icol++) = ediis_w;
 
-      // Last try: just the reference state
-      candidate_w(0,icol) = 1.0;
-      icol++;
+      // Last try: just do bare Roothaan
+      candidate_w(0,icol++) = 1.0;
 
       arma::Col<Tbase> density_projections(candidate_w.n_cols, arma::fill::zeros);
       for(size_t iw=0;iw<candidate_w.n_cols;iw++) {
@@ -1024,10 +944,6 @@ namespace OpenOrbitalOptimizer {
           }
         }
       }
-      // We reset the DIIS history, since the line searches can add
-      // lots of linear depedence in the DIIS history. Moreover, a
-      // reset makes sense since DIIS failed to lower the energy!
-      reset_history();
       if(not search_success) {
         throw std::runtime_error("Failed to find suitable step size.\n");
       }
@@ -1196,27 +1112,13 @@ namespace OpenOrbitalOptimizer {
         if(orbital_history_.size() > maximum_history_length_)
           orbital_history_.pop_back();
 
-        // Figure out the need for a reset
-        arma::Mat<Tbase> Bmat(diis_error_matrix());
-
-        arma::Col<Tbase> Bval;
-        arma::Mat<Tbase> Bvec;
-        arma::eig_sym(Bval,Bvec,Bmat);
-        if(arma::min(Bval) < 10*std::numeric_limits<Tbase>::epsilon()) {
-          if(verbosity_)
-            printf("Minimal eigenvalue of DIIS error matrix is %e, resetting history\n",arma::min(Bval));
-          reset_history();
-        } else if(verbosity_>10) {
-          printf("Minimal eigenvalue of DIIS error matrix is %e\n",arma::min(Bval));
-        }
-
         return return_value;
       }
     }
 
     /// Reset the DIIS history
     void reset_history() {
-      while(orbital_history_.size() > 1)
+      while(orbital_history_.size()>1)
         orbital_history_.pop_back();
     }
 
@@ -1363,11 +1265,8 @@ namespace OpenOrbitalOptimizer {
 
         } else {
           // Form DIIS and ADIIS weights
-          //arma::Col<Tbase> c2diis_w(c2diis_weights());
-          arma::Col<Tbase> c2diis_w(c2diis_weights());
-          if(verbosity_>=10) c2diis_w.print("C2DIIS weights");
-          arma::Col<Tbase> c1diis_w(c1diis_weights());
-          if(verbosity_>=10) c1diis_w.print("C1DIIS weights");
+          arma::Col<Tbase> diis_w(diis_weights());
+          if(verbosity_>=10) diis_w.print("DIIS weights");
           arma::Col<Tbase> adiis_w;
           bool adiis_ok = true;
           arma::Col<Tbase> ediis_w;
@@ -1391,8 +1290,7 @@ namespace OpenOrbitalOptimizer {
 
           arma::Mat<Tbase> diis_errmat(diis_error_matrix());
           if(verbosity_>=5) {
-            printf("C1DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*c1diis_w,error_norm_.c_str()));
-            printf("C2DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*c2diis_w,error_norm_.c_str()));
+            printf("DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*diis_w,error_norm_.c_str()));
             if(adiis_ok)
               printf("ADIIS extrapolated error norm %e\n",arma::norm(diis_errmat*adiis_w,error_norm_.c_str()));
             if(ediis_ok)
@@ -1400,13 +1298,8 @@ namespace OpenOrbitalOptimizer {
           }
 
           // Form DIIS weights
-          arma::Col<Tbase> diis_weights(orbital_history_.size(), arma::fill::zeros);
-          if(diis_error < diis_threshold_) {
-            if(verbosity_>=5) printf("C2DIIS extrapolation\n");
-            diis_weights = c2diis_w;
-            //printf("C1DIIS extrapolation\n");
-            //diis_weights = c1diis_w;
-          } else {
+          arma::Col<Tbase> diis_weights = diis_w;
+          if(diis_error > diis_threshold_) {
             if(not adiis_ok) {
               if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, taking a steepest descent step instead.\n");
               steepest_descent_step();
@@ -1414,13 +1307,17 @@ namespace OpenOrbitalOptimizer {
             }
 
             if(diis_error < diis_epsilon_) {
-              if(verbosity_>=10) printf("Mixed DIIS and ADIIS\n");
+              if(verbosity_>=5) printf("Mixed DIIS and ADIIS step\n");
               Tbase adiis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
               Tbase diis_coeff = 1.0 - adiis_coeff;
               diis_weights = adiis_coeff * adiis_w + diis_coeff * diis_weights;
             } else {
+              if(verbosity_>=5) printf("ADIIS step\n");
               diis_weights = adiis_w;
             }
+          } else {
+            if(verbosity_>=5) printf("Pure DIIS step\n");
+            //diis_weights = minimal_error_sampling_algorithm();
           }
           if(verbosity_>=10)
             diis_weights.print("Extrapolation weigths");
