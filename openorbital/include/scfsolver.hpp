@@ -966,7 +966,7 @@ namespace OpenOrbitalOptimizer {
                 printf("Error: energy did not decrease in line search! Decreasing trial step size\n");
                 fflush(stdout);
               }
-              step = std::min(10.0*predicted_step, step/2.0);
+              step = std::max(10.0*predicted_step, step/2.0);
             }
           }
         }
