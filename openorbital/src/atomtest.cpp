@@ -534,8 +534,8 @@ namespace OpenOrbitalOptimizer {
 
       // Initialize SCF solver
       OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
-      scfsolver.set_verbosity(verbosity);
-      scfsolver.set_convergence_threshold(convergence_threshold);
+      scfsolver.verbosity(verbosity);
+      scfsolver.convergence_threshold(convergence_threshold);
       scfsolver.initialize_with_fock(fock_guess);
       scfsolver.run();
       //scfsolver.brute_force_search_for_lowest_configuration();
@@ -549,7 +549,7 @@ namespace OpenOrbitalOptimizer {
 
         // Decrease occupation of 1s orbital
         occupations[0](0) = 0.0;
-        scfsolver.set_frozen_occupations(true);
+        scfsolver.frozen_occupations(true);
         scfsolver.initialize_with_orbitals(orbitals, occupations);
         scfsolver.run();
         auto core_hole_fock_build = scfsolver.get_fock_build();
@@ -678,8 +678,8 @@ namespace OpenOrbitalOptimizer {
 
       // Initialize SCF solver
       OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
-      scfsolver.set_verbosity(verbosity);
-      scfsolver.set_convergence_threshold(convergence_threshold);
+      scfsolver.verbosity(verbosity);
+      scfsolver.convergence_threshold(convergence_threshold);
       scfsolver.initialize_with_fock(fock_guess);
       scfsolver.run();
       //scfsolver.brute_force_search_for_lowest_configuration();
@@ -693,7 +693,7 @@ namespace OpenOrbitalOptimizer {
 
         // Decrease occupation of 1s orbital
         occupations[0](0) = 0.0;
-        scfsolver.set_frozen_occupations(true);
+        scfsolver.frozen_occupations(true);
         scfsolver.initialize_with_orbitals(orbitals, occupations);
         scfsolver.run();
         auto core_hole_fock_build = scfsolver.get_fock_build();
@@ -842,8 +842,8 @@ namespace OpenOrbitalOptimizer {
 
       // Initialize SCF solver
       OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
-      scfsolver.set_convergence_threshold(convergence_threshold);
-      scfsolver.set_verbosity(verbosity);
+      scfsolver.convergence_threshold(convergence_threshold);
+      scfsolver.verbosity(verbosity);
 
       {
         // Run a calculation with the point nucleus to initialize the electronic orbitals
@@ -891,7 +891,7 @@ namespace OpenOrbitalOptimizer {
 
         // Decrease occupation of 1s orbital
         occupations[0](0) = 0.0;
-        scfsolver.set_frozen_occupations(true);
+        scfsolver.frozen_occupations(true);
         scfsolver.initialize_with_orbitals(orbitals, occupations);
         scfsolver.run();
         auto core_hole_fock_build = scfsolver.get_fock_build();

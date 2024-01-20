@@ -113,7 +113,7 @@ namespace OpenOrbitalOptimizer {
     /// Convergence threshold for orbital gradient
     Tbase convergence_threshold_ = 1e-7;
     /// Threshold that determines an acceptable increase in energy due to finite numerical precision
-    Tbase energy_update_threshold_ = 1e-9;
+    Tbase energy_update_threshold_ = 1e-8;
     /// Threshold for the ratio of linear dependence
     Tbase linear_dependence_ratio_ = std::sqrt(std::numeric_limits<Tbase>::epsilon());
     /// Norm to use by default: maximum element (Pulay 1982)
@@ -1255,47 +1255,57 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Fix the number of occupied orbitals per block
-    void set_fixed_number_of_particles_per_block(const arma::Col<Tbase> & number_of_particles_per_block) {
+    void fixed_number_of_particles_per_block(const arma::Col<Tbase> & number_of_particles_per_block) {
       fixed_number_of_particles_per_block_ = number_of_particles_per_block;
     }
 
     /// Get frozen occupations
-    bool get_frozen_occupations() const {
+    bool frozen_occupations() const {
       return frozen_occupations_;
     }
 
     /// Set frozen occupations
-    void set_frozen_occupations(bool frozen) {
+    void frozen_occupations(bool frozen) {
       frozen_occupations_ = frozen;
     }
 
     /// Get verbosity
-    int get_verbosity() const {
+    int verbosity() const {
       return verbosity_;
     }
 
     /// Set verbosity
-    void set_verbosity(int verbosity) {
+    void verbosity(int verbosity) {
       verbosity_ = verbosity;
     }
 
     /// Get convergence threshold
-    Tbase get_convergence_threshold() const {
+    Tbase convergence_threshold() const {
       return convergence_threshold_;
     }
 
     /// Set verbosity
-    void set_convergence_threshold(Tbase convergence_threshold) {
+    void convergence_threshold(Tbase convergence_threshold) {
       convergence_threshold_ = convergence_threshold;
     }
 
+    /// Get energy_update threshold
+    Tbase energy_update_threshold() const {
+      return energy_update_threshold_;
+    }
+
+    /// Set verbosity
+    void energy_update_threshold(Tbase energy_update_threshold) {
+      energy_update_threshold_ = energy_update_threshold;
+    }
+
     /// Get the used error norm
-    std::string get_error_norm() const {
+    std::string error_norm() const {
       return error_norm_;
     }
 
     /// Set the used error norm
-    void set_error_norm(const std::string & error_norm) {
+    void error_norm(const std::string & error_norm) {
       // Check that the norm is a valid option to Armadillo
       arma::vec test(1,arma::fill::ones);
       (void) arma::norm(test,error_norm.c_str());
@@ -1304,22 +1314,22 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Get the maximum number of iterations
-    size_t get_maximum_iterations() const {
+    size_t maximum_iterations() const {
       return maximum_iterations_;
     }
 
     /// Set the maximum number of iterations
-    void set_maximum_iterations(size_t maxit) {
+    void maximum_iterations(size_t maxit) {
       maximum_iterations_ = maxit;
     }
 
     /// Get maximum_history_length
-    int get_maximum_history_length() const {
+    int maximum_history_length() const {
       return maximum_history_length_;
     }
 
     /// Set maximum_history_length
-    void set_maximum_history_length(int maximum_history_length) {
+    void maximum_history_length(int maximum_history_length) {
       maximum_history_length_ = maximum_history_length;
     }
 
