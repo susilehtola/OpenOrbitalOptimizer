@@ -978,6 +978,15 @@ namespace OpenOrbitalOptimizer {
         }
       }
       if(not search_success) {
+        arma::Col<Tbase> ttest(arma::logspace<arma::Col<Tbase>>(-16,4,101)*Tmu);
+        arma::Mat<Tbase> data(ttest.n_elem, 2);
+        data.col(0)=ttest/Tmu;
+        for(size_t i=0;i<ttest.n_elem;i++) {
+          data(i,1) = scan_step(ttest(i));
+          printf("%e %e % e % e\n",data(i,0),data(i,0)*Tmu,data(i,1),data(i,1)-get_energy());
+          fflush(stdout);
+        }
+        data.save("linesearch.dat",arma::raw_ascii);
         throw std::runtime_error("Failed to find suitable step size.\n");
       }
     }
