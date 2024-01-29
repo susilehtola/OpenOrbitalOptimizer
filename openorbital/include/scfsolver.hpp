@@ -113,7 +113,7 @@ namespace OpenOrbitalOptimizer {
     /// Convergence threshold for orbital gradient
     Tbase convergence_threshold_ = 1e-7;
     /// Threshold that determines an acceptable increase in energy due to finite numerical precision
-    Tbase energy_update_threshold_ = 1e-8;
+    Tbase energy_update_threshold_ = 0.0;
     /// Threshold for the ratio of linear dependence
     Tbase linear_dependence_ratio_ = std::sqrt(std::numeric_limits<Tbase>::epsilon());
     /// Norm to use by default: maximum element (Pulay 1982)
@@ -125,6 +125,10 @@ namespace OpenOrbitalOptimizer {
     Tbase adiis_regularization_parameter_ = 1e-3;
     /// Threshold for detection of occupied orbitals
     Tbase occupied_threshold_ = 1e-6;
+    /// Initial level shift
+    Tbase initial_level_shift_ = 1.0;
+    /// Level shift diminution factor
+    Tbase level_shift_factor_ = 2.0;
 
     /* Internal functions */
     /// Get a block of the density matrix for the ihist:th entry
@@ -159,9 +163,43 @@ namespace OpenOrbitalOptimizer {
       return std::get<1>(orbital_history_[ihist]).first;
     }
 
+    /// Get lowest energy after the given reference index
+    Tbase get_lowest_energy_after_index(size_t index=0) const {
+      bool initialized = false;
+      Tbase lowest_energy;
+      for(size_t i=0;i<orbital_history_.size();i++) {
+        if(get_index(i) > index) {
+          if(not initialized) {
+            initialized=true;
+            lowest_energy = get_energy(i);
+          } else {
+            lowest_energy = std::min(lowest_energy, get_energy(i));
+          }
+        }
+      }
+      if(initialized)
+        return lowest_energy;
+      else {
+        print_history();
+        fflush(stdout);
+        std::ostringstream oss;
+        oss << "Did not find any entries with index greater than " << index << "!\n";
+        throw std::logic_error(oss.str());
+      }
+    }
+
     /// Get the energy for the entry
     size_t get_index(size_t ihist=0) const {
       return std::get<2>(orbital_history_[ihist]);
+    }
+
+    /// Get largest index
+    size_t largest_index() const {
+      size_t index = get_index(0);
+      for(size_t i=1;i<orbital_history_.size();i++) {
+        index = std::max(index, get_index(i));
+      }
+      return index;
     }
 
     /// Matrix dimensions
@@ -544,13 +582,17 @@ namespace OpenOrbitalOptimizer {
       }
 
       // Form DIIS extrapolated Fock matrix
-      FockMatrix<Torb> extrapolated_fock(get_fock_matrix());
+      FockMatrix<Torb> extrapolated_fock(number_of_blocks_);
       for(size_t iblock = 0; iblock < extrapolated_fock.size(); iblock++) {
         // Apply the DIIS weight
-        extrapolated_fock[iblock] *= weights(0);
-        // and add the other blocks
-        for(size_t ihist=1; ihist < orbital_history_.size(); ihist++)
-          extrapolated_fock[iblock] += weights(ihist) * get_fock_matrix_block(ihist, iblock);
+        for(size_t ihist = 0; ihist < orbital_history_.size(); ihist++) {
+          arma::Mat<Torb> block = weights(ihist) * get_fock_matrix_block(ihist, iblock);
+          if(ihist==0) {
+            extrapolated_fock[iblock] = block;
+          } else {
+            extrapolated_fock[iblock] += block;
+          }
+        }
       }
 
       return extrapolated_fock;
@@ -667,7 +709,7 @@ namespace OpenOrbitalOptimizer {
 
       // If that did not succeed, try maximum overlap occupations; it
       // might be that the orbitals changed order
-      if(not frozen_occupations_ and not ref_success and occupation_difference(maximum_overlap_occupations, reference_occupations) > occupation_change_threshold_) {
+      if(not ref_success and not frozen_occupations_ and occupation_difference(maximum_overlap_occupations, reference_occupations) > occupation_change_threshold_) {
         if(verbosity_ >= 10)
           printf("attempt_extrapolation: occupation difference to maximum overlap orbitals %e\n",occupation_difference(reference_occupations, new_occupations));
         ref_success = add_entry(std::make_pair(new_orbitals, maximum_overlap_occupations));
@@ -686,21 +728,22 @@ namespace OpenOrbitalOptimizer {
         }
       }
 
-      // Clean up history from incorrect occupation data
-      if(occ_success) {
-        reference_occupations = get_orbital_occupations();
-        size_t nremoved=0;
-        for(size_t ihist=orbital_history_.size()-1;ihist>0;ihist--)
-          if(occupation_difference(reference_occupations, get_orbital_occupations(ihist)) > occupation_change_threshold_) {
-            nremoved++;
-            orbital_history_.erase(orbital_history_.begin()+ihist);
-          }
-        if(verbosity_>=10)
-        printf("Removed %i entries corresponding to bad occupations\n",nremoved);
-      }
-
       // Extrapolation was a success if either worked
       return ref_success or occ_success;
+    }
+
+    /// Clean up history from incorrect occupations
+    void cleanup() {
+      // Clean up history from incorrect occupation data
+      auto reference_occupations = get_orbital_occupations();
+      size_t nremoved=0;
+      for(size_t ihist=orbital_history_.size()-1;ihist>0;ihist--)
+        if(occupation_difference(reference_occupations, get_orbital_occupations(ihist)) > occupation_change_threshold_) {
+          nremoved++;
+          orbital_history_.erase(orbital_history_.begin()+ihist);
+        }
+        if(verbosity_>=10)
+          printf("Removed %i entries corresponding to bad occupations\n",nremoved);
     }
 
     /// Form list of rotation angles
@@ -1004,6 +1047,48 @@ namespace OpenOrbitalOptimizer {
         factor /= 2.0;
       }
     }
+    /// Level shift step
+    void level_shifting_step() {
+      Tbase level_shift = initial_level_shift_;
+      Tbase reference_energy = get_energy();
+      size_t start_index = largest_index();
+
+      if(verbosity_ >= 5)
+        printf("Entering level shifting code, reference energy %e\n",reference_energy);
+
+      // Get Fock matrix
+      FockMatrix<Torb> fock = get_fock_matrix();
+      // Form level shift matrix
+      FockMatrix<Torb> shifted_fock;
+
+      for(size_t ishift=0; ishift < 50; ishift++) {
+        // Shift virtual orbitals up in energy. In practice, scale
+        // the level shift by the fraction of unoccupied character,
+        // so that SOMOs get half the shift
+        shifted_fock = fock;
+        for(size_t iblock=0; iblock<fock.size(); iblock++) {
+          arma::Col<Tbase> fractional_occupations(get_orbital_occupation_block(0, iblock)/maximum_occupation_(iblock));
+          fractional_occupations = arma::ones<arma::Col<Tbase>>(fractional_occupations.n_elem) - fractional_occupations;
+          arma::Mat<Torb> orbitals(get_orbital_block(0, iblock));
+
+          shifted_fock[iblock] += level_shift *(orbitals * arma::diagmat(fractional_occupations) * orbitals.t());
+        }
+
+        // Add new Fock matrix
+        attempt_fock(shifted_fock);
+        Tbase best_energy = get_lowest_energy_after_index(start_index);
+        if(verbosity_ >= 5)
+          printf("Level shift iteration %i: shift %e energy change %e\n", ishift, level_shift, best_energy-reference_energy);
+
+        if(best_energy > reference_energy) {
+          // Energy did not decrease; increase level shift
+          level_shift *= level_shift_factor_;
+          continue;
+        } else {
+          return;
+        }
+      }
+    }
     /// Take a steepest descent step
     void steepest_descent_step() {
       // Reference energy
@@ -1030,9 +1115,6 @@ namespace OpenOrbitalOptimizer {
           return reference_energy;
         auto p(search_direction*length);
         auto entry = evaluate_rotation(p);
-        // Adding the matrices to the DIIS history turns out to be a
-        // bad idea, since the matrices are too linearly dependent. We
-        // take care of this by resetting the history at the end.
         if(length!=0.0)
           add_entry(std::get<0>(entry), std::get<1>(entry));
         if(verbosity_>=5)
@@ -1354,7 +1436,9 @@ namespace OpenOrbitalOptimizer {
         return true;
       else {
         // Otherwise we have to check if we lowered the energy
-        bool return_value = fock.first-get_energy() < energy_update_threshold_;
+        Tbase new_energy = fock.first;
+        Tbase old_energy = get_energy();
+        bool return_value = new_energy - old_energy < energy_update_threshold_;
 
         // Now, we first sort the stack in increasing energy to get
         // the lowest energy solution at the beginning
@@ -1366,9 +1450,7 @@ namespace OpenOrbitalOptimizer {
         std::sort(orbital_history_.begin()+1, orbital_history_.end(), [](const OrbitalHistoryEntry<Torb, Tbase> & a, const OrbitalHistoryEntry<Torb, Tbase> & b) {return std::get<2>(a) > std::get<2>(b);});
 
         if(verbosity_>=20) {
-          printf("Orbital history\n");
-          for(size_t ihist=0;ihist<orbital_history_.size();ihist++)
-            printf("%2i % .9f % e % i\n",ihist,get_energy(ihist),get_energy(ihist)-get_energy(),get_index(ihist));
+          print_history();
         }
 
         // Drop last entry if we are over the history length limit
@@ -1377,6 +1459,13 @@ namespace OpenOrbitalOptimizer {
 
         return return_value;
       }
+    }
+
+    /// Print the DIIS history
+    void print_history() const {
+      printf("Orbital history\n");
+      for(size_t ihist=0;ihist<orbital_history_.size();ihist++)
+        printf("%2i % .9f % e % i\n",ihist,get_energy(ihist),get_energy(ihist)-get_energy(),get_index(ihist));
     }
 
     /// Reset the DIIS history
@@ -1479,8 +1568,9 @@ namespace OpenOrbitalOptimizer {
         const auto old_occupations = get_orbital_occupations();
         Tbase occ_diff = occupation_difference(old_occupations, occupations);
         if(occ_diff > occupation_change_threshold_) {
-          std::cout << "Warning: occupations changed by " << occ_diff << " from previous iteration\n";
-          if(verbosity_>=0) {
+          if(verbosity_>=5)
+            std::cout << "Occupations changed by " << occ_diff << " from previous iteration\n";
+          if(verbosity_>=10) {
             for(size_t iblock=0; iblock < occupations.size(); iblock++) {
               for(size_t iorb=0; iorb < occupations[iblock].n_elem; iorb++) {
                 if(occupations[iblock][iorb] != old_occupations[iblock][iorb])
@@ -1564,11 +1654,13 @@ namespace OpenOrbitalOptimizer {
           arma::Col<Tbase> diis_weights = diis_w;
           if(diis_error > diis_threshold_) {
             if(not adiis_ok) {
-              if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, taking a steepest descent step instead.\n");
-              if(steepest_descent)
+              if(steepest_descent) {
+                if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, taking a steepest descent step instead.\n");
                 steepest_descent_step();
-              else
-                kain_step();
+              } else {
+                if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, doing level shifting instead.\n");
+                level_shifting_step();
+              }
               continue;
             }
 
@@ -1596,9 +1688,12 @@ namespace OpenOrbitalOptimizer {
             if(steepest_descent) {
               steepest_descent_step();
             } else {
-              kain_step();
+              level_shifting_step();
             }
           }
+
+          // Do cleanup
+          cleanup();
         }
       }
     }
