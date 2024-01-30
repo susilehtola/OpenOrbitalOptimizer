@@ -745,7 +745,7 @@ namespace OpenOrbitalOptimizer {
           nremoved++;
           orbital_history_.erase(orbital_history_.begin()+ihist);
         }
-        if(verbosity_>=10)
+        if(nremoved>0 and verbosity_>=10)
           printf("Removed %i entries corresponding to bad occupations\n",nremoved);
     }
 
