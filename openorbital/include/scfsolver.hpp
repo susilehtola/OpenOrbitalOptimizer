@@ -97,6 +97,9 @@ namespace OpenOrbitalOptimizer {
     /// Orbital energies, updated each iteration from the lowest-energy solution
     OrbitalOccupations<Tbase> orbital_occupations_;
 
+    /// Number of Fock matrix evaluations
+    size_t number_of_fock_evaluations_ = 0;
+
     /// Maximum number of iterations
     size_t maximum_iterations_ = 128;
     /// Start to mix in DIIS at this error threshold
@@ -984,7 +987,7 @@ namespace OpenOrbitalOptimizer {
       return std::make_tuple(density_matrix, fock, index++);
     }
     /// Evaluate the energy with a given orbital rotation vector
-    OrbitalHistoryEntry<Torb, Tbase> evaluate_rotation(const arma::Col<Tbase> & x) const {
+    OrbitalHistoryEntry<Torb, Tbase> evaluate_rotation(const arma::Col<Tbase> & x) {
       // Rotate orbitals
       auto new_orbitals(rotate_orbitals(x));
       // Compute the Fock matrix
@@ -992,6 +995,7 @@ namespace OpenOrbitalOptimizer {
 
       auto density_matrix = std::make_pair(new_orbitals, reference_occupations);
       auto fock = fock_builder_(density_matrix);
+      number_of_fock_evaluations_++;
       return make_history_entry(density_matrix, fock);
     }
     /// Krylov subspace accelerated inexact Newton; Harrison 2004
@@ -1078,7 +1082,7 @@ namespace OpenOrbitalOptimizer {
         attempt_fock(shifted_fock);
         Tbase best_energy = get_lowest_energy_after_index(start_index);
         if(verbosity_ >= 5)
-          printf("Level shift iteration %i: shift %e energy change %e\n", ishift, level_shift, best_energy-reference_energy);
+          printf("Level shift iteration %i: shift %e energy change % e\n", ishift, level_shift, best_energy-reference_energy);
 
         if(best_energy > reference_energy) {
           // Energy did not decrease; increase level shift
@@ -1323,6 +1327,7 @@ namespace OpenOrbitalOptimizer {
       // Disable frozen occupations for the initialization
       frozen_occupations_ = false;
       orbital_occupations_ = update_occupations(orbital_energies);
+      // This routine handles the rest
       initialize_with_orbitals(orbitals, orbital_occupations_);
     }
 
@@ -1333,6 +1338,9 @@ namespace OpenOrbitalOptimizer {
       if(orbitals.size() != number_of_blocks_)
         throw std::logic_error("Fed in orbitals and orbital occupations do not have the required number of blocks!\n");
       orbital_history_.clear();
+
+      // Reset number of evaluations
+      number_of_fock_evaluations_ = 0;
       add_entry(std::make_pair(orbitals, orbital_occupations));
     }
 
@@ -1419,6 +1427,8 @@ namespace OpenOrbitalOptimizer {
     bool add_entry(const DensityMatrix<Torb, Tbase> & density) {
       // Compute the Fock matrix
       auto fock = fock_builder_(density);
+      number_of_fock_evaluations_++;
+
       if(verbosity_>=5) {
         auto reference_energy = orbital_history_.size()>0 ? get_energy() : 0.0;
         printf("Evaluated energy % .10f (change from lowest %e)\n", fock.first, fock.first-reference_energy);
@@ -1593,7 +1603,12 @@ namespace OpenOrbitalOptimizer {
         Tbase dE = get_energy() - old_energy;
 
         if(verbosity_>=5) {
-          printf("\n\nIteration %i: energy % .10f change %e DIIS error vector %s norm %e\n", iteration, get_energy(), dE, error_norm_.c_str(), diis_error);
+          printf("\n\n");
+        }
+        if(verbosity_>0) {
+          printf("Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", iteration, number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
+        }
+        if(verbosity_>=5) {
           printf("History size %i\n",orbital_history_.size());
         }
         if(diis_error < convergence_threshold_) {
