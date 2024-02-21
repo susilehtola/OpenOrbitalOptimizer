@@ -1,51 +1,74 @@
 cmake_minimum_required(VERSION 3.12)
-project (liborbopt)
-set(PROJECT_TYPE C CXX)
-set(C_STANDARD 99)
-set(CXX_STANDARD 17)
 
-# Enable Fortran for LAPACK
-enable_language (Fortran)
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")  # foil Ninja Debug on Windows
 
-# Set version
-set(VERSION 0.1.0)
+
+project(
+  OpenOrbitalOptimizer
+  VERSION 0.1.0
+  DESCRIPTION
+    "A library orbital optimization problems in quantum chemistry"
+  HOMEPAGE_URL "https://github.com/susilehtola/openorbital"
+  LANGUAGES CXX
+  )
+
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+include(GNUInstallDirs)
+include(autocmake_safeguards)
+
 # Version of libraries
 set(SOVERSION 0.1.0)
 
-find_package(OpenMP)
-if(OPENMP_FOUND)
-  # Add flags to CXX flags
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  # Set OMP flags for preprocessor
-  set(PPROC_FLAGS "${OpenMP_CXX_FLAGS}")
-endif()
+set(ooo OpenOrbitalOptimizer)  # Namespace
 
-# Find LAPACK
-find_package(LAPACK REQUIRED)
-link_libraries(${LAPACK_LIBRARIES})
+set(${ooo}_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${ooo}"
+    CACHE STRING "Directory to which CMake files are installed")
+message(STATUS "Showing option ${ooo}_INSTALL_CMAKEDIR: ${${ooo}_INSTALL_CMAKEDIR}")
 
-# Find Armadillo
-option(ARMA_DONT_USE_WRAPPER "Do not use Armadillo wrapper" ON)
-include_directories(".")
 
-# TBD: detect Armadillo, Libxc, IntegratorXX for atomic binary
-#find_package(Armadillo REQUIRED)
-#include_directories(${ARMADILLO_INCLUDE_DIRS})
-include_directories("/home/work/armadillo/include")
-include_directories("/home/work/libxc/install/include")
-link_libraries("-L/home/work/libxc/install/lib")
-include_directories("/home/work/IntegratorXX/include")
+add_library(libooo INTERFACE)
+set(ooo_TARGET_TYPE INTERFACE)
 
-if(ARMA_DONT_USE_WRAPPER)
-  add_definitions(-DARMA_DONT_USE_WRAPPER)
-else()
-  link_libraries(${ARMADILLO_LIBRARIES})
-endif()
+target_compile_features(
+  libooo
+  ${ooo_TARGET_TYPE}
+    cxx_std_17
+  )
+target_include_directories(
+  libooo
+  ${ooo_TARGET_TYPE}
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/openorbital/include>
+  )
 
-# If we are doing a release build, turn off Armadillo bounds check
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  add_definitions(-DARMA_NO_DEBUG)
-endif()
+install(
+  DIRECTORY
+    openorbital/include/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ooo}
+  FILES_MATCHING
+    PATTERN "*.hpp*"
+  )
 
-# Descend into subdirectory
-add_subdirectory(openorbital)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  "cmake/${ooo}Config.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/${ooo}Config.cmake"
+  INSTALL_DESTINATION ${${ooo}_INSTALL_CMAKEDIR}
+  )
+
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/${ooo}ConfigVersion.cmake"
+  VERSION ${${ooo}_VERSION}
+  COMPATIBILITY SameMinorVersion
+  )
+
+install(
+  FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${ooo}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${ooo}ConfigVersion.cmake
+    #cmake/FindTargetLAPACK.cmake
+    #cmake/FindTargetHDF5.cmake
+  DESTINATION
+    ${${ooo}_INSTALL_CMAKEDIR}
+  )
