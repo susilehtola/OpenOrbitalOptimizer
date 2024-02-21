@@ -1,19 +1,17 @@
-2022-10-12
+2024-02-21
 
-openorbital: a reusable orbital optimization library
+OpenOrbitalOptimizer: a reusable orbital optimization library
 
 This is a general library aimed for orbital optimization problems that
 arise with various methods in quantum chemistry, ranging from
-self-consistent field methods like Hartree-Fock and density functional
-theory to more elaborate methods like multiconfigurational
-self-consistent field theory, orbital-optimized coupled-cluster
-theory, generalized valence bond theories, etc.
+self-consistent field (SCF) methods like Hartree-Fock (HF) and density
+functional theory (DFT) to more elaborate methods like
+multiconfigurational self-consistent field theory, orbital-optimized
+coupled-cluster theory, generalized valence bond theories, etc.
 
-The library splits into two components:
+At the moment, the library only does Roothaan-type SCF for HF and DFT
+calculations, but general algorithms for direct minimization on the
+Grassmann and Stiefel manifolds are forthcoming.
 
-- liborbopt for direct minimization of the energy via orbital rotation
-  techniques
-
-- liborbopt-scf for the traditional Roothaan scheme for orbital
-  optimization
-  
+The library is open source, licensed under the permissive Mozilla
+Public License 2.0.
