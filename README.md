@@ -15,3 +15,14 @@ Grassmann and Stiefel manifolds are forthcoming.
 
 The library is open source, licensed under the permissive Mozilla
 Public License 2.0.
+
+## Dependencies
+
+#### header-only library
+
+* Armadillo
+
+#### testing
+
+* Libxc
+* IntegratorXX
