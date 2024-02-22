@@ -1617,11 +1617,15 @@ namespace OpenOrbitalOptimizer {
 
       // Number of particles per block
       arma::Col<Tbase> number_of_particles_per_block = determine_number_of_particles_by_aufbau(orbital_energies);
-      number_of_particles_per_block.print("Number of particles per block from Aufbau");
       return occupations_from_number_of_particles_per_block(number_of_particles_per_block, orbital_energies);
     }
 
     OrbitalOccupations<Tbase> occupations_from_number_of_particles_per_block(const arma::Col<Tbase> & number_of_particles_per_block, const OrbitalEnergies<Tbase> & orbital_energies) const {
+      if(number_of_particles_per_block.size() != number_of_blocks_)
+        throw std::logic_error("number_of_particles_per_block does not have the expected length!\n");
+      if(orbital_energies.size() != number_of_blocks_)
+        throw std::logic_error("orbital_energies does not have the expected length!\n");
+
       // Determine the number of occupied orbitals
       OrbitalOccupations<Tbase> occupations(number_of_particles_per_block.size());
       for(size_t iblock=0; iblock<occupations.size(); iblock++) {
