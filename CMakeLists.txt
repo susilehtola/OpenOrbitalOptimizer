@@ -31,8 +31,6 @@ message(STATUS "Showing option ${ooo}_INSTALL_CMAKEDIR: ${${ooo}_INSTALL_CMAKEDI
 # next one defined by `include(CTest)`
 message(STATUS "Showing option BUILD_TESTING: ${BUILD_TESTING}")
 
-
-
 add_library(libooo INTERFACE)
 set(ooo_TARGET_TYPE INTERFACE)
 
@@ -87,8 +85,6 @@ install(
   FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${ooo}Config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/${ooo}ConfigVersion.cmake
-    #cmake/FindTargetLAPACK.cmake
-    #cmake/FindTargetHDF5.cmake
   DESTINATION
     ${${ooo}_INSTALL_CMAKEDIR}
   )
