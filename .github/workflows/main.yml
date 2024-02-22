@@ -89,5 +89,6 @@ jobs:
           ${{ matrix.cfg.cmargs }}
         cmake --build build --target install
 
+
     - name: Test
       run: ctest --output-on-failure --test-dir build/
