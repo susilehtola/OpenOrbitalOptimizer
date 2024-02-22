@@ -1,0 +1,94 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build-test-repo:
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+          - runs-on: ubuntu-latest
+            python-version: "3.10"
+            cmargs: ""
+#            cmargs: >
+#              -D LAPACK_LIBRARIES=${CONDA_PREFIX}/lib/libmkl_rt.so
+#          - runs-on: macos-latest
+#            python-version: 3.9
+#            cmargs: ""
+#    name: "🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
+    name: "Repo • ${{ matrix.cfg.runs-on }}"
+    runs-on: ${{ matrix.cfg.runs-on }}
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Write a Conda Env File
+      run: |
+        cat > export.yaml <<EOF
+        name: test
+        channels:
+          - conda-forge
+        dependencies:
+          - cmake >=3.12
+          - ninja
+          - cxx-compiler
+          - armadillo
+          - libxc-c
+#          - python
+#          - pybind11 >=2.6.2
+#          - hdf5 >=1.10.6
+#          - mkl >=2021.4.0
+#          - pytest
+#          - numpy
+        EOF
+#        if [[ "${{ runner.os }}" == "Windows" ]]; then
+#          sed -i "s/- cxx/#- cxx/g" export.yaml
+#        fi
+        cat export.yaml
+
+    - name: Create Conda Environment
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniforge-variant: Mambaforge
+        use-mamba: true
+        python-version: ${{ matrix.cfg.python-version }}
+        activate-environment: test
+        channels: conda-forge
+        environment-file: export.yaml
+        show-channel-urls: true
+
+    - name: Environment Information
+      run: |
+        conda info
+        conda list
+
+    - name: Extract, Build, Install OpenOrbitalOptimizer
+      run: |
+#        unset LDFLAGS
+        cmake \
+          -S . \
+          -B build \
+          -G "Ninja" \
+          -D CMAKE_BUILD_TYPE=Release \
+          -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
+          -D CMAKE_CXX_COMPILER=${CXX} \
+          -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+          ${{ matrix.cfg.cmargs }}
+        cmake --build build --target install
+
+    - name: Test
+      run: ctest --output-on-failure --test-dir build/
+
+#    - name: Smoke
+#      working-directory: .
+#      run: PYTHONPATH=installed/lib:$PYTHONPATH python -c "import ambit; help(ambit); help(ambit.pyambit)"
+#    - name: Test Ambit Module with Pytest
+#      working-directory: .
+#      run: PYTHONPATH=installed/lib:$PYTHONPATH pytest -v -rA --cache-clear --continue-on-collection-errors installed/lib/ambit/tests/
