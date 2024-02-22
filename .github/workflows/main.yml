@@ -1,0 +1,71 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build-test-repo:
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+          - runs-on: ubuntu-latest
+            python-version: "3.10"
+            cmargs: ""
+    name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
+    runs-on: ${{ matrix.cfg.runs-on }}
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Write a Conda Env File
+      run: |
+        cat > export.yaml <<EOF
+        name: test
+        channels:
+          - conda-forge
+        dependencies:
+          - cmake >=3.12
+          - ninja
+          - cxx-compiler
+          - armadillo
+          - libxc-c
+        EOF
+        cat export.yaml
+
+    - name: Create Conda Environment
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniforge-variant: Mambaforge
+        use-mamba: true
+        python-version: ${{ matrix.cfg.python-version }}
+        activate-environment: test
+        channels: conda-forge
+        environment-file: export.yaml
+        show-channel-urls: true
+
+    - name: Environment Information
+      run: |
+        conda info
+        conda list
+
+    - name: Extract, Build, Install OpenOrbitalOptimizer
+      run: |
+        cmake \
+          -S . \
+          -B build \
+          -G "Ninja" \
+          -D CMAKE_BUILD_TYPE=Release \
+          -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
+          -D CMAKE_CXX_COMPILER=${CXX} \
+          -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+          ${{ matrix.cfg.cmargs }}
+        cmake --build build --target install
+
+    - name: Test
+      run: ctest --output-on-failure --test-dir build/
