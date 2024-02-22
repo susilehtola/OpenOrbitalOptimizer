@@ -26,3 +26,4 @@ Public License 2.0.
 
 * Libxc
 * IntegratorXX
+* nlohmann-JSON

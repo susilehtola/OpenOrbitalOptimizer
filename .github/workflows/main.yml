@@ -14,6 +14,9 @@ jobs:
           - runs-on: ubuntu-latest
             python-version: "3.10"
             cmargs: ""
+          - runs-on: macos-latest
+            python-version: "3.10"
+            cmargs: ""
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
     runs-on: ${{ matrix.cfg.runs-on }}
     defaults:
@@ -61,7 +64,7 @@ jobs:
         conda info
         conda list
 
-    - name: Prepare IntegratorXX
+    - name: Build & Install IntegratorXX
       working-directory: ./IntXX
       run: |
         cmake \
@@ -75,7 +78,7 @@ jobs:
           ${{ matrix.cfg.cmargs }}
         cmake --build build --target install
 
-    - name: Extract, Build, Install OpenOrbitalOptimizer
+    - name: Build & Install OpenOrbitalOptimizer
       run: |
         cmake \
           -S . \
