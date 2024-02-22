@@ -1526,7 +1526,7 @@ namespace OpenOrbitalOptimizer {
     std::vector<std::tuple<Tbase, size_t, size_t>> order_orbitals_by_energy(const OrbitalEnergies<Tbase> & orbital_energies, size_t iparticle) const {
       // Compute the offset in the block array
       size_t block_offset = particle_block_offset(iparticle);
-      
+
       // Collect the orbital energies with the block index and the in-block index for this particle type
       std::vector<std::tuple<Tbase, size_t, size_t>> all_energies;
       for(size_t iblock = block_offset; iblock < block_offset + number_of_blocks_per_particle_type_(iparticle); iblock++)
@@ -1538,7 +1538,7 @@ namespace OpenOrbitalOptimizer {
 
       return all_energies;
     }
-    
+
     /// Determine number of particles in each block
     arma::Col<Tbase> determine_number_of_particles_by_aufbau(const OrbitalEnergies<Tbase> & orbital_energies) const {
       arma::Col<Tbase> number_of_particles(number_of_blocks_, arma::fill::zeros);
@@ -1547,7 +1547,7 @@ namespace OpenOrbitalOptimizer {
       for(size_t particle_type = 0; particle_type < number_of_blocks_per_particle_type_.size(); particle_type++) {
         // Sort orbitals in energy
         auto all_energies = order_orbitals_by_energy(orbital_energies, particle_type);
-        
+
         // Fill the orbitals in increasing energy. This is how many
         // particles we have to place
         Tbase num_left = number_of_particles_(particle_type);
@@ -1643,14 +1643,14 @@ namespace OpenOrbitalOptimizer {
       const auto & new_orbitals = diagonalized_fock.first;
       const auto & new_orbital_energies = diagonalized_fock.second;
 
-      // Figure out the degrees of freedom for each type of particle
-      std::vector<std::vector<arma::Col<Tbase>>> trial_occupations_per_particle(number_of_blocks_per_particle_type_.n_elem);
+      // Figure out the degrees of freedom for each type of particle: [iparticle][itrial][iblock]
+      std::vector<std::vector<std::vector<arma::Col<Tbase>>>> trial_occupations_per_particle(number_of_blocks_per_particle_type_.n_elem);
       for(size_t iparticle=0; iparticle<number_of_blocks_per_particle_type_.n_elem; iparticle++) {
         // The blocks spanned by this particle
         size_t iblock_start = particle_block_offset(iparticle);
         size_t iblock_end = iblock_start + number_of_blocks_per_particle_type_(iparticle);
 
-        // Occupation numbers for this particle type
+        // Base occupation numbers for this particle type; trials will be generated based on this
         std::vector<arma::Col<Tbase>> particle_occupations(number_of_blocks_per_particle_type_(iparticle));
         for(size_t iblock=0; iblock<particle_occupations.size(); iblock++) {
           particle_occupations[iblock].zeros(new_orbital_energies[iblock_start+iblock].size());
@@ -1668,7 +1668,7 @@ namespace OpenOrbitalOptimizer {
         std::function<bool(Tbase)> particles_left = [](Tbase num) {
           return num>=10*std::numeric_limits<Tbase>::epsilon();
         };
-        
+
         size_t ifill=0;
         while(particles_left(num_left)) {
           // Extract info
@@ -1701,11 +1701,19 @@ namespace OpenOrbitalOptimizer {
             }
             if(not particles_left(num_left)) {
               // We're done, add to stack of trial occupations
-              trial_occupations_per_particle[iparticle].push_back(particle_occupations);
+              trial_occupations_per_particle[iparticle].push_back(particle_occupations); // this causes a compiler failure
             }
           } else {
             // We have degenerate orbitals.
             if(jfill-ifill>2) {
+              // TODO: extend to problems with arbitrary number of
+              // degenerate orbitals. The issue is that one has to
+              // program the extreme cases for the density matrices;
+              // however, it appears this is straightforward to do by
+              // listing the degenerate orbitals, and then generating
+              // trials by filling them in different orderings. One
+              // just has to loop over all possible orderings of
+              // degenerate orbitals and eliminate duplicates
               std::ostringstream oss;
               oss << "Particle type " << iparticle << " has " << jfill-ifill << " degenerate orbitals.\nThe implementation of the optimal damping algorithm in OpenOrbitalOptimizer is limited to 2 degenerate orbitals per particle type.\n";
               throw std::runtime_error(oss.str());
@@ -1740,14 +1748,16 @@ namespace OpenOrbitalOptimizer {
               second_occupations[first_block_index-iblock_start](orbital_index(first_block_index-iblock_start)++) = num2_left;
             }
 
+            // These cause a compiler error
             trial_occupations_per_particle[iparticle].push_back(first_occupations);
             trial_occupations_per_particle[iparticle].push_back(second_occupations);
+
             // No particles left
             num_left = 0.0;
           }
         }
       }
-      
+
       std::function<DensityMatrix<Torb,Tbase>(const arma::Col<Tbase> &)> interpolate_density = [this, reference_orbitals, reference_occupations, new_orbitals, trial_occupations_per_particle](const arma::Col<Tbase> & lambda) {
         // Returned density matrix
         Orbitals<Torb> interp_orbs(reference_orbitals.size());
@@ -1755,29 +1765,29 @@ namespace OpenOrbitalOptimizer {
 
         // Index in parameter vector
         size_t iparam=0;
-        
+
         // Loop over particle types
         for(size_t iparticle=0; iparticle<number_of_blocks_per_particle_type_.n_elem; iparticle++) {
           // Loop over blocks of this particle
           for(size_t iblock = particle_block_offset(iparticle); iblock < particle_block_offset(iparticle) + number_of_blocks_per_particle_type_(iparticle); iblock++) {
             size_t iblock_particle = iblock - particle_block_offset(iparticle);
-            
+
             // Old density matrix block
             auto old_dm = reference_orbitals[iblock] * arma::diagmat(reference_occupations[iblock]) * arma::trans(reference_orbitals[iblock]);
 
             // Weight the new occupations
-            auto new_occupations(lambda(iparam)*trial_occupations_per_particle[iparticle][0][iblock_particle]);
+            arma::Col<Tbase> new_occupations(lambda(iparam)*trial_occupations_per_particle[iparticle][0][iblock_particle]);
             for(size_t itrial=1; itrial<trial_occupations_per_particle[iparticle].size(); itrial++) {
               new_occupations += lambda(iparam+itrial)*trial_occupations_per_particle[iparticle][itrial][iblock_particle];
             }
             // New density matrix block
-            auto new_dm = new_orbitals[iblock] * arma::diagmat(new_occupations) * arma::trans(new_orbitals[iblock]);
+            arma::Mat<Torb> new_dm = new_orbitals[iblock] * arma::diagmat(new_occupations) * arma::trans(new_orbitals[iblock]);
             // Mixed density matrix block
-            auto mix_dm = (1.0-arma::sum(lambda.subvec(iparam,iparam+trial_occupations_per_particle[iparticle].size()-1)))*old_dm + new_dm;
-          
+            arma::Mat<Torb> mix_dm = (1.0-arma::sum(lambda.subvec(iparam,iparam+trial_occupations_per_particle[iparticle].size()-1)))*old_dm + new_dm;
+
             // Flip sign so that natural orbitals are in decreasing occupation
             mix_dm *= -1.0;
-            arma::eig_sym(interp_orbs[iblock], interp_occs[iblock], mix_dm);
+            arma::eig_sym(interp_occs[iblock], interp_orbs[iblock], mix_dm);
             interp_occs[iblock] *= -1.0;
           }
 
@@ -1786,7 +1796,7 @@ namespace OpenOrbitalOptimizer {
         }
         if(iparam != lambda.n_elem)
           throw std::logic_error("Indexing inconsistency!\n");
-        
+
         // Returned density matrix type
         return std::make_pair(interp_orbs, interp_occs);
       };
@@ -1795,7 +1805,7 @@ namespace OpenOrbitalOptimizer {
       size_t npars=0;
       for(auto & trial: trial_occupations_per_particle)
         npars += trial.size();
-      
+
       // Run optimization
       arma::Col<Tbase> x0(npars, arma::fill::zeros);
     }
