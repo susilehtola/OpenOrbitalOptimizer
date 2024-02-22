@@ -3,6 +3,7 @@ find_package(IntegratorXX CONFIG REQUIRED)
 
 add_executable(
   atomtest-openorbopt
+  EXCLUDE_FROM_ALL
   src/atomtest.cpp
   )
 target_link_libraries(
