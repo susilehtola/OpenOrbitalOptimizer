@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.12)
 
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")  # foil Ninja Debug on Windows
 
-
 project(
   OpenOrbitalOptimizer
   VERSION 0.1.0
@@ -22,9 +21,16 @@ set(SOVERSION 0.1.0)
 
 set(ooo OpenOrbitalOptimizer)  # Namespace
 
+# ====  Options  ================================================================
+include(CTest)
+
 set(${ooo}_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${ooo}"
     CACHE STRING "Directory to which CMake files are installed")
 message(STATUS "Showing option ${ooo}_INSTALL_CMAKEDIR: ${${ooo}_INSTALL_CMAKEDIR}")
+
+# next one defined by `include(CTest)`
+message(STATUS "Showing option BUILD_TESTING: ${BUILD_TESTING}")
+
 
 
 add_library(libooo INTERFACE)
@@ -41,6 +47,20 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/openorbital/include>
   )
+
+add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
+
+find_package(Armadillo REQUIRED)
+target_link_libraries(
+  libooo
+  INTERFACE
+    armadillo  # upstream target is not namespaced
+  )
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    add_subdirectory(openorbital)
+endif()
+
 
 install(
   DIRECTORY

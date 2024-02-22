@@ -16,4 +16,15 @@ The library splits into two components:
 
 - liborbopt-scf for the traditional Roothaan scheme for orbital
   optimization
-  
+
+## Dependencies
+
+#### header-only library
+
+* Armadillo
+
+#### testing
+
+* Libxc
+* IntegratorXX
+
