@@ -45,6 +45,8 @@ jobs:
           - cxx-compiler
           - armadillo
           - libxc-c
+          - nlohmann_json
+          - catch2  # for IntXX
         EOF
         cat export.yaml
 
@@ -91,7 +93,6 @@ jobs:
           -D IntegratorXX_DIR="${{github.workspace}}/installed/lib64/cmake/IntegratorXX" \
           ${{ matrix.cfg.cmargs }}
         cmake --build build --target install
-
 
     - name: Test
       run: ctest --output-on-failure --test-dir build/
