@@ -10,6 +10,7 @@
 #include <vector>
 #include <armadillo>
 #include "cg_optimizer.hpp"
+#include "helper_routines.hpp"
 
 namespace OpenOrbitalOptimizer {
   /// A symmetry block of orbitals is defined by the corresponding N x
@@ -142,6 +143,11 @@ namespace OpenOrbitalOptimizer {
     bool allow_fractional_occupations_ = true;
 
     /* Internal functions */
+    /// Get the density matrix
+    DensityMatrix<Torb, Tbase> get_density_matrix(size_t ihist) const {
+      return std::get<0>(orbital_history_[ihist]);
+    }
+
     /// Get a block of the density matrix for the ihist:th entry
     arma::Mat<Torb> get_density_matrix_block(size_t ihist, size_t iblock) const {
       const auto orbitals = get_orbital_block(ihist, iblock);
@@ -222,12 +228,12 @@ namespace OpenOrbitalOptimizer {
       return dim;
     }
 
-    /// Get a block of the density matrix for the ihist:th entry
+    /// Get the Fock matrix for the ihist:th entry
     FockMatrix<Torb> get_fock_matrix(size_t ihist=0) const {
       return std::get<1>(orbital_history_[ihist]).second;
     }
 
-    /// Get a block of the density matrix for the ihist:th entry
+    /// Get a block of the Fock matrix for the ihist:th entry
     arma::Mat<Torb> get_fock_matrix_block(size_t ihist, size_t iblock) const {
       return std::get<1>(orbital_history_[ihist]).second[iblock];
     }
@@ -1856,24 +1862,86 @@ namespace OpenOrbitalOptimizer {
         npars += trial.size();
       printf("%i parameters in optimal damping\n", npars);
 
-      std::function<std::pair<DensityMatrix<Torb,Tbase>,FockBuilderReturn<Torb,Tbase>>(const arma::Col<Tbase> &)> evaluate_energy = [this, interpolate_density](const arma::Col<Tbase> & lambda) {
+      std::function<std::pair<DensityMatrix<Torb,Tbase>,FockBuilderReturn<Torb,Tbase>>(const arma::Col<Tbase> &)> evaluate = [this, interpolate_density](const arma::Col<Tbase> & lambda) {
         auto dm = interpolate_density(lambda);
         auto fock = fock_builder_(dm);
         return std::make_pair(dm,fock);
       };
 
-      // Run optimization
-      arma::Col<Tbase> x0(npars, arma::fill::zeros);
-      for(size_t i=0;i<10;i++) {
-        x0.randu();
-        auto [dm, fock] = evaluate_energy(x0);
-        printf("\nEvaluated energy % .10f with parameter vector\n",std::get<0>(fock));
-        x0.print();
-        auto & occs = dm.second;
-        for(auto block: occs) {
-          block.t().print("Occupation block");
+      std::function<std::pair<Tbase,Tbase>(const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb,Tbase> & fock)> trace = [](const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb,Tbase> & fock) {
+        const auto & orbitals = dm.first;
+        const auto & occupations = dm.second;
+
+        Tbase tr=0.0;
+        for(size_t iblock=0;iblock<orbitals.size();iblock++) {
+          auto orb_block = orbitals[iblock];
+          auto occ_block = occupations[iblock];
+          auto fock_block = fock[iblock];
+
+          arma::Col<Torb> fock_mo = arma::diagvec(orb_block.t() * fock_block * orb_block);
+          tr += std::real(arma::dot(fock_mo, occ_block));
         }
-      }
+        return tr;
+      };
+
+      if(npars==0)
+        // nothing to do
+        return;
+
+      // Initial guess
+      arma::Col<Tbase> x0(npars, arma::fill::zeros);
+
+      if(npars==1) {
+        // Do line search. Begin by adding the values
+        auto eval_left = std::make_pair(std::get<0>(orbital_history_[0]), std::get<1>(orbital_history_[0]));
+
+        x0.ones();
+        auto eval_right = evaluate(x0);
+        std::apply(add_entry, eval_right);
+
+        // Fit cubic polynomial: we have energies
+        Tbase E_left = eval_left.second.first;
+        Tbase E_right = eval_right.second.first;
+
+        // and Fock and density matrices
+        const auto & F_left = eval_left.second.second;
+        const auto & F_right = eval_right.second.second;
+        const auto & P_left = eval_left.first;
+        const auto & P_right = eval_right.first;
+
+        // which give us the derivatives
+        Tbase dE_left = trace(P_right, F_left);
+        Tbase E_right = trace(P_left, F_right);
+
+        // Fit a cubic polynomial
+        auto cubic = HelperRoutines::fit_cubic_polynomial(E_left, dE_left, 1.0, E_right, dE_right);
+        // and find its extrema
+        auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros, cubic);
+
+        // Checks whether the x value is allowed
+        std::function(bool(Tbase x)) within_limits = [](Tbase x) {
+          return x>=0.0 and x<=1.0;
+        };
+
+        // Evaluate the roots if they're ok
+        if(within_limits(zeros.first)) {
+          x0(0) = zeros.first;
+          auto eval_first = evaluate(x0);
+          std::apply(add_entry, eval_first);
+        }
+        if(within_limits(zeros.second)) {
+          x0(0) = zeros.second;
+          auto eval_second = evaluate(x0);
+          std::apply(add_entry, eval_second);
+        }
+
+      } else if(npars==2) {
+
+      } else
+        throw std::logic_error("Optimal damping algorithm not implemented for more than 2 degenerate orbitals!\n");
+
+      auto new_energy = get_energy();
+      printf("Energy changed by % e by optimal damping\n", new_energy - reference_energy);
     }
 
     /// Run the SCF
