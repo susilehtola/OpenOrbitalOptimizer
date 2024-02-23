@@ -4,7 +4,6 @@ find_package(nlohmann_json CONFIG REQUIRED)
 
 add_executable(
   atomtest-openorbopt
-  EXCLUDE_FROM_ALL
   atomtest.cpp
   )
 target_link_libraries(
