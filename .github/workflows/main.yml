@@ -99,8 +99,8 @@ jobs:
       run: ctest --output-on-failure --test-dir build/
 
     - name: Testing find_package Consumption
-      working-directory: ${{github.workspace}}/build/consume_fp
       run: |
+        mkdir consume_fp && cd consume_fp
         cat > CMakeLists.txt <<EOF
         cmake_minimum_required(VERSION 3.16)
         project(atomtest)
