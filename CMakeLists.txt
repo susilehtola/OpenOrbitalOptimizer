@@ -21,15 +21,24 @@ set(SOVERSION 0.1.0)
 
 set(ooo OpenOrbitalOptimizer)  # Namespace
 
+# TODO: Remove when requiring cmake >= 3.21  # from LecrisUT/CMake-Template
+if (NOT DEFINED ${ooo}_IS_TOP_LEVEL)
+    if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+        set(PROJECT_IS_TOP_LEVEL ON)
+    else ()
+        set(PROJECT_IS_TOP_LEVEL OFF)
+    endif ()
+    set(${ooo}_IS_TOP_LEVEL ${PROJECT_IS_TOP_LEVEL})
+endif ()
+
 # ====  Options  ================================================================
-include(CTest)
 
 set(${ooo}_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${ooo}"
     CACHE STRING "Directory to which CMake files are installed")
 message(STATUS "Showing option ${ooo}_INSTALL_CMAKEDIR: ${${ooo}_INSTALL_CMAKEDIR}")
 
-# next one defined by `include(CTest)`
-message(STATUS "Showing option BUILD_TESTING: ${BUILD_TESTING}")
+option(${ooo}_BUILD_TESTING "Build test-suite" ${PROJECT_IS_TOP_LEVEL})
+message(STATUS "Showing option ${ooo}_BUILD_TESTING: ${${ooo}_BUILD_TESTING}")
 
 # ====  Build  ==================================================================
 add_library(libooo INTERFACE)
@@ -55,7 +64,8 @@ target_link_libraries(
     armadillo  # upstream target is not namespaced
   )
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+if (${ooo}_BUILD_TESTING)
+    enable_testing()
     add_subdirectory(tests)
 endif()
 
