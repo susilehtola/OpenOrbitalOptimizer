@@ -1172,7 +1172,7 @@ namespace OpenOrbitalOptimizer {
         auto iorb = std::get<1>(dof);
         auto jorb = std::get<2>(dof);
 
-        Tbase hh=cbrt(DBL_EPSILON);
+        Tbase hh=cbrt(std::numeric_limits<Tbase>::epsilon());
         //Tbase hh=1e-10;
 
         std::function<Tbase(Tbase)> eval = [this, search_direction, i](Tbase xi){
@@ -1732,6 +1732,9 @@ namespace OpenOrbitalOptimizer {
               particle_occupations[block_index-iblock_start](orbital_index(block_index-iblock_start)++) = fill;
               num_left -= fill;
             }
+            if(num_left == 0.0) {
+              trial_occupations_per_particle[iparticle].push_back(particle_occupations);
+            }
          } else {
             // We have degenerate orbitals.
             if(jfill-ifill>2) {
@@ -1799,9 +1802,15 @@ namespace OpenOrbitalOptimizer {
 
         // Loop over particle types
         for(size_t iparticle=0; iparticle<number_of_blocks_per_particle_type_.n_elem; iparticle++) {
+          if(trial_occupations_per_particle[iparticle].size()==0) {
+            std::ostringstream oss;
+            oss << "No trial occupations for particle " << iparticle << "!\n";
+            throw std::logic_error(oss.str());
+          }
+
           // Loop over blocks of this particle
-          for(size_t iblock = particle_block_offset(iparticle); iblock < particle_block_offset(iparticle) + number_of_blocks_per_particle_type_(iparticle); iblock++) {
-            size_t iblock_particle = iblock - particle_block_offset(iparticle);
+          for(size_t iblock_particle = 0; iblock_particle < number_of_blocks_per_particle_type_(iparticle); iblock_particle++) {
+            size_t iblock = iblock_particle + particle_block_offset(iparticle);
 
             // Old density matrix block
             auto old_dm = reference_orbitals[iblock] * arma::diagmat(reference_occupations[iblock]) * arma::trans(reference_orbitals[iblock]);
@@ -1820,6 +1829,15 @@ namespace OpenOrbitalOptimizer {
             mix_dm *= -1.0;
             arma::eig_sym(interp_occs[iblock], interp_orbs[iblock], mix_dm);
             interp_occs[iblock] *= -1.0;
+
+            // Sanity check: occupations should be nonnegative
+            if(arma::min(interp_occs[iblock]) < -10*std::numeric_limits<Tbase>::epsilon()) {
+              std::ostringstream oss;
+              oss << "Negative natural occupation numbers in block " << iblock << "!\n";
+              oss << "Block " << iblock << " natural orbital occupations\n";
+              oss << interp_occs[iblock];
+              throw std::logic_error(oss.str());
+            }
           }
 
           // Increment parameter index
@@ -1836,9 +1854,26 @@ namespace OpenOrbitalOptimizer {
       size_t npars=0;
       for(auto & trial: trial_occupations_per_particle)
         npars += trial.size();
+      printf("%i parameters in optimal damping\n", npars);
+
+      std::function<std::pair<DensityMatrix<Torb,Tbase>,FockBuilderReturn<Torb,Tbase>>(const arma::Col<Tbase> &)> evaluate_energy = [this, interpolate_density](const arma::Col<Tbase> & lambda) {
+        auto dm = interpolate_density(lambda);
+        auto fock = fock_builder_(dm);
+        return std::make_pair(dm,fock);
+      };
 
       // Run optimization
       arma::Col<Tbase> x0(npars, arma::fill::zeros);
+      for(size_t i=0;i<10;i++) {
+        x0.randu();
+        auto [dm, fock] = evaluate_energy(x0);
+        printf("\nEvaluated energy % .10f with parameter vector\n",std::get<0>(fock));
+        x0.print();
+        auto & occs = dm.second;
+        for(auto block: occs) {
+          block.t().print("Occupation block");
+        }
+      }
     }
 
     /// Run the SCF
