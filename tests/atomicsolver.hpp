@@ -1,4 +1,4 @@
-#include "scfsolver.hpp"
+#include <openorbitaloptimizer/scfsolver.hpp>
 #include <armadillo>
 #include <cassert>
 #include <memory>

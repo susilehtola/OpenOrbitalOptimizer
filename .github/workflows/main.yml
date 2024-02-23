@@ -97,3 +97,27 @@ jobs:
 
     - name: Test
       run: ctest --output-on-failure --test-dir build/
+
+    - name: Testing find_package Consumption
+      working-directory: ${{github.workspace}}/build/consume_fp
+      run: |
+        cat > CMakeLists.txt <<EOF
+        cmake_minimum_required(VERSION 3.16)
+        project(atomtest)
+        find_package(OpenOrbitalOptimizer CONFIG REQUIRED)
+        add_executable(atomtest EXCLUDE_FROM_ALL ${{github.workspace}}/tests/atomtest.cpp)
+        target_include_directories(atomtest PRIVATE ${{github.workspace}}/tests/)
+        find_package(Libxc CONFIG REQUIRED)
+        find_package(IntegratorXX CONFIG REQUIRED)
+        find_package(nlohmann_json CONFIG REQUIRED)
+        target_link_libraries(
+          atomtest
+            OpenOrbitalOptimizer::OpenOrbitalOptimizer
+            Libxc::xc
+            IntegratorXX::IntegratorXX
+            nlohmann_json::nlohmann_json
+          )
+        EOF
+        cmake . -DCMAKE_PREFIX_PATH=${{github.workspace}}/installed
+        cmake --build . --target atomtest
+        atomtest --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 3 --sto 0 --basis "${{github.workspace}}/tests/cc-pvdz.json"

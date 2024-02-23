@@ -7,7 +7,7 @@ project(
   VERSION 0.1.0
   DESCRIPTION
     "A library orbital optimization problems in quantum chemistry"
-  HOMEPAGE_URL "https://github.com/susilehtola/openorbital"
+  HOMEPAGE_URL "https://github.com/susilehtola/OpenOrbitalOptimizer"
   LANGUAGES CXX
   )
 
@@ -31,19 +31,19 @@ message(STATUS "Showing option ${ooo}_INSTALL_CMAKEDIR: ${${ooo}_INSTALL_CMAKEDI
 # next one defined by `include(CTest)`
 message(STATUS "Showing option BUILD_TESTING: ${BUILD_TESTING}")
 
+# ====  Build  ==================================================================
 add_library(libooo INTERFACE)
-set(ooo_TARGET_TYPE INTERFACE)
 
 target_compile_features(
   libooo
-  ${ooo_TARGET_TYPE}
+  INTERFACE
     cxx_std_17
   )
 target_include_directories(
   libooo
-  ${ooo_TARGET_TYPE}
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/openorbital/include>
+  INTERFACE
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
 add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
@@ -56,16 +56,54 @@ target_link_libraries(
   )
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
-    add_subdirectory(openorbital)
+    add_subdirectory(tests)
 endif()
 
+set(export_properties
+  "${ooo}_VERSION"
+  )
 
+set_target_properties (
+  libooo
+  PROPERTIES
+    EXPORT_NAME "${ooo}"
+    ${ooo}_VERSION ${${ooo}_VERSION}
+  )
+set_property(TARGET libooo APPEND PROPERTY EXPORT_PROPERTIES "${export_properties}")
+
+# ====  Export & Install  =======================================================
 install(
   DIRECTORY
-    openorbital/include/
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ooo}
+    openorbitaloptimizer
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   FILES_MATCHING
     PATTERN "*.hpp*"
+  )
+
+install(
+  TARGETS
+    libooo
+  EXPORT
+    ho_interface
+  RUNTIME DESTINATION
+    ${CMAKE_INSTALL_BINDIR}
+  ARCHIVE DESTINATION
+    ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION
+    ${CMAKE_INSTALL_LIBDIR}
+  PUBLIC_HEADER DESTINATION
+    ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+
+install(
+  EXPORT
+    ho_interface
+  FILE
+    "${PROJECT_NAME}Targets.cmake"
+  NAMESPACE
+    "${PROJECT_NAME}::"
+  DESTINATION
+    ${${ooo}_INSTALL_CMAKEDIR}
   )
 
 include(CMakePackageConfigHelpers)
