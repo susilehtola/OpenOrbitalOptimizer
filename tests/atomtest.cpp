@@ -3,7 +3,7 @@
 #include <cassert>
 #include <xc.h>
 #include <cmath>
-#include "scfsolver.hpp"
+#include <openorbitaloptimizer/scfsolver.hpp>
 #include <nlohmann/json.hpp>
 #include "cmdline.h"
 

@@ -17,7 +17,7 @@ check_required_components(${ooo})
 # Don't include targets if this file is being picked up by another
 # project which has already built this as a subproject
 #-----------------------------------------------------------------------------
-if(NOT TARGET ${ooo}::ambit)
+if(NOT TARGET ${ooo}::${ooo})
     include("${CMAKE_CURRENT_LIST_DIR}/${ooo}Targets.cmake")
 
     if (CMAKE_VERSION VERSION_GREATER 3.15)
