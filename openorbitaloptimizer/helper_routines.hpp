@@ -19,7 +19,7 @@ namespace OpenOrbitalOptimizer {
     template<typename T> std::tuple<T,T,T,T> fit_cubic_polynomial(T f0, T df0, T L, T fL, T dfL) {
       double a = (L*df0 + L*dfL + 2*f0 - 2*fL)/(L*L*L);
       double b = -(2*L*df0 + L * dfL + 3*f0 - 3 * fL)/(L*L);
-      double c = fp0;
+      double c = df0;
       double d = f0;
       return std::make_tuple(a,b,c,d);
     }
@@ -33,16 +33,16 @@ namespace OpenOrbitalOptimizer {
       b *= 2;
 
       // Discriminant is
-      Tbase D = b*b - 4*a*c;
+      T D = b*b - 4*a*c;
       if(D<=0.0)
         throw std::logic_error("Polynomial has no extrema!\n");
 
       // Find zeros of E'
-      Tbase x1 = (-b - std::sqrt(D))/(2*a);
-      Tbase x2 = (-b + std::sqrt(D))/(2*a);
-      Tbase minx = std::min(x1,x2);
-      Tbase maxx = std::max(x1,x2);
-      return std::make_pair(minx, maxx);
+      T x1 = (-b - std::sqrt(D))/(2*a);
+      T x2 = (-b + std::sqrt(D))/(2*a);
+
+      // Return ordered pair
+      return std::make_pair(std::min(x1,x2), std::max(x1,x2));
     }
   }
 }

@@ -1819,7 +1819,7 @@ namespace OpenOrbitalOptimizer {
             size_t iblock = iblock_particle + particle_block_offset(iparticle);
 
             // Old density matrix block
-            auto old_dm = reference_orbitals[iblock] * arma::diagmat(reference_occupations[iblock]) * arma::trans(reference_orbitals[iblock]);
+            arma::Mat<Torb> old_dm = reference_orbitals[iblock] * arma::diagmat(reference_occupations[iblock]) * arma::trans(reference_orbitals[iblock]);
 
             // Weight the new occupations
             arma::Col<Tbase> new_occupations(lambda(iparam)*trial_occupations_per_particle[iparticle][0][iblock_particle]);
@@ -1837,7 +1837,7 @@ namespace OpenOrbitalOptimizer {
             interp_occs[iblock] *= -1.0;
 
             // Sanity check: occupations should be nonnegative
-            if(arma::min(interp_occs[iblock]) < -10*std::numeric_limits<Tbase>::epsilon()) {
+            if(arma::min(interp_occs[iblock]) < -100*std::numeric_limits<Tbase>::epsilon()) {
               std::ostringstream oss;
               oss << "Negative natural occupation numbers in block " << iblock << "!\n";
               oss << "Block " << iblock << " natural orbital occupations\n";
@@ -1868,7 +1868,7 @@ namespace OpenOrbitalOptimizer {
         return std::make_pair(dm,fock);
       };
 
-      std::function<std::pair<Tbase,Tbase>(const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb,Tbase> & fock)> trace = [](const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb,Tbase> & fock) {
+      std::function<Tbase(const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb> & fock)> trace = [](const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb> & fock) {
         const auto & orbitals = dm.first;
         const auto & occupations = dm.second;
 
@@ -1897,7 +1897,8 @@ namespace OpenOrbitalOptimizer {
 
         x0.ones();
         auto eval_right = evaluate(x0);
-        std::apply(add_entry, eval_right);
+        number_of_fock_evaluations_++;
+        add_entry(eval_right.first, eval_right.second);
 
         // Fit cubic polynomial: we have energies
         Tbase E_left = eval_left.second.first;
@@ -1911,15 +1912,15 @@ namespace OpenOrbitalOptimizer {
 
         // which give us the derivatives
         Tbase dE_left = trace(P_right, F_left);
-        Tbase E_right = trace(P_left, F_right);
+        Tbase dE_right = trace(P_left, F_right);
 
         // Fit a cubic polynomial
-        auto cubic = HelperRoutines::fit_cubic_polynomial(E_left, dE_left, 1.0, E_right, dE_right);
+        auto cubic = HelperRoutines::fit_cubic_polynomial<Tbase>(E_left, dE_left, 1.0, E_right, dE_right);
         // and find its extrema
-        auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros, cubic);
+        auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic);
 
         // Checks whether the x value is allowed
-        std::function(bool(Tbase x)) within_limits = [](Tbase x) {
+        std::function<bool(Tbase)> within_limits = [](Tbase x) {
           return x>=0.0 and x<=1.0;
         };
 
@@ -1927,21 +1928,61 @@ namespace OpenOrbitalOptimizer {
         if(within_limits(zeros.first)) {
           x0(0) = zeros.first;
           auto eval_first = evaluate(x0);
-          std::apply(add_entry, eval_first);
+          number_of_fock_evaluations_++;
+          add_entry(eval_first.first, eval_first.second);
         }
         if(within_limits(zeros.second)) {
           x0(0) = zeros.second;
           auto eval_second = evaluate(x0);
-          std::apply(add_entry, eval_second);
+          number_of_fock_evaluations_++;
+          add_entry(eval_second.first, eval_second.second);
         }
 
-      } else if(npars==2) {
+      } else {
+        std::ostringstream oss;
+        oss << "Optimal damping algorithm not implemented for " << npars << "-dimensional optimization!\n";
+        throw std::logic_error(oss.str());
+      }
+    }
 
-      } else
-        throw std::logic_error("Optimal damping algorithm not implemented for more than 2 degenerate orbitals!\n");
+    /// Run optimal damping algorithm
+    void run_optimal_damping() {
+      Tbase current_energy = get_energy();
+      Tbase old_energy;
 
-      auto new_energy = get_energy();
-      printf("Energy changed by % e by optimal damping\n", new_energy - reference_energy);
+      size_t iteration;
+      Tbase dE;
+      for(iteration=1; iteration <= maximum_iterations_; iteration++) {
+        old_energy = current_energy;
+        optimal_damping_step();
+        current_energy = get_energy();
+
+        dE = current_energy - old_energy;
+        Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+        if(verbosity_>=5) {
+          printf("\n\n");
+        }
+        if(verbosity_>0) {
+          printf("ODA iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", iteration, number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
+        }
+        if(verbosity_>=5) {
+          const auto & occupations = get_orbital_occupations();
+          auto occ_idx(occupied_orbitals(occupations));
+          for(size_t l=0;l<occ_idx.size();l++) {
+            if(occ_idx[l].n_elem) {
+              occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
+
+              // Compute Fock matrix
+              const auto orbitals = get_orbital_block(0, l);
+              const auto fock = get_fock_matrix_block(0, l);
+              arma::Mat<Torb> fock_mo = orbitals.t() * fock * orbitals;
+              fock_mo.submat(0,0,arma::max(occ_idx[l]),arma::max(occ_idx[l])).print(block_descriptions_[l] + " occupied-occupied orbital Fock matrix");
+            }
+          }
+        }
+        if(std::abs(dE) < convergence_threshold_)
+          break;
+      }
     }
 
     /// Run the SCF
