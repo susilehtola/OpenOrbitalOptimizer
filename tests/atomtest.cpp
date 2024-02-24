@@ -9,10 +9,7 @@
 
 namespace OpenOrbitalOptimizer {
   // Instantiate all types of SCFSolver just to check it compiles
-  template class SCFSolver<float, float>;
-  template class SCFSolver<std::complex<float>, float>;
   template class SCFSolver<double, double>;
-  template class SCFSolver<std::complex<double>, double>;
 
   namespace AtomicSolver {
 
