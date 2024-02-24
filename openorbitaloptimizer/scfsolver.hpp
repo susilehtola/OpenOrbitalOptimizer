@@ -10,6 +10,7 @@
 #include <vector>
 #include <armadillo>
 #include "cg_optimizer.hpp"
+#include "helper_routines.hpp"
 
 namespace OpenOrbitalOptimizer {
   /// A symmetry block of orbitals is defined by the corresponding N x
@@ -86,13 +87,8 @@ namespace OpenOrbitalOptimizer {
     /// Descriptions of the blocks
     std::vector<std::string> block_descriptions_;
 
-    /** (Optional) fixed number of particles in each symmetry, affects
-        the way occupations are assigned in Aufbau. These are used if
-        the array has the expected size.
-    */
-    arma::Col<Tbase> fixed_number_of_particles_per_block_;
-    /// (Optional) freeze occupations altogether to their previous values
-    bool frozen_occupations_;
+    /// (Optional) freeze occupations altogether to their set value
+    bool frozen_occupations_ = false;
 
     /// Verbosity level: 0 for silent, higher values for more info
     int verbosity_;
@@ -141,7 +137,17 @@ namespace OpenOrbitalOptimizer {
     /// Level shift diminution factor
     Tbase level_shift_factor_ = 2.0;
 
+    /// Degeneracy threshold for optimal damping algorithm
+    Tbase optimal_damping_degeneracy_threshold_ = 1e-3;
+    /// Allow fractional occupations in normal SCF
+    bool allow_fractional_occupations_ = true;
+
     /* Internal functions */
+    /// Get the density matrix
+    DensityMatrix<Torb, Tbase> get_density_matrix(size_t ihist) const {
+      return std::get<0>(orbital_history_[ihist]);
+    }
+
     /// Get a block of the density matrix for the ihist:th entry
     arma::Mat<Torb> get_density_matrix_block(size_t ihist, size_t iblock) const {
       const auto orbitals = get_orbital_block(ihist, iblock);
@@ -222,12 +228,12 @@ namespace OpenOrbitalOptimizer {
       return dim;
     }
 
-    /// Get a block of the density matrix for the ihist:th entry
+    /// Get the Fock matrix for the ihist:th entry
     FockMatrix<Torb> get_fock_matrix(size_t ihist=0) const {
       return std::get<1>(orbital_history_[ihist]).second;
     }
 
-    /// Get a block of the density matrix for the ihist:th entry
+    /// Get a block of the Fock matrix for the ihist:th entry
     arma::Mat<Torb> get_fock_matrix_block(size_t ihist, size_t iblock) const {
       return std::get<1>(orbital_history_[ihist]).second[iblock];
     }
@@ -434,7 +440,7 @@ namespace OpenOrbitalOptimizer {
     arma::Col<Tbase> adiis_linear_term() const {
       arma::Col<Tbase> ret(orbital_history_.size(),arma::fill::zeros);
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        const auto & Dn = get_density_matrix_block(0, iblock);
+        const arma::Mat<Torb> Dn = get_density_matrix_block(0, iblock);
         const auto & Fn = get_fock_matrix_block(0, iblock);
         for(size_t ihist=0;ihist<ret.size();ihist++) {
           // D_i - D_n
@@ -458,7 +464,7 @@ namespace OpenOrbitalOptimizer {
     arma::Mat<Tbase> aediis_quadratic_term() const {
       arma::Mat<Tbase> ret(orbital_history_.size(),orbital_history_.size(),arma::fill::zeros);
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        const auto & Dn = get_density_matrix_block(0, iblock);
+        const arma::Mat<Torb> Dn = get_density_matrix_block(0, iblock);
         const auto & Fn = get_fock_matrix_block(0, iblock);
         for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
           for(size_t jhist=0;jhist<orbital_history_.size();jhist++) {
@@ -1172,7 +1178,7 @@ namespace OpenOrbitalOptimizer {
         auto iorb = std::get<1>(dof);
         auto jorb = std::get<2>(dof);
 
-        Tbase hh=cbrt(DBL_EPSILON);
+        Tbase hh=cbrt(std::numeric_limits<Tbase>::epsilon());
         //Tbase hh=1e-10;
 
         std::function<Tbase(Tbase)> eval = [this, search_direction, i](Tbase xi){
@@ -1352,11 +1358,6 @@ namespace OpenOrbitalOptimizer {
       add_entry(std::make_pair(orbitals, orbital_occupations));
     }
 
-    /// Fix the number of occupied orbitals per block
-    void fixed_number_of_particles_per_block(const arma::Col<Tbase> & number_of_particles_per_block) {
-      fixed_number_of_particles_per_block_ = number_of_particles_per_block;
-    }
-
     /// Get frozen occupations
     bool frozen_occupations() const {
       return frozen_occupations_;
@@ -1519,38 +1520,93 @@ namespace OpenOrbitalOptimizer {
       return (iparticle>0) ? arma::sum(number_of_blocks_per_particle_type_.subvec(0,iparticle-1)) : 0;
     }
 
+    /// Order orbitals by energy
+    std::vector<std::tuple<Tbase, size_t, size_t>> order_orbitals_by_energy(const OrbitalEnergies<Tbase> & orbital_energies, size_t iparticle) const {
+      // Compute the offset in the block array
+      size_t block_offset = particle_block_offset(iparticle);
+
+      // Collect the orbital energies with the block index and the in-block index for this particle type
+      std::vector<std::tuple<Tbase, size_t, size_t>> all_energies;
+      for(size_t iblock = block_offset; iblock < block_offset + number_of_blocks_per_particle_type_(iparticle); iblock++)
+        for(size_t iorb = 0; iorb < orbital_energies[iblock].size(); iorb++)
+          all_energies.push_back(std::make_tuple(orbital_energies[iblock](iorb), iblock, iorb));
+
+      // Sort the energies in increasing order
+      std::stable_sort(all_energies.begin(), all_energies.end(), [](const std::tuple<Tbase, size_t, size_t> & a, const std::tuple<Tbase, size_t, size_t> & b) {return std::get<0>(a) < std::get<0>(b);});
+
+      return all_energies;
+    }
+
     /// Determine number of particles in each block
     arma::Col<Tbase> determine_number_of_particles_by_aufbau(const OrbitalEnergies<Tbase> & orbital_energies) const {
       arma::Col<Tbase> number_of_particles(number_of_blocks_, arma::fill::zeros);
 
       // Loop over particle types
       for(size_t particle_type = 0; particle_type < number_of_blocks_per_particle_type_.size(); particle_type++) {
-        // Compute the offset in the block array
-        size_t block_offset = particle_block_offset(particle_type);
-
-        // Collect the orbital energies with the block index and the in-block index for this particle type
-        std::vector<std::tuple<Tbase, size_t, size_t>> all_energies;
-        for(size_t iblock = block_offset; iblock < block_offset + number_of_blocks_per_particle_type_(particle_type); iblock++)
-          for(size_t iorb = 0; iorb < orbital_energies[iblock].size(); iorb++)
-            all_energies.push_back(std::make_tuple(orbital_energies[iblock](iorb), iblock, iorb));
-
-        // Sort the energies in increasing order
-        std::stable_sort(all_energies.begin(), all_energies.end(), [](const std::tuple<Tbase, size_t, size_t> & a, const std::tuple<Tbase, size_t, size_t> & b) {return std::get<0>(a) < std::get<0>(b);});
+        // Sort orbitals in energy
+        auto all_energies = order_orbitals_by_energy(orbital_energies, particle_type);
 
         // Fill the orbitals in increasing energy. This is how many
         // particles we have to place
         Tbase num_left = number_of_particles_(particle_type);
-        for(auto fill_orbital : all_energies) {
-          // Increase number of occupied orbitals
-          auto iblock = std::get<1>(fill_orbital);
-          auto iorb = std::get<2>(fill_orbital);
-          // Compute how many particles fit this orbital
-          auto fill = std::min(maximum_occupation_(iblock), num_left);
-          number_of_particles(iblock) += fill;
-          num_left -= fill;
-          // This should be sufficently tolerant to roundoff error
-          if(num_left <= 10*std::numeric_limits<Tbase>::epsilon())
-            break;
+        size_t ifill=0;
+        while(num_left>0) {
+          // Extract info
+          auto iorbital = all_energies[ifill];
+          auto ienergy = std::get<0>(iorbital);
+          auto iblock = std::get<1>(iorbital);
+          auto iorb = std::get<2>(iorbital);
+
+          // Determine degenerate orbitals
+          size_t jfill;
+          for(jfill=ifill+1; jfill < all_energies.size(); jfill++) {
+            auto jenergy = std::get<0>(all_energies[jfill]);
+            if(std::abs(ienergy-jenergy) > optimal_damping_degeneracy_threshold_)
+              break;
+          }
+
+          // Count how many particles fit into these orbitals
+          Tbase maximum_capacity = 0.0;
+          for(size_t iorb=ifill; iorb<jfill; iorb++)
+            maximum_capacity += maximum_occupation_(std::get<1>(all_energies[iorb]));
+
+          // Everything is filled or only one "degenerate" orbital to fill, no problem
+          if(num_left >= maximum_capacity or jfill-ifill==1) {
+            for(size_t iorb=ifill; iorb<jfill; iorb++) {
+              auto block_index = std::get<1>(all_energies[iorb]);
+              auto capacity = maximum_occupation_(block_index);
+              auto fill = std::min(capacity, num_left);
+              number_of_particles(block_index) += fill;
+              num_left -= fill;
+            }
+          } else {
+            // We have degenerate orbitals
+            if(not allow_fractional_occupations_) {
+              std::ostringstream oss;
+              oss << "System has no gap: the following orbitals are degenerate\nenergy iblock iorb\n";
+              for(size_t iorb=ifill; iorb<jfill; iorb++) {
+                auto energy = std::get<0>(all_energies[iorb]);
+                auto block_index = std::get<1>(all_energies[iorb]);
+                auto orbital_index = std::get<2>(all_energies[iorb]);
+                oss << energy << " " << block_index << " " << orbital_index << std::endl;
+                throw std::logic_error(oss.str());
+              }
+            } else {
+              // Divide occupation evenly across orbitals
+              if(verbosity_)
+                std::cout << jfill-ifill << " orbitals are degenerate; dividing occupations evenly" << std::endl;
+
+              for(size_t iorb=ifill; iorb<jfill; iorb++) {
+                auto block_index = std::get<1>(all_energies[iorb]);
+                auto capacity = maximum_occupation_(block_index);
+                auto fill = capacity * num_left / maximum_capacity;
+                number_of_particles(block_index) += fill;
+              }
+              num_left = 0.0;
+            }
+          }
+          // Update the orbital
+          ifill = jfill;
         }
       }
 
@@ -1559,18 +1615,29 @@ namespace OpenOrbitalOptimizer {
 
     /// Determines occupations based on the current orbital energies
     OrbitalOccupations<Tbase> update_occupations(const OrbitalEnergies<Tbase> & orbital_energies) const {
-      if(frozen_occupations_)
+      if(frozen_occupations_) {
         return get_orbital_occupations();
+      }
+      if(orbital_energies.size() != number_of_blocks_)
+        throw std::logic_error("orbital_energies does not have the expected length!\n");
 
       // Number of particles per block
-      arma::Col<Tbase> number_of_particles = (fixed_number_of_particles_per_block_.n_elem == number_of_blocks_) ? fixed_number_of_particles_per_block_ : determine_number_of_particles_by_aufbau(orbital_energies);
+      arma::Col<Tbase> number_of_particles_per_block = determine_number_of_particles_by_aufbau(orbital_energies);
+      return occupations_from_number_of_particles_per_block(number_of_particles_per_block, orbital_energies);
+    }
+
+    OrbitalOccupations<Tbase> occupations_from_number_of_particles_per_block(const arma::Col<Tbase> & number_of_particles_per_block, const OrbitalEnergies<Tbase> & orbital_energies) const {
+      if(number_of_particles_per_block.size() != number_of_blocks_)
+        throw std::logic_error("number_of_particles_per_block does not have the expected length!\n");
+      if(orbital_energies.size() != number_of_blocks_)
+        throw std::logic_error("orbital_energies does not have the expected length!\n");
 
       // Determine the number of occupied orbitals
-      OrbitalOccupations<Tbase> occupations(orbital_energies.size());
-      for(size_t iblock=0; iblock<orbital_energies.size(); iblock++) {
+      OrbitalOccupations<Tbase> occupations(number_of_particles_per_block.size());
+      for(size_t iblock=0; iblock<occupations.size(); iblock++) {
         occupations[iblock].zeros(orbital_energies[iblock].size());
 
-        Tbase num_left = number_of_particles(iblock);
+        Tbase num_left = number_of_particles_per_block(iblock);
         for(size_t iorb=0; iorb < occupations[iblock].n_elem; iorb++) {
           auto fill = std::min(maximum_occupation_(iblock), num_left);
           occupations[iblock](iorb) = fill;
@@ -1600,6 +1667,389 @@ namespace OpenOrbitalOptimizer {
       }
 
       return occupations;
+    }
+
+    /// Optimal damping algorithm
+    void optimal_damping_step() {
+      // Starting point: the reference orbitals and orbital occupations
+      auto reference_orbitals = get_orbitals();
+      auto reference_occupations = get_orbital_occupations();
+      auto reference_fock = get_fock_matrix();
+      auto reference_energy = get_energy();
+
+      // Roothaan step: diagonalize Fock matrix to get new orbitals and orbital energies
+      auto diagonalized_fock = compute_orbitals(reference_fock);
+      const auto & new_orbitals = diagonalized_fock.first;
+      const auto & new_orbital_energies = diagonalized_fock.second;
+
+      // Figure out the degrees of freedom for each type of particle: [iparticle][itrial][iblock]
+      std::vector<std::vector<std::vector<arma::Col<Tbase>>>> trial_occupations_per_particle(number_of_blocks_per_particle_type_.n_elem);
+      for(size_t iparticle=0; iparticle<number_of_blocks_per_particle_type_.n_elem; iparticle++) {
+        // The blocks spanned by this particle
+        size_t iblock_start = particle_block_offset(iparticle);
+        size_t iblock_end = iblock_start + number_of_blocks_per_particle_type_(iparticle);
+
+        // Base occupation numbers for this particle type; trials will be generated based on this
+        std::vector<arma::Col<Tbase>> particle_occupations(number_of_blocks_per_particle_type_(iparticle));
+        for(size_t iblock=0; iblock<particle_occupations.size(); iblock++) {
+          particle_occupations[iblock].zeros(new_orbital_energies[iblock_start+iblock].size());
+        }
+        // Orbital index in each block
+        arma::uvec orbital_index(particle_occupations.size(), arma::fill::zeros);
+
+        // Fill the orbitals in increasing energy. This is how many
+        // particles we have to place
+        Tbase num_left = number_of_particles_(iparticle);
+        // Sort orbitals in energy
+        auto all_energies = order_orbitals_by_energy(new_orbital_energies, iparticle);
+
+        // Function to check if particles are left
+        std::function<bool(Tbase)> particles_left = [](Tbase num) {
+          return num>=10*std::numeric_limits<Tbase>::epsilon();
+        };
+
+        size_t ifill=0;
+        while(particles_left(num_left)) {
+          // Extract info
+          auto iorbital = all_energies[ifill];
+          auto ienergy = std::get<0>(iorbital);
+          auto iblock = std::get<1>(iorbital);
+          auto iorb = std::get<2>(iorbital);
+
+          // Determine degenerate orbitals
+          size_t jfill;
+          for(jfill=ifill+1; jfill < all_energies.size(); jfill++) {
+            auto jenergy = std::get<0>(all_energies[jfill]);
+            if(std::abs(ienergy-jenergy) > optimal_damping_degeneracy_threshold_)
+              break;
+          }
+
+          // Count how many particles fit into these orbitals
+          Tbase maximum_capacity = 0.0;
+          for(size_t iorb=ifill; iorb<jfill; iorb++)
+            maximum_capacity += maximum_occupation_(std::get<1>(all_energies[iorb]));
+
+          // Everything is filled or only one orbital to fill, no problem
+          if(num_left >= maximum_capacity or jfill-ifill==1) {
+            for(size_t iorb=ifill; iorb<jfill; iorb++) {
+              auto block_index = std::get<1>(all_energies[iorb]);
+              auto capacity = maximum_occupation_(block_index);
+              auto fill = std::min(capacity, num_left);
+              particle_occupations[block_index-iblock_start](orbital_index(block_index-iblock_start)++) = fill;
+              num_left -= fill;
+            }
+            if(num_left == 0.0) {
+              trial_occupations_per_particle[iparticle].push_back(particle_occupations);
+            }
+         } else {
+            // We have degenerate orbitals.
+            if(jfill-ifill>2) {
+              // TODO: extend to problems with arbitrary number of
+              // degenerate orbitals. The issue is that one has to
+              // program the extreme cases for the density matrices;
+              // however, it appears this is straightforward to do by
+              // listing the degenerate orbitals, and then generating
+              // trials by filling them in different orderings. One
+              // just has to loop over all possible orderings of
+              // degenerate orbitals and eliminate duplicates
+              std::ostringstream oss;
+              oss << "Particle type " << iparticle << " has " << jfill-ifill << " degenerate orbitals.\nThe implementation of the optimal damping algorithm in OpenOrbitalOptimizer is limited to 2 degenerate orbitals per particle type.\n";
+              throw std::runtime_error(oss.str());
+            }
+
+            // If we are here, we have exactly two degenerate
+            // orbitals
+            auto first_block_index = std::get<1>(all_energies[iorb]);
+            auto first_capacity = maximum_occupation_(first_block_index);
+            auto second_block_index = std::get<1>(all_energies[iorb+1]);
+            auto second_capacity = maximum_occupation_(second_block_index);
+
+            // Next, we form the two occupation vectors
+            auto first_occupations(particle_occupations);
+            auto second_occupations(particle_occupations);
+            // In the first case, we have maximal occupation on the first orbital
+            auto num1_left(num_left);
+            auto fill1 = std::min(first_capacity, num1_left);
+            first_occupations[first_block_index-iblock_start](orbital_index(first_block_index-iblock_start)++) = fill1;
+            num1_left -= fill1;
+            if(particles_left(num1_left)) {
+              // Put the rest on the other orbital
+              first_occupations[second_block_index-iblock_start](orbital_index(second_block_index-iblock_start)++) = num1_left;
+            }
+            // In the first case, we have maximal occupation on the first orbital
+            auto num2_left(num_left);
+            auto fill2 = std::min(second_capacity, num2_left);
+            second_occupations[second_block_index-iblock_start](orbital_index(second_block_index-iblock_start)++) = fill2;
+            num2_left -= fill2;
+            if(particles_left(num2_left)) {
+              // Put the rest on the other orbital
+              second_occupations[first_block_index-iblock_start](orbital_index(first_block_index-iblock_start)++) = num2_left;
+            }
+
+            // Add to stack
+            trial_occupations_per_particle[iparticle].push_back(first_occupations);
+            trial_occupations_per_particle[iparticle].push_back(second_occupations);
+
+            // No particles left
+            num_left = 0.0;
+          }
+          // Update orbital index
+          ifill = jfill;
+        }
+      }
+
+      std::function<DensityMatrix<Torb,Tbase>(const arma::Col<Tbase> &)> interpolate_density = [this, reference_orbitals, reference_occupations, new_orbitals, trial_occupations_per_particle](const arma::Col<Tbase> & lambda) {
+        if(arma::sum(lambda)>1.0)
+          throw std::logic_error("Sum of parameters exceeds one; interpolated density is not N-representable!\n");
+
+        // Returned density matrix
+        Orbitals<Torb> interp_orbs(reference_orbitals.size());
+        OrbitalOccupations<Tbase> interp_occs(reference_orbitals.size());
+
+        // Index in parameter vector
+        size_t iparam=0;
+
+        // Loop over particle types
+        for(size_t iparticle=0; iparticle<number_of_blocks_per_particle_type_.n_elem; iparticle++) {
+          if(trial_occupations_per_particle[iparticle].size()==0) {
+            std::ostringstream oss;
+            oss << "No trial occupations for particle " << iparticle << "!\n";
+            throw std::logic_error(oss.str());
+          }
+
+          // Loop over blocks of this particle
+          for(size_t iblock_particle = 0; iblock_particle < number_of_blocks_per_particle_type_(iparticle); iblock_particle++) {
+            size_t iblock = iblock_particle + particle_block_offset(iparticle);
+
+            // Old density matrix block
+            arma::Mat<Torb> old_dm = reference_orbitals[iblock] * arma::diagmat(reference_occupations[iblock]) * arma::trans(reference_orbitals[iblock]);
+
+            // Weight the new occupations
+            arma::Col<Tbase> new_occupations(lambda(iparam)*trial_occupations_per_particle[iparticle][0][iblock_particle]);
+            for(size_t itrial=1; itrial<trial_occupations_per_particle[iparticle].size(); itrial++) {
+              new_occupations += lambda(iparam+itrial)*trial_occupations_per_particle[iparticle][itrial][iblock_particle];
+            }
+            // New density matrix block
+            arma::Mat<Torb> new_dm = new_orbitals[iblock] * arma::diagmat(new_occupations) * arma::trans(new_orbitals[iblock]);
+            // Mixed density matrix block
+            arma::Mat<Torb> mix_dm = (1.0-arma::sum(lambda.subvec(iparam,iparam+trial_occupations_per_particle[iparticle].size()-1)))*old_dm + new_dm;
+
+            // Flip sign so that natural orbitals are in decreasing occupation
+            mix_dm *= -1.0;
+            arma::eig_sym(interp_occs[iblock], interp_orbs[iblock], mix_dm);
+            interp_occs[iblock] *= -1.0;
+
+            // Sanity check: occupations should be nonnegative
+            if(arma::min(interp_occs[iblock]) < -100*std::numeric_limits<Tbase>::epsilon()) {
+              std::ostringstream oss;
+              oss << "Negative natural occupation numbers in block " << iblock << "!\n";
+              oss << "Block " << iblock << " natural orbital occupations\n";
+              oss << interp_occs[iblock];
+              throw std::logic_error(oss.str());
+            }
+          }
+
+          // Increment parameter index
+          iparam += trial_occupations_per_particle[iparticle].size();
+        }
+        if(iparam != lambda.n_elem)
+          throw std::logic_error("Indexing inconsistency!\n");
+
+        // Returned density matrix type
+        return std::make_pair(interp_orbs, interp_occs);
+      };
+
+      // Count number of parameters
+      size_t npars=0;
+      for(auto & trial: trial_occupations_per_particle)
+        npars += trial.size();
+      printf("%i parameters in optimal damping\n", npars);
+
+      std::function<std::pair<DensityMatrix<Torb,Tbase>,FockBuilderReturn<Torb,Tbase>>(const arma::Col<Tbase> &)> evaluate = [this, interpolate_density](const arma::Col<Tbase> & lambda) {
+        auto dm = interpolate_density(lambda);
+        auto fock = fock_builder_(dm);
+        return std::make_pair(dm,fock);
+      };
+
+      std::function<Tbase(const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb> & fock)> trace = [](const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb> & fock) {
+        const auto & orbitals = dm.first;
+        const auto & occupations = dm.second;
+
+        Tbase tr=0.0;
+        for(size_t iblock=0;iblock<orbitals.size();iblock++) {
+          arma::Mat<Torb> D = orbitals[iblock] * arma::diagmat(occupations[iblock]) * orbitals[iblock].t();
+          auto & F = fock[iblock];
+          tr += std::real(arma::trace(D*F));
+        }
+        return tr;
+      };
+
+      if(npars==0)
+        // nothing to do
+        return;
+
+      // Initial guess
+      arma::Col<Tbase> x0(npars, arma::fill::zeros);
+
+      if(npars==1) {
+        // Do line search. Begin by adding the values
+        auto eval_left = std::make_pair(std::get<0>(orbital_history_[0]), std::get<1>(orbital_history_[0]));
+
+        x0.ones();
+        auto eval_right = evaluate(x0);
+        number_of_fock_evaluations_++;
+        add_entry(eval_right.first, eval_right.second);
+
+        // Fit cubic polynomial: we have energies
+        Tbase E_left = eval_left.second.first;
+        Tbase E_right = eval_right.second.first;
+
+        if(E_right < E_left)
+          // Roothaan step decreased energy, no need to do anything more
+          return;
+
+        // and Fock and density matrices
+        const auto & F_left = eval_left.second.second;
+        const auto & F_right = eval_right.second.second;
+        const auto & P_left = eval_left.first;
+        const auto & P_right = eval_right.first;
+
+#if 0
+        // TODO: figure out what is wrong with this code; the derivatives aren't correct
+        // which give us the derivatives
+        Tbase dE_left = 2*trace(P_right, F_left);
+        Tbase dE_right = 2*trace(P_left, F_right);
+
+        // Debug: check the correctness of the derivatives
+        {
+          std::function<Tbase(Tbase)> eval = [this, evaluate](Tbase x) {
+            arma::Col<Tbase> xvec(1);
+            xvec(0) = x;
+            auto eval = evaluate(xvec);
+            return eval.second.first;
+          };
+
+          for(int ih=4;ih<10;ih++) {
+            Tbase h = std::pow(10.0, -ih);
+            Tbase dE_left_num = (eval(h) - eval(0))/h;
+            Tbase dE_right_num = (eval(1.0) - eval(1.0-h))/h;
+            printf("h = %e dE_left = %e vs %e dE_right = %e vs %e\n", h, dE_left, dE_left_num, dE_right, dE_right_num);
+          }
+        }
+
+        // Fit a cubic polynomial
+        auto cubic = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_left, dE_left, 1.0, E_right, dE_right);
+#else
+        x0(0) = 1.0/3.0;
+        auto eval_L3 = evaluate(x0);
+        number_of_fock_evaluations_++;
+        add_entry(eval_L3.first, eval_L3.second);
+
+        x0(0) = 2.0/3.0;
+        auto eval_2L3 = evaluate(x0);
+        number_of_fock_evaluations_++;
+        add_entry(eval_2L3.first, eval_2L3.second);
+
+        Tbase E_L3 = eval_L3.second.first;
+        Tbase E_2L3 = eval_2L3.second.first;
+
+        auto cubic = HelperRoutines::fit_cubic_polynomial_without_derivatives<Tbase>(E_left, 1.0, E_L3, E_2L3, E_right);
+
+        std::function<Tbase(Tbase)> eval_poly = [cubic](Tbase x) {
+          return HelperRoutines::evaluate_cubic_polynomial<Tbase>(x, std::get<0>(cubic), std::get<1>(cubic), std::get<2>(cubic), std::get<3>(cubic));
+        };
+        Tbase pEl = eval_poly(0.0);
+        Tbase pEl3 = eval_poly(1.0/3.0);
+        Tbase pE2l3 = eval_poly(2.0/3.0);
+        Tbase pEr = eval_poly(1.0);
+
+        printf("f(0) = %e vs %e diff %e\n",pEl,E_left,pEl-E_left);
+        printf("f(0.333) = %e vs %e diff %e\n",pEl3,E_L3,pEl3-E_L3);
+        printf("f(0.667) = %e vs %e diff %e\n",pE2l3,E_2L3,pE2l3-E_2L3);
+        printf("f(1) = %e vs %e diff %e\n",pEr,E_right,pEr-E_right);
+
+#endif
+        // and find its extrema
+        auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic);
+
+        // Checks whether the x value is allowed
+        std::function<bool(Tbase)> within_limits = [](Tbase x) {
+          return x>=0.0 and x<=1.0;
+        };
+
+        // Evaluate the roots if they're ok
+        if(within_limits(zeros.first)) {
+          x0(0) = zeros.first;
+          auto eval_first = evaluate(x0);
+          number_of_fock_evaluations_++;
+          add_entry(eval_first.first, eval_first.second);
+          if(verbosity_>=5)
+            printf("Energy with step %e is % .10f\n",zeros.first, eval_first.second.first);
+        }
+        if(within_limits(zeros.second)) {
+          x0(0) = zeros.second;
+          auto eval_second = evaluate(x0);
+          number_of_fock_evaluations_++;
+          add_entry(eval_second.first, eval_second.second);
+          if(verbosity_>=5)
+            printf("Energy with step %e is % .10f\n",zeros.second, eval_second.second.first);
+        }
+
+        if(not within_limits(zeros.first) and not within_limits(zeros.second)) {
+          std::ostringstream oss;
+          oss << "No roots in the search space! Roots " << zeros.first << " and " << zeros.second << "!\n";
+          throw std::logic_error(oss.str());
+        }
+
+      } else {
+        std::ostringstream oss;
+        oss << "Optimal damping algorithm not implemented for " << npars << "-dimensional optimization!\n";
+        throw std::logic_error(oss.str());
+      }
+    }
+
+    /// Run optimal damping algorithm
+    void run_optimal_damping() {
+      Tbase current_energy = get_energy();
+      Tbase old_energy;
+
+      size_t iteration;
+      Tbase dE;
+      for(iteration=1; iteration <= maximum_iterations_; iteration++) {
+        old_energy = current_energy;
+        // Occupation update and extract DIIS error with fixed orbitals
+        optimal_damping_step();
+        Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+        // Run SCF with these occupations to zero out orbital error
+        frozen_occupations_ = true;
+        run();
+        current_energy = get_energy();
+
+        dE = current_energy - old_energy;
+        if(verbosity_>=5) {
+          printf("\n\n");
+        }
+        if(verbosity_>0) {
+          printf("ODA iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", iteration, number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
+        }
+        if(verbosity_>=5) {
+          const auto & occupations = get_orbital_occupations();
+          auto occ_idx(occupied_orbitals(occupations));
+          for(size_t l=0;l<occ_idx.size();l++) {
+            if(occ_idx[l].n_elem) {
+              occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
+
+              // Compute Fock matrix
+              const auto orbitals = get_orbital_block(0, l);
+              const auto fock = get_fock_matrix_block(0, l);
+              arma::Mat<Torb> fock_mo = orbitals.t() * fock * orbitals;
+              fock_mo.submat(0,0,arma::max(occ_idx[l]),arma::max(occ_idx[l])).print(block_descriptions_[l] + " occupied-occupied orbital Fock matrix");
+            }
+          }
+        }
+        if(std::abs(dE) < convergence_threshold_)
+          break;
+      }
     }
 
     /// Run the SCF
@@ -1765,6 +2215,9 @@ namespace OpenOrbitalOptimizer {
         // List of occupations and resulting energies
         std::vector<std::pair<arma::Col<Tbase>,Tbase>> list_of_energies;
 
+        // Add the current solution to list
+        list_of_energies.push_back(std::make_pair(number_of_particles_per_block, get_energy()));
+
         // Loop over particle types. We have a double loop, since finding the lowest state in UHF probably requires this
         for(size_t iparticle=0; iparticle<number_of_blocks_per_particle_type_.n_elem; iparticle++) {
           size_t iblock_start = particle_block_offset(iparticle);
@@ -1794,23 +2247,20 @@ namespace OpenOrbitalOptimizer {
                 if(trial_number(iblock_source) < 0.0 or trial_number(iblock_target) > i_target_capacity)
                   continue;
 
-                fixed_number_of_particles_per_block_ = trial_number;
-
                 printf("isource = %i itarget = %i imoved = %f\n", iblock_source, iblock_target, i_moved);
                 trial_number.t().print("trial number of particles");
                 fflush(stdout);
 
-                // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
-                auto trial_occupations = update_occupations(orbital_energies);
+                // Determine full orbital occupations from the specified data
+                auto trial_occupations =  occupations_from_number_of_particles_per_block(trial_number, orbital_energies);
                 initialize_with_orbitals(reference_orbitals, trial_occupations);
+                frozen_occupations_ = true;
                 try {
                   run();
                 } catch(...) {};
                 // Add the result to the list
                 list_of_energies.push_back(std::make_pair(trial_number, get_energy()));
-                // Reset the restriction
-                arma::Col<Tbase> dummy;
-                fixed_number_of_particles_per_block_ = dummy;
+                frozen_occupations_ = false;
               }
             }
 
@@ -1884,24 +2334,21 @@ namespace OpenOrbitalOptimizer {
                         if(trial_number(jblock_target) > j_target_capacity)
                           continue;
 
-                        fixed_number_of_particles_per_block_ = trial_number;
-
                         printf("isource = %i itarget = %i imoved = %f\n", iblock_source, iblock_target, i_moved);
                         printf("jsource = %i jtarget = %i jmoved = %f\n", jblock_source, jblock_target, j_moved);
                         trial_number.t().print("trial number of particles");
                         fflush(stdout);
 
-                        // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
-                        auto trial_occupations = update_occupations(orbital_energies);
+                        // Determine full orbital occupations from the specified data
+                        auto trial_occupations =  occupations_from_number_of_particles_per_block(trial_number, orbital_energies);
                         initialize_with_orbitals(reference_orbitals, trial_occupations);
+                        frozen_occupations_ = true;
                         try {
                           run();
                         } catch(...) {};
                         // Add the result to the list
                         list_of_energies.push_back(std::make_pair(trial_number, get_energy()));
-                        // Reset the restriction
-                        arma::Col<Tbase> dummy;
-                        fixed_number_of_particles_per_block_ = dummy;
+                        frozen_occupations_ = false;
                       }
                   }
               }
@@ -1921,10 +2368,11 @@ namespace OpenOrbitalOptimizer {
           printf("Energy changed by %e by improved reference\n", list_of_energies[0].second - reference_energy);
 
           // Update the reference
-          fixed_number_of_particles_per_block_ = list_of_energies[0].first;
           auto trial_occupations = update_occupations(orbital_energies);
+          frozen_occupations_ = true;
           initialize_with_orbitals(reference_orbitals, trial_occupations);
           run();
+          frozen_occupations_ = false;
 
           reference_solution = orbital_history_[0];
           reference_orbitals = get_orbitals();
@@ -1934,7 +2382,9 @@ namespace OpenOrbitalOptimizer {
         } else {
           // Restore the reference calculation
           initialize_with_orbitals(reference_orbitals, reference_occupations);
+          frozen_occupations_ = true;
           run();
+          frozen_occupations_ = false;
           printf("Search converged!\n");
           break;
         }
