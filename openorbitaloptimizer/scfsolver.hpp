@@ -1978,7 +1978,7 @@ namespace OpenOrbitalOptimizer {
         // Debug: check the correctness of the derivatives
         {
           std::function<Tbase(Tbase)> eval = [this, evaluate, npars, ipar](Tbase x) {
-            arma::Col<Tbase> xvec(npars);
+            arma::Col<Tbase> xvec(npars,arma::fill::zeros);
             xvec(ipar) = x;
             auto eval = evaluate(xvec);
             return eval.second.first;
