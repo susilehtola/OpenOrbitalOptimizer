@@ -1679,8 +1679,8 @@ namespace OpenOrbitalOptimizer {
 
       // Roothaan step: diagonalize Fock matrix to get new orbitals and orbital energies
       auto diagonalized_fock = compute_orbitals(reference_fock);
-      const auto & new_orbitals = diagonalized_fock.first;
-      const auto & new_orbital_energies = diagonalized_fock.second;
+      auto new_orbitals = diagonalized_fock.first;
+      auto new_orbital_energies = diagonalized_fock.second;
 
       // Figure out the degrees of freedom for each type of particle: [iparticle][itrial][iblock]
       std::vector<std::vector<std::vector<arma::Col<Tbase>>>> trial_occupations_per_particle(number_of_blocks_per_particle_type_.n_elem);
@@ -1774,29 +1774,31 @@ namespace OpenOrbitalOptimizer {
             // In the first case, we have maximal occupation on the first orbital
             auto num1_left(num_left);
             auto fill1 = std::min(first_capacity, num1_left);
-            first_occupations[first_block_index-iblock_start](orbital_index(first_block_index-iblock_start)++) = fill1;
+            arma::uvec orbital_index1(orbital_index);
+            first_occupations[first_block_index-iblock_start](orbital_index1(first_block_index-iblock_start)++) = fill1;
             num1_left -= fill1;
             if(particles_left(num1_left)) {
               // Put the rest on the other orbital
-              first_occupations[second_block_index-iblock_start](orbital_index(second_block_index-iblock_start)++) = num1_left;
+              first_occupations[second_block_index-iblock_start](orbital_index1(second_block_index-iblock_start)++) = num1_left;
             }
 
             // In the first case, we have maximal occupation on the first orbital
             auto num2_left(num_left);
             auto fill2 = std::min(second_capacity, num2_left);
-            second_occupations[second_block_index-iblock_start](orbital_index(second_block_index-iblock_start)++) = fill2;
+            arma::uvec orbital_index2(orbital_index);
+            second_occupations[second_block_index-iblock_start](orbital_index2(second_block_index-iblock_start)++) = fill2;
             num2_left -= fill2;
             if(particles_left(num2_left)) {
               // Put the rest on the other orbital
-              second_occupations[first_block_index-iblock_start](orbital_index(first_block_index-iblock_start)++) = num2_left;
+              second_occupations[first_block_index-iblock_start](orbital_index2(first_block_index-iblock_start)++) = num2_left;
             }
 
             // Add to stack
             trial_occupations_per_particle[iparticle].push_back(first_occupations);
             trial_occupations_per_particle[iparticle].push_back(second_occupations);
 
-            printf("First  trial: put %f particles in block %i\n",first_block_index, fill1);
-            printf("Second trial: put %f particles in block %i\n",second_block_index, fill2);
+            printf("First  trial: put %f particles in block %i and %f particles in block %i\n", fill1, first_block_index, num1_left, second_block_index);
+            printf("Second trial: put %f particles in block %i and %f particles in block %i\n", fill2, second_block_index, num2_left, first_block_index);
             // No particles left
             num_left = 0.0;
           }
@@ -1833,11 +1835,16 @@ namespace OpenOrbitalOptimizer {
       arma::Col<Tbase> x0(npars, arma::fill::zeros);
 
       for(size_t ipar=0; ipar<npars; ipar++) {
-        // We update the orbitals for every parameter
+        // We update the reference orbitals for every parameter
         reference_orbitals = get_orbitals();
         reference_occupations = get_orbital_occupations();
         reference_fock = get_fock_matrix();
         reference_energy = get_energy();
+
+        // Also update the target orbitals for consistency
+        diagonalized_fock = compute_orbitals(reference_fock);
+        new_orbitals = diagonalized_fock.first;
+        new_orbital_energies = diagonalized_fock.second;
 
         // Do line search. Begin by adding the values
         auto eval_left = std::make_pair(std::get<0>(orbital_history_[0]), std::get<1>(orbital_history_[0]));
@@ -1971,7 +1978,7 @@ namespace OpenOrbitalOptimizer {
 
 #if 0
         // TODO: figure out what is wrong with this code; the derivatives aren't correct
-        // which give us the derivatives
+        // The derivatives with respect to the step size are
         Tbase dE_left = 2*trace(P_right, F_left);
         Tbase dE_right = 2*trace(P_left, F_right);
 
