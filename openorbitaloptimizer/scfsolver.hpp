@@ -149,19 +149,9 @@ namespace OpenOrbitalOptimizer {
       return orbitals * arma::diagmat(occupations) * arma::trans(orbitals);
     }
 
-    /// Get the orbitals
-    Orbitals<Torb> get_orbitals(size_t ihist=0) const {
-      return std::get<0>(orbital_history_[ihist]).first;
-    }
-
     /// Get a block of the orbital occupations for the ihist:th entry
     OrbitalBlock<Torb> get_orbital_block(size_t ihist, size_t iblock) const {
       return std::get<0>(orbital_history_[ihist]).first[iblock];
-    }
-
-    /// Get the orbital occupations
-    OrbitalOccupations<Tbase> get_orbital_occupations(size_t ihist=0) const {
-      return std::get<0>(orbital_history_[ihist]).second;
     }
 
     /// Get a block of the orbital occupations for the ihist:th entry
@@ -222,12 +212,7 @@ namespace OpenOrbitalOptimizer {
       return dim;
     }
 
-    /// Get a block of the density matrix for the ihist:th entry
-    FockMatrix<Torb> get_fock_matrix(size_t ihist=0) const {
-      return std::get<1>(orbital_history_[ihist]).second;
-    }
-
-    /// Get a block of the density matrix for the ihist:th entry
+    /// Get a block of the Fock matrix for the ihist:th entry
     arma::Mat<Torb> get_fock_matrix_block(size_t ihist, size_t iblock) const {
       return std::get<1>(orbital_history_[ihist]).second[iblock];
     }
@@ -1726,10 +1711,26 @@ namespace OpenOrbitalOptimizer {
       return std::get<0>(orbital_history_[ihist]);
     }
 
-    /// Get the Fock matrix
+    /// Get the orbitals
+    Orbitals<Torb> get_orbitals(size_t ihist=0) const {
+      return std::get<0>(orbital_history_[ihist]).first;
+    }
+
+    /// Get the orbital occupations
+    OrbitalOccupations<Tbase> get_orbital_occupations(size_t ihist=0) const {
+      return std::get<0>(orbital_history_[ihist]).second;
+    }
+
+    /// Get the Fock matrix builder return
     FockBuilderReturn<Torb, Tbase> get_fock_build(size_t ihist=0) const {
       return std::get<1>(orbital_history_[ihist]);
     }
+
+    /// Get the Fock matrix for the ihist:th entry
+    FockMatrix<Torb> get_fock_matrix(size_t ihist=0) const {
+      return std::get<1>(orbital_history_[ihist]).second;
+    }
+
 
     /// Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search
     void brute_force_search_for_lowest_configuration() {
