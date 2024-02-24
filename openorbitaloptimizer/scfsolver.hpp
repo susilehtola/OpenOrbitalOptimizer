@@ -1955,18 +1955,22 @@ namespace OpenOrbitalOptimizer {
 
         auto cubic = HelperRoutines::fit_cubic_polynomial_without_derivatives<Tbase>(E_left, 1.0, E_L3, E_2L3, E_right);
 
+        // Sanity check: check that the obtained polynomial passes through the points
         std::function<Tbase(Tbase)> eval_poly = [cubic](Tbase x) {
           return HelperRoutines::evaluate_cubic_polynomial<Tbase>(x, std::get<0>(cubic), std::get<1>(cubic), std::get<2>(cubic), std::get<3>(cubic));
         };
-        Tbase pEl = eval_poly(0.0);
-        Tbase pEl3 = eval_poly(1.0/3.0);
-        Tbase pE2l3 = eval_poly(2.0/3.0);
-        Tbase pEr = eval_poly(1.0);
-
-        printf("f(0) = %e vs %e diff %e\n",pEl,E_left,pEl-E_left);
-        printf("f(0.333) = %e vs %e diff %e\n",pEl3,E_L3,pEl3-E_L3);
-        printf("f(0.667) = %e vs %e diff %e\n",pE2l3,E_2L3,pE2l3-E_2L3);
-        printf("f(1) = %e vs %e diff %e\n",pEr,E_right,pEr-E_right);
+        std::function<void(Tbase,Tbase)> check_value = [eval_poly](Tbase x, Tbase y) {
+          Tbase y_predicted = eval_poly(x);
+          if(std::abs(y_predicted-y) > std::sqrt(std::numeric_limits<Tbase>::epsilon())) {
+            std::ostringstream oss;
+            oss << "Polynomial fit not working: predicted value " << y_predicted << " at x=" << x << ", real value " << y << ", difference " << y_predicted-y << "!\n";
+            throw std::logic_error(oss.str());
+          }
+        };
+        check_value(0.0, E_left);
+        check_value(1.0/3.0, E_L3);
+        check_value(2.0/3.0, E_2L3);
+        check_value(1.0, E_right);
 
 #endif
         // and find its extrema
@@ -2013,43 +2017,56 @@ namespace OpenOrbitalOptimizer {
       Tbase current_energy = get_energy();
       Tbase old_energy;
 
-      size_t iteration;
+      size_t iteration=1;
       Tbase dE;
-      for(iteration=1; iteration <= maximum_iterations_; iteration++) {
-        old_energy = current_energy;
-        // Occupation update and extract DIIS error with fixed orbitals
-        optimal_damping_step();
-        Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
-        // Run SCF with these occupations to zero out orbital error
-        frozen_occupations_ = true;
-        run();
-        current_energy = get_energy();
 
-        dE = current_energy - old_energy;
-        if(verbosity_>=5) {
-          printf("\n\n");
-        }
-        if(verbosity_>0) {
-          printf("ODA iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", iteration, number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
-        }
-        if(verbosity_>=5) {
-          const auto & occupations = get_orbital_occupations();
-          auto occ_idx(occupied_orbitals(occupations));
-          for(size_t l=0;l<occ_idx.size();l++) {
-            if(occ_idx[l].n_elem) {
-              occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
+      auto target_threshold = convergence_threshold_;
 
-              // Compute Fock matrix
-              const auto orbitals = get_orbital_block(0, l);
-              const auto fock = get_fock_matrix_block(0, l);
-              arma::Mat<Torb> fock_mo = orbitals.t() * fock * orbitals;
-              fock_mo.submat(0,0,arma::max(occ_idx[l]),arma::max(occ_idx[l])).print(block_descriptions_[l] + " occupied-occupied orbital Fock matrix");
+      for(int itarget=3; itarget<std::ceil(-log10(target_threshold)); itarget++) {
+        // Tighten convergence threshold adaptively
+        convergence_threshold_ = std::max(1.0/std::pow(10.0,itarget), target_threshold);
+
+        for(iteration=1; iteration <= maximum_iterations_; iteration++) {
+          old_energy = current_energy;
+          // Occupation update and extract DIIS error with fixed orbitals
+          optimal_damping_step();
+          Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+          // Run SCF with these occupations to zero out orbital error
+          frozen_occupations_ = true;
+          auto verbosity = verbosity_;
+          verbosity_ = std::min(1,verbosity);
+          run();
+          verbosity_ = verbosity;
+          current_energy = get_energy();
+
+          dE = current_energy - old_energy;
+          if(verbosity_>=5) {
+            printf("\n\n");
+          }
+          if(verbosity_>0) {
+            printf("ODA iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", iteration, number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
+          }
+          if(verbosity_>=5) {
+            const auto & occupations = get_orbital_occupations();
+            auto occ_idx(occupied_orbitals(occupations));
+            for(size_t l=0;l<occ_idx.size();l++) {
+              if(occ_idx[l].n_elem) {
+                occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
+
+                // Compute Fock matrix
+                const auto orbitals = get_orbital_block(0, l);
+                const auto fock = get_fock_matrix_block(0, l);
+                arma::Mat<Torb> fock_mo = orbitals.t() * fock * orbitals;
+                fock_mo.submat(0,0,arma::max(occ_idx[l]),arma::max(occ_idx[l])).print(block_descriptions_[l] + " occupied-occupied orbital Fock matrix");
+              }
             }
           }
+          if(std::abs(dE) < target_threshold)
+            break;
         }
-        if(std::abs(dE) < convergence_threshold_)
-          break;
       }
+      // Reset convergence threshold
+      convergence_threshold_ = target_threshold;
     }
 
     /// Run the SCF
