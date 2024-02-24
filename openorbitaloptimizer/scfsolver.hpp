@@ -1701,7 +1701,7 @@ namespace OpenOrbitalOptimizer {
             //diis_weights = minimal_error_sampling_algorithm();
           }
           if(verbosity_>=10)
-            diis_weights.print("Extrapolation weigths");
+            diis_weights.print("Extrapolation weights");
 
           // Perform extrapolation. If it does not lower the energy, we do
           // a scaled steepest descent step, instead.
