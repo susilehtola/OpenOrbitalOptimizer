@@ -440,7 +440,7 @@ namespace OpenOrbitalOptimizer {
     arma::Col<Tbase> adiis_linear_term() const {
       arma::Col<Tbase> ret(orbital_history_.size(),arma::fill::zeros);
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        const auto & Dn = get_density_matrix_block(0, iblock);
+        const arma::Mat<Torb> Dn = get_density_matrix_block(0, iblock);
         const auto & Fn = get_fock_matrix_block(0, iblock);
         for(size_t ihist=0;ihist<ret.size();ihist++) {
           // D_i - D_n
@@ -464,7 +464,7 @@ namespace OpenOrbitalOptimizer {
     arma::Mat<Tbase> aediis_quadratic_term() const {
       arma::Mat<Tbase> ret(orbital_history_.size(),orbital_history_.size(),arma::fill::zeros);
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        const auto & Dn = get_density_matrix_block(0, iblock);
+        const arma::Mat<Torb> Dn = get_density_matrix_block(0, iblock);
         const auto & Fn = get_fock_matrix_block(0, iblock);
         for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
           for(size_t jhist=0;jhist<orbital_history_.size();jhist++) {
@@ -1799,6 +1799,9 @@ namespace OpenOrbitalOptimizer {
       }
 
       std::function<DensityMatrix<Torb,Tbase>(const arma::Col<Tbase> &)> interpolate_density = [this, reference_orbitals, reference_occupations, new_orbitals, trial_occupations_per_particle](const arma::Col<Tbase> & lambda) {
+        if(arma::sum(lambda)>1.0)
+          throw std::logic_error("Sum of parameters exceeds one; interpolated density is not N-representable!\n");
+
         // Returned density matrix
         Orbitals<Torb> interp_orbs(reference_orbitals.size());
         OrbitalOccupations<Tbase> interp_occs(reference_orbitals.size());
@@ -1874,12 +1877,9 @@ namespace OpenOrbitalOptimizer {
 
         Tbase tr=0.0;
         for(size_t iblock=0;iblock<orbitals.size();iblock++) {
-          auto orb_block = orbitals[iblock];
-          auto occ_block = occupations[iblock];
-          auto fock_block = fock[iblock];
-
-          arma::Col<Torb> fock_mo = arma::diagvec(orb_block.t() * fock_block * orb_block);
-          tr += std::real(arma::dot(fock_mo, occ_block));
+          arma::Mat<Torb> D = orbitals[iblock] * arma::diagmat(occupations[iblock]) * orbitals[iblock].t();
+          auto & F = fock[iblock];
+          tr += std::real(arma::trace(D*F));
         }
         return tr;
       };
@@ -1904,18 +1904,71 @@ namespace OpenOrbitalOptimizer {
         Tbase E_left = eval_left.second.first;
         Tbase E_right = eval_right.second.first;
 
+        if(E_right < E_left)
+          // Roothaan step decreased energy, no need to do anything more
+          return;
+
         // and Fock and density matrices
         const auto & F_left = eval_left.second.second;
         const auto & F_right = eval_right.second.second;
         const auto & P_left = eval_left.first;
         const auto & P_right = eval_right.first;
 
+#if 0
+        // TODO: figure out what is wrong with this code; the derivatives aren't correct
         // which give us the derivatives
-        Tbase dE_left = trace(P_right, F_left);
-        Tbase dE_right = trace(P_left, F_right);
+        Tbase dE_left = 2*trace(P_right, F_left);
+        Tbase dE_right = 2*trace(P_left, F_right);
+
+        // Debug: check the correctness of the derivatives
+        {
+          std::function<Tbase(Tbase)> eval = [this, evaluate](Tbase x) {
+            arma::Col<Tbase> xvec(1);
+            xvec(0) = x;
+            auto eval = evaluate(xvec);
+            return eval.second.first;
+          };
+
+          for(int ih=4;ih<10;ih++) {
+            Tbase h = std::pow(10.0, -ih);
+            Tbase dE_left_num = (eval(h) - eval(0))/h;
+            Tbase dE_right_num = (eval(1.0) - eval(1.0-h))/h;
+            printf("h = %e dE_left = %e vs %e dE_right = %e vs %e\n", h, dE_left, dE_left_num, dE_right, dE_right_num);
+          }
+        }
 
         // Fit a cubic polynomial
-        auto cubic = HelperRoutines::fit_cubic_polynomial<Tbase>(E_left, dE_left, 1.0, E_right, dE_right);
+        auto cubic = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_left, dE_left, 1.0, E_right, dE_right);
+#else
+        x0(0) = 1.0/3.0;
+        auto eval_L3 = evaluate(x0);
+        number_of_fock_evaluations_++;
+        add_entry(eval_L3.first, eval_L3.second);
+
+        x0(0) = 2.0/3.0;
+        auto eval_2L3 = evaluate(x0);
+        number_of_fock_evaluations_++;
+        add_entry(eval_2L3.first, eval_2L3.second);
+
+        Tbase E_L3 = eval_L3.second.first;
+        Tbase E_2L3 = eval_2L3.second.first;
+
+        auto cubic = HelperRoutines::fit_cubic_polynomial_without_derivatives<Tbase>(E_left, 1.0, E_L3, E_2L3, E_right);
+
+        std::function<Tbase(Tbase)> eval_poly = [cubic](Tbase x) {
+          return HelperRoutines::evaluate_cubic_polynomial<Tbase>(x, std::get<0>(cubic), std::get<1>(cubic), std::get<2>(cubic), std::get<3>(cubic));
+        };
+        Tbase pEl = eval_poly(0.0);
+        Tbase pEl3 = eval_poly(1.0/3.0);
+        Tbase pE2l3 = eval_poly(2.0/3.0);
+        Tbase pEr = eval_poly(1.0);
+
+        printf("f(0) = %e vs %e diff %e\n",pEl,E_left,pEl-E_left);
+        printf("f(0.333) = %e vs %e diff %e\n",pEl3,E_L3,pEl3-E_L3);
+        printf("f(0.667) = %e vs %e diff %e\n",pE2l3,E_2L3,pE2l3-E_2L3);
+        printf("f(1) = %e vs %e diff %e\n",pEr,E_right,pEr-E_right);
+
+#endif
         // and find its extrema
         auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic);
 
@@ -1930,12 +1983,22 @@ namespace OpenOrbitalOptimizer {
           auto eval_first = evaluate(x0);
           number_of_fock_evaluations_++;
           add_entry(eval_first.first, eval_first.second);
+          if(verbosity_>=5)
+            printf("Energy with step %e is % .10f\n",zeros.first, eval_first.second.first);
         }
         if(within_limits(zeros.second)) {
           x0(0) = zeros.second;
           auto eval_second = evaluate(x0);
           number_of_fock_evaluations_++;
           add_entry(eval_second.first, eval_second.second);
+          if(verbosity_>=5)
+            printf("Energy with step %e is % .10f\n",zeros.second, eval_second.second.first);
+        }
+
+        if(not within_limits(zeros.first) and not within_limits(zeros.second)) {
+          std::ostringstream oss;
+          oss << "No roots in the search space! Roots " << zeros.first << " and " << zeros.second << "!\n";
+          throw std::logic_error(oss.str());
         }
 
       } else {
@@ -1954,11 +2017,15 @@ namespace OpenOrbitalOptimizer {
       Tbase dE;
       for(iteration=1; iteration <= maximum_iterations_; iteration++) {
         old_energy = current_energy;
+        // Occupation update and extract DIIS error with fixed orbitals
         optimal_damping_step();
+        Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+        // Run SCF with these occupations to zero out orbital error
+        frozen_occupations_ = true;
+        run();
         current_energy = get_energy();
 
         dE = current_energy - old_energy;
-        Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
         if(verbosity_>=5) {
           printf("\n\n");
         }
