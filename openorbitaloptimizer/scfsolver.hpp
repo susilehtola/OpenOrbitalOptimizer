@@ -1807,15 +1807,20 @@ namespace OpenOrbitalOptimizer {
         }
       }
 
-      std::function<Tbase(const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb> & fock)> trace = [](const DensityMatrix<Torb,Tbase> & dm, const FockMatrix<Torb> & fock) {
-        const auto & orbitals = dm.first;
-        const auto & occupations = dm.second;
+      std::function<Tbase(const DensityMatrix<Torb,Tbase> & dm1, const DensityMatrix<Torb,Tbase> & dm2, const FockMatrix<Torb> & fock)> trace = [](const DensityMatrix<Torb,Tbase> & dm1, const DensityMatrix<Torb,Tbase> & dm2, const FockMatrix<Torb> & fock) {
+        const auto & orbitals1 = dm1.first;
+        const auto & occupations1 = dm1.second;
+        const auto & orbitals2 = dm2.first;
+        const auto & occupations2 = dm2.second;
 
         Tbase tr=0.0;
-        for(size_t iblock=0;iblock<orbitals.size();iblock++) {
-          arma::Mat<Torb> D = orbitals[iblock] * arma::diagmat(occupations[iblock]) * orbitals[iblock].t();
-          auto & F = fock[iblock];
-          tr += std::real(arma::trace(D*F));
+        for(size_t iblock=0;iblock<fock.size();iblock++) {
+          // Compute difference density in block
+          arma::Mat<Torb> dD(orbitals1[iblock].n_rows,orbitals1[iblock].n_rows,arma::fill::zeros);
+          dD += orbitals1[iblock] * arma::diagmat(occupations1[iblock]) * orbitals1[iblock].t();
+          dD -= orbitals2[iblock] * arma::diagmat(occupations2[iblock]) * orbitals2[iblock].t();
+          // and trace it with the Fock matrix
+          tr += std::real(arma::trace(dD*fock[iblock]));
         }
         return tr;
       };
@@ -1833,6 +1838,11 @@ namespace OpenOrbitalOptimizer {
 
       // Initial guess
       arma::Col<Tbase> x0(npars, arma::fill::zeros);
+
+      // TODO: do simultaneous optimization of the parameters using an
+      // additional slackness variable: write lambda_i = x_i^2 / sum_j
+      // x_j^2 where the last x_i is a slackness parameter. As as a
+      // result, 0 <= sum_i lambda_i <= 1
 
       for(size_t ipar=0; ipar<npars; ipar++) {
         // We update the reference orbitals for every parameter
@@ -1930,7 +1940,7 @@ namespace OpenOrbitalOptimizer {
             // printf("Particle %i sum occs: old % .10f new % .10f\n",iparticle,num_old,num_new);
 
             if(std::abs(num_old-num_new)>std::sqrt(std::numeric_limits<Tbase>::epsilon())) {
-              throw std::logic_error("Error in trial generation\n");
+              throw std::logic_error("Error in trial generation: number of particles was not conserved!\n");
             }
           }
 
@@ -1944,8 +1954,11 @@ namespace OpenOrbitalOptimizer {
           return std::make_pair(dm,fock);
         };
 
+        // Step length to use
+        Tbase step_length = 1.0;
+
         x0.zeros();
-        x0(ipar) = 1.0;
+        x0(ipar) = step_length;
         auto eval_right = evaluate(x0);
         number_of_fock_evaluations_++;
         add_entry(eval_right.first, eval_right.second);
@@ -1958,8 +1971,9 @@ namespace OpenOrbitalOptimizer {
           // Roothaan step decreased energy, no need to do anything more
           return;
 
+#if 0
         // Debug
-        if(true) {
+         {
           x0.zeros();
           x0(ipar) = 0.0;
           auto test_eval = evaluate(x0);
@@ -1969,6 +1983,7 @@ namespace OpenOrbitalOptimizer {
             throw std::logic_error(oss.str());
           }
         }
+#endif
 
         // and Fock and density matrices
         const auto & F_left = eval_left.second.second;
@@ -1976,14 +1991,14 @@ namespace OpenOrbitalOptimizer {
         const auto & P_left = eval_left.first;
         const auto & P_right = eval_right.first;
 
-#if 0
+#if 1
         // TODO: figure out what is wrong with this code; the derivatives aren't correct
-        // The derivatives with respect to the step size are
-        Tbase dE_left = 2*trace(P_right, F_left);
-        Tbase dE_right = 2*trace(P_left, F_right);
+        // The derivatives with respect to the step size are given by Tr [F (D_new - D_old)]
+        Tbase dE_left = trace(P_right, P_left, F_left);
+        Tbase dE_right = trace(P_right, P_left, F_right);
 
         // Debug: check the correctness of the derivatives
-        {
+        if(false) {
           std::function<Tbase(Tbase)> eval = [this, evaluate, npars, ipar](Tbase x) {
             arma::Col<Tbase> xvec(npars,arma::fill::zeros);
             xvec(ipar) = x;
@@ -1991,7 +2006,7 @@ namespace OpenOrbitalOptimizer {
             return eval.second.first;
           };
 
-          for(int ih=4;ih<10;ih++) {
+          for(int ih=2;ih<8;ih++) {
             Tbase h = std::pow(10.0, -ih);
             Tbase dE_left_num = (eval(h) - eval(0))/h;
             Tbase dE_right_num = (eval(1.0) - eval(1.0-h))/h;
@@ -2003,13 +2018,13 @@ namespace OpenOrbitalOptimizer {
         auto cubic = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_left, dE_left, 1.0, E_right, dE_right);
 #else
         x0.zeros();
-        x0(ipar) = 1.0/3.0;
+        x0(ipar) = 1.0/3.0*step_length;
         auto eval_L3 = evaluate(x0);
         number_of_fock_evaluations_++;
         add_entry(eval_L3.first, eval_L3.second);
 
         x0.zeros();
-        x0(ipar) = 2.0/3.0;
+        x0(ipar) = 2.0/3.0*step_length;
         auto eval_2L3 = evaluate(x0);
         number_of_fock_evaluations_++;
         add_entry(eval_2L3.first, eval_2L3.second);
@@ -2023,7 +2038,7 @@ namespace OpenOrbitalOptimizer {
         printf("E_2L3 = %.10f\n",E_2L3);
         printf("E_right = %.10f\n",E_right);
 
-        auto cubic = HelperRoutines::fit_cubic_polynomial_without_derivatives<Tbase>(E_left, 1.0, E_L3, E_2L3, E_right);
+        auto cubic = HelperRoutines::fit_cubic_polynomial_without_derivatives<Tbase>(E_left, step_length, E_L3, E_2L3, E_right);
 
         // Sanity check: check that the obtained polynomial passes through the points
         std::function<Tbase(Tbase)> eval_poly = [cubic](Tbase x) {
@@ -2038,17 +2053,17 @@ namespace OpenOrbitalOptimizer {
           }
         };
         check_value(0.0, E_left);
-        check_value(1.0/3.0, E_L3);
-        check_value(2.0/3.0, E_2L3);
-        check_value(1.0, E_right);
+        check_value(1.0/3.0*step_length, E_L3);
+        check_value(2.0/3.0*step_length, E_2L3);
+        check_value(step_length, E_right);
 
 #endif
         // and find its extrema
         auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic);
 
         // Checks whether the x value is allowed
-        std::function<bool(Tbase)> within_limits = [](Tbase x) {
-          return x>=0.0 and x<=1.0;
+        std::function<bool(Tbase)> within_limits = [step_length](Tbase x) {
+          return x>=0.0 and x<=step_length;
         };
 
         // Evaluate the roots if they're ok
