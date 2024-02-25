@@ -1741,67 +1741,49 @@ namespace OpenOrbitalOptimizer {
             if(num_left == 0.0) {
               trial_occupations_per_particle[iparticle].push_back(particle_occupations);
             }
-         } else {
-            // We have degenerate orbitals.
-            if(jfill-ifill>2) {
-              // TODO: extend to problems with arbitrary number of
-              // degenerate orbitals. The issue is that one has to
-              // program the extreme cases for the density matrices;
-              // however, it appears this is straightforward to do by
-              // listing the degenerate orbitals, and then generating
-              // trials by filling them in different orderings. One
-              // just has to loop over all possible orderings of
-              // degenerate orbitals and eliminate duplicates
-              std::ostringstream oss;
-              oss << "Particle type " << iparticle << " has " << jfill-ifill << " degenerate orbitals.\nThe implementation of the optimal damping algorithm in OpenOrbitalOptimizer is limited to 2 degenerate orbitals per particle type.\n";
-              throw std::runtime_error(oss.str());
-            }
+          } else {
+            // List of orbitals to consider for filling
+            std::vector<size_t> filling_order;
+            for(size_t iorb=ifill;iorb<jfill;iorb++)
+              filling_order.push_back(iorb);
+            // Generate trials: enumerate all possible permutations of the orbitals to be filled
+            do {
+              // We need to always spread the same number of electrons
+              auto iter_num_left(num_left);
+              auto iter_occupations(particle_occupations);
+              arma::uvec iter_orbital_index(orbital_index);
+              // Fill the orbitals from left to right
+              for(size_t orbital_index: filling_order) {
+                auto block_index = std::get<1>(all_energies[orbital_index]);
+                auto capacity = maximum_occupation_(block_index);
+                auto fill = std::min(capacity, iter_num_left);
+                iter_occupations[block_index-iblock_start](iter_orbital_index(block_index-iblock_start)++) = fill;
+                iter_num_left -= fill;
+                if(iter_num_left == 0.0)
+                  break;
+              }
+              if(iter_num_left != 0.0)
+                throw std::logic_error("Still have electrons left!\n");
 
-            // If we are here, we have exactly two degenerate
-            // orbitals
-            auto first_energy = std::get<0>(all_energies[ifill]);
-            auto first_block_index = std::get<1>(all_energies[ifill]);
-            auto first_orb_index = std::get<2>(all_energies[ifill]);
-            auto first_capacity = maximum_occupation_(first_block_index);
-            auto second_energy = std::get<0>(all_energies[ifill+1]);
-            auto second_block_index = std::get<1>(all_energies[ifill+1]);
-            auto second_orb_index = std::get<2>(all_energies[ifill+1]);
-            auto second_capacity = maximum_occupation_(second_block_index);
+              // Function to check if the stack already has the same
+              // trial (fully filled subshells can be permuted without
+              // changing the resulting occupations)
+              auto match = [this, iter_occupations](const std::vector<arma::Col<Tbase>> & list_occ) {
+                Tbase sqdiff=0.0;
+                for(size_t iblock=0;iblock<list_occ.size();iblock++)
+                  sqdiff += arma::norm(list_occ[iblock]-iter_occupations[iblock],2);
+                return sqdiff < occupation_change_threshold_;
+              };
+              // Add the occupation pattern to the stack
+              auto idx = std::find_if(trial_occupations_per_particle[iparticle].begin(), trial_occupations_per_particle[iparticle].end(), match);
+              if(idx == trial_occupations_per_particle[iparticle].end())
+                trial_occupations_per_particle[iparticle].push_back(iter_occupations);
+            } while (std::next_permutation(filling_order.begin(), filling_order.end()));
 
-            // Next, we form the two occupation vectors
-            auto first_occupations(particle_occupations);
-            auto second_occupations(particle_occupations);
-            // In the first case, we have maximal occupation on the first orbital
-            auto num1_left(num_left);
-            auto fill1 = std::min(first_capacity, num1_left);
-            arma::uvec orbital_index1(orbital_index);
-            first_occupations[first_block_index-iblock_start](orbital_index1(first_block_index-iblock_start)++) = fill1;
-            num1_left -= fill1;
-            if(particles_left(num1_left)) {
-              // Put the rest on the other orbital
-              first_occupations[second_block_index-iblock_start](orbital_index1(second_block_index-iblock_start)++) = num1_left;
-            }
-
-            // In the first case, we have maximal occupation on the first orbital
-            auto num2_left(num_left);
-            auto fill2 = std::min(second_capacity, num2_left);
-            arma::uvec orbital_index2(orbital_index);
-            second_occupations[second_block_index-iblock_start](orbital_index2(second_block_index-iblock_start)++) = fill2;
-            num2_left -= fill2;
-            if(particles_left(num2_left)) {
-              // Put the rest on the other orbital
-              second_occupations[first_block_index-iblock_start](orbital_index2(first_block_index-iblock_start)++) = num2_left;
-            }
-
-            // Add to stack
-            trial_occupations_per_particle[iparticle].push_back(first_occupations);
-            trial_occupations_per_particle[iparticle].push_back(second_occupations);
-
-            printf("First  trial: put %f particles in block %i and %f particles in block %i\n", fill1, first_block_index, num1_left, second_block_index);
-            printf("Second trial: put %f particles in block %i and %f particles in block %i\n", fill2, second_block_index, num2_left, first_block_index);
-            // No particles left
+            // Nothing left
             num_left = 0.0;
           }
+
           // Update orbital index
           ifill = jfill;
         }
@@ -1824,7 +1806,6 @@ namespace OpenOrbitalOptimizer {
         }
         return tr;
       };
-
 
       // Count number of parameters
       size_t npars=0;
@@ -1971,93 +1952,18 @@ namespace OpenOrbitalOptimizer {
           // Roothaan step decreased energy, no need to do anything more
           return;
 
-#if 0
-        // Debug
-         {
-          x0.zeros();
-          x0(ipar) = 0.0;
-          auto test_eval = evaluate(x0);
-          if(std::abs(test_eval.second.first-E_left)>1e-8) {
-            std::ostringstream oss;
-            oss << "Energy evaluated for step=0 is " << test_eval.second.first << " while known energy is " << E_left << " with difference " << test_eval.second.first-E_left << "!\n";
-            throw std::logic_error(oss.str());
-          }
-        }
-#endif
-
         // and Fock and density matrices
         const auto & F_left = eval_left.second.second;
         const auto & F_right = eval_right.second.second;
         const auto & P_left = eval_left.first;
         const auto & P_right = eval_right.first;
 
-#if 1
-        // TODO: figure out what is wrong with this code; the derivatives aren't correct
         // The derivatives with respect to the step size are given by Tr [F (D_new - D_old)]
         Tbase dE_left = trace(P_right, P_left, F_left);
         Tbase dE_right = trace(P_right, P_left, F_right);
 
-        // Debug: check the correctness of the derivatives
-        if(false) {
-          std::function<Tbase(Tbase)> eval = [this, evaluate, npars, ipar](Tbase x) {
-            arma::Col<Tbase> xvec(npars,arma::fill::zeros);
-            xvec(ipar) = x;
-            auto eval = evaluate(xvec);
-            return eval.second.first;
-          };
-
-          for(int ih=2;ih<8;ih++) {
-            Tbase h = std::pow(10.0, -ih);
-            Tbase dE_left_num = (eval(h) - eval(0))/h;
-            Tbase dE_right_num = (eval(1.0) - eval(1.0-h))/h;
-            printf("h = %e dE_left = %e vs %e dE_right = %e vs %e\n", h, dE_left, dE_left_num, dE_right, dE_right_num);
-          }
-        }
-
         // Fit a cubic polynomial
         auto cubic = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_left, dE_left, 1.0, E_right, dE_right);
-#else
-        x0.zeros();
-        x0(ipar) = 1.0/3.0*step_length;
-        auto eval_L3 = evaluate(x0);
-        number_of_fock_evaluations_++;
-        add_entry(eval_L3.first, eval_L3.second);
-
-        x0.zeros();
-        x0(ipar) = 2.0/3.0*step_length;
-        auto eval_2L3 = evaluate(x0);
-        number_of_fock_evaluations_++;
-        add_entry(eval_2L3.first, eval_2L3.second);
-
-        Tbase E_L3 = eval_L3.second.first;
-        Tbase E_2L3 = eval_2L3.second.first;
-
-
-        printf("E_left = %.10f\n",E_left);
-        printf("E_L3 = %.10f\n",E_L3);
-        printf("E_2L3 = %.10f\n",E_2L3);
-        printf("E_right = %.10f\n",E_right);
-
-        auto cubic = HelperRoutines::fit_cubic_polynomial_without_derivatives<Tbase>(E_left, step_length, E_L3, E_2L3, E_right);
-
-        // Sanity check: check that the obtained polynomial passes through the points
-        std::function<Tbase(Tbase)> eval_poly = [cubic](Tbase x) {
-          return HelperRoutines::evaluate_cubic_polynomial<Tbase>(x, std::get<0>(cubic), std::get<1>(cubic), std::get<2>(cubic), std::get<3>(cubic));
-        };
-        std::function<void(Tbase,Tbase)> check_value = [eval_poly](Tbase x, Tbase y) {
-          Tbase y_predicted = eval_poly(x);
-          if(std::abs(y_predicted-y) > std::sqrt(std::numeric_limits<Tbase>::epsilon())) {
-            std::ostringstream oss;
-            oss << "Polynomial fit not working: predicted value " << y_predicted << " at x=" << x << ", real value " << y << ", difference " << y_predicted-y << "!\n";
-            throw std::logic_error(oss.str());
-          }
-        };
-        check_value(0.0, E_left);
-        check_value(1.0/3.0*step_length, E_L3);
-        check_value(2.0/3.0*step_length, E_2L3);
-        check_value(step_length, E_right);
-
-#endif
         // and find its extrema
         auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic);
 
@@ -2086,7 +1992,7 @@ namespace OpenOrbitalOptimizer {
             printf("Energy for ipar=%i with step %e is % .10f\n",ipar,zeros.second, eval_second.second.first);
         }
 
-#if 0
+#if 1
         if(not within_limits(zeros.first) and not within_limits(zeros.second)) {
           std::ostringstream oss;
           oss << "No roots in the search space! Roots " << zeros.first << " and " << zeros.second << "!\n";
