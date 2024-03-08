@@ -92,15 +92,16 @@ namespace OpenOrbitalOptimizer {
       /// Current estimate for parameters
       auto x(x0);
       auto current_point = fx(x);
-      auto current_energy = current_point.first;
 
       /// Old search direction
+      T current_energy;
       arma::Col<T> current_gradient, previous_gradient;
       arma::Col<T> current_direction, previous_direction;
       for(size_t iteration = 0; iteration < max_iter; iteration++) {
         /// Update the gradients
         previous_gradient = current_gradient;
         current_gradient = current_point.second;
+        current_energy = current_point.first;
 
         /// Form the search direction
         previous_direction = current_direction;
