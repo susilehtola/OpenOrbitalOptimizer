@@ -2139,11 +2139,15 @@ namespace OpenOrbitalOptimizer {
 
     /// Run the SCF
     void run(bool steepest_descent=false) {
-      Tbase old_energy = get_energy();
+      Tbase old_energy = 0.0;
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
         Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
         Tbase dE = get_energy() - old_energy;
+        if(dE==0.0) {
+          printf("Error: energy did not go down in last iteration, exiting SCF loop!\n");
+          break;
+        }
 
         if(verbosity_>=5) {
           printf("\n\n");
