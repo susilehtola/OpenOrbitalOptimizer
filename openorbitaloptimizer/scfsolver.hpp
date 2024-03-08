@@ -1973,8 +1973,10 @@ namespace OpenOrbitalOptimizer {
         auto fval = eval.second.first;
         // Fock matrix
         auto fock = eval.second.second;
-        // Density matrix
-        auto dm = eval.first;
+
+        // We need the reference density matrix for the gradient
+        arma::Col<Tbase> zero_lambda(lambda.n_elem, arma::fill::zeros);
+        auto dm_zero = interpolate_density(zero_lambda);
 
         // Compute gradient with respect to lambda.  We are computing
         // the partial derivative at the current point. To do this, we
@@ -1989,7 +1991,7 @@ namespace OpenOrbitalOptimizer {
           temp_lambda(il) = 1.0;
           auto dm_this = interpolate_density(temp_lambda);
           // Gradient is
-          grad_lambda(il) = trace(dm_this, dm, fock);
+          grad_lambda(il) = trace(dm_this, dm_zero, fock);
         }
 
         // The gradient is obtained with the Jacobian
