@@ -301,11 +301,16 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Form DIIS error vector for ihist:th entry
+    arma::Col<Tbase> diis_error_vector(size_t ihist, size_t iblock) const {
+      return vectorise(diis_residual(ihist, iblock));
+    }
+
+    /// Form DIIS error vector for ihist:th entry
     arma::Col<Tbase> diis_error_vector(size_t ihist) const {
       // Form error vectors
       std::vector<arma::Col<Tbase>> error_vectors(number_of_blocks_);
       for(size_t iblock = 0; iblock<number_of_blocks_;iblock++) {
-        error_vectors[iblock] = vectorise(diis_residual(ihist, iblock));
+        error_vectors[iblock] = diis_error_vector(ihist, iblock);
         if(verbosity_>=20)
           printf("ihist %i block %i error vector norm %e\n",ihist,iblock,arma::norm(error_vectors[iblock],error_norm_.c_str()));
         if(verbosity_>=30)
@@ -336,11 +341,17 @@ namespace OpenOrbitalOptimizer {
       // The error matrix is given by the orbital gradient dot products
       const size_t N=orbital_history_.size();
       arma::Mat<Tbase> B(N,N,arma::fill::zeros);
-      for(size_t ihist=0; ihist<N; ihist++) {
-        arma::Col<Tbase> ei = diis_error_vector(ihist);
-        for(size_t jhist=0; jhist<=ihist; jhist++) {
-          arma::Col<Tbase> ej = diis_error_vector(jhist);
-          B(jhist,ihist) = B(ihist, jhist) = arma::dot(ei,ej);
+
+      for(size_t iblock=0; iblock<number_of_blocks_; iblock++) {
+        for(size_t ihist=0; ihist<N; ihist++) {
+          arma::Col<Tbase> ei = diis_error_vector(ihist, iblock);
+          for(size_t jhist=0; jhist<=ihist; jhist++) {
+            arma::Col<Tbase> ej = diis_error_vector(jhist, iblock);
+            auto dotprod = arma::dot(ei,ej);
+            B(jhist, ihist) += dotprod;
+            if(ihist != jhist)
+              B(ihist, jhist) += dotprod;
+          }
         }
       }
       return B;
