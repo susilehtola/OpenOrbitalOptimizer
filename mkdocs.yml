@@ -1,7 +1,7 @@
 site_name: OpenOrbitalOptimizer Docs
 
 theme:
-  name: "material"
+  name: material
 
 plugins:
 - mkdocstrings:
@@ -12,7 +12,7 @@ plugins:
           docstring_style: numpy
 
 nav:
-  - QCManyBody Docs: index.md
+  - OpenOrbitalOptimizer Docs: index.md
   - tutorials.md
   - How-To Guides: how-to-guides.md
   - reference.md
