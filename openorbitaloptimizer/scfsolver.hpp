@@ -137,6 +137,9 @@ namespace OpenOrbitalOptimizer {
     /// Level shift diminution factor
     Tbase level_shift_factor_ = 2.0;
 
+    /// Positive shift of diagonal orbital Hessian in gradient descent
+    Tbase hessian_shift_ = 0.1;
+
     /// Degeneracy threshold for optimal damping algorithm
     Tbase optimal_damping_degeneracy_threshold_ = 1e-3;
     /// Allow fractional occupations in normal SCF
@@ -854,6 +857,7 @@ namespace OpenOrbitalOptimizer {
         arma::Mat<Torb> fock_mo = orbital_block.t() * fock_block * orbital_block;
         orb_hess(idof) = 2*std::real((fock_mo(iorb,iorb)-fock_mo(jorb,jorb))*(occ_block(jorb)-occ_block(iorb)));
         if constexpr (!arma::is_real<Torb>::value) {
+          // Same preconditioning for imaginary degrees of freedom
           orb_hess(dof_list.size() + idof) = orb_hess(idof);
         }
       }
@@ -861,13 +865,13 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Formulate the diagonal orbital Hessian
-    arma::Col<Tbase> precondition_search_direction(const arma::Col<Tbase> & gradient, const arma::Col<Tbase> & diagonal_hessian, Tbase shift=0.1) const {
+    arma::Col<Tbase> precondition_search_direction(const arma::Col<Tbase> & gradient, const arma::Col<Tbase> & diagonal_hessian) const {
       if(gradient.n_elem != diagonal_hessian.n_elem)
         throw std::logic_error("precondition_search_direction: gradient and diagonal hessian have different size!\n");
 
       // Build positive definite diagonal Hessian
       arma::Col<Tbase> positive_hessian(diagonal_hessian);
-      positive_hessian += (-arma::min(diagonal_hessian)+shift)*arma::ones<arma::Col<Tbase>>(positive_hessian.n_elem);
+      positive_hessian += (-arma::min(diagonal_hessian)+hessian_shift_)*arma::ones<arma::Col<Tbase>>(positive_hessian.n_elem);
 
       Tbase normalized_projection;
       Tbase maximum_spread = arma::max(positive_hessian);
@@ -1430,6 +1434,16 @@ namespace OpenOrbitalOptimizer {
     /// Set maximum_history_length
     void maximum_history_length(int maximum_history_length) {
       maximum_history_length_ = maximum_history_length;
+    }
+
+    /// Set the maximum number of iterations
+    void hessian_shift(Tbase shift) {
+      hessian_shift_ = shift;
+    }
+
+    /// Get maximum_history_length
+    Tbase hessian_shift() const {
+      return hessian_shift_;
     }
 
     /// Add entry to history, return value is True if energy was lowered
