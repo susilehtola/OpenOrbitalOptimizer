@@ -14,9 +14,6 @@ jobs:
           - runs-on: ubuntu-latest
             python-version: "3.10"
             cmargs: ""
-          - runs-on: macos-latest
-            python-version: "3.10"
-            cmargs: ""
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
     runs-on: ${{ matrix.cfg.runs-on }}
     defaults:
@@ -181,7 +178,7 @@ jobs:
         mkdocs build
 
     - name: GitHub Pages Deploy
-      uses: JamesIves/github-pages-deploy-action@4
+      uses: JamesIves/github-pages-deploy-action@v4
       if: github.event_name == 'push' && github.repository == 'susilehtola/OpenOrbitalOptimizer' && ( startsWith(github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/master' )
       with:
         branch: gh-pages
