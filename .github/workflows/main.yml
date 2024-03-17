@@ -51,7 +51,7 @@ jobs:
         cat export.yaml
 
     - name: Create Conda Environment
-      uses: conda-incubator/setup-miniconda@v2
+      uses: conda-incubator/setup-miniconda@v3
       with:
         miniforge-variant: Mambaforge
         use-mamba: true
@@ -149,17 +149,11 @@ jobs:
             - conda-forge
             - nodefaults
           dependencies:
-            # Build
-            - setuptools
-            - setuptools-scm
             # Core
             - python
-            - qcengine
-            - pydantic
             # Docs
             - mkdocs
             - mkdocs-material
-            - mkdocstrings-python
             - pip
             - pip:
               - mkdoxy
@@ -184,11 +178,10 @@ jobs:
 
     - name: Build Documentation
       run: |
-        python -m pip install . --no-deps
         mkdocs build
 
     - name: GitHub Pages Deploy
-      uses: JamesIves/github-pages-deploy-action@4.1.1
+      uses: JamesIves/github-pages-deploy-action@4
       if: github.event_name == 'push' && github.repository == 'susilehtola/OpenOrbitalOptimizer' && ( startsWith(github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/master' )
       with:
         branch: gh-pages
