@@ -51,7 +51,7 @@ jobs:
         cat export.yaml
 
     - name: Create Conda Environment
-      uses: conda-incubator/setup-miniconda@v2
+      uses: conda-incubator/setup-miniconda@v3
       with:
         miniforge-variant: Mambaforge
         use-mamba: true
@@ -121,3 +121,69 @@ jobs:
         cmake . -DCMAKE_PREFIX_PATH=${{github.workspace}}/installed
         cmake --build . --target atomtest
         ./atomtest --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 3 --sto 0 --basis "${{github.workspace}}/tests/cc-pvdz.json"
+
+  release_docs:
+    needs: [build-test-repo]
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+          - label: MkDocs
+            python-version: "3.10"
+            runs-on: ubuntu-latest
+
+    name: "🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.label }}"
+    runs-on: ${{ matrix.cfg.runs-on }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Write a Conda Env File
+      run: |
+          cat > export.yaml <<EOF
+          name: test
+          channels:
+            - conda-forge
+            - nodefaults
+          dependencies:
+            # Core
+            - python
+            # Docs
+            - mkdocs
+            - mkdocs-material
+            - doxygen
+            - pip
+            - pip:
+              - mkdoxy
+          EOF
+          cat export.yaml
+
+    - name: Create Environment
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        activate-environment: test
+        environment-file: export.yaml
+        python-version: ${{ matrix.cfg.python-version }}
+        auto-activate-base: false
+        show-channel-urls: true
+        add-pip-as-python-dependency: true
+        channels: conda-forge,nodefaults
+
+    - name: Environment Information
+      run: |
+        conda info
+        conda list --show-channel-urls
+
+    - name: Build Documentation
+      run: |
+        mkdocs build
+
+    - name: GitHub Pages Deploy
+      uses: JamesIves/github-pages-deploy-action@v4
+      if: github.event_name == 'push' && github.repository == 'susilehtola/OpenOrbitalOptimizer' && ( startsWith(github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/master' )
+      with:
+        branch: gh-pages
+        folder: site

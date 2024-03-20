@@ -1,0 +1,46 @@
+site_name: OpenOrbitalOptimizer Docs
+
+theme:
+  name: material
+
+plugins:
+- search
+- mkdoxy:
+    projects:
+      OOOApi:
+        src-dirs: openorbitaloptimizer
+        full-doc: True
+        doxy-cfg:  # standard doxygen configuration (key: value)
+          FILE_PATTERNS: "*.cpp *.h*"
+          RECURSIVE: True
+
+nav:
+  - OpenOrbitalOptimizer Docs: index.md
+  - tutorials.md
+  - How-To Guides: how-to-guides.md
+  - reference.md
+  - explanation.md
+  - OpenOrbitalOptimizer API:
+      - "OOOApi/index.md"
+      - "Links": "OOOApi/links.md"
+      - "Classes":
+          - "Class List": "OOOApi/annotated.md"
+          - "Class Index": "OOOApi/classes.md"
+          - "Class Hierarchy": "OOOApi/hierarchy.md"
+          - "Class Members": "OOOApi/class_members.md"
+          - "Class Member Functions": "OOOApi/class_member_functions.md"
+          - "Class Member Variables": "OOOApi/class_member_variables.md"
+          - "Class Member Typedefs": "OOOApi/class_member_typedefs.md"
+          - "Class Member Enumerations": "OOOApi/class_member_enums.md"
+      - "Namespaces":
+          - "Namespace List": "OOOApi/namespaces.md"
+          - "Namespace Members": "OOOApi/namespace_members.md"
+          - "Namespace Member Functions": "OOOApi/namespace_member_functions.md"
+          - "Namespace Member Variables": "OOOApi/namespace_member_variables.md"
+          - "Namespace Member Typedefs": "OOOApi/namespace_member_typedefs.md"
+          - "Namespace Member Enumerations": "OOOApi/namespace_member_enums.md"
+      - "Functions": "OOOApi/functions.md"
+      - "Variables": "OOOApi/variables.md"
+      - "Macros": "OOOApi/macros.md"
+      - "Files": "OOOApi/files.md"
+
