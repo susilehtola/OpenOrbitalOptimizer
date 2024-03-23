@@ -20,10 +20,10 @@ Public License 2.0.
 
 #### header-only library
 
-* Armadillo
+* [Armadillo](https://gitlab.com/conradsnicta/armadillo-code)
 
 #### testing
 
-* Libxc
-* IntegratorXX
-* nlohmann-JSON
+* [Libxc](https://gitlab.com/libxc/libxc)
+* [IntegratorXX](https://github.com/wavefunction91/IntegratorXX)
+* [nlohmann-JSON](https://github.com/nlohmann/json)
