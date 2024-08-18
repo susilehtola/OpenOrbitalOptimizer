@@ -141,7 +141,7 @@ namespace OpenOrbitalOptimizer {
     Tbase hessian_shift_ = 0.1;
 
     /// Degeneracy threshold for optimal damping algorithm
-    Tbase optimal_damping_degeneracy_threshold_ = 1e-3;
+    Tbase optimal_damping_degeneracy_threshold_ = 0.10;
     /// Allow fractional occupations in normal SCF
     bool allow_fractional_occupations_ = true;
 
@@ -2018,13 +2018,17 @@ namespace OpenOrbitalOptimizer {
         Tbase dE_iright = trace(P_i, P_orig, F_i);
         auto icubic = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_orig, dE_ileft, 1.0, E_i, dE_iright);
         // find its extrema
-        auto izeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, icubic);
-        x0.zeros();
-        x0(idim) = izeros.first;
-        if(within_limits(x0)) extrema.push_back(x0);
-        x0.zeros();
-        x0(idim) = izeros.second;
-        if(within_limits(x0)) extrema.push_back(x0);
+        try {
+          auto izeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, icubic);
+          x0.zeros();
+          x0(idim) = izeros.first;
+          if(within_limits(x0)) extrema.push_back(x0);
+          x0.zeros();
+          x0(idim) = izeros.second;
+          if(within_limits(x0)) extrema.push_back(x0);
+        } catch(std::logic_error) {
+          // no roots
+        };
       }
 
       // Minima on the lines connecting pairs of new density matrices
@@ -2041,17 +2045,21 @@ namespace OpenOrbitalOptimizer {
           // diagonal: interpolate from P_lr i.e. (1,0) to P_ul i.e. (0,1)
           Tbase dE_leftd = trace(P_ul, P_lr, F_lr);
           Tbase dE_rightd = trace(P_ul, P_lr, F_ul);
-          auto cubicd = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_lr, dE_leftd, 1.0, E_ul, dE_rightd);
-          auto zerosd = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubicd);
-          // root at 0 corresponds to (1,0)
-          x0.zeros();
-          x0(idim) = 1.0-zerosd.first;
-          x0(jdim) = zerosd.first;
-          if(within_limits(x0)) extrema.push_back(x0);
-          x0.zeros();
-          x0(idim) = 1.0-zerosd.second;
-          x0(jdim) = zerosd.second;
-          if(within_limits(x0)) extrema.push_back(x0);
+          try {
+            auto cubicd = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_lr, dE_leftd, 1.0, E_ul, dE_rightd);
+            auto zerosd = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubicd);
+            // root at 0 corresponds to (1,0)
+            x0.zeros();
+            x0(idim) = 1.0-zerosd.first;
+            x0(jdim) = zerosd.first;
+            if(within_limits(x0)) extrema.push_back(x0);
+            x0.zeros();
+            x0(idim) = 1.0-zerosd.second;
+            x0(jdim) = zerosd.second;
+            if(within_limits(x0)) extrema.push_back(x0);
+          } catch(std::logic_error) {
+            // no roots
+          }
         }
       }
         
