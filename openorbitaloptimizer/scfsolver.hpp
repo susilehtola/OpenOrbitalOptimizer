@@ -1816,6 +1816,7 @@ namespace OpenOrbitalOptimizer {
       for(auto & trial: trial_occupations_per_particle)
         npars += trial.size();
       printf("%i parameters in optimal damping\n", npars);
+      fflush(stdout);
 
       if(npars==0) {
         // nothing to do
@@ -1959,316 +1960,124 @@ namespace OpenOrbitalOptimizer {
         return true;
       };
 
-      if(npars==1) {
-        // Do line search. Begin by adding the values
-        arma::vec x0(npars);
+      // Carry out minimization by iterating over pairs of
+      // dimensions.
+
+      // For example, in the 2D case, the minimization should be
+      // carried out within the triangle 0 <= x1 + x2 <= 1 with 0 <=
+      // x1 <= 1 and 0 <= x2 <= 1. However, the minimization is
+      // easiest to do along the boundary lines (x1,0), (0,x2), and
+      // (x,1-x).
+
+      arma::vec x0(npars);
+      // origin
+      x0.zeros();
+      auto eval_orig = evaluate(x0);
+      number_of_fock_evaluations_++;
+
+      // Run all evaluations
+      std::vector<std::pair<DensityMatrix<Torb,Tbase>,FockBuilderReturn<Torb,Tbase>>> evaluations(npars);
+      for(size_t idim=0;idim<npars;idim++) {
         x0.zeros();
-        auto eval_left = evaluate(x0);
+        x0(idim)=1.0;
+        evaluations[idim] = evaluate(x0);
         number_of_fock_evaluations_++;
-
-        x0.ones();
-        auto eval_right = evaluate(x0);
-        number_of_fock_evaluations_++;
-
-        // Fit cubic polynomial: we have energies
-        Tbase E_left = eval_left.second.first;
-        Tbase E_right = eval_right.second.first;
-
-        if(E_right < E_left) {
-          // Roothaan step decreased energy, no need to do anything more
-          add_entry(eval_right.first, eval_right.second);
-          printf("ODA: successful Roothaan step\n");
-          return;
-        }
-
-        // and Fock and density matrices
-        const auto & F_left = eval_left.second.second;
-        const auto & F_right = eval_right.second.second;
-        const auto & P_left = eval_left.first;
-        const auto & P_right = eval_right.first;
-
-        // Fit a cubic polynomial
-        Tbase dE_left = trace(P_right, P_left, F_left);
-        Tbase dE_right = trace(P_right, P_left, F_right);
-        auto cubic = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_left, dE_left, 1.0, E_right, dE_right);
-        // and find its extrema
-        auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic);
-
-        // Evaluate the roots if they're ok
-        bool succ=false;
-        x0(0) = zeros.first;
-        if(within_limits(x0)) {
-          auto eval_first = evaluate(x0);
-          number_of_fock_evaluations_++;
-          succ = add_entry(eval_first.first, eval_first.second);
-          if(verbosity_>=5)
-            printf("Energy with step %e is % .10f\n",zeros.first, eval_first.second.first);
-        }
-        x0(0) = zeros.second;
-        if(within_limits(x0)) {
-          auto eval_second = evaluate(x0);
-          number_of_fock_evaluations_++;
-          succ = add_entry(eval_second.first, eval_second.second) || succ;
-          if(verbosity_>=5)
-            printf("Energy with step %e is % .10f\n",zeros.second, eval_second.second.first);
-        }
-
-        if(not succ) {
-          std::ostringstream oss;
-          oss << "Roots not in search space or energy was not decreased! Roots " << zeros.first << " and " << zeros.second << "!\n";
-          throw std::logic_error(oss.str());
-        }
-
-      } else if(npars==2) {
-        // Minimization should be carried out within the triangle 0 <=
-        // x1 + x2 <= 1 with 0 <= x1 <= 1 and 0 <= x2 <= 1. However,
-        // the minimization is easiest to do along the boundary lines
-        // (x1,0), (0,x2), and (x,1-x).
-
-        arma::vec x0(npars);
-
-        // origin
-        x0.zeros();
-        auto eval_orig = evaluate(x0);
-        number_of_fock_evaluations_++;
-
-        // lower right
-        x0.zeros();
-        x0(0)=1.0;
-        auto eval_lr = evaluate(x0);
-        number_of_fock_evaluations_++;
-
-        // upper left
-        x0.zeros();
-        x0(1)=1.0;
-        auto eval_ul = evaluate(x0);
-        number_of_fock_evaluations_++;
-
-        // Check first if we can decrease the energy with a Roothaan step
-        Tbase E_orig = eval_orig.second.first;
-        Tbase E_lr = eval_lr.second.first;
-        Tbase E_ul = eval_ul.second.first;
-
-        if(std::min(E_lr,E_ul) < E_orig) {
-          // Roothaan step decreased energy, adopt the minimal solution
-          if(E_lr < E_ul)
-            add_entry(eval_lr.first, eval_lr.second);
-          else
-            add_entry(eval_ul.first, eval_ul.second);
-          printf("ODA: successful Roothaan step: Elr-Eorig= %e Eul-Eorig= %e\n",E_lr-E_orig,E_ul-E_orig);
-          return;
-        }
-
-        // and Fock and density matrices
-        const auto & F_orig = eval_orig.second.second;
-        const auto & F_ul = eval_ul.second.second;
-        const auto & F_lr = eval_lr.second.second;
-
-        const auto & P_orig = eval_orig.first;
-        const auto & P_ul = eval_ul.first;
-        const auto & P_lr = eval_lr.first;
-
-        // Form list of zeros to try
-        std::vector<arma::Col<Tbase>> extrema;
-
-        // Fit cubic polynomials: dimension 0
-        Tbase dE_left0 = trace(P_lr, P_orig, F_orig);
-        Tbase dE_right0 = trace(P_lr, P_orig, F_lr);
-        auto cubic0 = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_orig, dE_left0, 1.0, E_lr, dE_right0);
-        // and find its extrema
-        auto zeros0 = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic0);
-        x0.zeros();
-        x0(0) = zeros0.first;
-        extrema.push_back(x0);
-        x0.zeros();
-        x0(0) = zeros0.second;
-        extrema.push_back(x0);
-
-        // dimension 1
-        Tbase dE_left1 = trace(P_ul, P_orig, F_orig);
-        Tbase dE_right1 = trace(P_ul, P_orig, F_ul);
-        auto cubic1 = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_orig, dE_left1, 1.0, E_ul, dE_right1);
-        auto zeros1 = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic1);
-        x0.zeros();
-        x0(1) = zeros1.first;
-        extrema.push_back(x0);
-        x0.zeros();
-        x0(1) = zeros1.second;
-        extrema.push_back(x0);
-
-        // diagonal: interpolate from P_lr i.e. (1,0) to P_ul i.e. (0,1)
-        Tbase dE_leftd = trace(P_ul, P_lr, F_lr);
-        Tbase dE_rightd = trace(P_ul, P_lr, F_ul);
-        auto cubicd = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_lr, dE_leftd, 1.0, E_ul, dE_rightd);
-        auto zerosd = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubicd);
-        // root at 0 corresponds to (1,0)
-        x0.zeros();
-        x0(0) = 1.0-zerosd.first;
-        x0(1) = zerosd.first;
-        extrema.push_back(x0);
-        x0.zeros();
-        x0(0) = 1.0-zerosd.second;
-        x0(1) = zerosd.second;
-        extrema.push_back(x0);
-
-        // Go through all solutions
-        bool succ=false;
-        for(const auto xval: extrema) {
-          if(within_limits(xval)) {
-            auto eval = evaluate(xval);
-            number_of_fock_evaluations_++;
-            succ = add_entry(eval.first, eval.second) || succ;
-            if(verbosity_>=5)
-              printf("Energy with (%e,%e) is % .10f\n",xval(0),xval(1), eval.second.first);
-          }
-        }
-        if(not succ) {
-          std::ostringstream oss;
-          oss << "Energy was not decreased!\n";
-          throw std::logic_error(oss.str());
-        }
-
-      } else {
-        throw std::logic_error("Implementation of ODA for >=3 parameters is not complete.\n");
-
-        // The optimization is done in terms of unrestricted variables
-        // x_i such that lambda_i = x_i^2 and a slack variable to allow
-        // 0 <= \sum_i lambda_i <= 1.
-        size_t nslack = npars+1;
-
-        // Initial guess: start close to the current vectors
-        //arma::Col<Tbase> x0(nslack, arma::fill::value(0.01));
-        //x0(x0.n_elem-1) = 0.99;
-        // can't init to 0 since then gradient is 0.
-        arma::Col<Tbase> x0(nslack, arma::fill::ones);
-
-        std::function<arma::Col<Tbase>(const arma::Col<Tbase> &)> get_lambda = [](const arma::Col<Tbase> & x) {
-          // Compute the mixing coefficients lambda
-          Tbase xnorm = arma::dot(x,x);
-          arma::Col<Tbase> lambda=arma::square(x)/xnorm;
-          // last element is the slack variable
-          return lambda.subvec(0,lambda.n_elem-2);
-        };
-
-        // Function to compute the ODA energy gradient with respect to the parameters
-        std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> oda_energy_gradient = [interpolate_density, evaluate, trace, get_lambda](const arma::Col<Tbase> & x) {
-          Tbase xnorm = arma::dot(x,x);
-
-          // Compute the mixing coefficients lambda
-          arma::Col<Tbase> lambda=get_lambda(x);
-          // and the Jacobian
-          arma::Mat<Tbase> jac(x.n_elem,lambda.n_elem,arma::fill::zeros);
-          for(size_t i=0;i<x.n_elem;i++) {
-            for(size_t j=0;j<lambda.n_elem;j++) {
-              jac(i,j) -= lambda(j)*2.0*x(i)/xnorm;
-            }
-            if(i<lambda.n_elem)
-              jac(i,i) += 2.0*x(i)/xnorm;
-          }
-
-          // Evaluate the density and Fock matrix
-          auto eval = evaluate(lambda);
-          // Energy
-          auto fval = eval.second.first;
-          // Fock matrix
-          auto fock = eval.second.second;
-
-          // We need the reference density matrix for the gradient
-          arma::Col<Tbase> zero_lambda(lambda.n_elem, arma::fill::zeros);
-          auto dm_zero = interpolate_density(zero_lambda);
-
-          // Compute gradient with respect to lambda.  We are computing
-          // the partial derivative at the current point. To do this, we
-          // need to construct the density matrices corresponding to all
-          // other blocks maintaining their current values, and the
-          // present block having differences. This means that the
-          // gradient is computed by particle.
-          arma::vec grad_lambda(lambda.n_elem, arma::fill::zeros);
-          for(size_t il=0; il<lambda.n_elem; il++) {
-            // Density matrix for this block
-            arma::Col<Tbase> temp_lambda(lambda.n_elem, arma::fill::zeros);
-            temp_lambda(il) = 1.0;
-            auto dm_this = interpolate_density(temp_lambda);
-            // Gradient is
-            grad_lambda(il) = trace(dm_this, dm_zero, fock);
-          }
-
-          // The gradient is obtained with the Jacobian
-          arma::Col<Tbase> g = jac * grad_lambda;
-
-          /*
-            printf("\n");
-            x.t().print("x");
-            lambda.t().print("Lambda");
-            grad_lambda.t().print("grad lambda");
-            g.t().print("grad x");
-            printf("fval = %.10f\n",fval);
-          */
-
-          return std::make_pair(fval, g);
-        };
-
-        // Test the gradient
-        if(false) {
-          // Value
-          auto [f, g] = oda_energy_gradient(x0);
-          // Numerical value
-          auto gnum(g);
-          for(size_t ig=0; ig<g.n_elem; ig++) {
-            double h = std::pow(10.0, -3);
-            auto x(x0);
-            x(ig) += h;
-            auto [fr, gr] = oda_energy_gradient(x);
-            x=x0;
-            x(ig) -= h;
-            auto [fl, gl] = oda_energy_gradient(x);
-            gnum(ig) = (fr-fl)/(2*h);
-          }
-
-          g.t().print("Analytical gradient");
-          gnum.t().print("Numerical gradient");
-          if(arma::norm(g-gnum,2)>=1e-5) {
-            std::ostringstream oss;
-            oss << "Incorrect gradient: difference " << arma::norm(g-gnum,2) << "!\n";
-
-            // Numerical value
-            for(int ih=1;ih<7;ih++) {
-              double h = std::pow(10.0, -ih);
-              for(size_t ig=0; ig<g.n_elem; ig++) {
-                auto x(x0);
-                x(ig) += h;
-                auto [fr, gr] = oda_energy_gradient(x);
-                x=x0;
-                x(ig) -= h;
-                auto [fl, gl] = oda_energy_gradient(x);
-                gnum(ig) = (fr-fl)/(2*h);
-              }
-              oss << "fd gradient h=" << h <<"\n";
-              oss << gnum.t();
-            }
-            oss << "analytical gradient\n";
-            oss << g.t();
-            throw std::logic_error(oss.str());
-          }
-        }
-
-        // Optimization
-        auto diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
-        auto f_tol = diis_error / 10.0;
-        auto df_tol = diis_error / 10.0;
-        auto x_tol = 1e-3;
-        auto max_iter = 10*nslack;
-        //auto max_iter = 1; // only do one line search
-        Tbase max_step = 1.0; // Constrain maximum step to 1.0
-        arma::Col<Tbase> x = ConjugateGradients::cg_optimize_limited_line<Tbase>(x0, oda_energy_gradient, max_step, f_tol, df_tol, x_tol, max_iter);
-
-        // Evalute at optimum
-        auto eval(evaluate(get_lambda(x)));
-        add_entry(eval.first, eval.second);
-
-        // Clean up DIIS history from bad occupations
-        cleanup();
+        printf("Roothaan step in dimension %i yields energy % .10f\n", (int) idim, evaluations[idim].second.first);
       }
+
+      // Check first if we can decrease the energy with a Roothaan step
+      Tbase E_orig = eval_orig.second.first;
+      Tbase lowest_E = E_orig;
+      size_t lowest_i;
+      for(size_t idim=0;idim<npars;idim++)
+        if(evaluations[idim].second.first < lowest_E) {
+          lowest_E = evaluations[idim].second.first;
+          lowest_i = idim;
+        }
+
+      if(lowest_E < E_orig) {
+        // Roothaan step decreased energy, adopt the minimal solution
+        add_entry(evaluations[lowest_i].first, evaluations[lowest_i].second);
+        printf("ODA: successful Roothaan step: energy decreased by = %e in dimension %i\n",lowest_E-E_orig,(int) lowest_i);
+        return;
+      }
+
+      // Form list of possible zeros to try out
+      std::vector<arma::Col<Tbase>> extrema;
+      const auto & F_orig = eval_orig.second.second;
+      const auto & P_orig = eval_orig.first;
+
+      // Minima in one dimension
+      for(size_t idim=0;idim<npars;idim++) {
+        const auto & F_i = evaluations[idim].second.second;
+        const auto & P_i = evaluations[idim].first;
+        const auto & E_i = evaluations[idim].second.first;
+        
+        // Fit cubic polynomial along this dimension
+        Tbase dE_ileft = trace(P_i, P_orig, F_orig);
+        Tbase dE_iright = trace(P_i, P_orig, F_i);
+        auto icubic = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_orig, dE_ileft, 1.0, E_i, dE_iright);
+        // find its extrema
+        auto izeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, icubic);
+        x0.zeros();
+        x0(idim) = izeros.first;
+        if(within_limits(x0)) extrema.push_back(x0);
+        x0.zeros();
+        x0(idim) = izeros.second;
+        if(within_limits(x0)) extrema.push_back(x0);
+      }
+
+      // Minima on the lines connecting pairs of new density matrices
+      for(size_t idim=0;idim<npars;idim++) {
+        for(size_t jdim=idim+1;jdim<npars;jdim++) {
+          // Fock and density matrices
+          const auto & E_ul = evaluations[jdim].second.first;
+          const auto & F_ul = evaluations[jdim].second.second;
+          const auto & P_ul = evaluations[jdim].first;
+          const auto & E_lr = evaluations[idim].second.first;
+          const auto & F_lr = evaluations[idim].second.second;
+          const auto & P_lr = evaluations[idim].first;
+            
+          // diagonal: interpolate from P_lr i.e. (1,0) to P_ul i.e. (0,1)
+          Tbase dE_leftd = trace(P_ul, P_lr, F_lr);
+          Tbase dE_rightd = trace(P_ul, P_lr, F_ul);
+          auto cubicd = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_lr, dE_leftd, 1.0, E_ul, dE_rightd);
+          auto zerosd = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubicd);
+          // root at 0 corresponds to (1,0)
+          x0.zeros();
+          x0(idim) = 1.0-zerosd.first;
+          x0(jdim) = zerosd.first;
+          if(within_limits(x0)) extrema.push_back(x0);
+          x0.zeros();
+          x0(idim) = 1.0-zerosd.second;
+          x0(jdim) = zerosd.second;
+          if(within_limits(x0)) extrema.push_back(x0);
+        }
+      }
+        
+      // Go through all solutions
+      bool succ=false;
+      for(const auto xval: extrema) {
+        auto eval = evaluate(xval);
+        number_of_fock_evaluations_++;
+        succ = add_entry(eval.first, eval.second) || succ;
+        if(verbosity_>=5) {
+          printf("Energy at (");
+          for(size_t ipar=0;ipar<xval.n_elem;ipar++) {
+            if(ipar)
+              printf(",");
+            printf("%e",xval(ipar));
+          }
+          printf(") is % .10f\n", eval.second.first);
+        }
+      }
+      if(not succ) {
+        std::ostringstream oss;
+        oss << "Energy was not decreased!\n";
+        throw std::logic_error(oss.str());
+      }
+      // Clean up DIIS history from bad occupations
+      cleanup();
     }
 
     /// Run optimal damping algorithm
