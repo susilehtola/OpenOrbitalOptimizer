@@ -1953,8 +1953,8 @@ namespace OpenOrbitalOptimizer {
         Tbase sum=arma::sum(lambda);
         if(sum>1.0)
           return false;
-        for(size_t i=0;i<lambda.n_elem;i++) {
-          if(lambda(i)<0.0 or lambda(i)>1.0)
+        for(auto l: lambda) {
+          if(l<0.0 or l>1.0)
             return false;
         }
         return true;
@@ -1973,6 +1973,7 @@ namespace OpenOrbitalOptimizer {
       // origin
       x0.zeros();
       auto eval_orig = evaluate(x0);
+      Tbase E_orig = eval_orig.second.first;
       number_of_fock_evaluations_++;
 
       // Run all evaluations
@@ -1982,11 +1983,10 @@ namespace OpenOrbitalOptimizer {
         x0(idim)=1.0;
         evaluations[idim] = evaluate(x0);
         number_of_fock_evaluations_++;
-        printf("Roothaan step in dimension %i yields energy % .10f\n", (int) idim, evaluations[idim].second.first);
+        printf("Roothaan step in dimension %i yields energy % .10f change %e\n", (int) idim, evaluations[idim].second.first,evaluations[idim].second.first-E_orig);
       }
 
       // Check first if we can decrease the energy with a Roothaan step
-      Tbase E_orig = eval_orig.second.first;
       Tbase lowest_E = E_orig;
       size_t lowest_i;
       for(size_t idim=0;idim<npars;idim++)
@@ -1998,7 +1998,7 @@ namespace OpenOrbitalOptimizer {
       if(lowest_E < E_orig) {
         // Roothaan step decreased energy, adopt the minimal solution
         add_entry(evaluations[lowest_i].first, evaluations[lowest_i].second);
-        printf("ODA: successful Roothaan step: energy decreased by = %e in dimension %i\n",lowest_E-E_orig,(int) lowest_i);
+        printf("ODA: successful Roothaan step: energy decreased by %e in dimension %i\n",lowest_E-E_orig,(int) lowest_i);
         return;
       }
 
@@ -2012,7 +2012,7 @@ namespace OpenOrbitalOptimizer {
         const auto & F_i = evaluations[idim].second.second;
         const auto & P_i = evaluations[idim].first;
         const auto & E_i = evaluations[idim].second.first;
-        
+
         // Fit cubic polynomial along this dimension
         Tbase dE_ileft = trace(P_i, P_orig, F_orig);
         Tbase dE_iright = trace(P_i, P_orig, F_i);
@@ -2022,10 +2022,15 @@ namespace OpenOrbitalOptimizer {
           auto izeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, icubic);
           x0.zeros();
           x0(idim) = izeros.first;
-          if(within_limits(x0)) extrema.push_back(x0);
+          if(within_limits(x0))
+            extrema.push_back(x0);
+
           x0.zeros();
           x0(idim) = izeros.second;
-          if(within_limits(x0)) extrema.push_back(x0);
+          if(within_limits(x0))
+            extrema.push_back(x0);
+
+          printf("Dimension %i roots %e and %e\n",(int) idim,izeros.first,izeros.second);
         } catch(std::logic_error) {
           // no roots
         };
@@ -2041,7 +2046,7 @@ namespace OpenOrbitalOptimizer {
           const auto & E_lr = evaluations[idim].second.first;
           const auto & F_lr = evaluations[idim].second.second;
           const auto & P_lr = evaluations[idim].first;
-            
+
           // diagonal: interpolate from P_lr i.e. (1,0) to P_ul i.e. (0,1)
           Tbase dE_leftd = trace(P_ul, P_lr, F_lr);
           Tbase dE_rightd = trace(P_ul, P_lr, F_ul);
@@ -2057,39 +2062,49 @@ namespace OpenOrbitalOptimizer {
             x0(idim) = 1.0-zerosd.second;
             x0(jdim) = zerosd.second;
             if(within_limits(x0)) extrema.push_back(x0);
+            printf("Dimensions %i-%i roots %e and %e\n",(int) idim,(int) jdim,zerosd.first,zerosd.second);
           } catch(std::logic_error) {
             // no roots
           }
         }
       }
-        
+
       // Go through all solutions
       bool succ=false;
-      for(const auto xval: extrema) {
-        auto eval = evaluate(xval);
-        number_of_fock_evaluations_++;
-        succ = add_entry(eval.first, eval.second) || succ;
-        if(verbosity_>=5) {
-          printf("Energy at (");
-          for(size_t ipar=0;ipar<xval.n_elem;ipar++) {
-            if(ipar)
-              printf(",");
-            printf("%e",xval(ipar));
+      for(int scalefac=0;scalefac<=5;scalefac++) {
+        double scale=std::pow(2.0,-scalefac);
+        for(auto xval: extrema) {
+          // Apply scale factor
+          xval*=scale;
+          auto eval = evaluate(xval);
+          number_of_fock_evaluations_++;
+          succ = add_entry(eval.first, eval.second) || succ;
+          if(verbosity_>=5) {
+            printf("Energy at (");
+            for(size_t ipar=0;ipar<xval.n_elem;ipar++) {
+              if(ipar)
+                printf(",");
+              printf("%e",xval(ipar));
+            }
+            printf(") is % .10f change %e\n", eval.second.first, eval.second.first-E_orig);
           }
-          printf(") is % .10f\n", eval.second.first);
+        }
+        if(succ) {
+          break;
+        } else {
+          printf("Did not find a minimizer with scale factor %e, decreasing scale\n",scale);
+          print_history();
         }
       }
-      if(not succ) {
-        std::ostringstream oss;
-        oss << "Energy was not decreased!\n";
-        throw std::logic_error(oss.str());
-      }
+      if(not succ)
+        throw std::logic_error("Energy did not decrease!\n");
+
       // Clean up DIIS history from bad occupations
       cleanup();
     }
 
     /// Run optimal damping algorithm
-    void run_optimal_damping(Tbase energy_threshold=1e-7) {
+    void run_optimal_damping(Tbase energy_threshold=1e-9) {
       Tbase current_energy = get_energy();
       Tbase old_energy;
 
