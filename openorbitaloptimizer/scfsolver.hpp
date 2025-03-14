@@ -1751,17 +1751,6 @@ namespace OpenOrbitalOptimizer {
           // Form DIIS weights
           arma::Col<Tbase> diis_weights = diis_w;
           if(diis_error > diis_threshold_) {
-            if(not adiis_ok) {
-              if(steepest_descent) {
-                if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, taking a steepest descent step instead.\n");
-                steepest_descent_step();
-              } else if(level_shifting) {
-                if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, doing level shifting instead.\n");
-                level_shifting_step();
-              }
-              continue;
-            }
-
             if(diis_error < diis_epsilon_) {
               if(verbosity_>=5) printf("Mixed DIIS and ADIIS step\n");
               Tbase adiis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
