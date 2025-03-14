@@ -132,8 +132,6 @@ namespace OpenOrbitalOptimizer {
 
     /// Minimal normalized projection of preconditioned search direction onto gradient
     Tbase minimal_gradient_projection_ = 1e-4;
-    /// ADIIS/EDIIS regularization parameter
-    Tbase adiis_regularization_parameter_ = 1e-3;
     /// Threshold for detection of occupied orbitals
     Tbase occupied_threshold_ = 1e-6;
     /// Initial level shift
@@ -384,46 +382,121 @@ namespace OpenOrbitalOptimizer {
 
       return diis_weights;
     }
-    /// Calculate ADIIS weights
-    arma::Col<Tbase> aediis_weights(const arma::Mat<Tbase> & linear_term, const arma::Mat<Tbase> & quadratic_term) const {
-      // Function to compute weights from the parameters
-      std::function<arma::Col<Tbase>(const arma::Col<Tbase> & x)> x_to_weight = [](const arma::Col<Tbase> & x) { arma::Col<Tbase> w=arma::square(x)/arma::dot(x,x); return w; };
-      // and its Jacobian
-      std::function<arma::Mat<Tbase>(const arma::Col<Tbase> & x)> x_to_weight_jacobian = [x_to_weight](const arma::Col<Tbase> & x) {
-        auto w(x_to_weight(x));
-        auto xnorm = arma::norm(x,2);
-        arma::Mat<Tbase> jac(x.n_elem,x.n_elem,arma::fill::zeros);
-        for(size_t i=0;i<x.n_elem;i++) {
-          for(size_t j=0;j<x.n_elem;j++) {
-            jac(i,j) -= w(j)*2.0*x(i)/xnorm;
+    /// Calculate ADIIS weights by minimizing quadratic form
+    arma::Col<Tbase> aediis_weights(const arma::Col<Tbase> & b, const arma::Mat<Tbase> & A) const {
+      if(b.n_elem==1) {
+        // Nothing to optimize
+        return arma::ones<arma::Col<Tbase>>(b.n_elem);
+      }
+
+      // Parameters
+      const size_t max_iter = 1000000;
+      const Tbase df_tol = 1e-8;
+
+      // Function to evaluate function value and in-plane gradient
+      std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> fx = [b, A](const arma::Col<Tbase> & x) {
+        Tbase f = 0.5*arma::as_scalar(x.t()*A*x) + arma::dot(b,x);
+        arma::Col<Tbase> ones(b.n_elem, arma::fill::ones);
+        arma::Col<Tbase> g = A*x+b;
+        // Project gradient onto plane
+        g -= arma::dot(g,ones)*ones/b.n_elem;
+        return std::make_pair(f, g);
+      };
+
+      std::function<Tbase(const arma::Col<Tbase> &, const arma::Col<Tbase> &)> optimal_step = [b, A](const arma::Col<Tbase> & current_direction, const arma::Col<Tbase> & x) {
+        return -(arma::as_scalar(current_direction.t()*A*x) + arma::dot(b,current_direction)) / (arma::as_scalar(current_direction.t()*A*current_direction));
+      };
+
+      /// Initial guess for parameters
+      arma::Col<Tbase> x(b.n_elem,arma::fill::value(1.0/b.n_elem));
+      //x.t().print("Initial x");
+
+      /// Matrix of search directions
+      arma::Mat<Tbase> search_directions(b.n_elem,b.n_elem,arma::fill::eye);
+
+      /// Evaluate initial point
+      auto current_point = fx(x);
+      auto old_point = current_point;
+      auto old_x = x;
+
+      // Powell algorithm
+      for(size_t imacro=0; imacro<max_iter; imacro++) {
+        Tbase curval(current_point.first);
+
+        for(size_t i=0; i<b.n_elem; i++) {
+          arma::Col<Tbase> c_i(search_directions.col(i));
+          // x -> (1-step)*x + step*c_i = x + step*(c_i-x)
+          Tbase step = optimal_step(c_i-x, x);
+          if(!std::isnormal(step))
+            continue;
+          //printf("Direction %i: optimal step %e\n",i,step);
+          if(step > 0.0 and step <= 1.0) {
+            auto new_point = fx(x+step*(c_i-x));
+            if(new_point.first < current_point.first) {
+              x += step*(c_i-x);
+              current_point = new_point;
+            }
+          } else if(step>1.0) {
+            auto new_point = fx(c_i);
+            if(new_point.first < current_point.first) {
+              x = c_i;
+              current_point = new_point;
+            }
           }
-          jac(i,i) += 2.0*x(i)/xnorm;
-        }
-        //jac.print("Jacobian");
-        return jac;
-      };
-
-      // Function to compute the energy and gradient
-      const Tbase regularization_parameter = adiis_regularization_parameter_;
-      std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> aediis_energy_gradient = [linear_term, quadratic_term, x_to_weight, x_to_weight_jacobian, regularization_parameter](const arma::Col<Tbase> & x) {
-        auto w(x_to_weight(x));
-        arma::Col<Tbase> g = x_to_weight_jacobian(x)*(linear_term + quadratic_term*w);
-        auto fval = arma::dot(linear_term, w) + 0.5*arma::dot(w, quadratic_term*w);
-
-        // Add regularization
-        if(regularization_parameter != 0.0) {
-          fval += regularization_parameter * arma::dot(x,x);
-          g += 2 * regularization_parameter * x;
         }
 
-        return std::make_pair(fval, g);
-      };
+        Tbase dE = current_point.first - curval;
+        //printf("Macroiteration %i changed energy by %e\n", imacro, dE);
 
-      // Optimization
-      arma::Col<Tbase> x(orbital_history_.size(),arma::fill::ones);
-      x = ConjugateGradients::cg_optimize<Tbase>(x, aediis_energy_gradient);
+        // Update in x
+        arma::Col<Tbase> dx = x - old_x;
 
-      return x_to_weight(x);
+        // Repeat line search along this direction
+        Tbase step = optimal_step(dx, x);
+        if(std::isnormal(step) and step > 0.0 and step <= 1.0) {
+          auto new_point = fx(x+step*dx);
+          if(new_point.first < current_point.first) {
+            x += step*dx;
+            //printf("Line search along dx changes energy by %e\n", new_point.first-current_point.first);
+            current_point = new_point;
+            dE = current_point.first - curval;
+          }
+        }
+        old_x = x;
+
+        //x.t().print("x");
+        if(dE > -df_tol) {
+          printf("Converged in %i macroiterations\n",imacro);
+          x.t().print("xconv");
+          break;
+        }
+      }
+
+      // Handle the edge case where the last matrix has zero norm
+      if(x(0)==0.0) {
+        x.zeros();
+        x(0)=1.0;
+        for(size_t i=0; i<b.n_elem; i++) {
+          arma::Col<Tbase> c_i(search_directions.col(i));
+          // x -> (1-step)*x + step*c_i = x + step*(c_i-x)
+          Tbase step = optimal_step(c_i-x, x);
+          if(!std::isnormal(step))
+            continue;
+          if(step > 0.0 and step < 1.0) {
+            auto new_point = fx(x+step*(c_i-x));
+            if(new_point.first < current_point.first) {
+              x += step*(c_i-x);
+              current_point = new_point;
+            }
+          }
+        }
+        //x.t().print("Using suboptimal solution instead");
+      }
+
+      //printf("Current energy %e\n",current_point.first);
+      //throw std::logic_error("Stop");
+
+      return x;
     }
 
     /// ADIIS linear term: <D_i - D_0 | F_i - F_0>
@@ -435,7 +508,7 @@ namespace OpenOrbitalOptimizer {
         for(size_t ihist=0;ihist<ret.size();ihist++) {
           // D_i - D_n
           arma::Mat<Torb> dD(get_density_matrix_block(ihist, iblock) - Dn);
-          ret(ihist) += std::real(arma::trace(dD*Fn));
+          ret(ihist) += 2.0*std::real(arma::trace(dD*Fn));
         }
       }
       return ret;
@@ -450,8 +523,8 @@ namespace OpenOrbitalOptimizer {
       return ret;
     }
 
-    /// ADIIS/EDIIS quadratic term: <D_i - D_j | F_i - F_j>
-    arma::Mat<Tbase> aediis_quadratic_term() const {
+    /// ADIIS quadratic term: <D_i - D_n | F_j - F_n>
+    arma::Mat<Tbase> adiis_quadratic_term() const {
       arma::Mat<Tbase> ret(orbital_history_.size(),orbital_history_.size(),arma::fill::zeros);
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
         const auto & Dn = get_density_matrix_block(0, iblock);
@@ -466,7 +539,27 @@ namespace OpenOrbitalOptimizer {
           }
         }
       }
-      // Only the symmetric part matters!
+      // Only the symmetric part matters; we also multiply by two
+      // since we define the quadratic model as 0.5*x^T A x + b x
+      return ret+ret.t();
+    }
+
+    /// EDIIS quadratic term: -0.5*<D_i - D_j | F_i - F_j>
+    arma::Mat<Tbase> ediis_quadratic_term() const {
+      arma::Mat<Tbase> ret(orbital_history_.size(),orbital_history_.size(),arma::fill::zeros);
+      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+        for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
+          for(size_t jhist=0;jhist<orbital_history_.size();jhist++) {
+            // D_i - D_j
+            arma::Mat<Torb> dD(get_density_matrix_block(ihist, iblock) - get_density_matrix_block(jhist, iblock));
+            // F_i - F_j
+            arma::Mat<Torb> dF(get_fock_matrix_block(ihist, iblock) - get_fock_matrix_block(jhist, iblock));
+            ret(ihist,jhist) -= std::real(arma::trace(dD*dF));
+          }
+        }
+      }
+      // Only the symmetric part matters; the factor 0.5 already
+      // exists in the base model
       return 0.5*(ret+ret.t());
     }
 
@@ -533,12 +626,12 @@ namespace OpenOrbitalOptimizer {
 
     /// Calculate ADIIS weights
     arma::Col<Tbase> adiis_weights() const {
-      return aediis_weights(adiis_linear_term(), aediis_quadratic_term());
+      return aediis_weights(adiis_linear_term(), adiis_quadratic_term());
     }
 
     /// Calculate EDIIS weights
     arma::Col<Tbase> ediis_weights() const {
-      return aediis_weights(ediis_linear_term(), -aediis_quadratic_term());
+      return aediis_weights(ediis_linear_term(), ediis_quadratic_term());
     }
 
     /** Minimal Error Sampling Algorithm (MESA), doi:10.14288/1.0372885 */
@@ -1640,33 +1733,19 @@ namespace OpenOrbitalOptimizer {
           arma::Col<Tbase> diis_w(diis_weights());
           if(verbosity_>=10) diis_w.print("DIIS weights");
           arma::Col<Tbase> adiis_w;
-          bool adiis_ok = true;
           arma::Col<Tbase> ediis_w;
-          bool ediis_ok = true;
-          try {
-            adiis_w = adiis_weights();
-            if(verbosity_>=10) adiis_w.print("ADIIS weights");
-          } catch(std::logic_error) {
-            // Bad weights
-            adiis_ok = false;
-            adiis_w.clear();
-          };
-          try {
-            ediis_w = ediis_weights();
-            if(verbosity_>=10) adiis_w.print("EDIIS weights");
-          } catch(std::logic_error) {
-            // Bad weights
-            ediis_ok = false;
-            ediis_w.clear();
-          };
+
+          ediis_w = ediis_weights();
+          if(verbosity_>=10) adiis_w.print("EDIIS weights");
+
+          adiis_w = adiis_weights();
+          if(verbosity_>=10) adiis_w.print("ADIIS weights");
 
           arma::Mat<Tbase> diis_errmat(diis_error_matrix());
           if(verbosity_>=5) {
             printf("DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*diis_w,error_norm_.c_str()));
-            if(adiis_ok)
-              printf("ADIIS extrapolated error norm %e\n",arma::norm(diis_errmat*adiis_w,error_norm_.c_str()));
-            if(ediis_ok)
-              printf("EDIIS extrapolated error norm %e\n",arma::norm(diis_errmat*ediis_w,error_norm_.c_str()));
+            printf("ADIIS extrapolated error norm %e\n",arma::norm(diis_errmat*adiis_w,error_norm_.c_str()));
+            printf("EDIIS extrapolated error norm %e\n",arma::norm(diis_errmat*ediis_w,error_norm_.c_str()));
           }
 
           // Form DIIS weights
