@@ -1599,7 +1599,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Run the SCF
-    void run(bool steepest_descent=false) {
+    void run(bool steepest_descent=false, bool level_shifting=false) {
       Tbase old_energy = get_energy();
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
@@ -1676,7 +1676,7 @@ namespace OpenOrbitalOptimizer {
               if(steepest_descent) {
                 if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, taking a steepest descent step instead.\n");
                 steepest_descent_step();
-              } else {
+              } else if(level_shifting) {
                 if(verbosity_>=5) printf("Large gradient and ADIIS minimization failed, doing level shifting instead.\n");
                 level_shifting_step();
               }
@@ -1706,7 +1706,7 @@ namespace OpenOrbitalOptimizer {
             if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
             if(steepest_descent) {
               steepest_descent_step();
-            } else {
+            } else if(level_shifting) {
               level_shifting_step();
             }
           }
