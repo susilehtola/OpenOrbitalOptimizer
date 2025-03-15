@@ -393,16 +393,12 @@ namespace OpenOrbitalOptimizer {
       const size_t max_iter = 1000000;
       const Tbase df_tol = 1e-8;
 
-      // Function to evaluate function value and in-plane gradient
-      std::function<std::pair<Tbase,arma::Col<Tbase>>(const arma::Col<Tbase> & x)> fx = [b, A](const arma::Col<Tbase> & x) {
-        Tbase f = 0.5*arma::as_scalar(x.t()*A*x) + arma::dot(b,x);
-        arma::Col<Tbase> ones(b.n_elem, arma::fill::ones);
-        arma::Col<Tbase> g = A*x+b;
-        // Project gradient onto plane
-        g -= arma::dot(g,ones)*ones/b.n_elem;
-        return std::make_pair(f, g);
+      // Function to evaluate function value
+      std::function<Tbase(const arma::Col<Tbase> & x)> fx = [b, A](const arma::Col<Tbase> & x) {
+        return 0.5*arma::as_scalar(x.t()*A*x) + arma::dot(b,x);
       };
 
+      // Function to determine optimal step
       std::function<Tbase(const arma::Col<Tbase> &, const arma::Col<Tbase> &)> optimal_step = [b, A](const arma::Col<Tbase> & current_direction, const arma::Col<Tbase> & x) {
         return -(arma::as_scalar(current_direction.t()*A*x) + arma::dot(b,current_direction)) / (arma::as_scalar(current_direction.t()*A*current_direction));
       };
@@ -427,7 +423,7 @@ namespace OpenOrbitalOptimizer {
       // Find minimum
       arma::vec yguess(xguess.size());
       for(size_t i=0;i<xguess.size();i++)
-        yguess[i] = fx(xguess[i]).first;
+        yguess[i] = fx(xguess[i]);
 
       arma::uvec idx(arma::sort_index(yguess,"ascend"));
       arma::Col<Tbase> x = xguess[idx[0]];
@@ -443,7 +439,7 @@ namespace OpenOrbitalOptimizer {
 
       // Powell algorithm
       for(size_t imacro=0; imacro<max_iter; imacro++) {
-        Tbase curval(current_point.first);
+        Tbase curval(current_point);
 
         for(size_t i=0; i<b.n_elem; i++) {
           arma::Col<Tbase> c_i(search_directions.col(i));
@@ -455,14 +451,14 @@ namespace OpenOrbitalOptimizer {
           if(step > 0.0 and step <= 1.0) {
             auto new_point = fx(x+step*(c_i-x));
             //printf("Direction %i: optimal step changes energy by %e\n",(int) i,new_point.first - current_point.first);
-            if(new_point.first < current_point.first) {
+            if(new_point < current_point) {
               x += step*(c_i-x);
               current_point = new_point;
             }
           }
         }
 
-        Tbase dE = current_point.first - curval;
+        Tbase dE = current_point - curval;
         //printf("Macroiteration %i changed energy by %e\n", imacro, dE);
 
         // Update in x
@@ -472,13 +468,13 @@ namespace OpenOrbitalOptimizer {
         Tbase step = optimal_step(dx, x);
         if(std::isnormal(step) and step > 0.0 and step <= 1.0) {
           auto new_point = fx(x+step*dx);
-          if(new_point.first < current_point.first) {
+          if(new_point < current_point) {
             x += step*dx;
-            //printf("Line search along dx changes energy by %e\n", new_point.first-current_point.first);
+            //printf("Line search along dx changes energy by %e\n", new_point-current_point);
             current_point = new_point;
-            dE = current_point.first - curval;
+            dE = current_point - curval;
           }
-        } 
+        }
         old_x = x;
 
         //x.t().print("x");
@@ -490,12 +486,31 @@ namespace OpenOrbitalOptimizer {
           printf("Not converged in %i macroiterations, dE=%e\n",imacro, dE);
           x.t().print("xfinal");
         }
+
+        /*
+        // Rotate search directions. Generate a random ordering of the columns
+        arma::uvec randperm(arma::randperm(search_directions.n_cols));
+        search_directions=search_directions.cols(randperm);
+        // Mix the vectors together
+        for(size_t i=0;i<search_directions.n_cols;i++)
+          for(size_t j=0;j<i;j++) {
+            arma::Col<Tbase> randu(1);
+            randu.randu();
+
+            arma::Col<Tbase> newi = (1-randu(0))*search_directions.col(i) + randu(0)*search_directions.col(j);
+            arma::Col<Tbase> newj = (1-randu(0))*search_directions.col(j) + randu(0)*search_directions.col(i);
+            search_directions.col(i) = newi;
+            search_directions.col(j) = newj;
+          }
+        */
       }
 
       // Handle the edge case where the last matrix has zero norm
       if(x(0)==0.0) {
         x.zeros();
         x(0)=1.0;
+        // Reset search directions
+        search_directions.eye();
         for(size_t i=0; i<b.n_elem; i++) {
           arma::Col<Tbase> c_i(search_directions.col(i));
           // x -> (1-step)*x + step*c_i = x + step*(c_i-x)
@@ -504,7 +519,7 @@ namespace OpenOrbitalOptimizer {
             continue;
           if(step > 0.0 and step < 1.0) {
             auto new_point = fx(x+step*(c_i-x));
-            if(new_point.first < current_point.first) {
+            if(new_point < current_point) {
               x += step*(c_i-x);
               current_point = new_point;
             }
@@ -513,7 +528,7 @@ namespace OpenOrbitalOptimizer {
         x.t().print("Using suboptimal solution instead");
       }
 
-      //printf("Current energy %e\n",current_point.first);
+      //printf("Current energy %e\n",current_point);
       //throw std::logic_error("Stop");
 
       return x;
