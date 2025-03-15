@@ -407,8 +407,30 @@ namespace OpenOrbitalOptimizer {
         return -(arma::as_scalar(current_direction.t()*A*x) + arma::dot(b,current_direction)) / (arma::as_scalar(current_direction.t()*A*current_direction));
       };
 
-      /// Initial guess for parameters
-      arma::Col<Tbase> x(b.n_elem,arma::fill::value(1.0/b.n_elem));
+      /// Make initial guesses for parameters
+      std::vector<arma::Col<Tbase>> xguess;
+      // Center point
+      xguess.push_back(arma::Col<Tbase>(b.n_elem,arma::fill::value(1.0/b.n_elem)));
+      // "Gauss" points
+      for(size_t i=0;i<b.n_elem;i++) {
+        arma::Col<Tbase> xtr(b.n_elem,arma::fill::value(1.0/(b.n_elem+2)));
+        xtr(i) *= 3;
+        xguess.push_back(xtr);
+      }
+      // End points
+      for(size_t i=0;i<b.n_elem;i++) {
+        arma::Col<Tbase> xtr(b.n_elem,arma::fill::zeros);
+        xtr(i) = 1.0;
+        xguess.push_back(xtr);
+      }
+
+      // Find minimum
+      arma::vec yguess(xguess.size());
+      for(size_t i=0;i<xguess.size();i++)
+        yguess[i] = fx(xguess[i]).first;
+
+      arma::uvec idx(arma::sort_index(yguess,"ascend"));
+      arma::Col<Tbase> x = xguess[idx[0]];
       //x.t().print("Initial x");
 
       /// Matrix of search directions
@@ -432,14 +454,9 @@ namespace OpenOrbitalOptimizer {
           //printf("Direction %i: optimal step %e\n",i,step);
           if(step > 0.0 and step <= 1.0) {
             auto new_point = fx(x+step*(c_i-x));
+            //printf("Direction %i: optimal step changes energy by %e\n",(int) i,new_point.first - current_point.first);
             if(new_point.first < current_point.first) {
               x += step*(c_i-x);
-              current_point = new_point;
-            }
-          } else if(step>1.0) {
-            auto new_point = fx(c_i);
-            if(new_point.first < current_point.first) {
-              x = c_i;
               current_point = new_point;
             }
           }
@@ -461,7 +478,7 @@ namespace OpenOrbitalOptimizer {
             current_point = new_point;
             dE = current_point.first - curval;
           }
-        }
+        } 
         old_x = x;
 
         //x.t().print("x");
@@ -469,6 +486,9 @@ namespace OpenOrbitalOptimizer {
           printf("Converged in %i macroiterations\n",imacro);
           x.t().print("xconv");
           break;
+        } else if(imacro==max_iter-1) {
+          printf("Not converged in %i macroiterations, dE=%e\n",imacro, dE);
+          x.t().print("xfinal");
         }
       }
 
@@ -490,7 +510,7 @@ namespace OpenOrbitalOptimizer {
             }
           }
         }
-        //x.t().print("Using suboptimal solution instead");
+        x.t().print("Using suboptimal solution instead");
       }
 
       //printf("Current energy %e\n",current_point.first);
