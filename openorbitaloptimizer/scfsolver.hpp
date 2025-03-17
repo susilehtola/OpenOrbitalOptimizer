@@ -157,11 +157,6 @@ namespace OpenOrbitalOptimizer {
       return std::get<0>(orbital_history_[ihist]).second[iblock];
     }
 
-    /// Get the energy for the entry
-    Tbase get_energy(size_t ihist=0) const {
-      return std::get<1>(orbital_history_[ihist]).first;
-    }
-
     /// Get lowest energy after the given reference index
     Tbase get_lowest_energy_after_index(size_t index=0) const {
       bool initialized = false;
@@ -1523,6 +1518,13 @@ namespace OpenOrbitalOptimizer {
     /// Set verbosity
     void energy_update_threshold(Tbase energy_update_threshold) {
       energy_update_threshold_ = energy_update_threshold;
+    }
+
+    /// Get the energy for the n:th entry
+    Tbase get_energy(size_t ihist=0) const {
+      if(ihist>orbital_history_.size())
+        throw std::logic_error("Invalid entry!\n");
+      return std::get<1>(orbital_history_[ihist]).first;
     }
 
     /// Get the used error norm
