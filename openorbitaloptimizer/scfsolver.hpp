@@ -702,8 +702,15 @@ namespace OpenOrbitalOptimizer {
     /// Computes the difference between orbital occupations
     Tbase occupation_difference(const OrbitalOccupations<Tbase> & old_occ, const OrbitalOccupations<Tbase> & new_occ) const {
       Tbase diff = 0.0;
-      for(size_t iblock = 0; iblock<old_occ.size(); iblock++)
-        diff += arma::sum(arma::abs(new_occ[iblock]-old_occ[iblock]));
+      for(size_t iblock = 0; iblock<old_occ.size(); iblock++) {
+        size_t n = std::min(new_occ[iblock].n_elem, old_occ[iblock].n_elem);
+        diff += arma::sum(arma::abs(new_occ[iblock].subvec(0,n-1)-old_occ[iblock].subvec(0,n-1)));
+        if(new_occ[iblock].n_elem>n)
+          diff += arma::sum(arma::abs(new_occ[iblock].subvec(n,new_occ[iblock].n_elem-1)));
+        else if(old_occ[iblock].n_elem>n)
+          diff += arma::sum(arma::abs(old_occ[iblock].subvec(n,old_occ[iblock].n_elem-1)));
+      }
+
       return diff;
     }
 
@@ -1473,6 +1480,30 @@ namespace OpenOrbitalOptimizer {
       // Reset number of evaluations
       number_of_fock_evaluations_ = 0;
       add_entry(std::make_pair(orbitals, orbital_occupations));
+
+      // Check that dimensions are consistent
+      bool consistent=true;
+      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+        if(get_orbital_block(0,iblock).n_cols != get_fock_matrix_block(0,iblock).n_cols)
+          consistent=false;
+        if(get_orbital_occupation_block(0,iblock).n_elem != get_fock_matrix_block(0,iblock).n_cols)
+          consistent=false;
+      }
+      // If they are not consistent (e.g. when a read-in guess has been used)
+      if(not consistent) {
+        if(verbosity_>=5)
+          printf("Fed-in orbitals are not consistent with Fock matrix, recomputing orbitals\n");
+
+        // Diagonalize the Fock matrix we just computed
+        auto new_orbitals = compute_orbitals(get_fock_matrix());
+        // Determine new occupations
+        auto new_occupations = update_occupations(new_orbitals.second);
+
+        // Clear out the old history
+        orbital_history_.clear();
+        // and add the new entry
+        add_entry(std::make_pair(new_orbitals.first, new_occupations));
+      }
     }
 
     /// Fix the number of occupied orbitals per block
