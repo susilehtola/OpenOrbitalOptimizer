@@ -110,11 +110,11 @@ namespace OpenOrbitalOptimizer {
 
     /// Maximum number of iterations
     size_t maximum_iterations_ = 128;
-    /// Start to mix in DIIS at this error threshold
+    /// Start to mix in DIIS at this error threshold (Garza and Scuseria, 2012)
     Tbase diis_epsilon_ = 1e-1;
-    /// Threshold for pure DIIS
-    Tbase diis_threshold_ = 1e-2;
-    /// Damping factor for DIIS diagonal; Hamilton and Pulay 1986
+    /// Threshold for pure DIIS (Garza and Scuseria, 2012)
+    Tbase diis_threshold_ = 1e-4;
+    /// Damping factor for DIIS diagonal (Hamilton and Pulay, 1986)
     Tbase diis_diagonal_damping_ = 0.02;
 
     /// Threshold for a change in occupations
