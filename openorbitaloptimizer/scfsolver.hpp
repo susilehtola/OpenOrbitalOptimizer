@@ -600,67 +600,6 @@ namespace OpenOrbitalOptimizer {
       return 0.5*(ret+ret.t());
     }
 
-    /// KAIN linear term: difference of Fock matrices multiplied by residual
-    arma::Col<Tbase> kain_linear_term() const {
-      const size_t N=orbital_history_.size()-1;
-      size_t m=0;
-      arma::Col<Tbase> ret(N,arma::fill::zeros);
-      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        const arma::Mat<Torb> fm = diis_residual(m, iblock);
-        const arma::Mat<Torb> xm = get_fock_matrix_block(m, iblock);
-        for(size_t i=0;i<N;i++) {
-          arma::Mat<Torb> dxi = get_fock_matrix_block(i+1, iblock) - xm;
-          ret(i) -= std::real(arma::trace(dxi * fm));
-        }
-      }
-      return ret;
-    }
-
-    /// KAIN quadratic term
-    arma::Mat<Tbase> kain_quadratic_term() const {
-      const size_t N=orbital_history_.size()-1;
-      size_t m=0;
-
-      arma::Mat<Tbase> ret(N,N,arma::fill::zeros);
-      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        // DIIS residual
-        const auto fm = diis_residual(m, iblock);
-        const auto & xm = get_fock_matrix_block(m, iblock);
-        for(size_t i=0;i<N;i++) {
-          for(size_t j=0;j<N;j++) {
-            const auto fj = diis_residual(j+1, iblock);
-            const auto & xi = get_fock_matrix_block(i+1, iblock);
-            ret(i,j) += std::real(arma::trace((xi-xm)*(fj-fm)));
-          }
-        }
-      }
-      return ret;
-    }
-
-    /// Assemble KAIN update
-    FockMatrix<Torb> kain_update(const arma::Col<Tbase> & c) {
-      const size_t N=orbital_history_.size()-1;
-      if(N != c.n_elem)
-        throw std::logic_error("KAIN vector has wrong size!\n");
-
-      FockMatrix<Torb> fock(number_of_blocks_);
-      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        // Initialize
-        fock[iblock] = get_fock_matrix_block(0, iblock);
-        fock[iblock].zeros();
-
-        // Update within the subspace
-        for(size_t j=0; j<N; j++)
-          fock[iblock] += c(j) * (get_fock_matrix_block(j+1, iblock) - get_fock_matrix_block(0, iblock));
-
-        // Update in the complement space
-        for(size_t j=0; j<N; j++)
-          fock[iblock] -= c(j) * (diis_residual(j+1,iblock) - diis_residual(0,iblock));
-        fock[iblock] -= diis_residual(0,iblock);
-      }
-      return fock;
-    }
-
     /// Calculate ADIIS weights
     arma::Col<Tbase> adiis_weights() const {
       return aediis_weights(adiis_linear_term(), adiis_quadratic_term());
@@ -1138,59 +1077,6 @@ namespace OpenOrbitalOptimizer {
       auto fock = fock_builder_(density_matrix);
       number_of_fock_evaluations_++;
       return make_history_entry(density_matrix, fock);
-    }
-    /// Krylov subspace accelerated inexact Newton; Harrison 2004
-    void kain_step() {
-      // Step restriction
-      static Tbase step_factor = 1.0;
-
-      // Get the matrix dimension
-      arma::uvec dim = matrix_dimension();
-
-      // check that vectorization routines works
-      {
-        auto fock_input = get_fock_matrix(0);
-        auto fock_vector = vectorise(fock_input);
-        auto fock_matrix = matricise(fock_vector, dim);
-        auto fock_revector = vectorise(fock_matrix);
-        printf("debug: vector-matrix-vector difference norm %e\n",arma::norm(fock_revector-fock_vector,"fro"));
-      }
-
-      // Compute subspace matrix elements
-      arma::Mat<Tbase> A = kain_quadratic_term();
-      arma::Col<Tbase> b = kain_linear_term();
-
-      // Solve linear equation
-      arma::Col<Tbase> c;
-      arma::solve(c,A,b);
-
-      // Form the components of the update
-      auto fock_matrix = get_fock_matrix();
-      auto fock_increment = kain_update(c);
-
-      // Step length loop
-      Tbase factor = step_factor;
-      while(true) {
-        printf("KAIN loop, step length factor = %e\n",factor);
-
-        // Assemble trial Fock matrix
-        auto trial_fock = fock_matrix;
-        for(size_t iblock = 0; iblock<trial_fock.size(); iblock++)
-          trial_fock[iblock] += factor*fock_increment[iblock];
-
-        // If energy was lowered, stop
-        if(attempt_fock(trial_fock)) {
-          // If the update was successful on the first try, increase the trust radius
-          if(factor == step_factor)
-            step_factor *= 2.0;
-          else
-            // Reset the trust radius
-            step_factor = factor;
-          return;
-        }
-        // otherwise reduce step length
-        factor /= 2.0;
-      }
     }
     /// Level shift step
     void level_shifting_step() {
