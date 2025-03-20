@@ -1806,11 +1806,11 @@ namespace OpenOrbitalOptimizer {
         } else {
           // Form DIIS and ADIIS weights
           arma::Col<Tbase> diis_w(diis_weights());
-          if(verbosity_>=10) diis_w.print("DIIS weights");
+          if(verbosity_>=10) diis_w.t().print("DIIS weights");
           arma::Col<Tbase> adiis_w = adiis_weights();
-          if(verbosity_>=10) adiis_w.print("EDIIS weights");
+          if(verbosity_>=10) adiis_w.t().print("ADIIS weights");
           arma::Col<Tbase> ediis_w = ediis_weights();
-          if(verbosity_>=10) adiis_w.print("ADIIS weights");
+          if(verbosity_>=10) ediis_w.t().print("EDIIS weights");
 
           arma::Mat<Tbase> diis_errmat(diis_error_matrix());
           if(verbosity_>=5) {
@@ -1855,7 +1855,7 @@ namespace OpenOrbitalOptimizer {
             //weights = minimal_error_sampling_algorithm();
           }
           if(verbosity_>=10)
-            weights.print("Extrapolation weights");
+            weights.t().print("Extrapolation weights");
 
           // Perform extrapolation. If it does not lower the energy, we do
           // a scaled steepest descent step, instead.
