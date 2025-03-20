@@ -730,39 +730,6 @@ namespace OpenOrbitalOptimizer {
       return ovl;
     }
 
-    /// Compute density change with given weights
-    Tbase density_projection(const arma::Col<Tbase> & weights) const {
-      // Get the extrapolated Fock matrix
-      auto fock(extrapolate_fock(weights));
-
-      // Diagonalize the extrapolated Fock matrix
-      auto diagonalized_fock = compute_orbitals(fock);
-      auto & new_orbitals = diagonalized_fock.first;
-      auto & new_orbital_energies = diagonalized_fock.second;
-
-      // Determine new occupations
-      auto new_occupations = update_occupations(new_orbital_energies);
-
-      // Reference calculation
-      const auto reference_orbitals = get_orbitals();
-      const auto reference_occupations = get_orbital_occupations();
-      // Occupations corresponding to the reference orbitals
-      auto maximum_overlap_occupations = determine_maximum_overlap_occupations(reference_occupations, reference_orbitals, new_orbitals);
-
-      Tbase ref_overlap = density_overlap(new_orbitals, reference_occupations, reference_orbitals, reference_occupations);
-      Tbase mom_overlap = 0.0;
-      if(occupation_difference(maximum_overlap_occupations, reference_occupations) > occupation_change_threshold_) {
-        mom_overlap = density_overlap(new_orbitals, maximum_overlap_occupations, reference_orbitals, reference_occupations);
-      }
-
-      Tbase occ_overlap = 0.0;
-      if(occupation_difference(reference_occupations, new_occupations) > occupation_change_threshold_) {
-        occ_overlap = density_overlap(new_orbitals, new_occupations, reference_orbitals, reference_occupations);
-      }
-
-      return std::max(std::max(ref_overlap, mom_overlap), occ_overlap);
-    }
-
     /// Attempt extrapolation with given weights
     bool attempt_extrapolation(const arma::Col<Tbase> & weights) {
       // Get the extrapolated Fock matrix
@@ -780,39 +747,92 @@ namespace OpenOrbitalOptimizer {
       // Determine new occupations
       auto new_occupations = update_occupations(new_orbital_energies);
 
-      // Reference calculation
-      auto reference_solution = orbital_history_[0];
-      auto reference_orbitals = get_orbitals();
-      auto reference_occupations = get_orbital_occupations();
-      // Occupations corresponding to the reference orbitals
-      auto maximum_overlap_occupations = determine_maximum_overlap_occupations(reference_occupations, reference_orbitals, new_orbitals);
+      // Try out the new occupations
+      bool ref_success = add_entry(std::make_pair(new_orbitals, new_occupations));
+      if(ref_success)
+        return ref_success;
 
-      // Try first updating the orbitals, but not the occupations
-      bool ref_success = add_entry(std::make_pair(new_orbitals, reference_occupations));
+      // If that did not succeed, we do optimal damping
+      if(verbosity_ >= 10)
+        printf("Energy did not decrease, doing an optimal damping step instead\n");
+      return optimal_damping_step();
+    }
 
-      // If that did not succeed, try maximum overlap occupations; it
-      // might be that the orbitals changed order
-      if(not ref_success and not frozen_occupations_ and occupation_difference(maximum_overlap_occupations, reference_occupations) > occupation_change_threshold_) {
-        if(verbosity_ >= 10)
-          printf("attempt_extrapolation: occupation difference to maximum overlap orbitals %e\n",occupation_difference(reference_occupations, new_occupations));
-        ref_success = add_entry(std::make_pair(new_orbitals, maximum_overlap_occupations));
+    /// Optimal damping step
+    bool optimal_damping_step() {
+      // Collect the energies of the stack
+      arma::Col<Tbase> energies(orbital_history_.size());
+      for(size_t i=0;i<energies.n_elem;i++)
+        energies(i) = get_energy(i);
+      // Sort in ascending order
+      arma::uvec idx(arma::sort_index(energies,"ascend"));
+
+      if(idx.n_elem<=1)
+        throw std::logic_error("Expected at least two matrices!\n");
+      if(verbosity_>=10)
+        printf("Mixing matrices from history entries %i and %i\n",(int) idx(0),(int) idx(1));
+
+      // Energies
+      Tbase E0 = std::get<1>(orbital_history_[idx(0)]).first;
+      Tbase E1 = std::get<1>(orbital_history_[idx(1)]).first;
+      // Derivatives
+      Tbase dE0 = 0.0, dE1 = 0.0;
+      // Optimal damping: E = E(lambda) = E((1-lambda)*Plow + lambda*Pnext)
+      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+        arma::Mat<Torb> dm_low(get_density_matrix_block(idx(0), iblock));
+        arma::Mat<Torb> dm_next(get_density_matrix_block(idx(1), iblock));
+        const auto & fock_low(get_fock_matrix_block(idx(0), iblock));
+        const auto & fock_next(get_fock_matrix_block(idx(1), iblock));
+        dE0 += arma::trace(fock_low*(dm_next-dm_low));
+        dE1 += arma::trace(fock_next*(dm_next-dm_low));
       }
 
-      // Finally, if occupations have changed, also check if updating
-      // the occupations lowers the energy
-      bool occ_success = false;
-      if(occupation_difference(reference_occupations, new_occupations) > occupation_change_threshold_) {
-        occ_success = add_entry(std::make_pair(new_orbitals, new_occupations));
-        if(verbosity_>=5) {
-          if(occ_success)
-            printf("Changing occupations decreased energy\n");
-          else
-            printf("Changing occupations failed to decrease energy\n");
-        }
+      // Fit cubic
+      Tbase d = E0;
+      Tbase c = dE0;
+      Tbase b = -2*dE0 - 3*E0 + 3*E1 - dE1;
+      Tbase a = dE0 + 2*E0 - 2*E1 + dE1;
+      std::function<Tbase(Tbase)> eval_poly = [a,b,c,d](Tbase x) {
+        return (((a*x+b)*x+c)*x)+d;
+      };
+
+      // Convert to derivative
+      a *= 3;
+      b *= 2;
+      std::function<Tbase(Tbase)> eval_deriv = [a,b,c,d](Tbase x) {
+        return (a*x+b)*x+c;
+      };
+
+      // Solve roots
+      Tbase x1 = (-b - sqrt(b*b - 4*a*c))/(2*a);
+      Tbase x2 = (-b + sqrt(b*b - 4*a*c))/(2*a);
+      bool x1ok = x1 > 0.0 and x1<=1.0;
+      bool x2ok = x2 > 0.0 and x2<=1.0;
+
+      Tbase opt_step;
+      if(x1ok and x2ok) {
+        opt_step = eval_poly(x1) < eval_poly(x2) ? x1 : x2;
+      } else if(x1ok) {
+        opt_step = x1;
+      } else if(x2ok) {
+        opt_step = x2;
+      } else throw std::logic_error("Did not find minimum!\n");
+      if(verbosity_>=10)
+        printf("Optimal damping factor %e, predicted energy change %e\n",opt_step,eval_poly(opt_step)-eval_poly(0.0));
+
+      // Mix the density matrices
+      Orbitals<Torb> new_orbs(number_of_blocks_);
+      OrbitalOccupations<Tbase> new_occs(number_of_blocks_);
+      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+        arma::Mat<Torb> dm_block((1-opt_step)*get_density_matrix_block(idx(0), iblock) + opt_step*get_density_matrix_block(idx(1), iblock));
+        // Flip the sign so that the orbitals come in increasing occupation
+        arma::eig_sym(new_occs[iblock], new_orbs[iblock], -dm_block);
+        new_occs[iblock] *= -1;
+        if(verbosity_>=10)
+          new_occs[iblock].t().print("Natural occupations");
       }
 
-      // Extrapolation was a success if either worked
-      return ref_success or occ_success;
+      return add_entry(std::make_pair(new_orbs, new_occs));
     }
 
     /// Clean up history from incorrect occupations
