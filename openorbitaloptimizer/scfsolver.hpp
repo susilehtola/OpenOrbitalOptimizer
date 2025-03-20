@@ -122,7 +122,7 @@ namespace OpenOrbitalOptimizer {
     /// Threshold for a change in occupations
     Tbase occupation_change_threshold_ = 1e-6;
     /// History length
-    int maximum_history_length_ = 7;
+    int maximum_history_length_ = 10;
     /// Convergence threshold for orbital gradient
     Tbase convergence_threshold_ = 1e-7;
     /// Threshold that determines an acceptable increase in energy due to finite numerical precision
