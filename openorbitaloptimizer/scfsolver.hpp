@@ -116,6 +116,8 @@ namespace OpenOrbitalOptimizer {
     Tbase diis_threshold_ = 1e-4;
     /// Damping factor for DIIS diagonal (Hamilton and Pulay, 1986)
     Tbase diis_diagonal_damping_ = 0.02;
+    /// Use EDIIS if the error of the last cycle is 10% greater than the minimum error (Garza and Scuseria, 2012)
+    Tbase pure_ediis_factor_ = 1.10;
 
     /// Threshold for a change in occupations
     Tbase occupation_change_threshold_ = 1e-6;
@@ -1805,13 +1807,9 @@ namespace OpenOrbitalOptimizer {
           // Form DIIS and ADIIS weights
           arma::Col<Tbase> diis_w(diis_weights());
           if(verbosity_>=10) diis_w.print("DIIS weights");
-          arma::Col<Tbase> adiis_w;
-          arma::Col<Tbase> ediis_w;
-
-          ediis_w = ediis_weights();
+          arma::Col<Tbase> adiis_w = adiis_weights();
           if(verbosity_>=10) adiis_w.print("EDIIS weights");
-
-          adiis_w = adiis_weights();
+          arma::Col<Tbase> ediis_w = ediis_weights();
           if(verbosity_>=10) adiis_w.print("ADIIS weights");
 
           arma::Mat<Tbase> diis_errmat(diis_error_matrix());
@@ -1821,29 +1819,48 @@ namespace OpenOrbitalOptimizer {
             printf("EDIIS extrapolated error norm %e\n",arma::norm(diis_errmat*ediis_w,error_norm_.c_str()));
           }
 
-          // Form DIIS weights
-          arma::Col<Tbase> diis_weights = diis_w;
+          // Form weights to use
+          arma::Col<Tbase> weights = diis_w;
+          arma::Col<Tbase> aediis_w = ediis_w;
           if(diis_error > diis_threshold_) {
             if(diis_error < diis_epsilon_) {
-              if(verbosity_>=5) printf("Mixed DIIS and ADIIS step\n");
-              Tbase adiis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
-              Tbase diis_coeff = 1.0 - adiis_coeff;
-              diis_weights = adiis_coeff * adiis_w + diis_coeff * diis_weights;
+              Tbase aediis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
+
+              if(diis_w.n_elem>1) {
+                arma::Col<Tbase> errors(arma::diagvec(diis_errmat));
+                // Use pure EDIIS if error of the last cycle is 10% greater than the minimum error (Garza and Scuseria 2012)
+                Tbase min_error = arma::min(errors);
+                arma::uvec iter_idx(errors.n_elem);
+                for(size_t i=0;i<iter_idx.n_elem;i++)
+                  iter_idx(i) = std::get<2>(orbital_history_[i]);
+                arma::uvec sortidx(arma::sort_index(iter_idx,"descend"));
+                Tbase last_error = errors(sortidx[0]);
+                if(last_error >= pure_ediis_factor_*min_error)
+                  aediis_coeff=1.0;
+              }
+
+              if(aediis_coeff < 1.0) {
+                if(verbosity_>=5) printf("Mixed DIIS and EDIIS step\n");
+              } else {
+                if(verbosity_>=5) printf("EDIIS step\n");
+              }
+              weights = aediis_coeff * aediis_w + (1.0 - aediis_coeff) * diis_w;
             } else {
-              if(verbosity_>=5) printf("ADIIS step\n");
-              diis_weights = adiis_w;
+              if(verbosity_>=5) printf("EDIIS step\n");
+              weights = aediis_w;
             }
           } else {
             if(verbosity_>=5) printf("Pure DIIS step\n");
-            //diis_weights = minimal_error_sampling_algorithm();
+            weights = diis_w;
+            //weights = minimal_error_sampling_algorithm();
           }
           if(verbosity_>=10)
-            diis_weights.print("Extrapolation weights");
+            weights.print("Extrapolation weights");
 
           // Perform extrapolation. If it does not lower the energy, we do
           // a scaled steepest descent step, instead.
           old_energy = get_energy();
-          if(!attempt_extrapolation(diis_weights)) {
+          if(!attempt_extrapolation(weights)) {
             if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
             if(steepest_descent) {
               steepest_descent_step();
