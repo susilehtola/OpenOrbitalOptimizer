@@ -696,14 +696,16 @@ namespace OpenOrbitalOptimizer {
       density_projections.max(idx);
       if(verbosity_>=10)
         printf("Max density projection %e with %s weights\n",density_projections(idx),weight_legend[idx].c_str());
-      arma::Col<Tbase> aediis_w = candidate_w.col(idx);
 
-      if(aediis_coeff < 1.0) {
-        if(verbosity_>=5) printf("Mixed DIIS and %s step\n",weight_legend[idx].c_str());
-      } else {
-        if(verbosity_>=5) printf("%s step\n",weight_legend[idx].c_str());
-      }
+      arma::Col<Tbase> aediis_w = candidate_w.col(idx);
       arma::Col<Tbase> weights(aediis_coeff * aediis_w + (1.0 - aediis_coeff) * diis_w);
+      if(aediis_coeff == 1.0) {
+        if(verbosity_>=5) printf("%s step\n",weight_legend[idx].c_str());
+      } else if(aediis_coeff == 0.0) {
+        if(verbosity_>=5) printf("DIIS step\n");
+      } else {
+        if(verbosity_>=5) printf("Mixed DIIS and %s step\n",weight_legend[idx].c_str());
+      }
 
       return weights;
     }
@@ -1813,8 +1815,11 @@ namespace OpenOrbitalOptimizer {
 
         } else {
           // Compute mixing factor (Garza and Scuseria, 2012)
-          Tbase aediis_coeff=1.0;
-          if(diis_error > diis_threshold_) {
+          Tbase aediis_coeff;
+          if(diis_error < diis_threshold_) {
+            // If error is small, use pure DIIS
+            aediis_coeff = 0.0;
+          } else {
             if(diis_error < diis_epsilon_) {
               // Compute AEDIIS mixing coefficient
               aediis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
@@ -1830,10 +1835,9 @@ namespace OpenOrbitalOptimizer {
               if(last_error >= pure_ediis_factor_*min_error)
                 aediis_coeff=1.0;
             } else {
+              // Error is large, use A/EDIIS
               aediis_coeff = 1.0;
             }
-          } else {
-            aediis_coeff = 0.0;
           }
           arma::Col<Tbase> weights(minimal_error_sampling_algorithm_weights(aediis_coeff));
           if(verbosity_>=10)
