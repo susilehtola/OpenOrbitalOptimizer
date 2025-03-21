@@ -369,12 +369,17 @@ namespace OpenOrbitalOptimizer {
     /// Calculate DIIS weights
     arma::Col<Tbase> diis_weights() const {
       // Only use reference points where the orbitals have similar occupations for DIIS
-      auto reference_occupations = get_orbital_occupations();
       std::vector<size_t> history_mask;
-      for(size_t ihist=0;ihist<orbital_history_.size();ihist++)
-        if(occupation_difference(reference_occupations, get_orbital_occupations(ihist)) <= occupation_change_threshold_) {
+      const auto reference_occupations = get_orbital_occupations();
+      const auto reference_orbitals = get_orbitals();
+      for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
+        const auto hist_occupations = get_orbital_occupations(ihist);
+        const auto hist_orbitals = get_orbitals(ihist);
+        const auto mom_occupations = determine_maximum_overlap_occupations(hist_occupations, hist_orbitals, reference_orbitals);
+        if(occupation_difference(reference_occupations, mom_occupations) <= occupation_change_threshold_) {
           history_mask.push_back(ihist);
         }
+      }
       size_t nremoved = orbital_history_.size()-history_mask.size();
       if(verbosity_>=10 and nremoved>0)
         printf("Removed %i entries corresponding to bad occupations from DIIS\n", nremoved);
@@ -888,15 +893,20 @@ namespace OpenOrbitalOptimizer {
     /// Clean up history from incorrect occupations
     void cleanup() {
       // Clean up history from incorrect occupation data
-      auto reference_occupations = get_orbital_occupations();
+      const auto reference_occupations = get_orbital_occupations();
+      const auto reference_orbitals = get_orbitals();
       size_t nremoved=0;
-      for(size_t ihist=orbital_history_.size()-1;ihist>0;ihist--)
-        if(occupation_difference(reference_occupations, get_orbital_occupations(ihist)) > occupation_change_threshold_) {
+      for(size_t ihist=orbital_history_.size()-1;ihist>0;ihist--) {
+        const auto hist_occupations = get_orbital_occupations(ihist);
+        const auto hist_orbitals = get_orbitals(ihist);
+        const auto mom_occupations = determine_maximum_overlap_occupations(hist_occupations, hist_orbitals, reference_orbitals);
+        if(occupation_difference(reference_occupations, mom_occupations) > occupation_change_threshold_) {
           nremoved++;
           orbital_history_.erase(orbital_history_.begin()+ihist);
         }
         if(nremoved>0 and verbosity_>=10)
           printf("Removed %i entries corresponding to bad occupations\n",nremoved);
+      }
     }
 
     /// Form list of rotation angles
