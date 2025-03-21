@@ -128,8 +128,6 @@ namespace OpenOrbitalOptimizer {
     int maximum_history_length_ = 10;
     /// Convergence threshold for orbital gradient
     Tbase convergence_threshold_ = 1e-7;
-    /// Threshold that determines an acceptable increase in energy due to finite numerical precision
-    Tbase energy_update_threshold_ = 0.0;
     /// Threshold for the ratio of linear dependence
     Tbase linear_dependence_ratio_ = std::sqrt(std::numeric_limits<Tbase>::epsilon());
     /// Norm to use by default: maximum element (Pulay 1982)
@@ -1554,16 +1552,6 @@ namespace OpenOrbitalOptimizer {
       convergence_threshold_ = convergence_threshold;
     }
 
-    /// Get energy_update threshold
-    Tbase energy_update_threshold() const {
-      return energy_update_threshold_;
-    }
-
-    /// Set verbosity
-    void energy_update_threshold(Tbase energy_update_threshold) {
-      energy_update_threshold_ = energy_update_threshold;
-    }
-
     /// Get the energy for the n:th entry
     Tbase get_energy(size_t ihist=0) const {
       if(ihist>orbital_history_.size())
@@ -1640,7 +1628,7 @@ namespace OpenOrbitalOptimizer {
         // Otherwise we have to check if we lowered the energy
         Tbase new_energy = fock.first;
         Tbase old_energy = get_energy();
-        bool return_value = new_energy - old_energy < energy_update_threshold_;
+        bool return_value = new_energy < old_energy;
 
         // Now, we first sort the stack in increasing energy to get
         // the lowest energy solution at the beginning
