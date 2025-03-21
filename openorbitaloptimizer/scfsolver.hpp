@@ -859,7 +859,10 @@ namespace OpenOrbitalOptimizer {
         opt_step = x1;
       } else if(x2ok) {
         opt_step = x2;
-      } else throw std::logic_error("Did not find minimum!\n");
+      } else {
+        // No allowable solution!
+        return false;
+      }
       if(verbosity_>=10)
         printf("Optimal damping factor %e, predicted energy change %e\n",opt_step,eval_poly(opt_step)-eval_poly(0.0));
 
@@ -871,6 +874,10 @@ namespace OpenOrbitalOptimizer {
         // Flip the sign so that the orbitals come in increasing occupation
         arma::eig_sym(new_occs[iblock], new_orbs[iblock], -dm_block);
         new_occs[iblock] *= -1;
+        // Zero out numerically zero occupations
+        arma::uvec zeroidx(arma::find(arma::abs(new_occs[iblock])<=10*std::numeric_limits<Tbase>::epsilon()));
+        new_occs[iblock](zeroidx).zeros();
+
         if(verbosity_>=10)
           new_occs[iblock].t().print("Natural occupations");
       }
