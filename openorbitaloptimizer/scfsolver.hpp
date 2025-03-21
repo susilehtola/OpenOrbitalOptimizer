@@ -130,8 +130,8 @@ namespace OpenOrbitalOptimizer {
     Tbase convergence_threshold_ = 1e-7;
     /// Threshold for the ratio of linear dependence
     Tbase linear_dependence_ratio_ = std::sqrt(std::numeric_limits<Tbase>::epsilon());
-    /// Norm to use by default: maximum element (Pulay 1982)
-    std::string error_norm_ = "inf";
+    /// Norm to use by default: root-mean-square error
+    std::string error_norm_ = "rms";
 
     /// Minimal normalized projection of preconditioned search direction onto gradient
     Tbase minimal_gradient_projection_ = 1e-4;
