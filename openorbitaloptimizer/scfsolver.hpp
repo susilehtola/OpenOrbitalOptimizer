@@ -116,6 +116,9 @@ namespace OpenOrbitalOptimizer {
     Tbase diis_threshold_ = 1e-4;
     /// Damping factor for DIIS diagonal (Hamilton and Pulay, 1986)
     Tbase diis_diagonal_damping_ = 0.02;
+    /// DIIS restart criterion (Chupin et al, 2021)
+    Tbase diis_restart_factor_ = 1e-4;
+
     /// Use EDIIS if the error of the last cycle is 10% greater than the minimum error (Garza and Scuseria, 2012)
     Tbase pure_ediis_factor_ = 1.10;
 
@@ -331,33 +334,68 @@ namespace OpenOrbitalOptimizer {
       return return_vector;
     }
 
+    /// Compute element of DIIS error matrix
+    Tbase diis_error_matrix_element(size_t ihist, size_t jhist) const {
+      Tbase el=0.0;
+      for(size_t iblock=0; iblock<number_of_blocks_; iblock++) {
+        arma::Col<Tbase> ei(diis_error_vector(ihist, iblock));
+        arma::Col<Tbase> ej(diis_error_vector(jhist, iblock));
+        el += arma::dot(ei,ej);
+      }
+      return el;
+    }
+
     /// Form DIIS error matrix
-    arma::Mat<Tbase> diis_error_matrix() const {
+    arma::Mat<Tbase> diis_error_matrix(const std::vector<size_t> & mask) const {
       // The error matrix is given by the orbital gradient dot products
-      const size_t N=orbital_history_.size();
+      const size_t N=mask.size();
       arma::Mat<Tbase> B(N,N,arma::fill::zeros);
 
-      for(size_t iblock=0; iblock<number_of_blocks_; iblock++) {
-        for(size_t ihist=0; ihist<N; ihist++) {
-          arma::Col<Tbase> ei = diis_error_vector(ihist, iblock);
-          for(size_t jhist=0; jhist<=ihist; jhist++) {
-            arma::Col<Tbase> ej = diis_error_vector(jhist, iblock);
-            auto dotprod = arma::dot(ei,ej);
-            B(jhist, ihist) += dotprod;
-            if(ihist != jhist)
-              B(ihist, jhist) += dotprod;
-          }
+      for(size_t ihist=0; ihist<N; ihist++) {
+        for(size_t jhist=0; jhist<=ihist; jhist++) {
+          B(ihist, jhist) = B(jhist, ihist) = diis_error_matrix_element(mask[ihist], mask[jhist]);
         }
       }
       return B;
     }
 
+    arma::Mat<Tbase> diis_error_matrix() const {
+      std::vector<size_t> mask(orbital_history_.size());
+      for(size_t i=0;i<mask.size();i++)
+        mask[i]=i;
+      return diis_error_matrix(mask);
+    }
+
     /// Calculate DIIS weights
     arma::Col<Tbase> diis_weights() const {
+      // Only use reference points where the orbitals have similar occupations for DIIS
+      auto reference_occupations = get_orbital_occupations();
+      std::vector<size_t> history_mask;
+      for(size_t ihist=0;ihist<orbital_history_.size();ihist++)
+        if(occupation_difference(reference_occupations, get_orbital_occupations(ihist)) <= occupation_change_threshold_) {
+          history_mask.push_back(ihist);
+        }
+      size_t nremoved = orbital_history_.size()-history_mask.size();
+      if(verbosity_>=10 and nremoved>0)
+        printf("Removed %i entries corresponding to bad occupations from DIIS\n", nremoved);
+
+      // Also check that the error residuals are sufficiently small
+      arma::Col<Tbase> residuals(history_mask.size());
+      for(size_t i=0;i<residuals.size();i++)
+        residuals(i) = diis_error_matrix_element(history_mask[i], history_mask[i]);
+      Tbase min_residual = arma::min(residuals);
+      for(size_t i=history_mask.size()-1;i<history_mask.size();i--)
+        // Criterion from Chupin et al, 2012
+        if(residuals(i)*diis_restart_factor_ > min_residual)
+          history_mask.erase(history_mask.begin()+i);
+      size_t nrestart = orbital_history_.size()-history_mask.size()-nremoved;
+      if(verbosity_>=10 and nrestart>0)
+        printf("Removed %i entries corresponding to large DIIS errors\n", nrestart);
+
       // Set up the DIIS error matrix
-      const size_t N=orbital_history_.size();
+      const size_t N=history_mask.size();
       arma::Mat<Tbase> B(N+1,N+1,arma::fill::value(-1.0));
-      B.submat(0,0,N-1,N-1)=diis_error_matrix();
+      B.submat(0,0,N-1,N-1)=diis_error_matrix(history_mask);
       B(N,N)=0.0;
 
       // Apply the diagonal damping
@@ -378,7 +416,12 @@ namespace OpenOrbitalOptimizer {
       arma::solve(diis_weights, B, rh);
       diis_weights=diis_weights.subvec(0,N-1);
 
-      return diis_weights;
+      // Pad to full space
+      arma::Col<Tbase> diis_weights_full(orbital_history_.size(),arma::fill::zeros);
+      for(size_t i=0;i<history_mask.size();i++)
+        diis_weights_full[history_mask[i]] = diis_weights[i];
+
+      return diis_weights_full;
     }
     /// Calculate ADIIS weights by minimizing quadratic form
     arma::Col<Tbase> aediis_weights(const arma::Col<Tbase> & b, const arma::Mat<Tbase> & A) const {
