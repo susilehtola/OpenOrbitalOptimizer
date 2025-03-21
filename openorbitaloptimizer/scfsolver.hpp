@@ -359,6 +359,14 @@ namespace OpenOrbitalOptimizer {
       return B;
     }
 
+    arma::Col<Tbase> diis_error_matrix_diagonal() const {
+      arma::Col<Tbase> B(orbital_history_.size(),arma::fill::zeros);
+      for(size_t ihist=0; ihist<B.n_elem; ihist++) {
+        B(ihist) = diis_error_matrix_element(ihist, ihist);
+      }
+      return B;
+    }
+
     arma::Mat<Tbase> diis_error_matrix() const {
       std::vector<size_t> mask(orbital_history_.size());
       for(size_t i=0;i<mask.size();i++)
@@ -527,13 +535,13 @@ namespace OpenOrbitalOptimizer {
         if(dE > -df_tol) {
           if(verbosity_ >= 10) {
             printf("A/EDIIS weights converged in %i macroiterations\n",imacro);
-            x.t().print("xconv");
+            //x.t().print("xconv");
           }
           break;
         } else if(imacro==max_iter-1) {
           if(verbosity_ >= 10) {
             printf("A/EDIIS weights did not converge in %i macroiterations, dE=%e\n",imacro, dE);
-            x.t().print("xfinal");
+            //x.t().print("xfinal");
           }
         }
 
@@ -575,7 +583,7 @@ namespace OpenOrbitalOptimizer {
             }
           }
         }
-        x.t().print("Using suboptimal solution instead");
+        //x.t().print("Using suboptimal solution instead");
       }
 
       //printf("Current energy %e\n",current_point);
@@ -659,35 +667,71 @@ namespace OpenOrbitalOptimizer {
     }
 
     /** Minimal Error Sampling Algorithm (MESA), doi:10.14288/1.0372885 */
-    arma::Col<Tbase> minimal_error_sampling_algorithm() const {
+    arma::Col<Tbase> minimal_error_sampling_algorithm_weights(Tbase aediis_coeff) const {
+      // Form DIIS and ADIIS weights
+      arma::Col<Tbase> diis_w(diis_weights());
+      if(verbosity_>=10) diis_w.t().print("DIIS weights");
+
       // Get various extrapolation weights
       const size_t N = orbital_history_.size();
-      arma::Col<Tbase> diis_w(diis_weights());
       arma::Col<Tbase> adiis_w(adiis_weights());
+      if(verbosity_>=10) adiis_w.t().print("ADIIS weights");
       arma::Col<Tbase> ediis_w(ediis_weights());
+      if(verbosity_>=10) ediis_w.t().print("EDIIS weights");
 
       // Candidates
-      arma::Mat<Tbase> candidate_w(N, 4, arma::fill::zeros);
+      arma::Mat<Tbase> candidate_w(N, 3, arma::fill::zeros);
       size_t icol=0;
-      candidate_w.col(icol++) = diis_w;
       candidate_w.col(icol++) = adiis_w;
       candidate_w.col(icol++) = ediis_w;
-
-      // Last try: just do bare Roothaan
       candidate_w(0,icol++) = 1.0;
+      const std::vector<std::string> weight_legend({"ADIIS", "EDIIS", "Roothaan"});
 
       arma::Col<Tbase> density_projections(candidate_w.n_cols, arma::fill::zeros);
       for(size_t iw=0;iw<candidate_w.n_cols;iw++) {
         density_projections(iw) = density_projection(candidate_w.col(iw));
       }
-      density_projections.t().print("Density projections");
+      if(verbosity_>=10)
+        density_projections.t().print("Density projections");
 
       arma::uword idx;
       density_projections.max(idx);
-      printf("Max density %e with trial %i\n",density_projections(idx),idx);
+      if(verbosity_>=10)
+        printf("Max density projection %e with %s weights\n",density_projections(idx),weight_legend[idx].c_str());
+      arma::Col<Tbase> aediis_w = candidate_w.col(idx);
 
-      return candidate_w.col(idx);
+      if(aediis_coeff < 1.0) {
+        if(verbosity_>=5) printf("Mixed DIIS and %s step\n",weight_legend[idx].c_str());
+      } else {
+        if(verbosity_>=5) printf("%s step\n",weight_legend[idx].c_str());
+      }
+      arma::Col<Tbase> weights(aediis_coeff * aediis_w + (1.0 - aediis_coeff) * diis_w);
+
+      return weights;
     }
+
+    /// Compute density change with given weights
+    Tbase density_projection(const arma::Col<Tbase> & weights) const {
+      // Get the extrapolated Fock matrix
+      auto fock(extrapolate_fock(weights));
+
+      // Diagonalize the extrapolated Fock matrix
+      auto diagonalized_fock = compute_orbitals(fock);
+      auto & new_orbitals = diagonalized_fock.first;
+      auto & new_orbital_energies = diagonalized_fock.second;
+
+      // Determine new occupations
+      auto new_occupations = update_occupations(new_orbital_energies);
+
+      // Reference calculation
+      const auto reference_orbitals = get_orbitals();
+      const auto reference_occupations = get_orbital_occupations();
+      // Occupations corresponding to the reference orbitals
+      auto maximum_overlap_occupations = determine_maximum_overlap_occupations(reference_occupations, reference_orbitals, new_orbitals);
+
+      return density_overlap(new_orbitals, maximum_overlap_occupations, reference_orbitals, reference_occupations);
+    }
+
 
     /// Computes the difference between orbital occupations
     Tbase occupation_difference(const OrbitalOccupations<Tbase> & old_occ, const OrbitalOccupations<Tbase> & new_occ) const {
@@ -1780,56 +1824,30 @@ namespace OpenOrbitalOptimizer {
           steepest_descent_step();
 
         } else {
-          // Form DIIS and ADIIS weights
-          arma::Col<Tbase> diis_w(diis_weights());
-          if(verbosity_>=10) diis_w.t().print("DIIS weights");
-          arma::Col<Tbase> adiis_w = adiis_weights();
-          if(verbosity_>=10) adiis_w.t().print("ADIIS weights");
-          arma::Col<Tbase> ediis_w = ediis_weights();
-          if(verbosity_>=10) ediis_w.t().print("EDIIS weights");
-
-          arma::Mat<Tbase> diis_errmat(diis_error_matrix());
-          if(verbosity_>=5) {
-            printf("DIIS extrapolated error norm %e\n",arma::norm(diis_errmat*diis_w,error_norm_.c_str()));
-            printf("ADIIS extrapolated error norm %e\n",arma::norm(diis_errmat*adiis_w,error_norm_.c_str()));
-            printf("EDIIS extrapolated error norm %e\n",arma::norm(diis_errmat*ediis_w,error_norm_.c_str()));
-          }
-
-          // Form weights to use
-          arma::Col<Tbase> weights = diis_w;
-          arma::Col<Tbase> aediis_w = ediis_w;
+          // Compute mixing factor (Garza and Scuseria, 2012)
+          Tbase aediis_coeff=1.0;
           if(diis_error > diis_threshold_) {
             if(diis_error < diis_epsilon_) {
-              Tbase aediis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
+              // Compute AEDIIS mixing coefficient
+              aediis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
 
-              if(diis_w.n_elem>1) {
-                arma::Col<Tbase> errors(arma::diagvec(diis_errmat));
-                // Use pure EDIIS if error of the last cycle is 10% greater than the minimum error (Garza and Scuseria 2012)
-                Tbase min_error = arma::min(errors);
-                arma::uvec iter_idx(errors.n_elem);
-                for(size_t i=0;i<iter_idx.n_elem;i++)
-                  iter_idx(i) = std::get<2>(orbital_history_[i]);
-                arma::uvec sortidx(arma::sort_index(iter_idx,"descend"));
-                Tbase last_error = errors(sortidx[0]);
-                if(last_error >= pure_ediis_factor_*min_error)
-                  aediis_coeff=1.0;
-              }
-
-              if(aediis_coeff < 1.0) {
-                if(verbosity_>=5) printf("Mixed DIIS and EDIIS step\n");
-              } else {
-                if(verbosity_>=5) printf("EDIIS step\n");
-              }
-              weights = aediis_coeff * aediis_w + (1.0 - aediis_coeff) * diis_w;
+              // Use pure A/EDIIS if error of the last cycle is 10% greater than the minimum error (Garza and Scuseria 2012)
+              arma::Col<Tbase> errors(diis_error_matrix_diagonal());
+              Tbase min_error = arma::min(errors);
+              arma::uvec iter_idx(errors.n_elem);
+              for(size_t i=0;i<iter_idx.n_elem;i++)
+                iter_idx(i) = std::get<2>(orbital_history_[i]);
+              arma::uvec sortidx(arma::sort_index(iter_idx,"descend"));
+              Tbase last_error = errors(sortidx[0]);
+              if(last_error >= pure_ediis_factor_*min_error)
+                aediis_coeff=1.0;
             } else {
-              if(verbosity_>=5) printf("EDIIS step\n");
-              weights = aediis_w;
+              aediis_coeff = 1.0;
             }
           } else {
-            if(verbosity_>=5) printf("Pure DIIS step\n");
-            weights = diis_w;
-            //weights = minimal_error_sampling_algorithm();
+            aediis_coeff = 0.0;
           }
+          arma::Col<Tbase> weights(minimal_error_sampling_algorithm_weights(aediis_coeff));
           if(verbosity_>=10)
             weights.t().print("Extrapolation weights");
 
