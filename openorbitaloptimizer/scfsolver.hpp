@@ -310,7 +310,7 @@ namespace OpenOrbitalOptimizer {
       for(size_t iblock = 0; iblock<number_of_blocks_;iblock++) {
         error_vectors[iblock] = diis_error_vector(ihist, iblock);
         if(verbosity_>=20)
-          printf("ihist %i block %i error vector norm %e\n",ihist,iblock,arma::norm(error_vectors[iblock],error_norm_.c_str()));
+          printf("ihist %i block %i error vector norm %e\n",ihist,iblock,norm(error_vectors[iblock]));
         if(verbosity_>=30)
           error_vectors[iblock].print();
       }
@@ -1532,13 +1532,23 @@ namespace OpenOrbitalOptimizer {
       return error_norm_;
     }
 
+    /// Evaluate the norm
+    Tbase norm(const arma::Mat<Tbase> & mat) const {
+      if(error_norm_ == "rms") {
+        // rms isn't implemented in Armadillo for some reason
+        return arma::norm(mat,"fro")/std::sqrt(1.0*mat.n_elem);
+      } else {
+        return arma::norm(mat, error_norm_.c_str());
+      }
+    }
+
     /// Set the used error norm
     void error_norm(const std::string & error_norm) {
-      // Check that the norm is a valid option to Armadillo
-      arma::vec test(1,arma::fill::ones);
-      (void) arma::norm(test,error_norm.c_str());
-      // store it
+      // Set the norm
       error_norm_ = error_norm;
+      // and check that it is a valid option
+      arma::vec test(1,arma::fill::ones);
+      (void) norm(test);
     }
 
     /// Get the maximum number of iterations
@@ -1737,7 +1747,7 @@ namespace OpenOrbitalOptimizer {
       Tbase old_energy = get_energy();
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
-        Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+        Tbase diis_error = norm(diis_error_vector(0));
         Tbase dE = get_energy() - old_energy;
 
         if(verbosity_>=5) {
@@ -1873,7 +1883,7 @@ namespace OpenOrbitalOptimizer {
       if(orbital_history_.size() == 0)
         run();
       else {
-        Tbase diis_error = arma::norm(diis_error_vector(0),error_norm_.c_str());
+        Tbase diis_error = norm(diis_error_vector(0));
         if(diis_error >= diis_threshold_)
           run();
       }
