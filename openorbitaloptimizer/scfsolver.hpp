@@ -121,6 +121,8 @@ namespace OpenOrbitalOptimizer {
 
     /// Use EDIIS if the error of the last cycle is 10% greater than the minimum error (Garza and Scuseria, 2012)
     Tbase pure_ediis_factor_ = 1.10;
+    /// Use optimal damping if otherwise we go up in energy
+    bool optimal_damping_ = false;
 
     /// Threshold for a change in occupations
     Tbase occupation_change_threshold_ = 1e-6;
@@ -773,7 +775,7 @@ namespace OpenOrbitalOptimizer {
       return diff;
     }
 
-    /// Perform DIIS extrapolation
+    /// Perform DIIS extrapolation of Fock matrix
     FockMatrix<Torb> extrapolate_fock(const arma::Col<Tbase> & weights) const {
       if(weights.n_elem != orbital_history_.size()) {
         std::ostringstream oss;
@@ -798,6 +800,42 @@ namespace OpenOrbitalOptimizer {
       }
 
       return extrapolated_fock;
+    }
+
+    /// Perform DIIS extrapolation of density matrix
+    DensityMatrix<Torb, Tbase> extrapolate_density(const arma::Col<Tbase> & weights) const {
+      if(weights.n_elem != orbital_history_.size()) {
+        std::ostringstream oss;
+        oss << "Inconsistent weights: " << weights.n_elem << " elements vs orbital history of size " << orbital_history_.size() << "!\n";
+        throw std::logic_error(oss.str());
+      }
+
+      // Form DIIS extrapolated density matrix
+      std::vector<arma::Mat<Torb>> orbitals(number_of_blocks_);
+      std::vector<arma::Col<Tbase>> occupations(number_of_blocks_);
+      for(size_t iblock = 0; iblock < number_of_blocks_; iblock++) {
+        if(empty_block(iblock))
+          continue;
+
+        arma::Mat<Torb> dm_block;
+        for(size_t ihist = 0; ihist < orbital_history_.size(); ihist++) {
+          arma::Mat<Torb> block = weights(ihist) * get_density_matrix_block(ihist, iblock);
+          if(ihist==0) {
+            dm_block = block;
+          } else {
+            dm_block += block;
+          }
+        }
+
+        // Flip the sign so that the orbitals come in increasing occupation
+        arma::eig_sym(occupations[iblock], orbitals[iblock], -dm_block);
+        occupations[iblock] *= -1;
+        // Zero out numerically zero occupations
+        arma::uvec zeroidx(arma::find(arma::abs(occupations[iblock])<=10*std::numeric_limits<Tbase>::epsilon()));
+        occupations[iblock](zeroidx).zeros();
+      }
+
+      return std::make_pair(orbitals,occupations);
     }
 
     /// Compute maximum overlap orbital occupations
@@ -854,10 +892,15 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Attempt extrapolation with given weights
-    bool attempt_extrapolation(const arma::Col<Tbase> & weights) {
+    bool attempt_extrapolation(const arma::Col<Tbase> & weights, bool density=false) {
       // Get the extrapolated Fock matrix
-      auto fock(extrapolate_fock(weights));
-      return attempt_fock(fock);
+      if(not density) {
+        auto fock(extrapolate_fock(weights));
+        return attempt_fock(fock);
+      } else {
+        auto dm(extrapolate_density(weights));
+        return add_entry(std::make_pair(dm.first, dm.second));
+      }
     }
 
     /// See if given Fock matrix reduces the energy
@@ -871,14 +914,7 @@ namespace OpenOrbitalOptimizer {
       auto new_occupations = update_occupations(new_orbital_energies);
 
       // Try out the new occupations
-      bool ref_success = add_entry(std::make_pair(new_orbitals, new_occupations));
-      if(ref_success)
-        return ref_success;
-
-      // If that did not succeed, we do optimal damping
-      if(verbosity_ >= 10)
-        printf("Energy did not decrease, doing an optimal damping step instead\n");
-      return optimal_damping_step();
+      return add_entry(std::make_pair(new_orbitals, new_occupations));
     }
 
     /// Optimal damping step
@@ -1900,16 +1936,14 @@ namespace OpenOrbitalOptimizer {
           if(verbosity_>=10)
             weights.t().print("Extrapolation weights");
 
-          // Perform extrapolation. If it does not lower the energy, we do
-          // a scaled steepest descent step, instead.
+          // Perform extrapolation.
           old_energy = get_energy();
           if(!attempt_extrapolation(weights)) {
             if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
-            if(steepest_descent) {
-              steepest_descent_step();
-            } else if(level_shifting) {
-              level_shifting_step();
-            }
+          } else if(optimal_damping_) {
+            if(verbosity_ >= 10)
+              printf("Energy did not decrease, doing an optimal damping step instead\n");
+            optimal_damping_step();
           }
 
           // Do cleanup
