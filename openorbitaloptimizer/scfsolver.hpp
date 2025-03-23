@@ -60,7 +60,7 @@ namespace OpenOrbitalOptimizer {
   template<typename Torb, typename Tbase> using FockBuilderReturn = std::pair<Tbase, FockMatrix<Torb>>;
   /// The Fock builder takes in the orbitals and orbital occupations,
   /// and returns the energy and Fock matrices
-  template<typename Torb, typename Tbase> using FockBuilder = std::function<FockBuilderReturn<Torb, Tbase>(DensityMatrix<Torb, Tbase>)>;
+  template<typename Torb, typename Tbase> using FockBuilder = std::function<FockBuilderReturn<Torb, Tbase>(const DensityMatrix<Torb, Tbase> &)>;
 
   /// The history of orbital optimization is defined by the orbitals
   /// and their occupations - together the density matrix - and the
@@ -1497,10 +1497,14 @@ namespace OpenOrbitalOptimizer {
       // Check that dimensions are consistent
       bool consistent=true;
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        if(get_orbital_block(0,iblock).n_cols != get_fock_matrix_block(0,iblock).n_cols)
+        if(get_orbital_block(0,iblock).n_cols != get_fock_matrix_block(0,iblock).n_cols) {
+          printf("get_orbital_block(0,iblock).n_cols=%i != get_fock_matrix_block(0,iblock).n_cols)=%i\n",get_orbital_block(0,iblock).n_cols,get_fock_matrix_block(0,iblock).n_cols);
           consistent=false;
-        if(get_orbital_occupation_block(0,iblock).n_elem != get_fock_matrix_block(0,iblock).n_cols)
+        }
+        if(get_orbital_occupation_block(0,iblock).n_elem != get_fock_matrix_block(0,iblock).n_cols) {
+          printf("get_orbital_occupation_block(0,iblock).n_elem=%i != get_fock_matrix_block(0,iblock).n_cols=%i\n",get_orbital_occupation_block(0,iblock).n_elem,get_fock_matrix_block(0,iblock).n_cols);
           consistent=false;
+        }
       }
       // If they are not consistent (e.g. when a read-in guess has been used)
       if(not consistent) {
