@@ -235,7 +235,7 @@ namespace OpenOrbitalOptimizer {
 
       std::vector<arma::Col<Tbase>> vectors(mat.size());
       for(size_t iblock=0;iblock<mat.size();iblock++) {
-        if(empty_block(iblock))
+        if(mat[iblock].n_elem==0)
           continue;
         vectors[iblock]=vectorise(mat[iblock]);
         N += vectors[iblock].n_elem;
@@ -244,7 +244,7 @@ namespace OpenOrbitalOptimizer {
       arma::Col<Tbase> v(N,arma::fill::zeros);
       size_t ioff=0;
       for(size_t iblock=0;iblock<vectors.size();iblock++) {
-        if(empty_block(iblock))
+        if(mat[iblock].n_elem==0)
           continue;
         v.subvec(ioff,ioff+vectors[iblock].n_elem-1)=vectors[iblock];
         ioff += vectors[iblock].n_elem;
@@ -279,7 +279,7 @@ namespace OpenOrbitalOptimizer {
       std::vector<arma::Mat<Torb>> mat(dim.n_elem);
       size_t ioff = 0;
       for(size_t iblock=0; iblock<dim.n_elem; iblock++) {
-        if(empty_block(iblock))
+        if(dim(iblock)==0)
           continue;
         size_t size = dim(iblock)*dim(iblock);
         if constexpr (not arma::is_real<Torb>::value) {
@@ -760,6 +760,8 @@ namespace OpenOrbitalOptimizer {
     Tbase occupation_difference(const OrbitalOccupations<Tbase> & old_occ, const OrbitalOccupations<Tbase> & new_occ) const {
       Tbase diff = 0.0;
       for(size_t iblock = 0; iblock<old_occ.size(); iblock++) {
+        if(old_occ[iblock].n_elem==0)
+          continue;
         size_t n = std::min(new_occ[iblock].n_elem, old_occ[iblock].n_elem);
         diff += arma::sum(arma::abs(new_occ[iblock].subvec(0,n-1)-old_occ[iblock].subvec(0,n-1)));
         if(new_occ[iblock].n_elem>n)
@@ -782,6 +784,8 @@ namespace OpenOrbitalOptimizer {
       // Form DIIS extrapolated Fock matrix
       FockMatrix<Torb> extrapolated_fock(number_of_blocks_);
       for(size_t iblock = 0; iblock < extrapolated_fock.size(); iblock++) {
+        if(empty_block(iblock))
+          continue;
         // Apply the DIIS weight
         for(size_t ihist = 0; ihist < orbital_history_.size(); ihist++) {
           arma::Mat<Torb> block = weights(ihist) * get_fock_matrix_block(ihist, iblock);
@@ -800,7 +804,7 @@ namespace OpenOrbitalOptimizer {
     OrbitalOccupations<Tbase> determine_maximum_overlap_occupations(const OrbitalOccupations<Tbase> & reference_occupations, const Orbitals<Torb> & C_reference, const Orbitals<Torb> & C_new) const {
       OrbitalOccupations<Tbase> new_occupations(reference_occupations);
       for(size_t iblock=0; iblock<new_occupations.size(); iblock++) {
-        if(empty_block(iblock))
+        if(C_reference[iblock].n_elem == 0)
           continue;
         // Initialize
         new_occupations[iblock].zeros();
@@ -834,7 +838,7 @@ namespace OpenOrbitalOptimizer {
 
       Tbase ovl=0.0;
       for(size_t iblock=0; iblock<lorb.size(); iblock++) {
-        if(empty_block(iblock))
+        if(lorb[iblock].n_elem==0)
           continue;
         // Get orbital coefficients and occupations
         const auto & lC = lorb[iblock];
@@ -992,6 +996,8 @@ namespace OpenOrbitalOptimizer {
 
       // List occupied-occupied rotations, in case some orbitals are not fully occupied
       for(size_t iblock = 0; iblock < reference_occupations.size(); iblock++) {
+        if(empty_block(iblock))
+          continue;
         arma::uvec occupied_indices = arma::find(reference_occupations[iblock] > 0.0);
         for(size_t io1 = 0; io1 < occupied_indices.size(); io1++)
           for(size_t io2 = 0; io2 < io1; io2++) {
@@ -1004,6 +1010,8 @@ namespace OpenOrbitalOptimizer {
 
       // List occupied-virtual rotations
       for(size_t iblock = 0; iblock < reference_occupations.size(); iblock++) {
+        if(empty_block(iblock))
+          continue;
         // Find the occupied and virtual blocks
         arma::uvec occupied_indices = arma::find(reference_occupations[iblock] > 0.0);
         arma::uvec virtual_indices = arma::find(reference_occupations[iblock] == 0.0);
@@ -1483,7 +1491,7 @@ namespace OpenOrbitalOptimizer {
 
   public:
     /// Constructor
-    SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions), verbosity_(5) {
+    SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions), verbosity_(5), frozen_occupations_(false) {
       // Run sanity checks
       number_of_blocks_ = arma::sum(number_of_blocks_per_particle_type_);
       if(maximum_occupation_.size() != number_of_blocks_) {
@@ -1513,8 +1521,7 @@ namespace OpenOrbitalOptimizer {
       const auto & orbitals = diagonalized_fock.first;
       const auto & orbital_energies = diagonalized_fock.second;
 
-      // Disable frozen occupations for the initialization
-      frozen_occupations_ = false;
+      // Compute the occupations
       orbital_occupations_ = update_occupations(orbital_energies);
       // This routine handles the rest
       initialize_with_orbitals(orbitals, orbital_occupations_);
@@ -1719,6 +1726,8 @@ namespace OpenOrbitalOptimizer {
 
       // Diagonalize all blocks
       for(size_t iblock = 0; iblock < fock.size(); iblock++) {
+        if(fock[iblock].n_elem==0)
+          continue;
         // Symmetrize Fock matrix
         arma::Mat<Torb> fsymm(0.5*(fock[iblock]+fock[iblock].t()));
         arma::eig_sym(diagonalized_fock.second[iblock], diagonalized_fock.first[iblock], fsymm);
@@ -1786,7 +1795,7 @@ namespace OpenOrbitalOptimizer {
       // Determine the number of occupied orbitals
       OrbitalOccupations<Tbase> occupations(orbital_energies.size());
       for(size_t iblock=0; iblock<orbital_energies.size(); iblock++) {
-        if(empty_block(iblock))
+        if(orbital_energies[iblock].n_elem==0)
           continue;
         occupations[iblock].zeros(orbital_energies[iblock].size());
 
@@ -1810,7 +1819,7 @@ namespace OpenOrbitalOptimizer {
             std::cout << "Occupations changed by " << occ_diff << " from previous iteration\n";
           if(verbosity_>=10) {
             for(size_t iblock=0; iblock < occupations.size(); iblock++) {
-              if(empty_block(iblock))
+              if(orbital_energies[iblock].n_elem==0)
                 continue;
               for(size_t iorb=0; iorb < occupations[iblock].n_elem; iorb++) {
                 if(occupations[iblock][iorb] != old_occupations[iblock][iorb])
