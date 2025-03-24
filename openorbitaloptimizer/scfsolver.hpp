@@ -1585,7 +1585,8 @@ namespace OpenOrbitalOptimizer {
           consistent=false;
         }
         if(get_orbital_occupation_block(0,iblock).n_elem != get_fock_matrix_block(0,iblock).n_cols) {
-          printf("get_orbital_occupation_block(0,iblock).n_elem=%i != get_fock_matrix_block(0,iblock).n_cols=%i\n",get_orbital_occupation_block(0,iblock).n_elem,get_fock_matrix_block(0,iblock).n_cols);
+          if(verbosity_>=10)
+            printf("get_orbital_occupation_block(0,iblock).n_elem=%i != get_fock_matrix_block(0,iblock).n_cols=%i\n",get_orbital_occupation_block(0,iblock).n_elem,get_fock_matrix_block(0,iblock).n_cols);
           consistent=false;
         }
       }
