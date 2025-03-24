@@ -15,17 +15,23 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-          - runs-on: ubuntu-latest
+          - lane: linux-gnu
+            runs-on: ubuntu-latest
             python-version: "3.10"
             cmargs: ""
+          - lane: linux-icpx
+            runs-on: ubuntu-latest
+            python-version: "3.10"
+            cmargs: >
+              -D CMAKE_CXX_COMPILER=icpx
           #- runs-on: macos-latest  # Silicon
           #  python-version: "3.10"
           #  cmargs: ""
           #- runs-on: macos-13  # Intel
           #  python-version: "3.10"
           #  cmargs: ""
-          #- lane: windows-clang-cl
-          - runs-on: windows-latest
+          - lane: windows-gnu  #clang-cl
+            runs-on: windows-latest
             python-version: "3.10"
             #cmargs: >
             #  -G Ninja
@@ -79,6 +85,10 @@ jobs:
         #  :
         #  # sed -i "s;;;g" export.yaml
         #fi
+        if [[ "${{ matrix.cfg.lane }}" == "linux-icpx" ]]; then
+          :
+          sed -i "s/#- dummy1/- dpcpp_linux-64/g" export.yaml
+        fi
         #if [[ "${{ runner.os }}" == "macOS" ]]; then
         #  :
         #  # sed -E -i.bak "s;;;g" export.yaml

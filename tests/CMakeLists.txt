@@ -15,6 +15,11 @@ target_link_libraries(
     IntegratorXX::IntegratorXX
     nlohmann_json::nlohmann_json
   )
+if(MSVC)
+    # conda Windows packages have linux pkgconfig
+    target_include_directories(openorbopt-atomtest ${ARMADILLO_INCLUDE_DIRS})
+    target_link_libraries(openorbopt-atomtest ${ARMADILLO_LIBRARIES})
+endif()
 add_test(  # Test #1
   NAME openorbopt/atomtest/build
   COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-atomtest
