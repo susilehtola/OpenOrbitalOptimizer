@@ -117,7 +117,7 @@ jobs:
         conda info
         conda list
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-            rm Library/lib/pkgconfig/armadillo.pc
+            rm ${CONDA_PREFIX}/Library/lib/pkgconfig/armadillo.pc
         fi
 
     - name: Build & Install IntegratorXX
