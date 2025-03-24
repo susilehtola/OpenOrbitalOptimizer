@@ -944,8 +944,8 @@ namespace OpenOrbitalOptimizer {
         arma::Mat<Torb> dm_next(get_density_matrix_block(idx(1), iblock));
         const auto & fock_low(get_fock_matrix_block(idx(0), iblock));
         const auto & fock_next(get_fock_matrix_block(idx(1), iblock));
-        dE0 += arma::trace(fock_low*(dm_next-dm_low));
-        dE1 += arma::trace(fock_next*(dm_next-dm_low));
+        dE0 += std::real(arma::trace(fock_low*(dm_next-dm_low)));
+        dE1 += std::real(arma::trace(fock_next*(dm_next-dm_low)));
       }
 
       // Fit cubic
