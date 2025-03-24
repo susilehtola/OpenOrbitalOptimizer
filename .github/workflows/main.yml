@@ -18,17 +18,17 @@ jobs:
           - runs-on: ubuntu-latest
             python-version: "3.10"
             cmargs: ""
-          #- runs-on: macos-latest  # Silicon
-          #  python-version: "3.10"
-          #  cmargs: ""
-          #- runs-on: macos-13  # Intel
-          #  python-version: "3.10"
-          #  cmargs: ""
-          - runs-on: windows-latest
+          - runs-on: macos-latest  # Silicon
             python-version: "3.10"
-            cmargs: >
-              -D CMAKE_C_COMPILER="gcc.exe"
-              -D CMAKE_CXX_COMPILER="g++.exe"
+            cmargs: ""
+          - runs-on: macos-13  # Intel
+            python-version: "3.10"
+            cmargs: ""
+          #- runs-on: windows-latest
+          #  python-version: "3.10"
+          #  cmargs: >
+          #    -D CMAKE_C_COMPILER="gcc.exe"
+          #    -D CMAKE_CXX_COMPILER="g++.exe"
 
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
     runs-on: ${{ matrix.cfg.runs-on }}
