@@ -58,12 +58,18 @@ target_include_directories(
 add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
 
 find_package(Armadillo REQUIRED)
-target_link_libraries(
-  libooo
-  INTERFACE
-    armadillo  # upstream target is not namespaced
-  )
 message("ARMADILLO ${ARMADILLO_INCLUDE_DIRS} ${ARMADILLO_LIBRARIES}")
+if(MSVC)
+    # conda Windows packages have linux pkgconfig
+    target_include_directories(libooo ${ARMADILLO_INCLUDE_DIRS})
+    target_link_libraries(libooo ${ARMADILLO_LIBRARIES})
+else()
+    target_link_libraries(
+      libooo
+      INTERFACE
+        armadillo  # upstream target is not namespaced
+      )
+endif()
 
 if (${ooo}_BUILD_TESTING)
     enable_testing()
