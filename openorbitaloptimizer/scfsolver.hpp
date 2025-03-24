@@ -919,31 +919,31 @@ namespace OpenOrbitalOptimizer {
 
     /// Optimal damping step
     bool optimal_damping_step() {
-      // Collect the energies of the stack
-      arma::Col<Tbase> energies(orbital_history_.size());
-      for(size_t i=0;i<energies.n_elem;i++)
-        energies(i) = get_energy(i);
-      // Sort in ascending order
-      arma::uvec idx(arma::sort_index(energies,"ascend"));
+      // Diagonalize the best Fock matrix
+      auto diagonalized_fock = compute_orbitals(std::get<1>(orbital_history_[0]).second);
+      auto new_orbitals = diagonalized_fock.first;
+      auto new_orbital_energies = diagonalized_fock.second;
+      // Determine new occupations
+      auto new_occupations = update_occupations(new_orbital_energies);
 
-      if(idx.n_elem<=1)
-        throw std::logic_error("Expected at least two matrices!\n");
-      if(verbosity_>=10)
-        printf("Mixing matrices from history entries %i and %i\n",(int) idx(0),(int) idx(1));
+      // Try out the new occupations
+      if(add_entry(std::make_pair(new_orbitals, new_occupations)))
+        // We went down in energy, done
+        return true;
 
-      // Energies
-      Tbase E0 = std::get<1>(orbital_history_[idx(0)]).first;
-      Tbase E1 = std::get<1>(orbital_history_[idx(1)]).first;
+      // Otherwise, get the energies
+      Tbase E0 = std::get<1>(orbital_history_[0]).first;
+      Tbase E1 = std::get<1>(orbital_history_[1]).first;
       // Derivatives
       Tbase dE0 = 0.0, dE1 = 0.0;
       // Optimal damping: E = E(lambda) = E((1-lambda)*Plow + lambda*Pnext)
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
         if(empty_block(iblock))
           continue;
-        arma::Mat<Torb> dm_low(get_density_matrix_block(idx(0), iblock));
-        arma::Mat<Torb> dm_next(get_density_matrix_block(idx(1), iblock));
-        const auto & fock_low(get_fock_matrix_block(idx(0), iblock));
-        const auto & fock_next(get_fock_matrix_block(idx(1), iblock));
+        arma::Mat<Torb> dm_low(get_density_matrix_block(0, iblock));
+        arma::Mat<Torb> dm_next(get_density_matrix_block(1, iblock));
+        const auto & fock_low(get_fock_matrix_block(0, iblock));
+        const auto & fock_next(get_fock_matrix_block(1, iblock));
         dE0 += std::real(arma::trace(fock_low*(dm_next-dm_low)));
         dE1 += std::real(arma::trace(fock_next*(dm_next-dm_low)));
       }
@@ -990,7 +990,7 @@ namespace OpenOrbitalOptimizer {
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
         if(empty_block(iblock))
           continue;
-        arma::Mat<Torb> dm_block((1-opt_step)*get_density_matrix_block(idx(0), iblock) + opt_step*get_density_matrix_block(idx(1), iblock));
+        arma::Mat<Torb> dm_block((1-opt_step)*get_density_matrix_block(0, iblock) + opt_step*get_density_matrix_block(1, iblock));
         // Flip the sign so that the orbitals come in increasing occupation
         arma::eig_sym(new_occs[iblock], new_orbs[iblock], -dm_block);
         new_occs[iblock] *= -1;
@@ -1887,7 +1887,7 @@ namespace OpenOrbitalOptimizer {
         if(verbosity_>=5) {
           printf("History size %i\n",orbital_history_.size());
         }
-        if(diis_error < convergence_threshold_) {
+        if(diis_error <= convergence_threshold_) {
           printf("Converged to energy % .10f!\n", get_energy());
           break;
         }
@@ -1940,15 +1940,70 @@ namespace OpenOrbitalOptimizer {
           // Perform extrapolation.
           old_energy = get_energy();
           if(!attempt_extrapolation(weights)) {
-            if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
-          } else if(optimal_damping_) {
-            if(verbosity_ >= 10)
-              printf("Energy did not decrease, doing an optimal damping step instead\n");
-            optimal_damping_step();
+            if(optimal_damping_) {
+              if(verbosity_ >= 10)
+                printf("Energy did not decrease, doing an optimal damping step instead\n");
+              optimal_damping_step();
+            } else {
+              if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
+            }
           }
 
           // Do cleanup
           cleanup();
+        }
+      }
+    }
+
+    /// Run optimal damping
+    void run_optimal_damping() {
+      Tbase old_energy = get_energy();
+      for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
+        if(not optimal_damping_step())
+          throw std::logic_error("Could not find descent step!\n");
+        Tbase new_energy = get_energy();
+        Tbase dE = new_energy - old_energy;
+        Tbase diis_error = norm(diis_error_vector(0));
+        if(verbosity_>=5) {
+          printf("\n\n");
+        }
+        if(verbosity_>0) {
+          printf("Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", iteration, number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
+        }
+
+        if(verbosity_>=5) {
+          const auto occupations = get_orbital_occupations();
+          auto occ_idx(occupied_orbitals(occupations));
+          for(size_t l=0;l<occ_idx.size();l++) {
+            if(occ_idx[l].n_elem)
+              occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
+          }
+        }
+
+        // Convergence check
+        if(diis_error <= convergence_threshold_) {
+          if(verbosity_>0) {
+            printf("Converged to energy % .10f\n", get_energy());
+          }
+          break;
+        }
+        old_energy = new_energy;
+      }
+
+      // Get the best Fock matrix
+      FockMatrix<Torb> fock(std::get<1>(orbital_history_[0]).second);
+      orbital_history_.clear();
+
+      if(verbosity_>=10) {
+        printf("\n\nRecomputing solution\n");
+      }
+      attempt_fock(fock);
+      if(verbosity_>=5) {
+        const auto occupations = get_orbital_occupations();
+        auto occ_idx(occupied_orbitals(occupations));
+        for(size_t l=0;l<occ_idx.size();l++) {
+          if(occ_idx[l].n_elem)
+            occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
         }
       }
     }
