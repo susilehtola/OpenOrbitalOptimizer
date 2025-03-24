@@ -1669,8 +1669,8 @@ namespace OpenOrbitalOptimizer {
       // Set the norm
       error_norm_ = error_norm;
       // and check that it is a valid option
-      arma::vec test(1,arma::fill::ones);
-      (void) norm(test);
+// TODO FIX     arma::vec test(1,arma::fill::ones);
+// TODO FIX     (void) norm(test);
     }
 
     /// Get the maximum number of iterations
