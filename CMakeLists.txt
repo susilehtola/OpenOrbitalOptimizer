@@ -63,6 +63,7 @@ target_link_libraries(
   INTERFACE
     armadillo  # upstream target is not namespaced
   )
+message("ARMADILLO ${ARMADILLO_INCLUDE_DIRS} ${ARMADILLO_LIBRARIES}")
 
 if (${ooo}_BUILD_TESTING)
     enable_testing()

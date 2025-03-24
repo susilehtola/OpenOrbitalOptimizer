@@ -18,18 +18,24 @@ jobs:
           - runs-on: ubuntu-latest
             python-version: "3.10"
             cmargs: ""
-          - runs-on: macos-latest  # Silicon
-            python-version: "3.10"
-            cmargs: ""
-          - runs-on: macos-13  # Intel
-            python-version: "3.10"
-            cmargs: ""
+          #- runs-on: macos-latest  # Silicon
+          #  python-version: "3.10"
+          #  cmargs: ""
+          #- runs-on: macos-13  # Intel
+          #  python-version: "3.10"
+          #  cmargs: ""
+          #- lane: windows-clang-cl
           - runs-on: windows-latest
             python-version: "3.10"
-            cmargs: ""
-          #  cmargs: >
-          #    -D CMAKE_C_COMPILER="gcc.exe"
-          #    -D CMAKE_CXX_COMPILER="g++.exe"
+            #cmargs: >
+            #  -G Ninja
+            #  -D CMAKE_BUILD_TYPE=Release
+            #  -D BUILD_SHARED_LIBS=OFF
+            #  -D CMAKE_CXX_COMPILER=clang-cl
+            #  -D CMAKE_C_COMPILER=clang-cl
+            cmargs: >
+              -D CMAKE_C_COMPILER="gcc.exe"
+              -D CMAKE_CXX_COMPILER="g++.exe"
 
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
     runs-on: ${{ matrix.cfg.runs-on }}
@@ -67,20 +73,21 @@ jobs:
           - libxc-c
           - nlohmann_json
           - catch2  # for IntXX
+          #- dummy1
         EOF
-        if [[ "${{ runner.os }}" == "Linux" ]]; then
-          :
-          # sed -i "s;;;g" export.yaml
-        fi
-        if [[ "${{ runner.os }}" == "macOS" ]]; then
-          :
-          # sed -E -i.bak "s;;;g" export.yaml
-        fi
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          :
-          sed -i "s;- cxx-compiler;- clangdev;g" export.yaml
-          #sed -i "s;#- dpcpp_linux-64;- clangdev ${{ matrix.cfg.llvm-version }};g" env_p4build.yaml
-        fi
+        #if [[ "${{ runner.os }}" == "Linux" ]]; then
+        #  :
+        #  # sed -i "s;;;g" export.yaml
+        #fi
+        #if [[ "${{ runner.os }}" == "macOS" ]]; then
+        #  :
+        #  # sed -E -i.bak "s;;;g" export.yaml
+        #fi
+        #if [[ "${{ runner.os }}" == "Windows" ]]; then
+        #  :
+        #  #sed -i "s;- cxx-compiler;- clangdev;g" export.yaml
+        #  #sed -i "s;#- dpcpp_linux-64;- clangdev ${{ matrix.cfg.llvm-version }};g" env_p4build.yaml
+        #fi
         cat export.yaml
 
     - name: Create Conda Environment
