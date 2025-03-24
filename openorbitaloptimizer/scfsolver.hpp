@@ -121,11 +121,11 @@ namespace OpenOrbitalOptimizer {
 
     /// Use EDIIS if the error of the last cycle is 10% greater than the minimum error (Garza and Scuseria, 2012)
     Tbase pure_ediis_factor_ = 1.10;
-    /// Use optimal damping if otherwise we go up in energy
-    bool optimal_damping_ = false;
+    /// Criterion for max error for which to use optimal damping
+    Tbase optimal_damping_threshold_ = 1.0;
 
-    /// Threshold for a change in occupations
-    Tbase occupation_change_threshold_ = 1e-6;
+    /// History cleanup criterion: keep only those density matrices that satisfy delta ||P0-Pi|| < min_{j>0} ||P0-Pj||
+    Tbase density_restart_factor_ = 1e-4;
     /// History length
     int maximum_history_length_ = 10;
     /// Convergence threshold for orbital gradient
@@ -393,23 +393,10 @@ namespace OpenOrbitalOptimizer {
 
     /// Calculate DIIS weights
     arma::Col<Tbase> diis_weights() const {
-      // Only use reference points where the orbitals have similar occupations for DIIS
-      std::vector<size_t> history_mask;
-      const auto reference_occupations = get_orbital_occupations();
-      const auto reference_orbitals = get_orbitals();
-      for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
-        const auto hist_occupations = get_orbital_occupations(ihist);
-        const auto hist_orbitals = get_orbitals(ihist);
-        const auto mom_occupations = determine_maximum_overlap_occupations(hist_occupations, hist_orbitals, reference_orbitals);
-        if(occupation_difference(reference_occupations, mom_occupations) <= occupation_change_threshold_) {
-          history_mask.push_back(ihist);
-        }
-      }
-      size_t nremoved = orbital_history_.size()-history_mask.size();
-      if(verbosity_>=10 and nremoved>0)
-        printf("Removed %i entries corresponding to bad occupations from DIIS\n", nremoved);
-
-      // Also check that the error residuals are sufficiently small
+      // Only use reference points with error residuals that are sufficiently small
+      std::vector<size_t> history_mask(orbital_history_.size());
+      for(size_t i=0;i<history_mask.size();i++)
+        history_mask[i]=i;
       arma::Col<Tbase> residuals(history_mask.size());
       for(size_t i=0;i<residuals.size();i++)
         residuals(i) = diis_error_matrix_element(history_mask[i], history_mask[i]);
@@ -418,7 +405,7 @@ namespace OpenOrbitalOptimizer {
         // Criterion from Chupin et al, 2012
         if(residuals(i)*diis_restart_factor_ > min_residual)
           history_mask.erase(history_mask.begin()+i);
-      size_t nrestart = orbital_history_.size()-history_mask.size()-nremoved;
+      size_t nrestart = orbital_history_.size()-history_mask.size();
       if(verbosity_>=10 and nrestart>0)
         printf("Removed %i entries corresponding to large DIIS errors\n", nrestart);
 
@@ -831,7 +818,7 @@ namespace OpenOrbitalOptimizer {
         arma::eig_sym(occupations[iblock], orbitals[iblock], -dm_block);
         occupations[iblock] *= -1;
         // Zero out numerically zero occupations
-        arma::uvec zeroidx(arma::find(arma::abs(occupations[iblock])<=10*std::numeric_limits<Tbase>::epsilon()));
+        arma::uvec zeroidx(arma::find(arma::abs(occupations[iblock])<=10*maximum_occupation_(iblock)*std::numeric_limits<Tbase>::epsilon()));
         occupations[iblock](zeroidx).zeros();
       }
 
@@ -995,7 +982,7 @@ namespace OpenOrbitalOptimizer {
         arma::eig_sym(new_occs[iblock], new_orbs[iblock], -dm_block);
         new_occs[iblock] *= -1;
         // Zero out numerically zero occupations
-        arma::uvec zeroidx(arma::find(arma::abs(new_occs[iblock])<=10*std::numeric_limits<Tbase>::epsilon()));
+        arma::uvec zeroidx(arma::find(arma::abs(new_occs[iblock])<=10*maximum_occupation_(iblock)*std::numeric_limits<Tbase>::epsilon()));
         new_occs[iblock](zeroidx).zeros();
 
         if(verbosity_>=10)
@@ -1007,20 +994,34 @@ namespace OpenOrbitalOptimizer {
 
     /// Clean up history from incorrect occupations
     void cleanup() {
-      // Clean up history from incorrect occupation data
-      const auto reference_occupations = get_orbital_occupations();
-      const auto reference_orbitals = get_orbitals();
       size_t nremoved=0;
-      for(size_t ihist=orbital_history_.size()-1;ihist>0;ihist--) {
-        const auto hist_occupations = get_orbital_occupations(ihist);
-        const auto hist_orbitals = get_orbitals(ihist);
-        const auto mom_occupations = determine_maximum_overlap_occupations(hist_occupations, hist_orbitals, reference_orbitals);
-        if(occupation_difference(reference_occupations, mom_occupations) > occupation_change_threshold_) {
-          nremoved++;
-          orbital_history_.erase(orbital_history_.begin()+ihist);
+      arma::Col<Tbase> density_differences(orbital_history_.size()-1,arma::fill::zeros);
+      for(size_t ihist=1;ihist<orbital_history_.size();ihist++) {
+        Tbase diff_norm = 0.0;
+        for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+          diff_norm += arma::norm(get_density_matrix_block(ihist, iblock)-get_density_matrix_block(0, iblock), "fro");
         }
-        if(nremoved>0 and verbosity_>=10)
-          printf("Removed %i entries corresponding to bad occupations\n",nremoved);
+        density_differences(ihist-1)=diff_norm;
+      }
+      if(verbosity_ >= 10) {
+        density_differences.t().print("Density differences");
+      } else if(verbosity_>=5) {
+        printf("Density matrix difference %e between lowest-energy and newest entry\n",density_differences(0));
+      }
+
+      // Sort the differences
+      arma::uvec idx(arma::sort_index(density_differences,"ascend"));
+      // Pick the indices that don't satisfy the criterion
+      arma::uvec sub_idx(arma::find(density_restart_factor_*density_differences(idx) > density_differences(idx(0))));
+      if(sub_idx.n_elem) {
+        idx=idx(sub_idx);
+        idx=arma::sort(idx,"descend");
+        if(verbosity_>=10)
+          printf("Removing %i entries corresponding to large change in density matrix\n",(int) idx.n_elem);
+        for(auto ihistm1: idx) {
+          // Remember the off-by-one in the indices
+          orbital_history_.erase(orbital_history_.begin()+ihistm1+1);
+        }
       }
     }
 
@@ -1847,35 +1848,16 @@ namespace OpenOrbitalOptimizer {
         }
       }
 
-      if(orbital_history_.size() and verbosity_>=0) {
-        // Check if occupations have changed
-        const auto old_occupations = get_orbital_occupations();
-        Tbase occ_diff = occupation_difference(old_occupations, occupations);
-        if(occ_diff > occupation_change_threshold_) {
-          if(verbosity_>=5)
-            std::cout << "Occupations changed by " << occ_diff << " from previous iteration\n";
-          if(verbosity_>=10) {
-            for(size_t iblock=0; iblock < occupations.size(); iblock++) {
-              if(orbital_energies[iblock].n_elem==0)
-                continue;
-              for(size_t iorb=0; iorb < occupations[iblock].n_elem; iorb++) {
-                if(occupations[iblock][iorb] != old_occupations[iblock][iorb])
-                  printf("iblock= %i iorb= %i new= %e old= %e\n",iblock,iorb,occupations[iblock][iorb],old_occupations[iblock][iorb]);
-              }
-            }
-          }
-        }
-      }
-
       return occupations;
     }
 
     /// Run the SCF
-    void run(bool steepest_descent=false, bool level_shifting=false) {
+    void run() {
       Tbase old_energy = get_energy();
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
         Tbase diis_error = norm(diis_error_vector(0));
+        Tbase diis_max_error = arma::norm(diis_error_vector(0),"inf");
         Tbase dE = get_energy() - old_energy;
 
         if(verbosity_>=5) {
@@ -1901,11 +1883,11 @@ namespace OpenOrbitalOptimizer {
           }
         }
 
-        if(steepest_descent and iteration == 1) {
-          // The orbitals can be bad, so start with a steepest descent
-          // step to give DIIS a better starting point
+        if(diis_max_error >= optimal_damping_threshold_) {
+          // The orbitals are so bad we can't trust A/EDIIS or DIIS
           old_energy = get_energy();
-          steepest_descent_step();
+          if(verbosity_>=5) printf("Optimal damping step due to large DIIS max error %e\n", diis_max_error);
+          optimal_damping_step();
 
         } else {
           // Compute mixing factor (Garza and Scuseria, 2012)
@@ -1940,13 +1922,7 @@ namespace OpenOrbitalOptimizer {
           // Perform extrapolation.
           old_energy = get_energy();
           if(!attempt_extrapolation(weights)) {
-            if(optimal_damping_) {
-              if(verbosity_ >= 10)
-                printf("Energy did not decrease, doing an optimal damping step instead\n");
-              optimal_damping_step();
-            } else {
-              if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
-            }
+            if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
           }
 
           // Do cleanup
