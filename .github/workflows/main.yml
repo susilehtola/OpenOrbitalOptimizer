@@ -18,15 +18,18 @@ jobs:
           - runs-on: ubuntu-latest
             python-version: "3.10"
             cmargs: ""
-          - runs-on: macos-latest  # Silicon
-            python-version: "3.10"
-            cmargs: ""
-          - runs-on: macos-13  # Intel
-            python-version: "3.10"
-            cmargs: ""
+          #- runs-on: macos-latest  # Silicon
+          #  python-version: "3.10"
+          #  cmargs: ""
+          #- runs-on: macos-13  # Intel
+          #  python-version: "3.10"
+          #  cmargs: ""
           - runs-on: windows-latest
             python-version: "3.10"
-            cmargs: ""
+            cmargs: >
+              -D CMAKE_C_COMPILER="gcc.exe"
+              -D CMAKE_CXX_COMPILER="g++.exe"
+
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
     runs-on: ${{ matrix.cfg.runs-on }}
     defaults:
@@ -42,6 +45,12 @@ jobs:
       with:
         repository: wavefunction91/IntegratorXX
         path: IntXX
+
+    - name: Prepare compiler environment, vcvarsall (W)
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
 
     - name: Write a Conda Env File
       run: |
