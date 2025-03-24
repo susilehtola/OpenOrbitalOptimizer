@@ -117,8 +117,14 @@ jobs:
         conda info
         conda list
         if [[ "${{ runner.os }}" == "Windows" ]]; then
+            ls -l ${CONDA_PREFIX}/Library/lib/pkgconfig
             rm ${CONDA_PREFIX}/Library/lib/pkgconfig/armadillo.pc
+            ls -l ${CONDA_PREFIX}/Library/lib/pkgconfig
         fi
+        echo PREFIX
+        grep -r "larmadillo" ${CONDA_PREFIX}
+        echo CLONE
+        grep -r "larmadillo" .
 
     - name: Build & Install IntegratorXX
       working-directory: ./IntXX
@@ -129,6 +135,7 @@ jobs:
           -G "Ninja" \
           -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
+          -D CMAKE_INSTALL_LIBDIR=lib \
           -D CMAKE_CXX_COMPILER=${CXX} \
           -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
           -D INTEGRATORXX_ENABLE_TESTS=OFF \
@@ -143,10 +150,13 @@ jobs:
           -G "Ninja" \
           -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
+          -D CMAKE_INSTALL_LIBDIR=lib \
           -D CMAKE_CXX_COMPILER=${CXX} \
           -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
-          -D IntegratorXX_DIR="${{github.workspace}}/installed/lib64/cmake/IntegratorXX" \
+          -D IntegratorXX_DIR="${{github.workspace}}/installed/lib/cmake/IntegratorXX" \
           ${{ matrix.cfg.cmargs }}
+        echo BUILD
+        grep -r "larmadillo" .
         cmake --build build --target install
 
     - name: Test
