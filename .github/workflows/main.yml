@@ -4,6 +4,10 @@ on:
     branches:
       - master
   pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: "9 16 * * 1"
 
 jobs:
   build-test-repo:
@@ -14,7 +18,13 @@ jobs:
           - runs-on: ubuntu-latest
             python-version: "3.10"
             cmargs: ""
-          - runs-on: macos-latest
+          - runs-on: macos-latest  # Silicon
+            python-version: "3.10"
+            cmargs: ""
+          - runs-on: macos-13  # Intel
+            python-version: "3.10"
+            cmargs: ""
+          - runs-on: windows-latest
             python-version: "3.10"
             cmargs: ""
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
@@ -53,13 +63,14 @@ jobs:
     - name: Create Conda Environment
       uses: conda-incubator/setup-miniconda@v3
       with:
-        miniforge-variant: Mambaforge
-        use-mamba: true
         python-version: ${{ matrix.cfg.python-version }}
         activate-environment: test
         channels: conda-forge
         environment-file: export.yaml
         show-channel-urls: true
+        auto-activate-base: false
+        add-pip-as-python-dependency: true
+        conda-remove-defaults: true
 
     - name: Environment Information
       run: |
