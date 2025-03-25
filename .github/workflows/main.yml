@@ -42,6 +42,7 @@ jobs:
             cmargs: >
               -D CMAKE_C_COMPILER="gcc.exe"
               -D CMAKE_CXX_COMPILER="g++.exe"
+              -D Armadillo_DIR="C:/Miniconda/envs/test/Library/Armadillo/CMake/"
 
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
     runs-on: ${{ matrix.cfg.runs-on }}
