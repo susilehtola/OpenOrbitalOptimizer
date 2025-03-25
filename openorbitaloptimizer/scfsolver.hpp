@@ -913,27 +913,95 @@ namespace OpenOrbitalOptimizer {
       // Determine new occupations
       auto new_occupations = update_occupations(new_orbital_energies);
 
-      // Try out the new occupations
-      if(add_entry(std::make_pair(new_orbitals, new_occupations)))
-        // We went down in energy, done
+      // Form the new density matrix
+      std::vector<arma::Mat<Torb>> dm_new(new_orbitals.size());
+      for(size_t iblock=0; iblock<new_orbitals.size(); iblock++)
+        dm_new[iblock] = new_orbitals[iblock] * arma::diagmat(new_occupations[iblock]) * arma::trans(new_orbitals[iblock]);
+
+      // Compute the energy gradient for each particle type for the density matrix mixing: P -> (1-lambda)*Pcurrent + lambda*Pnew
+      size_t nparticles = number_of_blocks_per_particle_type_.n_elem;
+      arma::Col<Tbase> dEdlambda(nparticles, arma::fill::zeros);
+      for(size_t iparticle=0;iparticle<nparticles;iparticle++) {
+        size_t block_offset = particle_block_offset(iparticle);
+        for(size_t iblock=block_offset;iblock<block_offset+number_of_blocks_per_particle_type_(iparticle);iblock++) {
+          if(empty_block(iblock))
+            continue;
+          // Current density matrix
+          arma::Mat<Torb> fock_current(get_fock_matrix_block(0, iblock));
+          arma::Mat<Torb> dm_current(get_density_matrix_block(0, iblock));
+          dEdlambda(iparticle) += std::real(arma::trace(fock_current*(dm_new[iblock] - dm_current)));
+        }
+      }
+      if(verbosity_>=10)
+        dEdlambda.t().print("Optimal damping: dE/dlambda");
+
+      // Search direction is therefore
+      arma::Col<Tbase> search_direction = -dEdlambda;
+      // As we start the search from the current density matrix,
+      // lambda=0 at the outset and we set any negative directions as
+      // invalid
+      arma::uvec negative_indices = arma::find(search_direction < 0.0);
+      if(negative_indices.n_elem)
+        search_direction(negative_indices).zeros();
+
+      arma::uvec valid_directions = arma::find(search_direction != 0);
+      if(valid_directions.n_elem==0) {
+        // No valid search directions!
+        return false;
+      }
+
+      // The resulting trial is therefore the step that takes us to
+      // the edge
+      arma::Col<Tbase> lambda_trial = search_direction/arma::max(search_direction);
+
+      // Helper function
+      std::function<DensityMatrix<Torb, Tbase>(const arma::Col<Tbase> &)> interpolate_dm = [&](const arma::Col<Tbase> & step) {
+        Orbitals<Torb> new_orbs(number_of_blocks_);
+        OrbitalOccupations<Tbase> new_occs(number_of_blocks_);
+        for(size_t iparticle=0;iparticle<nparticles;iparticle++) {
+          size_t block_offset = particle_block_offset(iparticle);
+          for(size_t iblock=block_offset;iblock<block_offset+number_of_blocks_per_particle_type_(iparticle);iblock++) {
+            if(empty_block(iblock))
+              continue;
+            arma::Mat<Torb> dm_block((1-step(iparticle))*get_density_matrix_block(0, iblock) + step(iparticle)*dm_new[iblock]);
+            // Flip the sign so that the orbitals come in increasing occupation
+            arma::eig_sym(new_occs[iblock], new_orbs[iblock], -dm_block);
+            new_occs[iblock] *= -1;
+            // Zero out numerically zero occupations
+            arma::uvec zeroidx(arma::find(arma::abs(new_occs[iblock])<=10*maximum_occupation_(iblock)*std::numeric_limits<Tbase>::epsilon()));
+            new_occs[iblock](zeroidx).zeros();
+          }
+        }
+        return std::make_pair(new_orbs, new_occs);
+      };
+
+      // Evaluate the energy with the trial density
+      if(add_entry(interpolate_dm(lambda_trial)))
+        // We already went down in energy, great!
         return true;
 
-      // Otherwise, get the energies
+      // If we are here, we need to interpolate. Since we already
+      // handled the case that the full step decreased the energy, we
+      // know that the new step is the first in the stack since that
+      // is how it is sorted. Energies are
       Tbase E0 = std::get<1>(orbital_history_[0]).first;
       Tbase E1 = std::get<1>(orbital_history_[1]).first;
-      // Derivatives
-      Tbase dE0 = 0.0, dE1 = 0.0;
-      // Optimal damping: E = E(lambda) = E((1-lambda)*Plow + lambda*Pnext)
-      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        if(empty_block(iblock))
-          continue;
-        arma::Mat<Torb> dm_low(get_density_matrix_block(0, iblock));
-        arma::Mat<Torb> dm_next(get_density_matrix_block(1, iblock));
-        const auto & fock_low(get_fock_matrix_block(0, iblock));
-        const auto & fock_next(get_fock_matrix_block(1, iblock));
-        dE0 += std::real(arma::trace(fock_low*(dm_next-dm_low)));
-        dE1 += std::real(arma::trace(fock_next*(dm_next-dm_low)));
+      // and the gradients along the path are
+      Tbase dE0 = arma::dot(dEdlambda, lambda_trial);
+
+      arma::Col<Tbase> dEdlambda2(nparticles, arma::fill::zeros);
+      for(size_t iparticle=0;iparticle<nparticles;iparticle++) {
+        size_t block_offset = particle_block_offset(iparticle);
+        for(size_t iblock=block_offset;iblock<block_offset+number_of_blocks_per_particle_type_(iparticle);iblock++) {
+          if(empty_block(iblock))
+            continue;
+          // Current density matrix
+          arma::Mat<Torb> fock_new(get_fock_matrix_block(1, iblock));
+          arma::Mat<Torb> dm_current(get_density_matrix_block(0, iblock));
+          dEdlambda2(iparticle) += std::real(arma::trace(fock_new*(dm_new[iblock] - dm_current)));
+        }
       }
+      Tbase dE1 = arma::dot(dEdlambda2, lambda_trial);
 
       // Fit cubic
       Tbase d = E0;
@@ -972,24 +1040,7 @@ namespace OpenOrbitalOptimizer {
         printf("Optimal damping factor %e, predicted energy change %e\n",opt_step,eval_poly(opt_step)-eval_poly(0.0));
 
       // Mix the density matrices
-      Orbitals<Torb> new_orbs(number_of_blocks_);
-      OrbitalOccupations<Tbase> new_occs(number_of_blocks_);
-      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-        if(empty_block(iblock))
-          continue;
-        arma::Mat<Torb> dm_block((1-opt_step)*get_density_matrix_block(0, iblock) + opt_step*get_density_matrix_block(1, iblock));
-        // Flip the sign so that the orbitals come in increasing occupation
-        arma::eig_sym(new_occs[iblock], new_orbs[iblock], -dm_block);
-        new_occs[iblock] *= -1;
-        // Zero out numerically zero occupations
-        arma::uvec zeroidx(arma::find(arma::abs(new_occs[iblock])<=10*maximum_occupation_(iblock)*std::numeric_limits<Tbase>::epsilon()));
-        new_occs[iblock](zeroidx).zeros();
-
-        if(verbosity_>=10)
-          new_occs[iblock].t().print("Natural occupations");
-      }
-
-      return add_entry(std::make_pair(new_orbs, new_occs));
+      return add_entry(interpolate_dm(opt_step*lambda_trial));
     }
 
     /// Clean up history from incorrect occupations
