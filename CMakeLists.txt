@@ -59,17 +59,11 @@ add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
 
 find_package(Armadillo REQUIRED)
 message("ARMADILLO ${ARMADILLO_INCLUDE_DIRS} ${ARMADILLO_LIBRARIES}")
-if(MSVC)
-    message("ARMA old cmake")
-    # conda Windows packages have linux pkgconfig
-    target_include_directories(libooo ${ARMADILLO_INCLUDE_DIRS})
-    target_link_libraries(libooo ${ARMADILLO_LIBRARIES})
-elseif(WIN32)
+if(WIN32)
     message("ARMA old cmake 2")
     # conda Windows packages have linux pkgconfig
-    target_include_directories(libooo ${ARMADILLO_INCLUDE_DIRS})
-    target_link_libraries(libooo ${ARMADILLO_LIBRARIES})
-
+    target_include_directories(libooo INTERFACE ${ARMADILLO_INCLUDE_DIRS})
+    target_link_libraries(libooo INTERFACE ${ARMADILLO_LIBRARIES})
 else()
     message("ARMA new cmake")
     target_link_libraries(
