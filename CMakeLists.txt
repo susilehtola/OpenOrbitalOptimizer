@@ -75,6 +75,21 @@ else()
     target_link_libraries(libooo INTERFACE ${ARMADILLO_LIBRARIES})
 endif()
 
+          include(CMakePrintHelpers)
+          cmake_print_properties(
+            TARGETS
+              armadillo
+            PROPERTIES
+              IMPORTED_LINK_DEPENDENT_LIBRARIES
+              IMPORTED_LOCATION
+              INTERFACE_LOCATION
+              INTERFACE_LINK_LIBRARIES
+              INTERFACE_INCLUDE_DIRECTORIES
+              INTERFACE_COMPILE_DEFINITIONS
+              INTERFACE_COMPILE_OPTIONS
+              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+            )
+
 if (${ooo}_BUILD_TESTING)
     enable_testing()
     add_subdirectory(tests)
