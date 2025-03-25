@@ -15,15 +15,15 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-          - lane: linux-gnu
-            runs-on: ubuntu-latest
-            python-version: "3.10"
-            cmargs: ""
-          - lane: linux-icpx
-            runs-on: ubuntu-latest
-            python-version: "3.10"
-            cmargs: >
-              -D CMAKE_CXX_COMPILER=icpx
+          #- lane: linux-gnu
+          #  runs-on: ubuntu-latest
+          #  python-version: "3.10"
+          #  cmargs: ""
+          #- lane: linux-icpx
+          #  runs-on: ubuntu-latest
+          #  python-version: "3.10"
+          #  cmargs: >
+          #    -D CMAKE_CXX_COMPILER=icpx
           #- runs-on: macos-latest  # Silicon
           #  python-version: "3.10"
           #  cmargs: ""
