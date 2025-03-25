@@ -15,12 +15,12 @@ target_link_libraries(
     IntegratorXX::IntegratorXX
     nlohmann_json::nlohmann_json
   )
-if(WIN32)
-    message("ARMA tests old cmak2e")
-    # conda Windows packages have linux pkgconfig
-    target_include_directories(openorbopt-atomtest PUBLIC ${ARMADILLO_INCLUDE_DIRS})
-    target_link_libraries(openorbopt-atomtest PUBLIC ${ARMADILLO_LIBRARIES})
-endif()
+#if(WIN32)
+#    message("ARMA tests old cmak2e")
+#    # conda Windows packages have linux pkgconfig
+#    target_include_directories(openorbopt-atomtest PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+#    target_link_libraries(openorbopt-atomtest PUBLIC ${ARMADILLO_LIBRARIES})
+#endif()
 add_test(  # Test #1
   NAME openorbopt/atomtest/build
   COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-atomtest
