@@ -134,6 +134,8 @@ jobs:
         ls -l "C:/Miniconda/envs/test/Library"
         echo PREFIX
         ls -l "C:/Miniconda/envs/test"
+        echo FIND
+        find "C:/Miniconda/envs/test/" -name "*blas*" 
 
     - name: Build & Install IntegratorXX
       working-directory: ./IntXX
