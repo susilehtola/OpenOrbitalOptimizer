@@ -81,6 +81,8 @@ jobs:
           - nlohmann_json
           - catch2  # for IntXX
           - blas-devel
+          - libblas
+          - liblapack
           #- dummy1
         EOF
         #if [[ "${{ runner.os }}" == "Linux" ]]; then
