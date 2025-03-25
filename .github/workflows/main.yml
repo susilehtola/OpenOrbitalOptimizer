@@ -128,6 +128,12 @@ jobs:
         grep -r "larmadillo" .
         echo LIB
         ls -l "C:/Miniconda/envs/test/Library/lib"
+        echo BIN
+        ls -l "C:/Miniconda/envs/test/Library/bin"
+        echo PRE
+        ls -l "C:/Miniconda/envs/test/Library"
+        echo PREFIX
+        ls -l "C:/Miniconda/envs/test"
 
     - name: Build & Install IntegratorXX
       working-directory: ./IntXX
