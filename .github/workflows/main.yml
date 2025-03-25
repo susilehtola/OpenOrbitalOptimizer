@@ -126,7 +126,7 @@ jobs:
         grep -r "larmadillo" ${CONDA_PREFIX}
         echo CLONE
         grep -r "larmadillo" .
-        grep LIB
+        echo LIB
         ls -l "C:/Miniconda/envs/test/Library/lib"
 
     - name: Build & Install IntegratorXX
