@@ -179,8 +179,8 @@ jobs:
     - name: Verify Armadillo Installation
       run: |
         conda list armadillo
-        echo "CM1"
-        ls -l "${CONDA_PREFIX}/Library/lib/cmake/Armadillo"
+        #echo "CM1"
+        #ls -l "${CONDA_PREFIX}/Library/lib/cmake/Armadillo"
         echo "CM2"
         ls -l "${CONDA_PREFIX}/Library/Armadillo/CMake"
 
