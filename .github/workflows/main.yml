@@ -175,7 +175,7 @@ jobs:
         cmake --build build --target install
 
     - name: Test
-      run: ctest --output-on-failure --test-dir build/
+      run: ctest --rerun-failed --output-on-failure --test-dir build/
 
     - name: Testing find_package Consumption
       run: |

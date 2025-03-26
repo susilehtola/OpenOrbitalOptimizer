@@ -78,6 +78,7 @@ target_link_libraries(
           include(CMakePrintHelpers)
           cmake_print_properties(
             TARGETS
+              libooo
               armadillo
             PROPERTIES
               IMPORTED_LINK_DEPENDENT_LIBRARIES

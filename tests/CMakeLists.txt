@@ -9,7 +9,8 @@ add_executable(
   )
 target_link_libraries(
   openorbopt-atomtest
-  PRIVATE
+  #PRIVATE
+  PUBLIC
     ${ooo}::OpenOrbitalOptimizer
     Libxc::xc
     IntegratorXX::IntegratorXX
@@ -53,7 +54,8 @@ set_tests_properties(
   )
   target_link_libraries(
     openorbopt-instantiation-float-float
-    PRIVATE
+    #PRIVATE
+    PUBLIC
     ${ooo}::OpenOrbitalOptimizer
   )
   add_executable(
