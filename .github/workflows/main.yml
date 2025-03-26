@@ -15,10 +15,10 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-          #- lane: linux-gnu
-          #  runs-on: ubuntu-latest
-          #  python-version: "3.10"
-          #  cmargs: ""
+          - lane: linux-gnu
+            runs-on: ubuntu-latest
+            python-version: "3.10"
+            cmargs: ""
           #- lane: linux-icpx
           #  runs-on: ubuntu-latest
           #  python-version: "3.10"
@@ -119,10 +119,6 @@ jobs:
         conda info
         conda list
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-            ls -l ${CONDA_PREFIX}/Library/lib/pkgconfig
-            rm ${CONDA_PREFIX}/Library/lib/pkgconfig/armadillo.pc
-            ls -l ${CONDA_PREFIX}/Library/lib/pkgconfig
-        fi
         echo PREFIX
         grep -r "larmadillo" ${CONDA_PREFIX}
         echo CLONE
@@ -139,6 +135,7 @@ jobs:
         ls -l "C:/Miniconda/envs/test"
         echo FIND
         find "C:/Miniconda/envs/test/" -name "*blas*" 
+        fi
 
     - name: Build & Install IntegratorXX
       working-directory: ./IntXX
@@ -174,14 +171,6 @@ jobs:
         grep -r "larmadillo" .
         cmake --build build --target install
 
-    - name: Verify Armadillo Installation
-      run: |
-        conda list armadillo
-        #echo "CM1"
-        #ls -l "${CONDA_PREFIX}/Library/lib/cmake/Armadillo"
-        echo "CM2"
-        ls -l "${CONDA_PREFIX}/Library/Armadillo/CMake"
-        #cat "${CONDA_PREFIX}/Library/Armadillo/CMake/*"
 
     - name: Test
       run: ctest --output-on-failure --test-dir build/

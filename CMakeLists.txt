@@ -47,9 +47,6 @@ if(MSVC)
     # _CRT_* to squash some getenv, strdup, strncpy, ctime, fopen warnings
     add_compile_definitions(
       _USE_MATH_DEFINES
-      _CRT_NONSTDC_NO_DEPRECATE
-      _CRT_NONSTDC_NO_WARNINGS
-      _CRT_SECURE_NO_WARNINGS
       )
     # Set the exception handling model (allows "throw"; set this *before* adding targets)
     add_compile_options("/EHsc")
