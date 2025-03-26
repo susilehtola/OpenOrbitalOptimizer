@@ -41,6 +41,20 @@ option(${ooo}_BUILD_TESTING "Build test-suite" ${PROJECT_IS_TOP_LEVEL})
 message(STATUS "Showing option ${ooo}_BUILD_TESTING: ${${ooo}_BUILD_TESTING}")
 
 # ====  Build  ==================================================================
+
+if(MSVC)
+    # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
+    # _CRT_* to squash some getenv, strdup, strncpy, ctime, fopen warnings
+    add_compile_definitions(
+      _USE_MATH_DEFINES
+      _CRT_NONSTDC_NO_DEPRECATE
+      _CRT_NONSTDC_NO_WARNINGS
+      _CRT_SECURE_NO_WARNINGS
+      )
+    # Set the exception handling model (allows "throw"; set this *before* adding targets)
+    add_compile_options("/EHsc")
+endif()
+
 add_library(libooo INTERFACE)
 
 target_compile_features(
@@ -74,18 +88,6 @@ target_link_libraries(
 #    target_include_directories(libooo INTERFACE ${ARMADILLO_INCLUDE_DIRS})
 #    target_link_libraries(libooo INTERFACE ${ARMADILLO_LIBRARIES})
 #endif()
-if(MSVC)
-    # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
-    # _CRT_* to squash some getenv, strdup, strncpy, ctime, fopen warnings
-    add_compile_definitions(
-      _USE_MATH_DEFINES
-      _CRT_NONSTDC_NO_DEPRECATE
-      _CRT_NONSTDC_NO_WARNINGS
-      _CRT_SECURE_NO_WARNINGS
-      )
-    # Set the exception handling model (allows "throw") (this isn't working; still need it in `-D CMAKE_CXX_FLAGS`)
-    add_compile_options("/EHsc")
-endif()
 
 
           include(CMakePrintHelpers)

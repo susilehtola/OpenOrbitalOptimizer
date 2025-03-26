@@ -183,11 +183,10 @@ jobs:
         #ls -l "${CONDA_PREFIX}/Library/lib/cmake/Armadillo"
         echo "CM2"
         ls -l "${CONDA_PREFIX}/Library/Armadillo/CMake"
+        cat "${CONDA_PREFIX}/Library/Armadillo/CMake/*"
 
     - name: Test
-      if: false
-      run: ctest --test-dir build/
-      #run: ctest --rerun-failed --output-on-failure --test-dir build/
+      run: ctest --output-on-failure --test-dir build/
 
         #find_package(Threads)  # clang does not autolink threads even though we are using std::thread
         #add_executable(hf++ EXCLUDE_FROM_ALL "../libint/tests/hartree-fock/hartree-fock++.cc")
