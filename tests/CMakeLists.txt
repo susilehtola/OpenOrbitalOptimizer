@@ -22,6 +22,12 @@ target_link_libraries(
 #    target_include_directories(openorbopt-atomtest PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 #    target_link_libraries(openorbopt-atomtest PUBLIC ${ARMADILLO_LIBRARIES})
 #endif()
+if(MSVC)
+    # Increase stack size from 1 MB to 4 MB
+    set_target_properties(openorbopt-atomtest PROPERTIES LINK_FLAGS "/STACK:4194304")
+endif()
+
+
 add_test(  # Test #1
   NAME openorbopt/atomtest/build
   COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-atomtest
