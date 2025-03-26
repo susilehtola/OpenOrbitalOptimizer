@@ -167,21 +167,10 @@ jobs:
           -D IntegratorXX_DIR="${{github.workspace}}/installed/lib/cmake/IntegratorXX" \
           -D CMAKE_CXX_FLAGS="-L${CONDA_PREFIX}\\Library\\lib\\lapack.lib -L${CONDA_PREFIX}\\Library\\lib\\blas.lib -I${CONDA_PREFIX}\\Library\\include" \
           ${{ matrix.cfg.cmargs }}
-        echo BUILD
-        grep -r "larmadillo" .
         cmake --build build --target install
-
 
     - name: Test
       run: ctest --output-on-failure --test-dir build/
-
-        #find_package(Threads)  # clang does not autolink threads even though we are using std::thread
-        #add_executable(hf++ EXCLUDE_FROM_ALL "../libint/tests/hartree-fock/hartree-fock++.cc")
-        #target_link_libraries(hf++ Libint2::cxx Threads::Threads)
-        #EOF
-        #cmake -S . -B build -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" ${{ matrix.cfg.testargs }}
-        #cmake --build build --target hf++
-        #./build/hf++ ../libint/tests/hartree-fock/h2o_rotated.xyz | python ../libint/tests/hartree-fock/hartree-fock++-validate.py ../libint/MakeVars.features
 
     - name: Testing find_package Consumption
       run: |
@@ -190,7 +179,7 @@ jobs:
         ls -l ../tests
         cat > CMakeLists.txt <<EOF
         cmake_minimum_required(VERSION 3.16)
-        project(atomtest)
+        project(atomtest LANGUAGES CXX)
         if (MSVC)
             add_compile_definitions(_USE_MATH_DEFINES)
             add_compile_options("/EHsc")

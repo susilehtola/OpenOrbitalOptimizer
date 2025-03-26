@@ -44,10 +44,7 @@ message(STATUS "Showing option ${ooo}_BUILD_TESTING: ${${ooo}_BUILD_TESTING}")
 
 if(MSVC)
     # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
-    # _CRT_* to squash some getenv, strdup, strncpy, ctime, fopen warnings
-    add_compile_definitions(
-      _USE_MATH_DEFINES
-      )
+    add_compile_definitions(_USE_MATH_DEFINES)
     # Set the exception handling model (allows "throw"; set this *before* adding targets)
     add_compile_options("/EHsc")
 endif()
