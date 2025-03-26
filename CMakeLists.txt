@@ -68,25 +68,15 @@ target_include_directories(
 
 add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
 
-find_package(Armadillo REQUIRED)
-message("ARMADILLO ${ARMADILLO_INCLUDE_DIRS} ${ARMADILLO_LIBRARIES}")
-#if(WIN32)
-#else()
-#if (TARGET armadillo)
-message("ARMA new cmake")
+find_package(Armadillo REQUIRED CONFIG)
+if (NOT TARGET armadillo)
+    message(FATAL "Require detecting an Armadillo target")
+endif()
 target_link_libraries(
   libooo
   INTERFACE
     armadillo  # upstream target is not namespaced
   )
-#else()
-#    message("ARMA old cmake 2")
-#    # conda Windows packages have linux pkgconfig
-#    target_include_directories(libooo INTERFACE ${ARMADILLO_INCLUDE_DIRS})
-#    target_link_libraries(libooo INTERFACE ${ARMADILLO_LIBRARIES})
-#endif()
-
-
           include(CMakePrintHelpers)
           cmake_print_properties(
             TARGETS
