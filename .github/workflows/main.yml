@@ -129,6 +129,8 @@ jobs:
         grep -r "larmadillo" ${CONDA_PREFIX}
         echo CLONE
         grep -r "larmadillo" .
+        echo INC
+        ls -l "C:/Miniconda/envs/test/Library/include"
         echo LIB
         ls -l "C:/Miniconda/envs/test/Library/lib"
         echo BIN
@@ -168,14 +170,23 @@ jobs:
           -D CMAKE_CXX_COMPILER=${CXX} \
           -D CMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}\Library" \
           -D IntegratorXX_DIR="${{github.workspace}}/installed/lib/cmake/IntegratorXX" \
-          -D CMAKE_CXX_FLAGS="-L${CONDA_PREFIX}\\Library\\lib\\lapack.lib -L${CONDA_PREFIX}\\Library\\lib\\blas.lib" \
+          -D CMAKE_CXX_FLAGS="-L${CONDA_PREFIX}\\Library\\lib\\lapack.lib -L${CONDA_PREFIX}\\Library\\lib\\blas.lib -I${CONDA_PREFIX}\\Library\\include" \
           ${{ matrix.cfg.cmargs }}
         echo BUILD
         grep -r "larmadillo" .
         cmake --build build --target install
 
+    - name: Verify Armadillo Installation
+      run: |
+        conda list armadillo
+        echo "CM1"
+        ls -l "${CONDA_PREFIX}/Library/lib/cmake/Armadillo"
+        echo "CM2"
+        ls -l "${CONDA_PREFIX}/Library/Armadillo/CMake"
+
     - name: Test
-      run: ctest --rerun-failed --output-on-failure --test-dir build/
+      run: ctest --test-dir build/
+      #run: ctest --rerun-failed --output-on-failure --test-dir build/
 
     - name: Testing find_package Consumption
       run: |
