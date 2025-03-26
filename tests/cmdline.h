@@ -104,6 +104,7 @@ Target lexical_cast(const Source &arg)
   return lexical_cast_t<Target, Source, detail::is_same<Target, Source>::value>::cast(arg);
 }
 
+// Windows modifications from https://github.com/tanakh/cmdline/pull/14/files
 #ifndef _MSC_VER
 static inline std::string demangle(const std::string &name)
 {
