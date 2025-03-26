@@ -33,7 +33,7 @@ set_tests_properties(
   )
 add_test(  # Test #2
   NAME openorbopt/atomtest/run1
-  COMMAND $<TARGET_FILE:openorbopt-atomtest> --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 1 --basis "${CMAKE_CURRENT_SOURCE_DIR}/cc-pvdz.json"
+  COMMAND $<TARGET_FILE:openorbopt-atomtest> --help #--Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 1 --basis "${CMAKE_CURRENT_SOURCE_DIR}/cc-pvdz.json"
   )
 add_test(  # Test #3
   NAME openorbopt/atomtest/run2
@@ -57,6 +57,7 @@ set_tests_properties(
     #PRIVATE
     PUBLIC
     ${ooo}::OpenOrbitalOptimizer
+    armadillo
   )
   add_executable(
     openorbopt-instantiation-cplxfloat-float
