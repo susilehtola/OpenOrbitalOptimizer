@@ -15,7 +15,6 @@ target_link_libraries(
     IntegratorXX::IntegratorXX
     nlohmann_json::nlohmann_json
   )
-
 add_test(  # Test #1
   NAME openorbopt/atomtest/build
   COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-atomtest

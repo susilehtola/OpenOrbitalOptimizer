@@ -68,7 +68,7 @@ target_include_directories(
 
 add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
 
-find_package(Armadillo REQUIRED CONFIG)
+find_package(Armadillo REQUIRED)
 message("ARMADILLO ${ARMADILLO_INCLUDE_DIRS} ${ARMADILLO_LIBRARIES}")
 #if(WIN32)
 #else()
