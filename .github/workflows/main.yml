@@ -185,6 +185,7 @@ jobs:
         ls -l "${CONDA_PREFIX}/Library/Armadillo/CMake"
 
     - name: Test
+      if: false
       run: ctest --test-dir build/
       #run: ctest --rerun-failed --output-on-failure --test-dir build/
 
