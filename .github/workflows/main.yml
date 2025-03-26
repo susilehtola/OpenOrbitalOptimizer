@@ -19,11 +19,11 @@ jobs:
             runs-on: ubuntu-latest
             python-version: "3.10"
             cmargs: ""
-          #- lane: linux-icpx
-          #  runs-on: ubuntu-latest
-          #  python-version: "3.10"
-          #  cmargs: >
-          #    -D CMAKE_CXX_COMPILER=icpx
+          - lane: linux-icpx
+            runs-on: ubuntu-latest
+            python-version: "3.10"
+            cmargs: >
+              -D CMAKE_CXX_COMPILER=icpx
           #- runs-on: macos-latest  # Silicon
           #  python-version: "3.10"
           #  cmargs: ""
@@ -78,23 +78,16 @@ jobs:
           - libxc-c
           - nlohmann_json
           - catch2  # for IntXX
-          - blas-devel
+          #- blas-devel
           - libblas * *netlib
           - liblapack * *netlib
           #- dummy1
         EOF
-        #if [[ "${{ runner.os }}" == "Linux" ]]; then
-        #  :
-        #  # sed -i "s;;;g" export.yaml
-        #fi
         if [[ "${{ matrix.cfg.lane }}" == "linux-icpx" ]]; then
           :
           sed -i "s/#- dummy1/- dpcpp_linux-64/g" export.yaml
         fi
-        #if [[ "${{ runner.os }}" == "macOS" ]]; then
-        #  :
-        #  # sed -E -i.bak "s;;;g" export.yaml
-        #fi
+        # MacOS: sed -E -i.bak "s;;;g" export.yaml
         #if [[ "${{ runner.os }}" == "Windows" ]]; then
         #  :
         #  #sed -i "s;- cxx-compiler;- clangdev;g" export.yaml
@@ -175,8 +168,6 @@ jobs:
     - name: Testing find_package Consumption
       run: |
         mkdir consume_fp && cd consume_fp
-        ls -l ../
-        ls -l ../tests
         cat > CMakeLists.txt <<EOF
         cmake_minimum_required(VERSION 3.16)
         project(atomtest LANGUAGES CXX)
@@ -186,8 +177,8 @@ jobs:
         endif()
         find_package(Armadillo CONFIG REQUIRED)
         find_package(OpenOrbitalOptimizer CONFIG REQUIRED)
-        add_executable(atomtest EXCLUDE_FROM_ALL "../tests/atomtest.cpp") #"${{github.workspace}}/tests/atomtest.cpp")
-        target_include_directories(atomtest PRIVATE "../tests/")  #"${{github.workspace}}/tests/")
+        add_executable(atomtest EXCLUDE_FROM_ALL "${{github.workspace}}/tests/atomtest.cpp")
+        target_include_directories(atomtest PRIVATE "${{github.workspace}}/tests/")
         find_package(Libxc CONFIG REQUIRED)
         find_package(IntegratorXX CONFIG REQUIRED)
         find_package(nlohmann_json CONFIG REQUIRED)
