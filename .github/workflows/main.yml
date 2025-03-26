@@ -183,7 +183,7 @@ jobs:
         #ls -l "${CONDA_PREFIX}/Library/lib/cmake/Armadillo"
         echo "CM2"
         ls -l "${CONDA_PREFIX}/Library/Armadillo/CMake"
-        cat "${CONDA_PREFIX}/Library/Armadillo/CMake/*"
+        #cat "${CONDA_PREFIX}/Library/Armadillo/CMake/*"
 
     - name: Test
       run: ctest --output-on-failure --test-dir build/
