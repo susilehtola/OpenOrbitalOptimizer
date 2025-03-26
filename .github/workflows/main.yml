@@ -28,17 +28,13 @@ jobs:
             runs-on: macos-latest
             python-version: "3.10"
             cmargs: ""
-          #- lane: macos-clang-intel
-          #  runs-on: macos-13
-          #  python-version: "3.10"
-          #  cmargs: ""
+          - lane: macos-clang-intel
+            runs-on: macos-13
+            python-version: "3.10"
+            cmargs: ""
           - lane: windows-clang
             runs-on: windows-latest
             python-version: "3.10"
-            #cmargs: >
-            #  -G Ninja
-            #  -D CMAKE_BUILD_TYPE=Release
-            #  -D BUILD_SHARED_LIBS=OFF
             cmargs: >
               -D CMAKE_CXX_COMPILER=clang-cl
               -D Armadillo_DIR="C:\\Miniconda\\envs\\test\\Library\\Armadillo\\CMake"
@@ -173,6 +169,10 @@ jobs:
         cat > CMakeLists.txt <<EOF
         cmake_minimum_required(VERSION 3.16)
         project(atomtest LANGUAGES CXX)
+        if (MSVC)
+            add_compile_definitions(_USE_MATH_DEFINES)
+            add_compile_options("/EHsc")
+        endif()
         find_package(Armadillo CONFIG REQUIRED)
         find_package(OpenOrbitalOptimizer CONFIG REQUIRED)
         add_executable(atomtest EXCLUDE_FROM_ALL "../tests/atomtest.cpp")
