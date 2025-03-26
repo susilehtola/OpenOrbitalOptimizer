@@ -189,15 +189,25 @@ jobs:
       run: ctest --test-dir build/
       #run: ctest --rerun-failed --output-on-failure --test-dir build/
 
+        #find_package(Threads)  # clang does not autolink threads even though we are using std::thread
+        #add_executable(hf++ EXCLUDE_FROM_ALL "../libint/tests/hartree-fock/hartree-fock++.cc")
+        #target_link_libraries(hf++ Libint2::cxx Threads::Threads)
+        #EOF
+        #cmake -S . -B build -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" ${{ matrix.cfg.testargs }}
+        #cmake --build build --target hf++
+        #./build/hf++ ../libint/tests/hartree-fock/h2o_rotated.xyz | python ../libint/tests/hartree-fock/hartree-fock++-validate.py ../libint/MakeVars.features
+
     - name: Testing find_package Consumption
       run: |
         mkdir consume_fp && cd consume_fp
+        ls -l ../
+        ls -l ../tests
         cat > CMakeLists.txt <<EOF
         cmake_minimum_required(VERSION 3.16)
         project(atomtest)
         find_package(OpenOrbitalOptimizer CONFIG REQUIRED)
-        add_executable(atomtest EXCLUDE_FROM_ALL "${{github.workspace}}/tests/atomtest.cpp")
-        target_include_directories(atomtest PRIVATE "${{github.workspace}}/tests/")
+        add_executable(atomtest EXCLUDE_FROM_ALL "../tests/atomtest.cpp") #"${{github.workspace}}/tests/atomtest.cpp")
+        target_include_directories(atomtest PRIVATE "../tests/")  #"${{github.workspace}}/tests/")
         find_package(Libxc CONFIG REQUIRED)
         find_package(IntegratorXX CONFIG REQUIRED)
         find_package(nlohmann_json CONFIG REQUIRED)
