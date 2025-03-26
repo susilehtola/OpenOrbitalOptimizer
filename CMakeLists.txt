@@ -74,6 +74,19 @@ target_link_libraries(
 #    target_include_directories(libooo INTERFACE ${ARMADILLO_INCLUDE_DIRS})
 #    target_link_libraries(libooo INTERFACE ${ARMADILLO_LIBRARIES})
 #endif()
+if(MSVC)
+    # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
+    # _CRT_* to squash some getenv, strdup, strncpy, ctime, fopen warnings
+    add_compile_definitions(
+      _USE_MATH_DEFINES
+      _CRT_NONSTDC_NO_DEPRECATE
+      _CRT_NONSTDC_NO_WARNINGS
+      _CRT_SECURE_NO_WARNINGS
+      )
+    # Set the exception handling model (allows "throw") (this isn't working; still need it in `-D CMAKE_CXX_FLAGS`)
+    add_compile_options("/EHsc")
+endif()
+
 
           include(CMakePrintHelpers)
           cmake_print_properties(
