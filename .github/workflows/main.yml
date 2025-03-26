@@ -225,7 +225,7 @@ jobs:
             )
         endif()
         EOF
-        cmake . -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" -DOpenOrbitalOptimizer_DIR="${{github.workspace}}/installed/lib/cmake/OpenOrbitalOptimizer" -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_FLAGS="/LIBPATH:${CONDA_PREFIX}\\Library\\lib /EHsc"
+        cmake . -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" -DOpenOrbitalOptimizer_DIR="${{github.workspace}}/installed/lib/cmake/OpenOrbitalOptimizer" -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_FLAGS="/LIBPATH:'${CONDA_PREFIX}/Library/lib' /EHsc"
         cmake --build . --target atomtest
         ./atomtest --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 3 --sto 0 --basis "${{github.workspace}}/tests/cc-pvdz.json"
 
