@@ -30,17 +30,15 @@ jobs:
           #- runs-on: macos-13  # Intel
           #  python-version: "3.10"
           #  cmargs: ""
-          - lane: windows-gnu  #clang-cl
+          - lane: windows-clang
             runs-on: windows-latest
             python-version: "3.10"
             #cmargs: >
             #  -G Ninja
             #  -D CMAKE_BUILD_TYPE=Release
             #  -D BUILD_SHARED_LIBS=OFF
-            #  -D CMAKE_CXX_COMPILER=clang-cl
-            #  -D CMAKE_C_COMPILER=clang-cl
             cmargs: >
-              -D CMAKE_CXX_COMPILER="g++.exe"
+              -D CMAKE_CXX_COMPILER=clang-cl
               -D Armadillo_DIR="C:\\Miniconda\\envs\\test\\Library\\Armadillo\\CMake"
 
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"

@@ -9,8 +9,7 @@ add_executable(
   )
 target_link_libraries(
   openorbopt-atomtest
-  #PRIVATE
-  PUBLIC
+  PRIVATE
     ${ooo}::OpenOrbitalOptimizer
     Libxc::xc
     IntegratorXX::IntegratorXX
@@ -22,11 +21,6 @@ target_link_libraries(
 #    target_include_directories(openorbopt-atomtest PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 #    target_link_libraries(openorbopt-atomtest PUBLIC ${ARMADILLO_LIBRARIES})
 #endif()
-if(MSVC)
-    # Increase stack size from 1 MB to 4 MB
-    set_target_properties(openorbopt-atomtest PROPERTIES LINK_FLAGS "/STACK:4194304")
-endif()
-
 
 add_test(  # Test #1
   NAME openorbopt/atomtest/build
@@ -37,9 +31,10 @@ set_tests_properties(
   PROPERTIES
     FIXTURES_SETUP OPENORBOPT_ATOMTEST_EXEC
   )
+# On Windows, the run1/run2 tests give `Exit code 0xc0000374` = STATUS_HEAP_CORRUPTION with MinGW (Gnu) compilers. Use clang-cl instead.
 add_test(  # Test #2
   NAME openorbopt/atomtest/run1
-  COMMAND $<TARGET_FILE:openorbopt-atomtest> --help #--Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 1 --basis "${CMAKE_CURRENT_SOURCE_DIR}/cc-pvdz.json"
+  COMMAND $<TARGET_FILE:openorbopt-atomtest> --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 1 --basis "${CMAKE_CURRENT_SOURCE_DIR}/cc-pvdz.json"
   )
 add_test(  # Test #3
   NAME openorbopt/atomtest/run2
@@ -60,8 +55,7 @@ set_tests_properties(
   )
   target_link_libraries(
     openorbopt-instantiation-float-float
-    #PRIVATE
-    PUBLIC
+    PRIVATE
     ${ooo}::OpenOrbitalOptimizer
     armadillo
   )
