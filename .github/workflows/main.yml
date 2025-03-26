@@ -209,7 +209,7 @@ jobs:
             nlohmann_json::nlohmann_json
           )
         EOF
-        cmake . -DCMAKE_PREFIX_PATH=${{github.workspace}}/installed
+        cmake . -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" -DOpenOrbitalOptimizer_DIR="${{github.workspace}}/installed/lib/cmake/OpenOrbitalOptimizer"
         cmake --build . --target atomtest
         ./atomtest --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 3 --sto 0 --basis "${{github.workspace}}/tests/cc-pvdz.json"
 
