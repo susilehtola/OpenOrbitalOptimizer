@@ -205,6 +205,14 @@ jobs:
         cat > CMakeLists.txt <<EOF
         cmake_minimum_required(VERSION 3.16)
         project(atomtest)
+        if(MSVC)
+            # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
+            add_compile_definitions(
+                _USE_MATH_DEFINES
+            )
+        # Set the exception handling model (allows "throw") (before adding targets)
+            add_compile_options("/EHsc")
+        endif()
         find_package(Armadillo CONFIG REQUIRED)
         find_package(OpenOrbitalOptimizer CONFIG REQUIRED)
         add_executable(atomtest EXCLUDE_FROM_ALL "../tests/atomtest.cpp") #"${{github.workspace}}/tests/atomtest.cpp")
@@ -220,14 +228,8 @@ jobs:
             IntegratorXX::IntegratorXX
             nlohmann_json::nlohmann_json
           )
-        if(MSVC)
-            # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
-            add_compile_definitions(
-                _USE_MATH_DEFINES
-            )
-        endif()
         EOF
-        cmake . -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" -DOpenOrbitalOptimizer_DIR="${{github.workspace}}/installed/lib/cmake/OpenOrbitalOptimizer" -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_FLAGS="/EHsc"
+        cmake . -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" -DOpenOrbitalOptimizer_DIR="${{github.workspace}}/installed/lib/cmake/OpenOrbitalOptimizer" -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_C_COMPILER=clang-cl
         cmake --build . --target atomtest
         ./atomtest --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 3 --sto 0 --basis "${{github.workspace}}/tests/cc-pvdz.json"
 
