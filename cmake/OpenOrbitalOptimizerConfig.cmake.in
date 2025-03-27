@@ -10,6 +10,7 @@
 set(ooo OpenOrbitalOptimizer)  # NameSpace
 
 if (NOT TARGET armadillo)
+  # find_dependency unsuitable b/c can't require CONFIG mode
   find_package(Armadillo CONFIG REQUIRED)
 endif()
 
