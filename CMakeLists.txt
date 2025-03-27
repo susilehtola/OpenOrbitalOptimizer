@@ -70,6 +70,8 @@ endif()
 add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
 
 find_package(Armadillo REQUIRED CONFIG)
+message("ARMADILLO_INCLUDE_DIRS ${ARMADILLO_INCLUDE_DIRS}")
+message("ARMADILLO_LIBRARIES    ${ARMADILLO_LIBRARIES}")
 if (NOT TARGET armadillo)
     message(FATAL "Require detecting an Armadillo target")
 endif()
@@ -78,21 +80,6 @@ target_link_libraries(
   INTERFACE
     armadillo  # upstream target is not namespaced
   )
-          include(CMakePrintHelpers)
-          cmake_print_properties(
-            TARGETS
-              libooo
-              armadillo
-            PROPERTIES
-              IMPORTED_LINK_DEPENDENT_LIBRARIES
-              IMPORTED_LOCATION
-              INTERFACE_LOCATION
-              INTERFACE_LINK_LIBRARIES
-              INTERFACE_INCLUDE_DIRECTORIES
-              INTERFACE_COMPILE_DEFINITIONS
-              INTERFACE_COMPILE_OPTIONS
-              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
-            )
 
 if (${ooo}_BUILD_TESTING)
     enable_testing()
