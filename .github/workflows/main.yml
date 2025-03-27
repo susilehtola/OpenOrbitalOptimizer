@@ -104,22 +104,22 @@ jobs:
         conda info
         conda list
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-        echo PREFIX
-        grep -r "larmadillo" ${CONDA_PREFIX}
-        echo CLONE
-        grep -r "larmadillo" .
-        echo INC
-        ls -l "C:/Miniconda/envs/test/Library/include"
-        echo LIB
-        ls -l "C:/Miniconda/envs/test/Library/lib"
-        echo BIN
-        ls -l "C:/Miniconda/envs/test/Library/bin"
-        echo PRE
-        ls -l "C:/Miniconda/envs/test/Library"
-        echo PREFIX
-        ls -l "C:/Miniconda/envs/test"
-        echo FIND
-        find "C:/Miniconda/envs/test/" -name "*blas*"
+            echo PREFIX
+            grep -r "larmadillo" ${CONDA_PREFIX}
+            echo CLONE
+            grep -r "larmadillo" .
+            echo INC
+            ls -l "C:/Miniconda/envs/test/Library/include"
+            echo LIB
+            ls -l "C:/Miniconda/envs/test/Library/lib"
+            echo BIN
+            ls -l "C:/Miniconda/envs/test/Library/bin"
+            echo PRE
+            ls -l "C:/Miniconda/envs/test/Library"
+            echo PREFIX
+            ls -l "C:/Miniconda/envs/test"
+            echo FIND
+            find "C:/Miniconda/envs/test/" -name "*blas*"
         fi
 
     - name: Build & Install IntegratorXX
