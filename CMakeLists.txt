@@ -47,8 +47,6 @@ option(${ooo}_BUILD_TESTING "Build test-suite" ${PROJECT_IS_TOP_LEVEL})
 message(STATUS "Showing option ${ooo}_BUILD_TESTING: ${${ooo}_BUILD_TESTING}")
 
 # ====  Build  ==================================================================
-
-
 add_library(libooo INTERFACE)
 
 target_compile_features(
@@ -65,7 +63,7 @@ target_include_directories(
 if(MSVC)
     # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
     target_compile_definitions(libooo INTERFACE _USE_MATH_DEFINES)
-    # Set the exception handling model (allows "throw"; set this *before* adding targets if using add_compile_options form)
+    # Set the exception handling model (allows "throw"; if using add_compile_options form, set this *before* adding targets)
     target_compile_options(libooo INTERFACE "/EHsc")
 endif()
 
