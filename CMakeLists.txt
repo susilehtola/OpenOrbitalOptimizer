@@ -48,12 +48,6 @@ message(STATUS "Showing option ${ooo}_BUILD_TESTING: ${${ooo}_BUILD_TESTING}")
 
 # ====  Build  ==================================================================
 
-if(MSVC)
-    # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
-    add_compile_definitions(_USE_MATH_DEFINES)
-    # Set the exception handling model (allows "throw"; set this *before* adding targets)
-    add_compile_options("/EHsc")
-endif()
 
 add_library(libooo INTERFACE)
 
@@ -68,6 +62,12 @@ target_include_directories(
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
+if(MSVC)
+    # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
+    target_compile_definitions(libooo INTERFACE _USE_MATH_DEFINES)
+    # Set the exception handling model (allows "throw"; set this *before* adding targets if using add_compile_options form)
+    target_compile_options(libooo INTERFACE "/EHsc")
+endif()
 
 add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
 

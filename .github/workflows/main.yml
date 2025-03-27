@@ -146,7 +146,7 @@ jobs:
           -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
           -D CMAKE_CXX_COMPILER=${CXX} \
-          -D CMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}\Library" \
+          -D CMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library" \
           -D IntegratorXX_DIR="${{github.workspace}}/installed/lib/cmake/IntegratorXX" \
           -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include" \
           ${{ matrix.cfg.cmargs }}
