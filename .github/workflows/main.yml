@@ -37,7 +37,6 @@ jobs:
             python-version: "3.10"
             cmargs: >
               -D CMAKE_CXX_COMPILER=clang-cl
-              -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
 
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.lane }}"
     runs-on: ${{ matrix.cfg.runs-on }}
@@ -76,8 +75,8 @@ jobs:
           - libxc-c
           - nlohmann_json
           - catch2  # for IntXX
-          - libblas * *netlib
-          - liblapack * *netlib
+          - libblas * *openblas
+          - liblapack * *opeblas
           #- dummy1
         EOF
         # MacOS: sed -E -i.bak "s;;;g" export.yaml
@@ -103,24 +102,6 @@ jobs:
       run: |
         conda info
         conda list
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-            echo PREFIX
-            grep -r "larmadillo" ${CONDA_PREFIX}
-            echo CLONE
-            grep -r "larmadillo" .
-            echo INC
-            ls -l "C:/Miniconda/envs/test/Library/include"
-            echo LIB
-            ls -l "C:/Miniconda/envs/test/Library/lib"
-            echo BIN
-            ls -l "C:/Miniconda/envs/test/Library/bin"
-            echo PRE
-            ls -l "C:/Miniconda/envs/test/Library"
-            echo PREFIX
-            ls -l "C:/Miniconda/envs/test"
-            echo FIND
-            find "C:/Miniconda/envs/test/" -name "*blas*"
-        fi
 
     - name: Build & Install IntegratorXX
       working-directory: ./IntXX
@@ -151,7 +132,6 @@ jobs:
           -D IntegratorXX_DIR="${{github.workspace}}/installed/lib/cmake/IntegratorXX" \
           ${{ matrix.cfg.cmargs }}
         cmake --build build --target install
-          # TODO CMAKE_CXX_FLAGS shouldn't be necessary
 
     - name: Test
       run: ctest --output-on-failure --test-dir build/
