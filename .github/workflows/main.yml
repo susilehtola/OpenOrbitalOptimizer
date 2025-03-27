@@ -76,21 +76,15 @@ jobs:
           - libxc-c
           - nlohmann_json
           - catch2  # for IntXX
-          #- blas-devel
           - libblas * *netlib
           - liblapack * *netlib
           #- dummy1
         EOF
+        # MacOS: sed -E -i.bak "s;;;g" export.yaml
         if [[ "${{ matrix.cfg.lane }}" == "linux-icpx" ]]; then
           :
           sed -i "s/#- dummy1/- dpcpp_linux-64/g" export.yaml
         fi
-        # MacOS: sed -E -i.bak "s;;;g" export.yaml
-        #if [[ "${{ runner.os }}" == "Windows" ]]; then
-        #  :
-        #  #sed -i "s;- cxx-compiler;- clangdev;g" export.yaml
-        #  #sed -i "s;#- dpcpp_linux-64;- clangdev ${{ matrix.cfg.llvm-version }};g" env_p4build.yaml
-        #fi
         cat export.yaml
 
     - name: Create Conda Environment
@@ -152,11 +146,9 @@ jobs:
           -G "Ninja" \
           -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
-          -D CMAKE_INSTALL_LIBDIR=lib \
           -D CMAKE_CXX_COMPILER=${CXX} \
           -D CMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}\Library" \
           -D IntegratorXX_DIR="${{github.workspace}}/installed/lib/cmake/IntegratorXX" \
-          -D CMAKE_CXX_FLAGS="-L${CONDA_PREFIX}\\Library\\lib\\lapack.lib -L${CONDA_PREFIX}\\Library\\lib\\blas.lib -I${CONDA_PREFIX}\\Library\\include" \
           ${{ matrix.cfg.cmargs }}
         cmake --build build --target install
 

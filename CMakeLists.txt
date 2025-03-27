@@ -33,6 +33,7 @@ endif ()
 
 # ====  Options  ================================================================
 
+# there are paths that work for both windows and unix but they repeat ${ooo} :-(
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
     set(${ooo}_INSTALL_CMAKEDIR "${ooo}/CMake"
         CACHE STRING "Directory to which CMake files are installed")
