@@ -37,6 +37,8 @@ jobs:
             python-version: "3.10"
             cmargs: >
               -D CMAKE_CXX_COMPILER=clang-cl
+              -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
+              # Library/include/ compensates for faulty conda windows config
 
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.lane }}"
     runs-on: ${{ matrix.cfg.runs-on }}
@@ -142,7 +144,6 @@ jobs:
         cat > CMakeLists.txt <<EOF
         cmake_minimum_required(VERSION 3.16)
         project(atomtest LANGUAGES CXX)
-        find_package(Armadillo CONFIG REQUIRED)
         find_package(OpenOrbitalOptimizer CONFIG REQUIRED)
         add_executable(atomtest EXCLUDE_FROM_ALL "../tests/atomtest.cpp")
         target_include_directories(atomtest PRIVATE "../tests/")
@@ -151,7 +152,6 @@ jobs:
         find_package(nlohmann_json CONFIG REQUIRED)
         target_link_libraries(
           atomtest
-            armadillo
             OpenOrbitalOptimizer::OpenOrbitalOptimizer
             Libxc::xc
             IntegratorXX::IntegratorXX
