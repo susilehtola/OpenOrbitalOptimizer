@@ -76,7 +76,7 @@ jobs:
           - nlohmann_json
           - catch2  # for IntXX
           - libblas * *openblas
-          - liblapack * *opeblas
+          - liblapack * *openblas
           #- dummy1
         EOF
         # MacOS: sed -E -i.bak "s;;;g" export.yaml
