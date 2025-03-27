@@ -24,11 +24,11 @@ jobs:
             python-version: "3.10"
             cmargs: >
               -D CMAKE_CXX_COMPILER=icpx
-          - lane: macos-clang-silicon
+          - lane: macos-silicon-clang
             runs-on: macos-latest
             python-version: "3.10"
             cmargs: ""
-          - lane: macos-clang-intel
+          - lane: macos-intel-clang
             runs-on: macos-13
             python-version: "3.10"
             cmargs: ""
@@ -37,7 +37,6 @@ jobs:
             python-version: "3.10"
             cmargs: >
               -D CMAKE_CXX_COMPILER=clang-cl
-              -D Armadillo_DIR="C:\\Miniconda\\envs\\test\\Library\\Armadillo\\CMake"
 
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.lane }}"
     runs-on: ${{ matrix.cfg.runs-on }}
@@ -119,7 +118,7 @@ jobs:
         echo PREFIX
         ls -l "C:/Miniconda/envs/test"
         echo FIND
-        find "C:/Miniconda/envs/test/" -name "*blas*" 
+        find "C:/Miniconda/envs/test/" -name "*blas*"
         fi
 
     - name: Build & Install IntegratorXX
@@ -152,6 +151,7 @@ jobs:
           -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include" \
           ${{ matrix.cfg.cmargs }}
         cmake --build build --target install
+          # TODO CMAKE_CXX_FLAGS shouldn't be necessary
 
     - name: Test
       run: ctest --output-on-failure --test-dir build/
