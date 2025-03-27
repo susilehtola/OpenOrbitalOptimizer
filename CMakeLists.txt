@@ -33,8 +33,13 @@ endif ()
 
 # ====  Options  ================================================================
 
-set(${ooo}_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${ooo}"
-    CACHE STRING "Directory to which CMake files are installed")
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+    set(${ooo}_INSTALL_CMAKEDIR "${ooo}/CMake"
+        CACHE STRING "Directory to which CMake files are installed")
+else()
+    set(${ooo}_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${ooo}"
+        CACHE STRING "Directory to which CMake files are installed")
+endif()
 message(STATUS "Showing option ${ooo}_INSTALL_CMAKEDIR: ${${ooo}_INSTALL_CMAKEDIR}")
 
 option(${ooo}_BUILD_TESTING "Build test-suite" ${PROJECT_IS_TOP_LEVEL})
