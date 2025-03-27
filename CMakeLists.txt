@@ -70,11 +70,11 @@ endif()
 add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
 
 find_package(Armadillo REQUIRED CONFIG)
-message("ARMADILLO_INCLUDE_DIRS ${ARMADILLO_INCLUDE_DIRS}")
-message("ARMADILLO_LIBRARIES    ${ARMADILLO_LIBRARIES}")
 if (NOT TARGET armadillo)
     message(FATAL "Require detecting an Armadillo target")
 endif()
+# [Mar 2025] Conda Windows target is wrong. Compensate with:
+# * -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
 target_link_libraries(
   libooo
   INTERFACE
