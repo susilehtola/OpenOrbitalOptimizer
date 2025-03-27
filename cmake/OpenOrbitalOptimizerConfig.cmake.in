@@ -10,8 +10,7 @@
 set(ooo OpenOrbitalOptimizer)  # NameSpace
 
 if (NOT TARGET armadillo)
-  include(CMakeFindDependencyMacro)
-  find_dependency(Armadillo)
+  find_package(Armadillo CONFIG REQUIRED)
 endif()
 
 # Check all required components are available before trying to load any
