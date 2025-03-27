@@ -77,7 +77,7 @@ jobs:
           - libxc-c
           - nlohmann_json
           - catch2  # for IntXX
-          - libblas * *netlib
+          - libblas * *netlib  # netlib compensates for faulty conda windows config
           - liblapack * *netlib
           #- dummy1
         EOF
@@ -150,24 +150,8 @@ jobs:
         find_package(Libxc CONFIG REQUIRED)
         find_package(IntegratorXX CONFIG REQUIRED)
         find_package(nlohmann_json CONFIG REQUIRED)
-        include(CMakePrintHelpers)
-        cmake_print_properties(
-          TARGETS
-            OpenOrbitalOptimizer::OpenOrbitalOptimizer
-            armadillo
-          PROPERTIES
-            IMPORTED_LINK_DEPENDENT_LIBRARIES
-            IMPORTED_LOCATION
-            INTERFACE_LOCATION
-            INTERFACE_LINK_LIBRARIES
-            INTERFACE_INCLUDE_DIRECTORIES
-            INTERFACE_COMPILE_DEFINITIONS
-            INTERFACE_COMPILE_OPTIONS
-            INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
-          )
         target_link_libraries(
           atomtest
-            armadillo
             OpenOrbitalOptimizer::OpenOrbitalOptimizer
             Libxc::xc
             IntegratorXX::IntegratorXX
