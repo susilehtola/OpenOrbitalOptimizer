@@ -90,6 +90,22 @@ set(export_properties
   "${ooo}_VERSION"
   )
 
+          include(CMakePrintHelpers)
+          cmake_print_properties(
+            TARGETS
+              libooo
+              armadillo
+            PROPERTIES
+              IMPORTED_LINK_DEPENDENT_LIBRARIES
+              IMPORTED_LOCATION
+              INTERFACE_LOCATION
+              INTERFACE_LINK_LIBRARIES
+              INTERFACE_INCLUDE_DIRECTORIES
+              INTERFACE_COMPILE_DEFINITIONS
+              INTERFACE_COMPILE_OPTIONS
+              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+            )
+
 set_target_properties (
   libooo
   PROPERTIES
