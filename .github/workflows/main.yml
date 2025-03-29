@@ -32,11 +32,11 @@ jobs:
             runs-on: macos-13
             python-version: "3.10"
             cmargs: ""
+            # Library/include/ compensates for faulty conda windows config
+            #  -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
           - lane: windows-clang
             runs-on: windows-latest
             python-version: "3.10"
-            # Library/include/ compensates for faulty conda windows config
-            #  -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
             cmargs: >
               -D CMAKE_CXX_COMPILER=clang-cl
 
