@@ -75,15 +75,20 @@ if (NOT TARGET armadillo)
 endif()
 # [Mar 2025] Conda Windows target is wrong. Compensate with:
 # * -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
+# or use the block below, duplicated in ${ooo}Config.cmake
 get_property(_iid TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
 if(NOT EXISTS "${_iid}")
+    message("${_iid} doesn't exist")
+else()
+    message("${_iid} does exist")
+endif()
   if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
     if(DEFINED ENV{CONDA_PREFIX})
       message("healing armadillo.INTERFACE_INCLUDE_DIRECTORIES from ${_iid} to $ENV{CONDA_PREFIX}\\Library\\include")
       set_property(TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES "$ENV{CONDA_PREFIX}\\Library\\include")
     endif()
   endif()
-endif()
+#endif()
 
 target_link_libraries(
   libooo
