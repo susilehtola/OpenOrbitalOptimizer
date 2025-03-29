@@ -10,8 +10,21 @@
 set(ooo OpenOrbitalOptimizer)  # NameSpace
 
 if (NOT TARGET armadillo)
-  # find_dependency unsuitable b/c can't require CONFIG mode
-  find_package(Armadillo CONFIG REQUIRED)
+    # find_dependency unsuitable b/c can't require CONFIG mode
+    find_package(Armadillo CONFIG REQUIRED)
+
+    get_property(_iid TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+    message("armadillo::_iid ${_iid}")
+    message("LIBRARY_INC $ENV{LIBRARY_INC}")
+    message("PREFIX $ENV{PREFIX}")
+    message("CONDA_PREFIX $ENV{CONDA_PREFIX}")
+    if(NOT EXISTS "${_iid}")
+        message("can't find it")
+        if(DEFINED ENV{LIBRARY_INC})
+            message("setting INTERFACE_INCLUDE_DIRECTORIES $ENV{LIBRARY_INC}")
+            set_property(TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES "$ENV{LIBRARY_INC}")
+        )
+    endif()
 endif()
 
 # Check all required components are available before trying to load any
