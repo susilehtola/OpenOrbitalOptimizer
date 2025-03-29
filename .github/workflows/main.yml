@@ -53,6 +53,7 @@ jobs:
     - name: Checkout IntegratorXX
       uses: actions/checkout@v4
       with:
+        #repository: wavefunction91/IntegratorXX
         repository: loriab/IntegratorXX
         ref: windows
         path: IntXX
