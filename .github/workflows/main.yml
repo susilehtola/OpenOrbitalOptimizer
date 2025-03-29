@@ -33,12 +33,12 @@ jobs:
             python-version: "3.10"
             cmargs: ""
             # Library/include/ compensates for faulty conda windows config
-            #  -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
           - lane: windows-clang
             runs-on: windows-latest
             python-version: "3.10"
             cmargs: >
               -D CMAKE_CXX_COMPILER=clang-cl
+              -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
 
     name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.lane }}"
     runs-on: ${{ matrix.cfg.runs-on }}
