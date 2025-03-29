@@ -1902,9 +1902,17 @@ namespace OpenOrbitalOptimizer {
       return occupations;
     }
 
+    /// Check if we are converged
+    bool converged() const {
+      return norm(diis_error_vector(0)) <= convergence_threshold_;
+    }
+
     /// Run the SCF
     void run() {
       Tbase old_energy = get_energy();
+      // Number of consecutive steps that the procedure failed to decrease the energy
+      size_t failed_iterations = 0;
+      size_t noda_steps = 0;
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
         Tbase diis_error = norm(diis_error_vector(0));
@@ -1920,7 +1928,7 @@ namespace OpenOrbitalOptimizer {
         if(verbosity_>=5) {
           printf("History size %i\n",orbital_history_.size());
         }
-        if(diis_error <= convergence_threshold_) {
+        if(converged()) {
           printf("Converged to energy % .10f!\n", get_energy());
           break;
         }
@@ -1934,11 +1942,32 @@ namespace OpenOrbitalOptimizer {
           }
         }
 
-        if(diis_max_error >= optimal_damping_threshold_) {
-          // The orbitals are so bad we can't trust A/EDIIS or DIIS
+        if(noda_steps == 0) {
+          if(failed_iterations >= maximum_history_length_/2) {
+            // Run the same number of steps using ODA
+            noda_steps = maximum_history_length_/2;
+            if(verbosity_>=5) {
+              printf("Switching to optimal damping for next iterations\n");
+            }
+          }
+          if(diis_max_error >= optimal_damping_threshold_) {
+            // The orbitals are so bad we can't trust A/EDIIS or DIIS
+            noda_steps = 1;
+          }
+        }
+
+        // Do ODA if necessary
+        if(noda_steps>0) {
+          noda_steps--;
           old_energy = get_energy();
-          if(verbosity_>=5) printf("Optimal damping step due to large DIIS max error %e\n", diis_max_error);
-          optimal_damping_step();
+          if(verbosity_>=5) {
+            if(diis_max_error >= optimal_damping_threshold_)
+              printf("Optimal damping step due to large DIIS max error %e\n", diis_max_error);
+            else
+              printf("Optimal damping step\n");
+          }
+          if(optimal_damping_step())
+            failed_iterations=0;
 
         } else {
           // Compute mixing factor (Garza and Scuseria, 2012)
@@ -1974,11 +2003,15 @@ namespace OpenOrbitalOptimizer {
           old_energy = get_energy();
           if(!attempt_extrapolation(weights)) {
             if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
+            // Increment number of consecutive failed iterations
+            failed_iterations++;
+          } else {
+            // Step succeeded, reset counter
+            failed_iterations=0;
           }
-
-          // Do cleanup
-          cleanup();
         }
+        // Do cleanup
+        cleanup();
       }
     }
 
@@ -2008,7 +2041,7 @@ namespace OpenOrbitalOptimizer {
         }
 
         // Convergence check
-        if(diis_error <= convergence_threshold_) {
+        if(converged()) {
           if(verbosity_>0) {
             printf("Converged to energy % .10f\n", get_energy());
           }
