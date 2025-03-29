@@ -186,7 +186,7 @@ jobs:
         EOF
         ls -l "${{github.workspace}}/installed/Library/OpenOrbitalOptimizer/CMake"
         ls -l "${{github.workspace}}/installed/Library/mylib/cmake/IntegratorXX"
-        cmake . -GNinja -DCMAKE_BUILD_TYPE=Release -DOpenOrbitalOptimizer_DIR="${{github.workspace}}/installed/Library/OpenOrbitalOptimizer/CMake" -DIntegratorXX_DIR="${{github.workspace}}/installed/Library/mylib/cmake/IntegratorXX" ${{ matrix.cfg.cmargs }}
+        cmake . -GNinja -DCMAKE_BUILD_TYPE=Release -DOpenOrbitalOptimizer_DIR="${{github.workspace}}/installed/Library/OpenOrbitalOptimizer/CMake" -DIntegratorXX_DIR="${{github.workspace}}/installed/Library/mylib/cmake/IntegratorXX" -DCMAKE_CXX_COMPILER=clang-cl
         cmake --build . --target atomtest
         ./atomtest --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 3 --sto 0 --basis "${{github.workspace}}/tests/cc-pvdz.json"
 
