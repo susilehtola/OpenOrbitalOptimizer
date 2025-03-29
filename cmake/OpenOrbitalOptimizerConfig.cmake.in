@@ -23,7 +23,7 @@ if (NOT TARGET armadillo)
         if(DEFINED ENV{LIBRARY_INC})
             message("setting INTERFACE_INCLUDE_DIRECTORIES $ENV{LIBRARY_INC}")
             set_property(TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES "$ENV{LIBRARY_INC}")
-        )
+        endif()
     endif()
 endif()
 
