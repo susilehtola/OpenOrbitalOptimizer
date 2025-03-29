@@ -15,6 +15,22 @@ target_link_libraries(
     IntegratorXX::IntegratorXX
     nlohmann_json::nlohmann_json
   )
+          include(CMakePrintHelpers)
+          cmake_print_properties(
+            TARGETS
+              armadillo
+              IntegratorXX::IntegratorXX
+              OpenOrbitalOptimizer::OpenOrbitalOptimizer
+            PROPERTIES
+              IMPORTED_LINK_DEPENDENT_LIBRARIES
+              IMPORTED_LOCATION
+              INTERFACE_LOCATION
+              INTERFACE_LINK_LIBRARIES
+              INTERFACE_INCLUDE_DIRECTORIES
+              INTERFACE_COMPILE_DEFINITIONS
+              INTERFACE_COMPILE_OPTIONS
+              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+            )
 add_test(  # Test #1
   NAME openorbopt/atomtest/build
   COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-atomtest
@@ -24,6 +40,7 @@ set_tests_properties(
   PROPERTIES
     FIXTURES_SETUP OPENORBOPT_ATOMTEST_EXEC
   )
+# On Windows, the run1/run2 tests give `Exit code 0xc0000374` = STATUS_HEAP_CORRUPTION with MinGW (Gnu) compilers. Use clang-cl instead.
 add_test(  # Test #2
   NAME openorbopt/atomtest/run1
   COMMAND $<TARGET_FILE:openorbopt-atomtest> --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 1 --basis "${CMAKE_CURRENT_SOURCE_DIR}/cc-pvdz.json"

@@ -9,6 +9,20 @@
 
 set(ooo OpenOrbitalOptimizer)  # NameSpace
 
+if (NOT TARGET armadillo)
+    # find_dependency unsuitable b/c can't require CONFIG mode
+    find_package(Armadillo CONFIG REQUIRED)
+
+    get_property(_iid TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+    if(NOT EXISTS "${_iid}")
+      if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+        if(DEFINED ENV{CONDA_PREFIX})
+          message("healing armadillo.INTERFACE_INCLUDE_DIRECTORIES from ${_iid} to $ENV{CONDA_PREFIX}\\Library\\include")
+          set_property(TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES "$ENV{CONDA_PREFIX}\\Library\\include")
+        endif()
+      endif()
+    endif()
+endif()
 
 # Check all required components are available before trying to load any
 check_required_components(${ooo})
