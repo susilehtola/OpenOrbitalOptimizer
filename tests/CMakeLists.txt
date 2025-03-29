@@ -21,7 +21,6 @@ target_link_libraries(
               armadillo
               IntegratorXX::IntegratorXX
               OpenOrbitalOptimizer::OpenOrbitalOptimizer
-              openorbopt-atomtest
             PROPERTIES
               IMPORTED_LINK_DEPENDENT_LIBRARIES
               IMPORTED_LOCATION
