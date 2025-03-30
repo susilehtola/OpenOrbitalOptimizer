@@ -7,6 +7,8 @@
 */
 
 #pragma once
+#include <any>
+#include <map>
 #include <vector>
 #include <armadillo>
 #include "cg_optimizer.hpp"
@@ -85,6 +87,8 @@ namespace OpenOrbitalOptimizer {
     FockBuilder<Torb, Tbase> fock_builder_;
     /// Descriptions of the blocks
     std::vector<std::string> block_descriptions_;
+    /// Callback function
+    std::function<void(const std::map<std::string,std::any> & data)> callback_function_;
 
     /** (Optional) fixed number of particles in each symmetry, affects
         the way occupations are assigned in Aufbau. These are used if
@@ -677,7 +681,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /** Minimal Error Sampling Algorithm (MESA), doi:10.14288/1.0372885 */
-    arma::Col<Tbase> minimal_error_sampling_algorithm_weights(Tbase aediis_coeff) const {
+    std::tuple<arma::Col<Tbase>,std::string> minimal_error_sampling_algorithm_weights(Tbase aediis_coeff) const {
       // Form DIIS and ADIIS weights
       arma::Col<Tbase> diis_w(diis_weights());
       if(verbosity_>=10) diis_w.t().print("DIIS weights");
@@ -690,12 +694,12 @@ namespace OpenOrbitalOptimizer {
       if(verbosity_>=10) ediis_w.t().print("EDIIS weights");
 
       // Candidates
-      arma::Mat<Tbase> candidate_w(N, 3, arma::fill::zeros);
+      arma::Mat<Tbase> candidate_w(N, 2, arma::fill::zeros);
       size_t icol=0;
       candidate_w.col(icol++) = adiis_w;
       candidate_w.col(icol++) = ediis_w;
-      candidate_w(0,icol++) = 1.0;
-      const std::vector<std::string> weight_legend({"ADIIS", "EDIIS", "Roothaan"});
+      const std::vector<std::string> weight_legend({"ADIIS", "EDIIS"});
+      std::string step;
 
       arma::Col<Tbase> density_projections(candidate_w.n_cols, arma::fill::zeros);
       for(size_t iw=0;iw<candidate_w.n_cols;iw++) {
@@ -712,14 +716,14 @@ namespace OpenOrbitalOptimizer {
       arma::Col<Tbase> aediis_w = candidate_w.col(idx);
       arma::Col<Tbase> weights(aediis_coeff * aediis_w + (1.0 - aediis_coeff) * diis_w);
       if(aediis_coeff == 1.0) {
-        if(verbosity_>=5) printf("%s step\n",weight_legend[idx].c_str());
+        step = weight_legend[idx];
       } else if(aediis_coeff == 0.0) {
-        if(verbosity_>=5) printf("DIIS step\n");
+        step = "DIIS";
       } else {
-        if(verbosity_>=5) printf("Mixed DIIS and %s step\n",weight_legend[idx].c_str());
+        step = weight_legend[idx] + "+DIIS";
       }
 
-      return weights;
+      return std::make_tuple(weights,step);
     }
 
     /// Compute density change with given weights
@@ -1048,11 +1052,7 @@ namespace OpenOrbitalOptimizer {
       size_t nremoved=0;
       arma::Col<Tbase> density_differences(orbital_history_.size()-1,arma::fill::zeros);
       for(size_t ihist=1;ihist<orbital_history_.size();ihist++) {
-        Tbase diff_norm = 0.0;
-        for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
-          diff_norm += arma::norm(get_density_matrix_block(ihist, iblock)-get_density_matrix_block(0, iblock), "fro");
-        }
-        density_differences(ihist-1)=diff_norm;
+        density_differences(ihist-1)=density_matrix_difference(ihist, 0);
       }
       if(verbosity_ >= 10) {
         density_differences.t().print("Density differences");
@@ -1701,18 +1701,30 @@ namespace OpenOrbitalOptimizer {
       return std::get<1>(orbital_history_[ihist]).first;
     }
 
+
+    /// Density matrix difference norm
+    Tbase density_matrix_difference(size_t ihist, size_t jhist) {
+      Tbase diff_norm = 0.0;
+      for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+        diff_norm += norm(get_density_matrix_block(ihist, iblock)-get_density_matrix_block(jhist, iblock));
+      }
+      return diff_norm;
+    }
+
     /// Get the used error norm
     std::string error_norm() const {
       return error_norm_;
     }
 
     /// Evaluate the norm
-    Tbase norm(const arma::Mat<Tbase> & mat) const {
-      if(error_norm_ == "rms") {
+    Tbase norm(const arma::Mat<Tbase> & mat, std::string norm="") const {
+      if(norm == "")
+        norm=error_norm_;
+      if(norm == "rms") {
         // rms isn't implemented in Armadillo for some reason
         return arma::norm(mat,"fro")/std::sqrt(1.0*mat.n_elem);
       } else {
-        return arma::norm(mat, error_norm_.c_str());
+        return arma::norm(mat, norm.c_str());
       }
     }
 
@@ -1919,6 +1931,15 @@ namespace OpenOrbitalOptimizer {
         Tbase diis_max_error = arma::norm(diis_error_vector(0),"inf");
         Tbase dE = get_energy() - old_energy;
 
+        // Data to pass to callback function
+        std::map<std::string, std::any> callback_data;
+        callback_data["iter"] = iteration;
+        callback_data["nfock"] = number_of_fock_evaluations_;
+        callback_data["E"] = get_energy();
+        callback_data["dE"] = get_energy() - old_energy;
+        callback_data["diis_error"] = diis_error;
+        callback_data["diis_max_error"] = diis_max_error;
+
         if(verbosity_>=5) {
           printf("\n\n");
         }
@@ -1929,7 +1950,8 @@ namespace OpenOrbitalOptimizer {
           printf("History size %i\n",orbital_history_.size());
         }
         if(converged()) {
-          printf("Converged to energy % .10f!\n", get_energy());
+          if(verbosity_)
+            printf("Converged to energy % .10f!\n", get_energy());
           break;
         }
 
@@ -1966,6 +1988,9 @@ namespace OpenOrbitalOptimizer {
             else
               printf("Optimal damping step\n");
           }
+          callback_data["step"] = "ODA";
+          if(callback_function_)
+            callback_function_(callback_data);
           if(optimal_damping_step())
             failed_iterations=0;
 
@@ -1995,9 +2020,18 @@ namespace OpenOrbitalOptimizer {
               aediis_coeff = 1.0;
             }
           }
-          arma::Col<Tbase> weights(minimal_error_sampling_algorithm_weights(aediis_coeff));
+          arma::Col<Tbase> weights;
+          std::string step;
+          std::tie(weights, step) = minimal_error_sampling_algorithm_weights(aediis_coeff);
+          if(verbosity_>=5)
+            printf("%s step\n",step.c_str());
           if(verbosity_>=10)
             weights.t().print("Extrapolation weights");
+
+          // Do the callback
+          callback_data["step"] = step;
+          if(callback_function_)
+            callback_function_(callback_data);
 
           // Perform extrapolation.
           old_energy = get_energy();
@@ -2305,6 +2339,10 @@ namespace OpenOrbitalOptimizer {
           break;
         }
       }
+    }
+
+    void callback_function(std::function<void(const std::map<std::string,std::any> &)> callback_function = nullptr) {
+      callback_function_ = callback_function;
     }
   };
 }
