@@ -1988,7 +1988,7 @@ namespace OpenOrbitalOptimizer {
             else
               printf("Optimal damping step\n");
           }
-          callback_data["step"] = "ODA";
+          callback_data["step"] = std::string("ODA");
           if(callback_function_)
             callback_function_(callback_data);
           if(optimal_damping_step())
