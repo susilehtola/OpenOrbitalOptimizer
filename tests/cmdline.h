@@ -36,7 +36,9 @@
 #include <typeinfo>
 #include <cstring>
 #include <algorithm>
+#ifndef _MSC_VER
 #include <cxxabi.h>
+#endif
 #include <cstdlib>
 
 namespace cmdline{
@@ -102,6 +104,8 @@ Target lexical_cast(const Source &arg)
   return lexical_cast_t<Target, Source, detail::is_same<Target, Source>::value>::cast(arg);
 }
 
+// Windows modifications from https://github.com/tanakh/cmdline/pull/14/files
+#ifndef _MSC_VER
 static inline std::string demangle(const std::string &name)
 {
   int status=0;
@@ -110,6 +114,12 @@ static inline std::string demangle(const std::string &name)
   free(p);
   return ret;
 }
+#else
+static inline std::string demangle(const std::string &name)
+{
+  return name;
+}
+#endif
 
 template <class T>
 std::string readable_typename()
@@ -721,7 +731,7 @@ private:
         actual=read(value);
         has=true;
       }
-      catch(const std::exception &e){
+      catch(const std::exception){
         return false;
       }
       return true;

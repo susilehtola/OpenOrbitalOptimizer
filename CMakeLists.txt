@@ -33,8 +33,14 @@ endif ()
 
 # ====  Options  ================================================================
 
-set(${ooo}_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${ooo}"
-    CACHE STRING "Directory to which CMake files are installed")
+# there are paths that work for both windows and unix but they repeat ${ooo} :-(
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+    set(${ooo}_INSTALL_CMAKEDIR "${ooo}/CMake"
+        CACHE STRING "Directory to which CMake files are installed")
+else()
+    set(${ooo}_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${ooo}"
+        CACHE STRING "Directory to which CMake files are installed")
+endif()
 message(STATUS "Showing option ${ooo}_INSTALL_CMAKEDIR: ${${ooo}_INSTALL_CMAKEDIR}")
 
 option(${ooo}_BUILD_TESTING "Build test-suite" ${PROJECT_IS_TOP_LEVEL})
@@ -54,10 +60,33 @@ target_include_directories(
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
+if(MSVC)
+    # MSVC does not include <cmath> constants, unless _USE_MATH_DEFINES is defined.
+    target_compile_definitions(libooo INTERFACE _USE_MATH_DEFINES)
+    # Set the exception handling model (allows "throw"; if using add_compile_options form, set this *before* adding targets)
+    target_compile_options(libooo INTERFACE "/EHsc")
+endif()
 
 add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
 
-find_package(Armadillo REQUIRED)
+find_package(Armadillo REQUIRED CONFIG)
+if (NOT TARGET armadillo)
+    message(FATAL "Require detecting an Armadillo target")
+endif()
+# [Mar 2025] Conda Windows target is wrong. Compensate with:
+# * -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
+# or use the block below, duplicated in ${ooo}Config.cmake
+# Block below is cautious so if bad dir exists, may still need abov
+get_property(_iid TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+if(NOT EXISTS "${_iid}")
+  if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+    if(DEFINED ENV{CONDA_PREFIX})
+      message(STATUS "healing armadillo.INTERFACE_INCLUDE_DIRECTORIES from ${_iid} to $ENV{CONDA_PREFIX}\\Library\\include")
+      set_property(TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES "$ENV{CONDA_PREFIX}\\Library\\include")
+    endif()
+  endif()
+endif()
+
 target_link_libraries(
   libooo
   INTERFACE

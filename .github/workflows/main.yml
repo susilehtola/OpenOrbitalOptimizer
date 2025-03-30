@@ -15,22 +15,32 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-          - runs-on: ubuntu-latest
+          - lane: linux-gnu
+            runs-on: ubuntu-latest
             python-version: "3.10"
             cmargs: ""
-          - runs-on: macos-latest  # Silicon
+          - lane: linux-icpx
+            runs-on: ubuntu-latest
+            python-version: "3.10"
+            cmargs: >
+              -D CMAKE_CXX_COMPILER=icpx
+          - lane: macos-silicon-clang
+            runs-on: macos-latest
             python-version: "3.10"
             cmargs: ""
-          - runs-on: macos-13  # Intel
+          - lane: macos-intel-clang
+            runs-on: macos-13
             python-version: "3.10"
             cmargs: ""
-          #- runs-on: windows-latest
-          #  python-version: "3.10"
-          #  cmargs: >
-          #    -D CMAKE_C_COMPILER="gcc.exe"
-          #    -D CMAKE_CXX_COMPILER="g++.exe"
+            # Library/include/ compensates for faulty conda windows config
+          - lane: windows-clang
+            runs-on: windows-latest
+            python-version: "3.10"
+            cmargs: >
+              -D CMAKE_CXX_COMPILER=clang-cl
+              -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
 
-    name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.runs-on }}"
+    name: "Repo • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.lane }}"
     runs-on: ${{ matrix.cfg.runs-on }}
     defaults:
       run:
@@ -43,7 +53,9 @@ jobs:
     - name: Checkout IntegratorXX
       uses: actions/checkout@v4
       with:
-        repository: wavefunction91/IntegratorXX
+        #repository: wavefunction91/IntegratorXX
+        repository: loriab/IntegratorXX
+        ref: windows
         path: IntXX
 
     - name: Prepare compiler environment, vcvarsall (W)
@@ -66,7 +78,15 @@ jobs:
           - libxc-c
           - nlohmann_json
           - catch2  # for IntXX
+          - libblas * *netlib  # netlib compensates for faulty conda windows config
+          - liblapack * *netlib
+          #- dummy1
         EOF
+        # MacOS: sed -E -i.bak "s;;;g" export.yaml
+        if [[ "${{ matrix.cfg.lane }}" == "linux-icpx" ]]; then
+          :
+          sed -i "s/#- dummy1/- dpcpp_linux-64/g" export.yaml
+        fi
         cat export.yaml
 
     - name: Create Conda Environment
@@ -95,6 +115,7 @@ jobs:
           -G "Ninja" \
           -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
+          -D CMAKE_INSTALL_LIBDIR=lib \
           -D CMAKE_CXX_COMPILER=${CXX} \
           -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
           -D INTEGRATORXX_ENABLE_TESTS=OFF \
@@ -110,8 +131,8 @@ jobs:
           -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
           -D CMAKE_CXX_COMPILER=${CXX} \
-          -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
-          -D IntegratorXX_DIR="${{github.workspace}}/installed/lib64/cmake/IntegratorXX" \
+          -D CMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library" \
+          -D IntegratorXX_DIR="${{github.workspace}}/installed/lib/cmake/IntegratorXX" \
           ${{ matrix.cfg.cmargs }}
         cmake --build build --target install
 
@@ -123,13 +144,29 @@ jobs:
         mkdir consume_fp && cd consume_fp
         cat > CMakeLists.txt <<EOF
         cmake_minimum_required(VERSION 3.16)
-        project(atomtest)
+        project(atomtest LANGUAGES CXX)
         find_package(OpenOrbitalOptimizer CONFIG REQUIRED)
-        add_executable(atomtest EXCLUDE_FROM_ALL ${{github.workspace}}/tests/atomtest.cpp)
-        target_include_directories(atomtest PRIVATE ${{github.workspace}}/tests/)
+        add_executable(atomtest EXCLUDE_FROM_ALL "../tests/atomtest.cpp")
+        target_include_directories(atomtest PRIVATE "../tests/")
         find_package(Libxc CONFIG REQUIRED)
         find_package(IntegratorXX CONFIG REQUIRED)
         find_package(nlohmann_json CONFIG REQUIRED)
+          include(CMakePrintHelpers)
+          cmake_print_properties(
+            TARGETS
+              armadillo
+              IntegratorXX::IntegratorXX
+              OpenOrbitalOptimizer::OpenOrbitalOptimizer
+            PROPERTIES
+              IMPORTED_LINK_DEPENDENT_LIBRARIES
+              IMPORTED_LOCATION
+              INTERFACE_LOCATION
+              INTERFACE_LINK_LIBRARIES
+              INTERFACE_INCLUDE_DIRECTORIES
+              INTERFACE_COMPILE_DEFINITIONS
+              INTERFACE_COMPILE_OPTIONS
+              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+            )
         target_link_libraries(
           atomtest
             OpenOrbitalOptimizer::OpenOrbitalOptimizer
@@ -138,7 +175,7 @@ jobs:
             nlohmann_json::nlohmann_json
           )
         EOF
-        cmake . -DCMAKE_PREFIX_PATH=${{github.workspace}}/installed
+        cmake . -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" ${{ matrix.cfg.cmargs }}
         cmake --build . --target atomtest
         ./atomtest --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 3 --sto 0 --basis "${{github.workspace}}/tests/cc-pvdz.json"
 
