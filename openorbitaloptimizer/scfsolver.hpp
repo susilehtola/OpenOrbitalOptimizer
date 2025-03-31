@@ -134,8 +134,6 @@ namespace OpenOrbitalOptimizer {
     int maximum_history_length_ = 10;
     /// Convergence threshold for orbital gradient
     Tbase convergence_threshold_ = 1e-7;
-    /// Threshold for the ratio of linear dependence
-    Tbase linear_dependence_ratio_ = std::sqrt(std::numeric_limits<Tbase>::epsilon());
     /// Norm to use by default: root-mean-square error
     std::string error_norm_ = "rms";
 
@@ -685,6 +683,10 @@ namespace OpenOrbitalOptimizer {
       // Form DIIS and ADIIS weights
       arma::Col<Tbase> diis_w(diis_weights());
       if(verbosity_>=10) diis_w.t().print("DIIS weights");
+      if(aediis_coeff == 0.0) {
+        std::string step = "DIIS";
+        return std::make_tuple(diis_w,step);
+      }
 
       // Get various extrapolation weights
       const size_t N = orbital_history_.size();
@@ -717,8 +719,6 @@ namespace OpenOrbitalOptimizer {
       arma::Col<Tbase> weights(aediis_coeff * aediis_w + (1.0 - aediis_coeff) * diis_w);
       if(aediis_coeff == 1.0) {
         step = weight_legend[idx];
-      } else if(aediis_coeff == 0.0) {
-        step = "DIIS";
       } else {
         step = weight_legend[idx] + "+DIIS";
       }
@@ -1745,6 +1745,66 @@ namespace OpenOrbitalOptimizer {
     /// Set the maximum number of iterations
     void maximum_iterations(size_t maxit) {
       maximum_iterations_ = maxit;
+    }
+
+    /// When to start mixing in DIIS
+    Tbase diis_epsilon() const {
+      return diis_epsilon_;
+    }
+
+    /// When to start mixing in DIIS
+    void diis_epsilon(Tbase eps) {
+      diis_epsilon_ = eps;
+    }
+
+    /// When to switch over to DIIS
+    Tbase diis_threshold() const {
+      return diis_threshold_;
+    }
+
+    /// When to switch over to DIIS
+    void diis_threshold(Tbase eps) {
+      diis_threshold_ = eps;
+    }
+
+    /// Damping factor for DIIS diagonal
+    Tbase diis_diagonal_damping() const {
+      return diis_diagonal_damping_;
+    }
+
+    /// Damping factor for DIIS diagonal
+    void diis_diagonal_damping(Tbase eps) {
+      diis_diagonal_damping_ = eps;
+    }
+
+    /// DIIS restart criterion
+    Tbase diis_restart_factor() const {
+      return diis_restart_factor_;
+    }
+
+    /// DIIS restart criterion
+    void diis_restart_factor(Tbase eps) {
+      diis_restart_factor_ = eps;
+    }
+
+    /// Use only A/EDIIS when error of last cycle is factor greater than minimum
+    Tbase pure_ediis_factor() const {
+      return pure_ediis_factor_;
+    }
+
+    /// Use only A/EDIIS when error of last cycle is factor greater than minimum
+    void pure_ediis_factor(Tbase eps) {
+      pure_ediis_factor_ = eps;
+    }
+
+    /// Use optimal damping when max error bigger than this
+    Tbase optimal_damping_threshold() const {
+      return optimal_damping_threshold_;
+    }
+
+    /// Use optimal damping when max error bigger than this
+    void optimal_damping_threshold(Tbase eps) {
+      optimal_damping_threshold_ = eps;
     }
 
     /// Get maximum_history_length
