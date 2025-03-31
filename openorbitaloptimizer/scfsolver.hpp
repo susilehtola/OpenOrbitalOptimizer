@@ -1952,6 +1952,11 @@ namespace OpenOrbitalOptimizer {
         if(converged()) {
           if(verbosity_)
             printf("Converged to energy % .10f!\n", get_energy());
+
+          // Print out info
+          callback_data["step"] = std::string("Converged");
+          if(callback_function_)
+            callback_function_(callback_data);
           break;
         }
 
