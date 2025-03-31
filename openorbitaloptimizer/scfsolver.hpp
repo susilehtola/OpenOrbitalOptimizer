@@ -123,8 +123,8 @@ namespace OpenOrbitalOptimizer {
     /// DIIS restart criterion (Chupin et al, 2021)
     Tbase diis_restart_factor_ = 1e-4;
 
-    /// Use EDIIS if the error of the last cycle is 10% greater than the minimum error (Garza and Scuseria, 2012)
-    Tbase pure_ediis_factor_ = 1.10;
+    /// Use EDIIS if the error of the last cycle is a factor x times greater than the minimum error (Garza and Scuseria, 2012). Using 2.0 instead of 1.1 to avoid getting stuck in local minima
+    Tbase pure_ediis_factor_ = 2.0;
     /// Criterion for max error for which to use optimal damping
     Tbase optimal_damping_threshold_ = 1.0;
 
