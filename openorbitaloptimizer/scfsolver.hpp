@@ -123,8 +123,6 @@ namespace OpenOrbitalOptimizer {
     /// DIIS restart criterion (Chupin et al, 2021)
     Tbase diis_restart_factor_ = 1e-4;
 
-    /// Use EDIIS if the error of the last cycle is a factor x times greater than the minimum error (Garza and Scuseria, 2012). Using 10.0 instead of 1.1 to avoid getting stuck in local minima
-    Tbase pure_ediis_factor_ = 10.0;
     /// Criterion for max error for which to use optimal damping
     Tbase optimal_damping_threshold_ = 1.0;
 
@@ -1804,16 +1802,6 @@ namespace OpenOrbitalOptimizer {
       diis_restart_factor_ = eps;
     }
 
-    /// Use only A/EDIIS when error of last cycle is factor greater than minimum
-    Tbase pure_ediis_factor() const {
-      return pure_ediis_factor_;
-    }
-
-    /// Use only A/EDIIS when error of last cycle is factor greater than minimum
-    void pure_ediis_factor(Tbase eps) {
-      pure_ediis_factor_ = eps;
-    }
-
     /// Use optimal damping when max error bigger than this
     Tbase optimal_damping_threshold() const {
       return optimal_damping_threshold_;
@@ -2103,17 +2091,6 @@ namespace OpenOrbitalOptimizer {
             if(diis_error < diis_epsilon_) {
               // Compute AEDIIS mixing coefficient
               aediis_coeff = (diis_error-diis_threshold_)/(diis_epsilon_-diis_threshold_);
-
-              // Use pure A/EDIIS if error of the last cycle is 10% greater than the minimum error (Garza and Scuseria 2012)
-              arma::Col<Tbase> errors(diis_error_matrix_diagonal());
-              Tbase min_error = arma::min(errors);
-              arma::uvec iter_idx(errors.n_elem);
-              for(size_t i=0;i<iter_idx.n_elem;i++)
-                iter_idx(i) = std::get<2>(orbital_history_[i]);
-              arma::uvec sortidx(arma::sort_index(iter_idx,"descend"));
-              Tbase last_error = errors(sortidx[0]);
-              if(last_error >= pure_ediis_factor_*min_error)
-                aediis_coeff=1.0;
             } else {
               // Error is large, use A/EDIIS
               aediis_coeff = 1.0;
