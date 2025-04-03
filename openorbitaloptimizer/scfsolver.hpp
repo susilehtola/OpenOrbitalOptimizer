@@ -150,6 +150,8 @@ namespace OpenOrbitalOptimizer {
     /// Is the block empty?
     bool empty_block(size_t iblock) const {
       // Check if Fock matrix has zero dimension
+      if(iblock>=std::get<0>(orbital_history_[0]).first.size())
+        throw std::logic_error("Trying to check empty block for nonexistent index!\n");
       return std::get<1>(orbital_history_[0]).second[iblock].n_elem == 0;
     }
 
@@ -162,11 +164,19 @@ namespace OpenOrbitalOptimizer {
 
     /// Get a block of the orbital occupations for the ihist:th entry
     OrbitalBlock<Torb> get_orbital_block(size_t ihist, size_t iblock) const {
+      if(ihist>=orbital_history_.size())
+        throw std::logic_error("Trying to access orbitals for nonexistent history member!\n");
+      if(iblock>=std::get<0>(orbital_history_[ihist]).first.size())
+        throw std::logic_error("Trying to access orbitals for nonexistent block index!\n");
       return std::get<0>(orbital_history_[ihist]).first[iblock];
     }
 
     /// Get a block of the orbital occupations for the ihist:th entry
     OrbitalBlockOccupations<Tbase> get_orbital_occupation_block(size_t ihist, size_t iblock) const {
+      if(ihist>=orbital_history_.size())
+        throw std::logic_error("Trying to access orbital occupations for nonexistent history member!\n");
+      if(iblock>=std::get<0>(orbital_history_[ihist]).first.size())
+        throw std::logic_error("Trying to access orbital occupations for nonexistent block index!\n");
       return std::get<0>(orbital_history_[ihist]).second[iblock];
     }
 
@@ -197,6 +207,8 @@ namespace OpenOrbitalOptimizer {
 
     /// Get the energy for the entry
     size_t get_index(size_t ihist=0) const {
+      if(ihist>=orbital_history_.size())
+        throw std::logic_error("Trying to access index for nonexistent history member!\n");
       return std::get<2>(orbital_history_[ihist]);
     }
 
@@ -919,8 +931,11 @@ namespace OpenOrbitalOptimizer {
 
       // Form the new density matrix
       std::vector<arma::Mat<Torb>> dm_new(new_orbitals.size());
-      for(size_t iblock=0; iblock<new_orbitals.size(); iblock++)
+      for(size_t iblock=0; iblock<new_orbitals.size(); iblock++) {
+        if(new_orbitals[iblock].n_cols == 0)
+          continue;
         dm_new[iblock] = new_orbitals[iblock] * arma::diagmat(new_occupations[iblock]) * arma::trans(new_orbitals[iblock]);
+      }
 
       // Compute the energy gradient for each particle type for the density matrix mixing: P -> (1-lambda)*Pcurrent + lambda*Pnew
       size_t nparticles = number_of_blocks_per_particle_type_.n_elem;
@@ -1706,6 +1721,8 @@ namespace OpenOrbitalOptimizer {
     Tbase density_matrix_difference(size_t ihist, size_t jhist) {
       Tbase diff_norm = 0.0;
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
+        if(empty_block(iblock))
+          continue;
         diff_norm += norm(get_density_matrix_block(ihist, iblock)-get_density_matrix_block(jhist, iblock));
       }
       return diff_norm;
@@ -1834,6 +1851,23 @@ namespace OpenOrbitalOptimizer {
     bool add_entry(const DensityMatrix<Torb, Tbase> & density, const FockBuilderReturn<Torb, Tbase> & fock) {
       // Make a pair
       orbital_history_.push_back(make_history_entry(density, fock));
+
+      if(std::isnan(fock.first)) {
+        throw std::logic_error("Got NaN total energy!\n");
+      }
+      if(std::isinf(fock.first)) {
+        throw std::logic_error("Got +-infinite total energy!\n");
+      }
+      for(size_t iblock=0;iblock<fock.second.size();iblock++) {
+        if(fock.second[iblock].n_rows==0)
+          continue;
+        if(fock.second[iblock].has_nan()) {
+          throw std::logic_error("Got NaN in Fock matrix!\n");
+        }
+        if(fock.second[iblock].has_inf()) {
+          throw std::logic_error("Got +-infinity in Fock matrix!\n");
+        }
+      }
 
       if(orbital_history_.size()==1)
         // First try is a success by definition
