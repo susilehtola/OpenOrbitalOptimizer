@@ -2015,7 +2015,7 @@ namespace OpenOrbitalOptimizer {
 
     /// Run the SCF
     void run() {
-      Tbase old_energy = get_energy();
+      Tbase old_energy = 0.0;
       // Number of consecutive steps that the procedure failed to decrease the energy
       size_t failed_iterations = 0;
       size_t noda_steps = 0;
@@ -2150,19 +2150,48 @@ namespace OpenOrbitalOptimizer {
 
     /// Run optimal damping
     void run_optimal_damping() {
-      Tbase old_energy = get_energy();
+      Tbase old_energy = 0.0;
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
-        if(not optimal_damping_step())
-          throw std::logic_error("Could not find descent step!\n");
-        Tbase new_energy = get_energy();
-        Tbase dE = new_energy - old_energy;
+        // Compute DIIS error
         Tbase diis_error = norm(diis_error_vector(0));
+        Tbase diis_max_error = arma::norm(diis_error_vector(0),"inf");
+        Tbase dE = get_energy() - old_energy;
+
         if(verbosity_>=5) {
           printf("\n\n");
         }
         if(verbosity_>0) {
           printf("Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", iteration, number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
         }
+
+        // Data to pass to callback function
+        std::map<std::string, std::any> callback_data;
+        callback_data["iter"] = iteration;
+        callback_data["nfock"] = number_of_fock_evaluations_;
+        callback_data["E"] = get_energy();
+        callback_data["dE"] = get_energy() - old_energy;
+        callback_data["diis_error"] = diis_error;
+        callback_data["diis_max_error"] = diis_max_error;
+        callback_data["step"] = std::string("ODA");
+
+        // Convergence check
+        if(converged()) {
+          if(verbosity_>0) {
+            printf("Converged to energy % .10f\n", get_energy());
+          }
+          callback_data["step"] = std::string("Converged");
+          if(callback_function_)
+            callback_function_(callback_data);
+          break;
+        }
+
+        // Printout
+        if(callback_function_)
+          callback_function_(callback_data);
+
+        old_energy = get_energy();
+        if(not optimal_damping_step())
+          throw std::logic_error("Could not find descent step!\n");
 
         if(verbosity_>=5) {
           const auto occupations = get_orbital_occupations();
@@ -2171,32 +2200,6 @@ namespace OpenOrbitalOptimizer {
             if(occ_idx[l].n_elem)
               occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
           }
-        }
-
-        // Convergence check
-        if(converged()) {
-          if(verbosity_>0) {
-            printf("Converged to energy % .10f\n", get_energy());
-          }
-          break;
-        }
-        old_energy = new_energy;
-      }
-
-      // Get the best Fock matrix
-      FockMatrix<Torb> fock(std::get<1>(orbital_history_[0]).second);
-      orbital_history_.clear();
-
-      if(verbosity_>=10) {
-        printf("\n\nRecomputing solution\n");
-      }
-      attempt_fock(fock);
-      if(verbosity_>=5) {
-        const auto occupations = get_orbital_occupations();
-        auto occ_idx(occupied_orbitals(occupations));
-        for(size_t l=0;l<occ_idx.size();l++) {
-          if(occ_idx[l].n_elem)
-            occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
         }
       }
     }
