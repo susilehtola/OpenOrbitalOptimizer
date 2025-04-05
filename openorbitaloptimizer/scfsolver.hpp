@@ -311,6 +311,11 @@ namespace OpenOrbitalOptimizer {
       auto P = get_density_matrix_block(ihist, iblock);
       arma::Mat<Torb> PF = P*F;
       PF -= arma::trans(PF);
+
+      // To make the L^infty error independent of the underlying basis
+      // set, we project the residual into the best orbitals we have
+      auto C = get_orbital_block(0, iblock);
+      PF = C.t() * PF * C;
       return PF;
     }
 
