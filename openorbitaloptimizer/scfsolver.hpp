@@ -754,15 +754,8 @@ namespace OpenOrbitalOptimizer {
       // Determine new occupations
       auto new_occupations = update_occupations(new_orbital_energies);
 
-      // Reference calculation
-      const auto reference_orbitals = get_orbitals();
-      const auto reference_occupations = get_orbital_occupations();
-      // Occupations corresponding to the reference orbitals
-      auto maximum_overlap_occupations = determine_maximum_overlap_occupations(reference_occupations, reference_orbitals, new_orbitals);
-
-      return density_overlap(new_orbitals, maximum_overlap_occupations, reference_orbitals, reference_occupations);
+      return density_overlap(new_orbitals, new_occupations, reference_orbitals, reference_occupations);
     }
-
 
     /// Computes the difference between orbital occupations
     Tbase occupation_difference(const OrbitalOccupations<Tbase> & old_occ, const OrbitalOccupations<Tbase> & new_occ) const {
