@@ -746,6 +746,10 @@ namespace OpenOrbitalOptimizer {
       // Get the extrapolated Fock matrix
       auto fock(extrapolate_fock(weights));
 
+      // Reference calculation
+      const auto reference_orbitals = get_orbitals();
+      const auto reference_occupations = get_orbital_occupations();
+
       // Diagonalize the extrapolated Fock matrix
       auto diagonalized_fock = compute_orbitals(fock);
       auto & new_orbitals = diagonalized_fock.first;
