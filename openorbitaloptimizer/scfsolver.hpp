@@ -1734,7 +1734,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Evaluate the norm
-    Tbase norm(const arma::Mat<Tbase> & mat, std::string norm="") const {
+    Tbase norm(const arma::Mat<Torb> & mat, std::string norm="") const {
       if(norm == "")
         norm=error_norm_;
       if(norm == "rms") {
