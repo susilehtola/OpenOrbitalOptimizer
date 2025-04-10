@@ -1723,7 +1723,7 @@ namespace OpenOrbitalOptimizer {
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
         if(empty_block(iblock))
           continue;
-        diff_norm += norm(get_density_matrix_block(ihist, iblock)-get_density_matrix_block(jhist, iblock));
+        diff_norm += norm(vectorise(get_density_matrix_block(ihist, iblock)-get_density_matrix_block(jhist, iblock)));
       }
       return diff_norm;
     }
@@ -1734,11 +1734,13 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Evaluate the norm
-    Tbase norm(const arma::Mat<Torb> & mat, std::string norm="") const {
+    Tbase norm(const arma::Mat<Tbase> & mat, std::string norm="") const {
       if(norm == "")
         norm=error_norm_;
       if(norm == "rms") {
         // rms isn't implemented in Armadillo for some reason
+        if(mat.n_elem == 0)
+          return 0;
         return arma::norm(mat,"fro")/std::sqrt(1.0*mat.n_elem);
       } else {
         return arma::norm(mat, norm.c_str());
