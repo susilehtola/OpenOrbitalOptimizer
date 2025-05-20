@@ -342,7 +342,7 @@ namespace OpenOrbitalOptimizer {
       for(size_t iblock = 0; iblock<number_of_blocks_;iblock++) {
         error_vectors[iblock] = diis_error_vector(ihist, iblock);
         if(verbosity_>=20)
-          printf("ihist %i block %i error vector norm %e\n",ihist,iblock,norm(error_vectors[iblock]));
+          printf("ihist %i block %i error vector norm %e\n", (int) ihist, (int) iblock, norm(error_vectors[iblock]));
         if(verbosity_>=30)
           error_vectors[iblock].print();
       }
@@ -1594,7 +1594,7 @@ namespace OpenOrbitalOptimizer {
 
   public:
     /// Constructor
-    SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions), verbosity_(5), frozen_occupations_(false) {
+    SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions), frozen_occupations_(false), verbosity_(5) {
       // Run sanity checks
       number_of_blocks_ = arma::sum(number_of_blocks_per_particle_type_);
       if(maximum_occupation_.size() != number_of_blocks_) {
@@ -1648,12 +1648,12 @@ namespace OpenOrbitalOptimizer {
         if(empty_block(iblock))
           continue;
         if(get_orbital_block(0,iblock).n_cols != get_fock_matrix_block(0,iblock).n_cols) {
-          printf("get_orbital_block(0,iblock).n_cols=%i != get_fock_matrix_block(0,iblock).n_cols)=%i\n",get_orbital_block(0,iblock).n_cols,get_fock_matrix_block(0,iblock).n_cols);
+          printf("get_orbital_block(0,iblock).n_cols=%i != get_fock_matrix_block(0,iblock).n_cols)=%i\n",(int) get_orbital_block(0,iblock).n_cols,(int) get_fock_matrix_block(0,iblock).n_cols);
           consistent=false;
         }
         if(get_orbital_occupation_block(0,iblock).n_elem != get_fock_matrix_block(0,iblock).n_cols) {
           if(verbosity_>=10)
-            printf("get_orbital_occupation_block(0,iblock).n_elem=%i != get_fock_matrix_block(0,iblock).n_cols=%i\n",get_orbital_occupation_block(0,iblock).n_elem,get_fock_matrix_block(0,iblock).n_cols);
+            printf("get_orbital_occupation_block(0,iblock).n_elem=%i != get_fock_matrix_block(0,iblock).n_cols=%i\n",(int) get_orbital_occupation_block(0,iblock).n_elem,(int) get_fock_matrix_block(0,iblock).n_cols);
           consistent=false;
         }
       }
@@ -1884,7 +1884,7 @@ namespace OpenOrbitalOptimizer {
         }
 
         // Drop last entry if we are over the history length limit
-        if(orbital_history_.size() > maximum_history_length_)
+        if((int) orbital_history_.size() > maximum_history_length_)
           orbital_history_.pop_back();
 
         return return_value;
@@ -1895,7 +1895,7 @@ namespace OpenOrbitalOptimizer {
     void print_history() const {
       printf("Orbital history\n");
       for(size_t ihist=0;ihist<orbital_history_.size();ihist++)
-        printf("%2i % .9f % e % i\n",ihist,get_energy(ihist),get_energy(ihist)-get_energy(),get_index(ihist));
+        printf("%2i % .9f % e % i\n",(int) ihist, get_energy(ihist), get_energy(ihist)-get_energy(), (int) get_index(ihist));
     }
 
     /// Reset the DIIS history
@@ -1957,7 +1957,6 @@ namespace OpenOrbitalOptimizer {
         for(auto fill_orbital : all_energies) {
           // Increase number of occupied orbitals
           auto iblock = std::get<1>(fill_orbital);
-          auto iorb = std::get<2>(fill_orbital);
           // Compute how many particles fit this orbital
           auto fill = std::min(maximum_occupation_(iblock), num_left);
           number_of_particles(iblock) += fill;
@@ -2030,7 +2029,7 @@ namespace OpenOrbitalOptimizer {
           printf("\n\n");
         }
         if(verbosity_>0) {
-          printf("Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", iteration, number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
+          printf("Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", (int) iteration, (int) number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
         }
         if(verbosity_>=5) {
           printf("History size %i\n",orbital_history_.size());
@@ -2142,7 +2141,7 @@ namespace OpenOrbitalOptimizer {
           printf("\n\n");
         }
         if(verbosity_>0) {
-          printf("Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", iteration, number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
+          printf("Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", (int) iteration, (int) number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
         }
 
         // Data to pass to callback function
