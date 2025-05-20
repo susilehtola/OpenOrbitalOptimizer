@@ -424,7 +424,7 @@ namespace OpenOrbitalOptimizer {
           history_mask.erase(history_mask.begin()+i);
       size_t nrestart = orbital_history_.size()-history_mask.size();
       if(verbosity_>=10 and nrestart>0)
-        printf("Removed %i entries corresponding to large DIIS errors\n", nrestart);
+        printf("Removed %i entries corresponding to large DIIS errors\n", (int) nrestart);
 
       // Set up the DIIS error matrix
       const size_t N=history_mask.size();
@@ -509,7 +509,6 @@ namespace OpenOrbitalOptimizer {
 
       /// Evaluate initial point
       auto current_point = fx(x);
-      auto old_point = current_point;
       auto old_x = x;
 
       // Powell algorithm
@@ -555,13 +554,13 @@ namespace OpenOrbitalOptimizer {
         //x.t().print("x");
         if(dE > -df_tol) {
           if(verbosity_ >= 10) {
-            printf("A/EDIIS weights converged in %i macroiterations\n",imacro);
+            printf("A/EDIIS weights converged in %i macroiterations\n",(int) imacro);
             //x.t().print("xconv");
           }
           break;
         } else if(imacro==max_iter-1) {
           if(verbosity_ >= 10) {
-            printf("A/EDIIS weights did not converge in %i macroiterations, dE=%e\n",imacro, dE);
+            printf("A/EDIIS weights did not converge in %i macroiterations, dE=%e\n", (int) imacro, dE);
             //x.t().print("xfinal");
           }
         }
@@ -1064,7 +1063,6 @@ namespace OpenOrbitalOptimizer {
 
     /// Clean up history from incorrect occupations
     void cleanup() {
-      size_t nremoved=0;
       arma::Col<Tbase> density_differences(orbital_history_.size()-1,arma::fill::zeros);
       for(size_t ihist=1;ihist<orbital_history_.size();ihist++) {
         density_differences(ihist-1)=density_matrix_difference(ihist, 0);
@@ -2008,7 +2006,7 @@ namespace OpenOrbitalOptimizer {
     void run() {
       Tbase old_energy = 0.0;
       // Number of consecutive steps that the procedure failed to decrease the energy
-      size_t failed_iterations = 0;
+      int failed_iterations = 0;
       size_t noda_steps = 0;
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
@@ -2032,7 +2030,7 @@ namespace OpenOrbitalOptimizer {
           printf("Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", (int) iteration, (int) number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
         }
         if(verbosity_>=5) {
-          printf("History size %i\n",orbital_history_.size());
+          printf("History size %i\n",(int) orbital_history_.size());
         }
         if(converged()) {
           if(verbosity_)
