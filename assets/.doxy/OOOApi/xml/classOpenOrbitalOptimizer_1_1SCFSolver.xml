@@ -1,0 +1,2462 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="classOpenOrbitalOptimizer_1_1SCFSolver" kind="class" language="C++" prot="public">
+    <compoundname>OpenOrbitalOptimizer::SCFSolver</compoundname>
+    <includes refid="scfsolver_8hpp" local="no">scfsolver.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename Torb</type>
+      </param>
+      <param>
+        <type>typename Tbase</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae1f81465b3f0b2ebb00a4be2ec4b386c" prot="private" static="no" mutable="no">
+        <type>arma::uvec</type>
+        <definition>arma::uvec OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::number_of_blocks_per_particle_type_</definition>
+        <argsstring></argsstring>
+        <name>number_of_blocks_per_particle_type_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::number_of_blocks_per_particle_type_</qualifiedname>
+        <briefdescription>
+<para>The number of orbital blocks per particle type (length ntypes) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="81" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a852d54e2d9f35f325b20c7ad98653f2c" prot="private" static="no" mutable="no">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt;Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::maximum_occupation_</definition>
+        <argsstring></argsstring>
+        <name>maximum_occupation_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::maximum_occupation_</qualifiedname>
+        <briefdescription>
+<para>The maximal capacity of each orbital block. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="83" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae995abee8e40b0f2c1538929ca18f7ce" prot="private" static="no" mutable="no">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt;Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::number_of_particles_</definition>
+        <argsstring></argsstring>
+        <name>number_of_particles_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::number_of_particles_</qualifiedname>
+        <briefdescription>
+<para>The number of particles of each class in total (length ntypes, used to determine Aufbau occupations) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="85" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a178704c06de01f31c6cce3c5871fb4aa" prot="private" static="no" mutable="no">
+        <type>FockBuilder&lt; Torb, Tbase &gt;</type>
+        <definition>FockBuilder&lt;Torb, Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::fock_builder_</definition>
+        <argsstring></argsstring>
+        <name>fock_builder_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::fock_builder_</qualifiedname>
+        <briefdescription>
+<para>The Fock builder used to evaluate energies and Fock matrices. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="87" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0cede4d600343c7980f81fb966c4b367" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::block_descriptions_</definition>
+        <argsstring></argsstring>
+        <name>block_descriptions_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::block_descriptions_</qualifiedname>
+        <briefdescription>
+<para>Descriptions of the blocks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="89" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aaa62973b95694fa51da68375e3b5d999" prot="private" static="no" mutable="no">
+        <type>std::function&lt; void(const std::map&lt; std::string, std::any &gt; &amp;data)&gt;</type>
+        <definition>std::function&lt;void(const std::map&lt;std::string,std::any&gt; &amp; data)&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::callback_function_</definition>
+        <argsstring></argsstring>
+        <name>callback_function_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::callback_function_</qualifiedname>
+        <briefdescription>
+<para>Callback function. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="91" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8ab0ea39136d92c157c45cba1b1f1ade" prot="private" static="no" mutable="no">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt;Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::fixed_number_of_particles_per_block_</definition>
+        <argsstring></argsstring>
+        <name>fixed_number_of_particles_per_block_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::fixed_number_of_particles_per_block_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>(Optional) fixed number of particles in each symmetry, affects the way occupations are assigned in Aufbau. These are used if the array has the expected size. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="97" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a40459414333a2fc9a9b4d960d2de3ce2" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::frozen_occupations_</definition>
+        <argsstring></argsstring>
+        <name>frozen_occupations_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::frozen_occupations_</qualifiedname>
+        <briefdescription>
+<para>(Optional) freeze occupations altogether to their previous values </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="99" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8721ce7f6613fcaaec88871af626a44d" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::verbosity_</definition>
+        <argsstring></argsstring>
+        <name>verbosity_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::verbosity_</qualifiedname>
+        <briefdescription>
+<para>Verbosity level: 0 for silent, higher values for more info. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="102" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1468c6c6674a84debe50ff331d8968a9" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::number_of_blocks_</definition>
+        <argsstring></argsstring>
+        <name>number_of_blocks_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::number_of_blocks_</qualifiedname>
+        <briefdescription>
+<para>The number of blocks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="106" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6cd0d3b49acd94f9493b6864c7a60aa9" prot="private" static="no" mutable="no">
+        <type>OrbitalHistory&lt; Torb, Tbase &gt;</type>
+        <definition>OrbitalHistory&lt;Torb, Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::orbital_history_</definition>
+        <argsstring></argsstring>
+        <name>orbital_history_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::orbital_history_</qualifiedname>
+        <briefdescription>
+<para>The orbital history used for convergence acceleration. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="108" column="20" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae928e6fa4559fe7071c1b6ccc0fbb963" prot="private" static="no" mutable="no">
+        <type>OrbitalOccupations&lt; Tbase &gt;</type>
+        <definition>OrbitalOccupations&lt;Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::orbital_occupations_</definition>
+        <argsstring></argsstring>
+        <name>orbital_occupations_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::orbital_occupations_</qualifiedname>
+        <briefdescription>
+<para>Orbital energies, updated each iteration from the lowest-energy solution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="110" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="110" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a33c12f52b363d055006ffc04fcbda753" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::number_of_fock_evaluations_</definition>
+        <argsstring></argsstring>
+        <name>number_of_fock_evaluations_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::number_of_fock_evaluations_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Number of Fock matrix evaluations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="113" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4be19cea6627ee3e603759aeceeadb4d" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::maximum_iterations_</definition>
+        <argsstring></argsstring>
+        <name>maximum_iterations_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::maximum_iterations_</qualifiedname>
+        <initializer>= 128</initializer>
+        <briefdescription>
+<para>Maximum number of iterations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="116" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="116" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa6437b2c942e0b9ac96450591c9d0e08" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_epsilon_</definition>
+        <argsstring></argsstring>
+        <name>diis_epsilon_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_epsilon_</qualifiedname>
+        <initializer>= 1e-1</initializer>
+        <briefdescription>
+<para>Start to mix in DIIS at this error threshold (Garza and Scuseria, 2012) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="118" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab742a684ae7c7abb4cbfd64d209964ef" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_threshold_</definition>
+        <argsstring></argsstring>
+        <name>diis_threshold_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_threshold_</qualifiedname>
+        <initializer>= 1e-4</initializer>
+        <briefdescription>
+<para>Threshold for pure DIIS (Garza and Scuseria, 2012) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="120" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae82790d04b09e22131069b1704ff78f1" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_diagonal_damping_</definition>
+        <argsstring></argsstring>
+        <name>diis_diagonal_damping_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_diagonal_damping_</qualifiedname>
+        <initializer>= 0.02</initializer>
+        <briefdescription>
+<para>Damping factor for DIIS diagonal (Hamilton and Pulay, 1986) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="122" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a860146bf0eb3d033305ab70477d1a058" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_restart_factor_</definition>
+        <argsstring></argsstring>
+        <name>diis_restart_factor_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_restart_factor_</qualifiedname>
+        <initializer>= 1e-4</initializer>
+        <briefdescription>
+<para>DIIS restart criterion (Chupin et al, 2021) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="124" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af36dfa775b8217c143e7b3f50e7c4465" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::optimal_damping_threshold_</definition>
+        <argsstring></argsstring>
+        <name>optimal_damping_threshold_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::optimal_damping_threshold_</qualifiedname>
+        <initializer>= 1.0</initializer>
+        <briefdescription>
+<para>Criterion for max error for which to use optimal damping. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="127" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="127" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4e22eb6ac92d1d95ae1c4a6f75c888b6" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::density_restart_factor_</definition>
+        <argsstring></argsstring>
+        <name>density_restart_factor_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::density_restart_factor_</qualifiedname>
+        <initializer>= 1e-4</initializer>
+        <briefdescription>
+<para>History cleanup criterion: keep only those density matrices that satisfy delta ||P0-Pi|| &lt; min_{j&gt;0} ||P0-Pj||. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="130" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8d62f812e103bcfef7a02c3d4590273c" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::maximum_history_length_</definition>
+        <argsstring></argsstring>
+        <name>maximum_history_length_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::maximum_history_length_</qualifiedname>
+        <initializer>= 10</initializer>
+        <briefdescription>
+<para>History length. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="132" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="132" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a46235bb5948a944dafbda86fa88f5e0e" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::convergence_threshold_</definition>
+        <argsstring></argsstring>
+        <name>convergence_threshold_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::convergence_threshold_</qualifiedname>
+        <initializer>= 1e-7</initializer>
+        <briefdescription>
+<para>Convergence threshold for orbital gradient. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="134" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="134" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1d0673dc9ec81952eb756196dcb48ac5" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::error_norm_</definition>
+        <argsstring></argsstring>
+        <name>error_norm_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::error_norm_</qualifiedname>
+        <initializer>= &quot;rms&quot;</initializer>
+        <briefdescription>
+<para>Norm to use by default: root-mean-square error. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="136" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="136" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a84941dce0da3f27ddbef80fb77b75952" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::minimal_gradient_projection_</definition>
+        <argsstring></argsstring>
+        <name>minimal_gradient_projection_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::minimal_gradient_projection_</qualifiedname>
+        <initializer>= 1e-4</initializer>
+        <briefdescription>
+<para>Minimal normalized projection of preconditioned search direction onto gradient. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="139" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="139" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae761774741a6f35ae6c89b0c73ca403f" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::occupied_threshold_</definition>
+        <argsstring></argsstring>
+        <name>occupied_threshold_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::occupied_threshold_</qualifiedname>
+        <initializer>= 1e-6</initializer>
+        <briefdescription>
+<para>Threshold for detection of occupied orbitals. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="141" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="141" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6b492ca1e0f7d8f03a6e7465232895ce" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::initial_level_shift_</definition>
+        <argsstring></argsstring>
+        <name>initial_level_shift_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::initial_level_shift_</qualifiedname>
+        <initializer>= 1.0</initializer>
+        <briefdescription>
+<para>Initial level shift. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="143" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="143" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a54cc44e76575beed4ac7dc5045de5d59" prot="private" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::level_shift_factor_</definition>
+        <argsstring></argsstring>
+        <name>level_shift_factor_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::level_shift_factor_</qualifiedname>
+        <initializer>= 2.0</initializer>
+        <briefdescription>
+<para>Level shift diminution factor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="145" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="145" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a57b7f1d5a457f1f365aad8bbff84e877" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::empty_block</definition>
+        <argsstring>(size_t iblock) const</argsstring>
+        <name>empty_block</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::empty_block</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>iblock</declname>
+        </param>
+        <briefdescription>
+<para>Is the block empty? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="149" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="149" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a653c4a357d5f7856e4441dbd59d13890" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Mat&lt; Torb &gt;</type>
+        <definition>arma::Mat&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_density_matrix_block</definition>
+        <argsstring>(size_t ihist, size_t iblock) const</argsstring>
+        <name>get_density_matrix_block</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_density_matrix_block</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>iblock</declname>
+        </param>
+        <briefdescription>
+<para>Get a block of the density matrix for the ihist:th entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="157" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="157" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aff327fdda23834c22fa61048dc12d1f5" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>OrbitalBlock&lt; Torb &gt;</type>
+        <definition>OrbitalBlock&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_orbital_block</definition>
+        <argsstring>(size_t ihist, size_t iblock) const</argsstring>
+        <name>get_orbital_block</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_orbital_block</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>iblock</declname>
+        </param>
+        <briefdescription>
+<para>Get a block of the orbital occupations for the ihist:th entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="164" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="164" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2ab9acb5bc76179c1bd63bd8a95a98a4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>OrbitalBlockOccupations&lt; Tbase &gt;</type>
+        <definition>OrbitalBlockOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_orbital_occupation_block</definition>
+        <argsstring>(size_t ihist, size_t iblock) const</argsstring>
+        <name>get_orbital_occupation_block</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_orbital_occupation_block</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>iblock</declname>
+        </param>
+        <briefdescription>
+<para>Get a block of the orbital occupations for the ihist:th entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="173" column="29" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="173" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a537ae55f63c1a96a15025c47a59d821b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_lowest_energy_after_index</definition>
+        <argsstring>(size_t index=0) const</argsstring>
+        <name>get_lowest_energy_after_index</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_lowest_energy_after_index</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>index</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Get lowest energy after the given reference index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="182" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="182" bodyend="204"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4ffb5cd61bce928fd5a3d46657381df2" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_index</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_index</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_index</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Get the energy for the entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="207" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="207" bodyend="211"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5d11cda99d54a87a939d3ed5c229ac55" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::largest_index</definition>
+        <argsstring>() const</argsstring>
+        <name>largest_index</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::largest_index</qualifiedname>
+        <briefdescription>
+<para>Get largest index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="214" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="214" bodyend="220"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4374bf535922770ef07a05a54f6173ef" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::uvec</type>
+        <definition>arma::uvec OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::matrix_dimension</definition>
+        <argsstring>() const</argsstring>
+        <name>matrix_dimension</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::matrix_dimension</qualifiedname>
+        <briefdescription>
+<para>Matrix dimensions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="223" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="223" bodyend="229"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a88996ab0286cd3456d4b7d91656df0f4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Mat&lt; Torb &gt;</type>
+        <definition>arma::Mat&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_fock_matrix_block</definition>
+        <argsstring>(size_t ihist, size_t iblock) const</argsstring>
+        <name>get_fock_matrix_block</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_fock_matrix_block</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>iblock</declname>
+        </param>
+        <briefdescription>
+<para>Get a block of the Fock matrix for the ihist:th entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="232" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="232" bodyend="234"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a30550d11d4b92f250e62bdc08e4920eb" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::vectorise</definition>
+        <argsstring>(const arma::Mat&lt; Torb &gt; &amp;mat) const</argsstring>
+        <name>vectorise</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::vectorise</qualifiedname>
+        <param>
+          <type>const arma::Mat&lt; Torb &gt; &amp;</type>
+          <declname>mat</declname>
+        </param>
+        <briefdescription>
+<para>Vectorise. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="237" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="237" bodyend="243"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a9fb1d49a6bab8a9e2e508119897cb734" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::vectorise</definition>
+        <argsstring>(const std::vector&lt; arma::Mat&lt; Torb &gt; &gt; &amp;mat) const</argsstring>
+        <name>vectorise</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::vectorise</qualifiedname>
+        <param>
+          <type>const std::vector&lt; arma::Mat&lt; Torb &gt; &gt; &amp;</type>
+          <declname>mat</declname>
+        </param>
+        <briefdescription>
+<para>Vectorise. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="246" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="246" bodyend="268"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab93c09a73bed231b6a68618032a17669" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Mat&lt; Torb &gt;</type>
+        <definition>arma::Mat&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::matricise</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;vec, size_t nrows, size_t ncols) const</argsstring>
+        <name>matricise</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::matricise</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>vec</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nrows</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ncols</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="270" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="270" bodyend="290"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8a9c6d8e7d24d1b4a88caede12e82369" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; arma::Mat&lt; Torb &gt; &gt;</type>
+        <definition>std::vector&lt; arma::Mat&lt; Torb &gt; &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::matricise</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;vec, const arma::uvec &amp;dim) const</argsstring>
+        <name>matricise</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::matricise</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>vec</declname>
+        </param>
+        <param>
+          <type>const arma::uvec &amp;</type>
+          <declname>dim</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="292" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="292" bodyend="305"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a63ce4220ad107f3197c4886835a0f638" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Mat&lt; Torb &gt;</type>
+        <definition>arma::Mat&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_residual</definition>
+        <argsstring>(size_t ihist, size_t iblock) const</argsstring>
+        <name>diis_residual</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_residual</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>iblock</declname>
+        </param>
+        <briefdescription>
+<para>Compute DIIS residual. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="308" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="308" bodyend="320"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1afabbeaad658ca706bf352cdc214f5c24" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; arma::Mat&lt; Torb &gt; &gt;</type>
+        <definition>std::vector&lt; arma::Mat&lt; Torb &gt; &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_residual</definition>
+        <argsstring>(size_t ihist) const</argsstring>
+        <name>diis_residual</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_residual</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <briefdescription>
+<para>Compute DIIS residual. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="323" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="323" bodyend="331"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a904dab52fdbc113cdf189fd9b7c4356e" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_error_vector</definition>
+        <argsstring>(size_t ihist, size_t iblock) const</argsstring>
+        <name>diis_error_vector</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_error_vector</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>iblock</declname>
+        </param>
+        <briefdescription>
+<para>Form DIIS error vector for ihist:th entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="334" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="334" bodyend="336"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a621060c1575cfd21feb65a8636bacf07" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_error_vector</definition>
+        <argsstring>(size_t ihist) const</argsstring>
+        <name>diis_error_vector</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_error_vector</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <briefdescription>
+<para>Form DIIS error vector for ihist:th entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="339" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="339" bodyend="367"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1afb8fc1f218fc83c9e5b693f2e32767f3" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_error_matrix_element</definition>
+        <argsstring>(size_t ihist, size_t jhist) const</argsstring>
+        <name>diis_error_matrix_element</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_error_matrix_element</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>jhist</declname>
+        </param>
+        <briefdescription>
+<para>Compute element of DIIS error matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="370" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="370" bodyend="380"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a627b0e7935c98b1b384c3d81cf0be3eb" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Mat&lt; Tbase &gt;</type>
+        <definition>arma::Mat&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_error_matrix</definition>
+        <argsstring>(const std::vector&lt; size_t &gt; &amp;mask) const</argsstring>
+        <name>diis_error_matrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_error_matrix</qualifiedname>
+        <param>
+          <type>const std::vector&lt; size_t &gt; &amp;</type>
+          <declname>mask</declname>
+        </param>
+        <briefdescription>
+<para>Form DIIS error matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="383" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="383" bodyend="394"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1abc31a0cf719060b3af827ae15c4513eb" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_error_matrix_diagonal</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_error_matrix_diagonal</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_error_matrix_diagonal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="396" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="396" bodyend="402"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a72d41a684e3de3cfbb28b987d85b7de5" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Mat&lt; Tbase &gt;</type>
+        <definition>arma::Mat&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_error_matrix</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_error_matrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_error_matrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="404" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="404" bodyend="409"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae14dbfc7d0f3a03b9e111dfc11b30f5e" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_weights</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_weights</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_weights</qualifiedname>
+        <briefdescription>
+<para>Calculate DIIS weights. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="412" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="412" bodyend="459"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6ba11cf4ca492e50c756c581e9f7f6f4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::aediis_weights</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;b, const arma::Mat&lt; Tbase &gt; &amp;A) const</argsstring>
+        <name>aediis_weights</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::aediis_weights</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>const arma::Mat&lt; Tbase &gt; &amp;</type>
+          <declname>A</declname>
+        </param>
+        <briefdescription>
+<para>Calculate ADIIS weights by minimizing quadratic form. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>Make initial guesses for parameters</para>
+<para>Matrix of search directions</para>
+<para>Evaluate initial point</para>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="461" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="461" bodyend="613"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aae75cda50c005140c92910dc12b83eb4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::adiis_linear_term</definition>
+        <argsstring>() const</argsstring>
+        <name>adiis_linear_term</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::adiis_linear_term</qualifiedname>
+        <briefdescription>
+<para>ADIIS linear term: &lt;D_i - D_0 | F_i - F_0&gt; </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="616" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="616" bodyend="630"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab0d080b6888f0915aa23ea142a68a1f2" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::ediis_linear_term</definition>
+        <argsstring>() const</argsstring>
+        <name>ediis_linear_term</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::ediis_linear_term</qualifiedname>
+        <briefdescription>
+<para>EDIIS linear term: list of energies. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="633" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="633" bodyend="639"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1c465733343c39dee257be60135bd49c" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Mat&lt; Tbase &gt;</type>
+        <definition>arma::Mat&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::adiis_quadratic_term</definition>
+        <argsstring>() const</argsstring>
+        <name>adiis_quadratic_term</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::adiis_quadratic_term</qualifiedname>
+        <briefdescription>
+<para>ADIIS quadratic term: &lt;D_i - D_n | F_j - F_n&gt; </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="642" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="642" bodyend="662"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0f0b2a94fc04e9bf1eda4e1cf547e957" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Mat&lt; Tbase &gt;</type>
+        <definition>arma::Mat&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::ediis_quadratic_term</definition>
+        <argsstring>() const</argsstring>
+        <name>ediis_quadratic_term</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::ediis_quadratic_term</qualifiedname>
+        <briefdescription>
+<para>EDIIS quadratic term: -0.5*&lt;D_i - D_j | F_i - F_j&gt; </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="665" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="665" bodyend="683"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a878ab4b8d6084eb623ef0c0e0e1d4da7" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::adiis_weights</definition>
+        <argsstring>() const</argsstring>
+        <name>adiis_weights</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::adiis_weights</qualifiedname>
+        <briefdescription>
+<para>Calculate ADIIS weights. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="686" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="686" bodyend="688"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4a0879a8c93a543d2011fc6e14628360" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::ediis_weights</definition>
+        <argsstring>() const</argsstring>
+        <name>ediis_weights</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::ediis_weights</qualifiedname>
+        <briefdescription>
+<para>Calculate EDIIS weights. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="691" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="691" bodyend="693"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5d9eb5bc89dd46aada6e25b7b869552c" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::tuple&lt; arma::Col&lt; Tbase &gt;, std::string &gt;</type>
+        <definition>std::tuple&lt; arma::Col&lt; Tbase &gt;, std::string &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::minimal_error_sampling_algorithm_weights</definition>
+        <argsstring>(Tbase aediis_coeff) const</argsstring>
+        <name>minimal_error_sampling_algorithm_weights</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::minimal_error_sampling_algorithm_weights</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>aediis_coeff</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Minimal Error Sampling Algorithm (MESA), doi:10.14288/1.0372885 </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="696" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="696" bodyend="741"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a3b18503cbff62bd23d8070a4b0e0375d" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::density_projection</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;weights) const</argsstring>
+        <name>density_projection</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::density_projection</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+<para>Compute density change with given weights. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="744" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="744" bodyend="761"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8ee859e6748aecd2d56e67c3c6f64c6b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::occupation_difference</definition>
+        <argsstring>(const OrbitalOccupations&lt; Tbase &gt; &amp;old_occ, const OrbitalOccupations&lt; Tbase &gt; &amp;new_occ) const</argsstring>
+        <name>occupation_difference</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::occupation_difference</qualifiedname>
+        <param>
+          <type>const OrbitalOccupations&lt; Tbase &gt; &amp;</type>
+          <declname>old_occ</declname>
+        </param>
+        <param>
+          <type>const OrbitalOccupations&lt; Tbase &gt; &amp;</type>
+          <declname>new_occ</declname>
+        </param>
+        <briefdescription>
+<para>Computes the difference between orbital occupations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="764" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="764" bodyend="778"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac666fc7e301c6ca725c5bbc3a9685ef4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FockMatrix&lt; Torb &gt;</type>
+        <definition>FockMatrix&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::extrapolate_fock</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;weights) const</argsstring>
+        <name>extrapolate_fock</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::extrapolate_fock</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+<para>Perform DIIS extrapolation of Fock matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="781" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="781" bodyend="805"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac00963d321be12035de9aece9cc8f326" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>DensityMatrix&lt; Torb, Tbase &gt;</type>
+        <definition>DensityMatrix&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::extrapolate_density</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;weights) const</argsstring>
+        <name>extrapolate_density</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::extrapolate_density</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>weights</declname>
+        </param>
+        <briefdescription>
+<para>Perform DIIS extrapolation of density matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="808" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="808" bodyend="841"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2c1a8fd383a2654e8827aeab6a4d2e41" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>OrbitalOccupations&lt; Tbase &gt;</type>
+        <definition>OrbitalOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::determine_maximum_overlap_occupations</definition>
+        <argsstring>(const OrbitalOccupations&lt; Tbase &gt; &amp;reference_occupations, const Orbitals&lt; Torb &gt; &amp;C_reference, const Orbitals&lt; Torb &gt; &amp;C_new) const</argsstring>
+        <name>determine_maximum_overlap_occupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::determine_maximum_overlap_occupations</qualifiedname>
+        <param>
+          <type>const OrbitalOccupations&lt; Tbase &gt; &amp;</type>
+          <declname>reference_occupations</declname>
+        </param>
+        <param>
+          <type>const Orbitals&lt; Torb &gt; &amp;</type>
+          <declname>C_reference</declname>
+        </param>
+        <param>
+          <type>const Orbitals&lt; Torb &gt; &amp;</type>
+          <declname>C_new</declname>
+        </param>
+        <briefdescription>
+<para>Compute maximum overlap orbital occupations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="844" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="844" bodyend="872"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa04b785045a04e49bdf6e45d04fb4624" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::density_overlap</definition>
+        <argsstring>(const Orbitals&lt; Torb &gt; &amp;lorb, const OrbitalOccupations&lt; Tbase &gt; &amp;locc, const Orbitals&lt; Torb &gt; &amp;rorb, const OrbitalOccupations&lt; Tbase &gt; &amp;rocc) const</argsstring>
+        <name>density_overlap</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::density_overlap</qualifiedname>
+        <param>
+          <type>const Orbitals&lt; Torb &gt; &amp;</type>
+          <declname>lorb</declname>
+        </param>
+        <param>
+          <type>const OrbitalOccupations&lt; Tbase &gt; &amp;</type>
+          <declname>locc</declname>
+        </param>
+        <param>
+          <type>const Orbitals&lt; Torb &gt; &amp;</type>
+          <declname>rorb</declname>
+        </param>
+        <param>
+          <type>const OrbitalOccupations&lt; Tbase &gt; &amp;</type>
+          <declname>rocc</declname>
+        </param>
+        <briefdescription>
+<para>Compute density overlap between two sets of orbitals and occupations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="875" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="875" bodyend="894"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6c0c7f717ca7c606f133584a38202cd1" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::attempt_extrapolation</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;weights, bool density=false)</argsstring>
+        <name>attempt_extrapolation</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::attempt_extrapolation</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>weights</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>density</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+<para>Attempt extrapolation with given weights. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="897" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="897" bodyend="906"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6535a0dc7766bcbfac83ede96582d43e" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::attempt_fock</definition>
+        <argsstring>(const FockMatrix&lt; Torb &gt; &amp;fock)</argsstring>
+        <name>attempt_fock</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::attempt_fock</qualifiedname>
+        <param>
+          <type>const FockMatrix&lt; Torb &gt; &amp;</type>
+          <declname>fock</declname>
+        </param>
+        <briefdescription>
+<para>See if given Fock matrix reduces the energy. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="909" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="909" bodyend="920"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa8f17504ffd6e60ce91eb024b9aec425" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::optimal_damping_step</definition>
+        <argsstring>()</argsstring>
+        <name>optimal_damping_step</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::optimal_damping_step</qualifiedname>
+        <briefdescription>
+<para>Optimal damping step. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="923" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="923" bodyend="1062"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa3f4c8f4a100e667f5639372749c4c86" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::cleanup</definition>
+        <argsstring>()</argsstring>
+        <name>cleanup</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::cleanup</qualifiedname>
+        <briefdescription>
+<para>Clean up history from incorrect occupations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1065" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1065" bodyend="1090"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ad68ab86dfd297a6d07e11af5cf14bc48" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; OrbitalRotation &gt;</type>
+        <definition>std::vector&lt; OrbitalRotation &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::degrees_of_freedom</definition>
+        <argsstring>() const</argsstring>
+        <name>degrees_of_freedom</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::degrees_of_freedom</qualifiedname>
+        <briefdescription>
+<para>Form list of rotation angles. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1093" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1093" bodyend="1125"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ad0d124b2b71abde6b2eae30f5f77f653" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::orbital_gradient_vector</definition>
+        <argsstring>() const</argsstring>
+        <name>orbital_gradient_vector</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::orbital_gradient_vector</qualifiedname>
+        <briefdescription>
+<para>Formulate the orbital gradient vector. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1128" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1128" bodyend="1160"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2679844554745f373b2efec45d28ab7b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diagonal_orbital_hessian</definition>
+        <argsstring>() const</argsstring>
+        <name>diagonal_orbital_hessian</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diagonal_orbital_hessian</qualifiedname>
+        <briefdescription>
+<para>Formulate the diagonal orbital Hessian. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1163" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1163" bodyend="1191"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4900cac172f996458cf104e27be12b1c" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::precondition_search_direction</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;gradient, const arma::Col&lt; Tbase &gt; &amp;diagonal_hessian, Tbase shift=0.1) const</argsstring>
+        <name>precondition_search_direction</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::precondition_search_direction</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>gradient</declname>
+        </param>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>diagonal_hessian</declname>
+        </param>
+        <param>
+          <type>Tbase</type>
+          <declname>shift</declname>
+          <defval>0.1</defval>
+        </param>
+        <briefdescription>
+<para>Formulate the diagonal orbital Hessian. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1194" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1194" bodyend="1226"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae7da2200faddeeb2027e2e1e8e60e864" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Orbitals&lt; Torb &gt;</type>
+        <definition>Orbitals&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::form_rotation_matrices</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;x) const</argsstring>
+        <name>form_rotation_matrices</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::form_rotation_matrices</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>Rotation matrices. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1229" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1229" bodyend="1272"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae7c6e9c9fa478058d07407a143d95c96" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::maximum_rotation_step</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;x) const</argsstring>
+        <name>maximum_rotation_step</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::maximum_rotation_step</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>Determine maximum step size; doi:10.1016/j.sigpro.2009.03.015. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1275" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1275" bodyend="1295"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1fd3382fcf50adaaaf5a4c2f7570af6e" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Orbitals&lt; Torb &gt;</type>
+        <definition>Orbitals&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::rotate_orbitals</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;x) const</argsstring>
+        <name>rotate_orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::rotate_orbitals</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>Rotate the orbitals through the given parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1298" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1298" bodyend="1332"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a268ea9ddb743a9ba6fdb46d71812c498" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>OrbitalHistoryEntry&lt; Torb, Tbase &gt;</type>
+        <definition>OrbitalHistoryEntry&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::make_history_entry</definition>
+        <argsstring>(const DensityMatrix&lt; Torb, Tbase &gt; &amp;density_matrix, const FockBuilderReturn&lt; Torb, Tbase &gt; &amp;fock) const</argsstring>
+        <name>make_history_entry</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::make_history_entry</qualifiedname>
+        <param>
+          <type>const DensityMatrix&lt; Torb, Tbase &gt; &amp;</type>
+          <declname>density_matrix</declname>
+        </param>
+        <param>
+          <type>const FockBuilderReturn&lt; Torb, Tbase &gt; &amp;</type>
+          <declname>fock</declname>
+        </param>
+        <briefdescription>
+<para>Make an orbital history entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1334" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1334" bodyend="1337"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a9d43322a239ef06896de16364622e3ae" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>OrbitalHistoryEntry&lt; Torb, Tbase &gt;</type>
+        <definition>OrbitalHistoryEntry&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::evaluate_rotation</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;x)</argsstring>
+        <name>evaluate_rotation</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::evaluate_rotation</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>Evaluate the energy with a given orbital rotation vector. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1339" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1339" bodyend="1349"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a338090149468d43e06cb5576415f3d88" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::level_shifting_step</definition>
+        <argsstring>()</argsstring>
+        <name>level_shifting_step</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::level_shifting_step</qualifiedname>
+        <briefdescription>
+<para>Level shift step. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1351" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1351" bodyend="1393"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8296026ef41ef7eb23c4bf1ef2d4cda7" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::steepest_descent_step</definition>
+        <argsstring>()</argsstring>
+        <name>steepest_descent_step</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::steepest_descent_step</qualifiedname>
+        <briefdescription>
+<para>Take a steepest descent step. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1395" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1395" bodyend="1573"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa745cbf9964b38c2e90929dd7022178c" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; arma::uvec &gt;</type>
+        <definition>std::vector&lt; arma::uvec &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::occupied_orbitals</definition>
+        <argsstring>(const OrbitalOccupations&lt; Tbase &gt; &amp;occupations)</argsstring>
+        <name>occupied_orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::occupied_orbitals</qualifiedname>
+        <param>
+          <type>const OrbitalOccupations&lt; Tbase &gt; &amp;</type>
+          <declname>occupations</declname>
+        </param>
+        <briefdescription>
+<para>List of occupied orbitals. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1576" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1576" bodyend="1582"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac36c550850e8abd38362539aa0f23dad" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; arma::uvec &gt;</type>
+        <definition>std::vector&lt; arma::uvec &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::unoccupied_orbitals</definition>
+        <argsstring>(const OrbitalOccupations&lt; Tbase &gt; &amp;occupations)</argsstring>
+        <name>unoccupied_orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::unoccupied_orbitals</qualifiedname>
+        <param>
+          <type>const OrbitalOccupations&lt; Tbase &gt; &amp;</type>
+          <declname>occupations</declname>
+        </param>
+        <briefdescription>
+<para>List of occupied orbitals. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1585" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1585" bodyend="1591"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a887856626f6da6faa815291512686819" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SCFSolver</definition>
+        <argsstring>(const arma::uvec &amp;number_of_blocks_per_particle_type, const arma::Col&lt; Tbase &gt; &amp;maximum_occupation, const arma::Col&lt; Tbase &gt; &amp;number_of_particles, const FockBuilder&lt; Torb, Tbase &gt; &amp;fock_builder, const std::vector&lt; std::string &gt; &amp;block_descriptions)</argsstring>
+        <name>SCFSolver</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SCFSolver</qualifiedname>
+        <param>
+          <type>const arma::uvec &amp;</type>
+          <declname>number_of_blocks_per_particle_type</declname>
+        </param>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>maximum_occupation</declname>
+        </param>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>number_of_particles</declname>
+        </param>
+        <param>
+          <type>const FockBuilder&lt; Torb, Tbase &gt; &amp;</type>
+          <declname>fock_builder</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>block_descriptions</declname>
+        </param>
+        <briefdescription>
+<para>Constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1595" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1595" bodyend="1613"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a38bdbc6d77676038e447b7493835e918" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::initialize_with_fock</definition>
+        <argsstring>(const FockMatrix&lt; Torb &gt; &amp;fock_guess)</argsstring>
+        <name>initialize_with_fock</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::initialize_with_fock</qualifiedname>
+        <param>
+          <type>const FockMatrix&lt; Torb &gt; &amp;</type>
+          <declname>fock_guess</declname>
+        </param>
+        <briefdescription>
+<para>Initialize the solver with a guess Fock matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1616" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1616" bodyend="1629"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a582f71dacbb5aaf5e3ee62b35ab58e30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::initialize_with_orbitals</definition>
+        <argsstring>(const Orbitals&lt; Torb &gt; &amp;orbitals, const OrbitalOccupations&lt; Tbase &gt; &amp;orbital_occupations)</argsstring>
+        <name>initialize_with_orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::initialize_with_orbitals</qualifiedname>
+        <param>
+          <type>const Orbitals&lt; Torb &gt; &amp;</type>
+          <declname>orbitals</declname>
+        </param>
+        <param>
+          <type>const OrbitalOccupations&lt; Tbase &gt; &amp;</type>
+          <declname>orbital_occupations</declname>
+        </param>
+        <briefdescription>
+<para>Initialize with precomputed orbitals and occupations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1632" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1632" bodyend="1673"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af3e94cb59031195a7a836f8551c8096b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::fixed_number_of_particles_per_block</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;number_of_particles_per_block)</argsstring>
+        <name>fixed_number_of_particles_per_block</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::fixed_number_of_particles_per_block</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>number_of_particles_per_block</declname>
+        </param>
+        <briefdescription>
+<para>Fix the number of occupied orbitals per block. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1676" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1676" bodyend="1678"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a02660ac2ea37b2db05e279c536e87934" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::frozen_occupations</definition>
+        <argsstring>() const</argsstring>
+        <name>frozen_occupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::frozen_occupations</qualifiedname>
+        <briefdescription>
+<para>Get frozen occupations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1681" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1681" bodyend="1683"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab46784ee78994ad43742969d75f6574a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::frozen_occupations</definition>
+        <argsstring>(bool frozen)</argsstring>
+        <name>frozen_occupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::frozen_occupations</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>frozen</declname>
+        </param>
+        <briefdescription>
+<para>Set frozen occupations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1686" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1686" bodyend="1688"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aef36f1506aef3398f939985c0fc47c91" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::verbosity</definition>
+        <argsstring>() const</argsstring>
+        <name>verbosity</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::verbosity</qualifiedname>
+        <briefdescription>
+<para>Get verbosity. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1691" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1691" bodyend="1693"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a921d51f72394adda3b735d1715f78548" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::verbosity</definition>
+        <argsstring>(int verbosity)</argsstring>
+        <name>verbosity</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::verbosity</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>verbosity</declname>
+        </param>
+        <briefdescription>
+<para>Set verbosity. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1696" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1696" bodyend="1698"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1a1933d8e73fe81a5dec2e2f75cba6ed" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::convergence_threshold</definition>
+        <argsstring>() const</argsstring>
+        <name>convergence_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::convergence_threshold</qualifiedname>
+        <briefdescription>
+<para>Get convergence threshold. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1701" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1701" bodyend="1703"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1afee8343f85cff1b49507d214ddcb8092" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::convergence_threshold</definition>
+        <argsstring>(Tbase convergence_threshold)</argsstring>
+        <name>convergence_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::convergence_threshold</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>convergence_threshold</declname>
+        </param>
+        <briefdescription>
+<para>Set verbosity. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1706" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1706" bodyend="1708"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab21294662e1f2558b29e6cedc6300718" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_energy</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_energy</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_energy</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Get the energy for the n:th entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1711" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1711" bodyend="1715"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2fb5211e7daf74bd4539d34df25124b6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::density_matrix_difference</definition>
+        <argsstring>(size_t ihist, size_t jhist)</argsstring>
+        <name>density_matrix_difference</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::density_matrix_difference</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>jhist</declname>
+        </param>
+        <briefdescription>
+<para>Density matrix difference norm. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1719" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1719" bodyend="1727"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1adcb4d5fe06438d9f39283b4575997ad6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::error_norm</definition>
+        <argsstring>() const</argsstring>
+        <name>error_norm</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::error_norm</qualifiedname>
+        <briefdescription>
+<para>Get the used error norm. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1730" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1730" bodyend="1732"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4a038bd03dd1d31bedd748405a03a38d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::norm</definition>
+        <argsstring>(const arma::Mat&lt; Tbase &gt; &amp;mat, std::string norm=&quot;&quot;) const</argsstring>
+        <name>norm</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::norm</qualifiedname>
+        <param>
+          <type>const arma::Mat&lt; Tbase &gt; &amp;</type>
+          <declname>mat</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>norm</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <briefdescription>
+<para>Evaluate the norm. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1735" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1735" bodyend="1746"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa8cb8267076a491496a1af442795c67a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::error_norm</definition>
+        <argsstring>(const std::string &amp;error_norm)</argsstring>
+        <name>error_norm</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::error_norm</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>error_norm</declname>
+        </param>
+        <briefdescription>
+<para>Set the used error norm. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1749" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1749" bodyend="1755"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a3f0c11a985ab3f3a4ffc84823d7e94c6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::maximum_iterations</definition>
+        <argsstring>() const</argsstring>
+        <name>maximum_iterations</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::maximum_iterations</qualifiedname>
+        <briefdescription>
+<para>Get the maximum number of iterations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1758" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1758" bodyend="1760"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ad19c77082867c330aee32b6f68df246b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::maximum_iterations</definition>
+        <argsstring>(size_t maxit)</argsstring>
+        <name>maximum_iterations</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::maximum_iterations</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>maxit</declname>
+        </param>
+        <briefdescription>
+<para>Set the maximum number of iterations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1763" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1763" bodyend="1765"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af634030ca79755dafc326d376ee59b0f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_epsilon</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_epsilon</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_epsilon</qualifiedname>
+        <briefdescription>
+<para>When to start mixing in DIIS. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1768" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1768" bodyend="1770"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ade110ab568a8a4a14ba6291b92d1edb7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_epsilon</definition>
+        <argsstring>(Tbase eps)</argsstring>
+        <name>diis_epsilon</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_epsilon</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>eps</declname>
+        </param>
+        <briefdescription>
+<para>When to start mixing in DIIS. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1773" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1773" bodyend="1775"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa23d78c738f7c05258a65277a7ff2ba2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_threshold</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_threshold</qualifiedname>
+        <briefdescription>
+<para>When to switch over to DIIS. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1778" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1778" bodyend="1780"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5058bce20583c2b8df9476c0e713ec94" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_threshold</definition>
+        <argsstring>(Tbase eps)</argsstring>
+        <name>diis_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_threshold</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>eps</declname>
+        </param>
+        <briefdescription>
+<para>When to switch over to DIIS. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1783" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1783" bodyend="1785"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8eafb122403592282c32f1a4edbde36a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_diagonal_damping</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_diagonal_damping</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_diagonal_damping</qualifiedname>
+        <briefdescription>
+<para>Damping factor for DIIS diagonal. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1788" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1788" bodyend="1790"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae937f72a4934ccd07930cccff0547217" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_diagonal_damping</definition>
+        <argsstring>(Tbase eps)</argsstring>
+        <name>diis_diagonal_damping</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_diagonal_damping</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>eps</declname>
+        </param>
+        <briefdescription>
+<para>Damping factor for DIIS diagonal. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1793" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1793" bodyend="1795"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a12d32ccbb8c805ff5253ca2cfcf02c34" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_restart_factor</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_restart_factor</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_restart_factor</qualifiedname>
+        <briefdescription>
+<para>DIIS restart criterion. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1798" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1798" bodyend="1800"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a453fb7458cb95e7a00f7e015478d6a36" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::diis_restart_factor</definition>
+        <argsstring>(Tbase eps)</argsstring>
+        <name>diis_restart_factor</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::diis_restart_factor</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>eps</declname>
+        </param>
+        <briefdescription>
+<para>DIIS restart criterion. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1803" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1803" bodyend="1805"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af189ef00b9219e6a3c005df8da8a84ce" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::optimal_damping_threshold</definition>
+        <argsstring>() const</argsstring>
+        <name>optimal_damping_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::optimal_damping_threshold</qualifiedname>
+        <briefdescription>
+<para>Use optimal damping when max error bigger than this. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1808" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1808" bodyend="1810"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5a4283cc873207a4c4a24f39ed771241" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::optimal_damping_threshold</definition>
+        <argsstring>(Tbase eps)</argsstring>
+        <name>optimal_damping_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::optimal_damping_threshold</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>eps</declname>
+        </param>
+        <briefdescription>
+<para>Use optimal damping when max error bigger than this. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1813" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1813" bodyend="1815"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8c383e2d9a47abd3a4dc3cf9dbb68fc7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::maximum_history_length</definition>
+        <argsstring>() const</argsstring>
+        <name>maximum_history_length</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::maximum_history_length</qualifiedname>
+        <briefdescription>
+<para>Get maximum_history_length. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1818" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1818" bodyend="1820"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4e2a07b396907c2eb74ae79f53fbf264" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::maximum_history_length</definition>
+        <argsstring>(int maximum_history_length)</argsstring>
+        <name>maximum_history_length</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::maximum_history_length</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>maximum_history_length</declname>
+        </param>
+        <briefdescription>
+<para>Set maximum_history_length. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1823" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1823" bodyend="1825"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a947e5a5cc12070b4f441424c85d574c5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::add_entry</definition>
+        <argsstring>(const DensityMatrix&lt; Torb, Tbase &gt; &amp;density)</argsstring>
+        <name>add_entry</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::add_entry</qualifiedname>
+        <param>
+          <type>const DensityMatrix&lt; Torb, Tbase &gt; &amp;</type>
+          <declname>density</declname>
+        </param>
+        <briefdescription>
+<para>Add entry to history, return value is True if energy was lowered. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1828" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1828" bodyend="1838"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a73a5a99a48840b0e19ae2ef4a8f04de8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::add_entry</definition>
+        <argsstring>(const DensityMatrix&lt; Torb, Tbase &gt; &amp;density, const FockBuilderReturn&lt; Torb, Tbase &gt; &amp;fock)</argsstring>
+        <name>add_entry</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::add_entry</qualifiedname>
+        <param>
+          <type>const DensityMatrix&lt; Torb, Tbase &gt; &amp;</type>
+          <declname>density</declname>
+        </param>
+        <param>
+          <type>const FockBuilderReturn&lt; Torb, Tbase &gt; &amp;</type>
+          <declname>fock</declname>
+        </param>
+        <briefdescription>
+<para>Add entry to history, return value is True if energy was lowered. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1841" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1841" bodyend="1890"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a83718b48c4f1180324b256f013e11ce9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::print_history</definition>
+        <argsstring>() const</argsstring>
+        <name>print_history</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::print_history</qualifiedname>
+        <briefdescription>
+<para>Print the DIIS history. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1893" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1893" bodyend="1897"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1cd4b2212f3985975fd5c4898be2211f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::reset_history</definition>
+        <argsstring>()</argsstring>
+        <name>reset_history</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::reset_history</qualifiedname>
+        <briefdescription>
+<para>Reset the DIIS history. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1900" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1900" bodyend="1903"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a05154d8013f3c8c326ded36a2bfd0f6a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>DiagonalizedFockMatrix&lt; Torb, Tbase &gt;</type>
+        <definition>DiagonalizedFockMatrix&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::compute_orbitals</definition>
+        <argsstring>(const FockMatrix&lt; Torb &gt; &amp;fock) const</argsstring>
+        <name>compute_orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::compute_orbitals</qualifiedname>
+        <param>
+          <type>const FockMatrix&lt; Torb &gt; &amp;</type>
+          <declname>fock</declname>
+        </param>
+        <briefdescription>
+<para>Computes orbitals and orbital energies by diagonalizing the Fock matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1906" column="28" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1906" bodyend="1927"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a20ab6894d7a07d543ae6f4fa17ba1d88" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::uword</type>
+        <definition>arma::uword OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::particle_block_offset</definition>
+        <argsstring>(size_t iparticle) const</argsstring>
+        <name>particle_block_offset</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::particle_block_offset</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>iparticle</declname>
+        </param>
+        <briefdescription>
+<para>Determines the offset for the blocks of the iparticle:th particle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1930" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1930" bodyend="1932"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0c76a0f310461e9c787ec5f3eba312e7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>arma::Col&lt; Tbase &gt;</type>
+        <definition>arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::determine_number_of_particles_by_aufbau</definition>
+        <argsstring>(const OrbitalEnergies&lt; Tbase &gt; &amp;orbital_energies) const</argsstring>
+        <name>determine_number_of_particles_by_aufbau</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::determine_number_of_particles_by_aufbau</qualifiedname>
+        <param>
+          <type>const OrbitalEnergies&lt; Tbase &gt; &amp;</type>
+          <declname>orbital_energies</declname>
+        </param>
+        <briefdescription>
+<para>Determine number of particles in each block. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1935" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1935" bodyend="1969"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a924d6a3808cc3254bd2395bdc719f27a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>OrbitalOccupations&lt; Tbase &gt;</type>
+        <definition>OrbitalOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::update_occupations</definition>
+        <argsstring>(const OrbitalEnergies&lt; Tbase &gt; &amp;orbital_energies) const</argsstring>
+        <name>update_occupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::update_occupations</qualifiedname>
+        <param>
+          <type>const OrbitalEnergies&lt; Tbase &gt; &amp;</type>
+          <declname>orbital_energies</declname>
+        </param>
+        <briefdescription>
+<para>Determines occupations based on the current orbital energies. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1972" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1972" bodyend="1998"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a05e8fd7e915665580418ab47e44629e5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::converged</definition>
+        <argsstring>() const</argsstring>
+        <name>converged</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::converged</qualifiedname>
+        <briefdescription>
+<para>Check if we are converged. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2001" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2001" bodyend="2003"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0e46cd54304afa2a530f4ef787fb2335" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::run</definition>
+        <argsstring>()</argsstring>
+        <name>run</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::run</qualifiedname>
+        <briefdescription>
+<para>Run the SCF. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2006" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2006" bodyend="2127"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae9684d09e04bbc8123acd7f79cf6bbd5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::run_optimal_damping</definition>
+        <argsstring>()</argsstring>
+        <name>run_optimal_damping</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::run_optimal_damping</qualifiedname>
+        <briefdescription>
+<para>Run optimal damping. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2130" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2130" bodyend="2183"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac6c5ba9873cbd926433d1d7827eaedd4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>DensityMatrix&lt; Torb, Tbase &gt;</type>
+        <definition>DensityMatrix&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_solution</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_solution</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_solution</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Get the SCF solution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2186" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2186" bodyend="2188"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a31954e994daecb7c8ac07ef063a3508a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Orbitals&lt; Torb &gt;</type>
+        <definition>Orbitals&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_orbitals</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_orbitals</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Get the orbitals. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2191" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2191" bodyend="2193"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a419a31b06513b66c3d9836c24d9c561f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>OrbitalOccupations&lt; Tbase &gt;</type>
+        <definition>OrbitalOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_orbital_occupations</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_orbital_occupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_orbital_occupations</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Get the orbital occupations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2196" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2196" bodyend="2198"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a43bdad00e9e22b7b40a377480857f8d4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FockBuilderReturn&lt; Torb, Tbase &gt;</type>
+        <definition>FockBuilderReturn&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_fock_build</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_fock_build</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_fock_build</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Get the Fock matrix builder return. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2201" column="23" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2201" bodyend="2203"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a325f1538e5fc350c13e66838cef13b64" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FockMatrix&lt; Torb &gt;</type>
+        <definition>FockMatrix&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::get_fock_matrix</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_fock_matrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::get_fock_matrix</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Get the Fock matrix for the ihist:th entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2206" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2206" bodyend="2208"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1c8c9606adb3ddef58c791a6ccf028a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::brute_force_search_for_lowest_configuration</definition>
+        <argsstring>()</argsstring>
+        <name>brute_force_search_for_lowest_configuration</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::brute_force_search_for_lowest_configuration</qualifiedname>
+        <briefdescription>
+<para>Finds the lowest &quot;Aufbau&quot; configuration by moving particles between symmetries by brute force search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2212" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2212" bodyend="2422"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a7f4222276dfeecdd45be72ef733df016" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::callback_function</definition>
+        <argsstring>(std::function&lt; void(const std::map&lt; std::string, std::any &gt; &amp;)&gt; callback_function=nullptr)</argsstring>
+        <name>callback_function</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::callback_function</qualifiedname>
+        <param>
+          <type>std::function&lt; void(const std::map&lt; std::string, std::any &gt; &amp;)&gt;</type>
+          <declname>callback_function</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2424" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2424" bodyend="2426"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SCF solver class. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="78" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="78" bodyend="2427"/>
+    <listofallmembers>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a947e5a5cc12070b4f441424c85d574c5" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>add_entry</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a73a5a99a48840b0e19ae2ef4a8f04de8" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>add_entry</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aae75cda50c005140c92910dc12b83eb4" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>adiis_linear_term</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1c465733343c39dee257be60135bd49c" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>adiis_quadratic_term</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a878ab4b8d6084eb623ef0c0e0e1d4da7" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>adiis_weights</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6ba11cf4ca492e50c756c581e9f7f6f4" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>aediis_weights</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6c0c7f717ca7c606f133584a38202cd1" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>attempt_extrapolation</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6535a0dc7766bcbfac83ede96582d43e" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>attempt_fock</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0cede4d600343c7980f81fb966c4b367" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>block_descriptions_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1c8c9606adb3ddef58c791a6ccf028a0" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>brute_force_search_for_lowest_configuration</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a7f4222276dfeecdd45be72ef733df016" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>callback_function</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aaa62973b95694fa51da68375e3b5d999" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>callback_function_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa3f4c8f4a100e667f5639372749c4c86" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>cleanup</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a05154d8013f3c8c326ded36a2bfd0f6a" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>compute_orbitals</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a05e8fd7e915665580418ab47e44629e5" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>converged</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1a1933d8e73fe81a5dec2e2f75cba6ed" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>convergence_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1afee8343f85cff1b49507d214ddcb8092" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>convergence_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a46235bb5948a944dafbda86fa88f5e0e" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>convergence_threshold_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ad68ab86dfd297a6d07e11af5cf14bc48" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>degrees_of_freedom</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a2fb5211e7daf74bd4539d34df25124b6" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>density_matrix_difference</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa04b785045a04e49bdf6e45d04fb4624" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>density_overlap</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a3b18503cbff62bd23d8070a4b0e0375d" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>density_projection</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4e22eb6ac92d1d95ae1c4a6f75c888b6" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>density_restart_factor_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a2c1a8fd383a2654e8827aeab6a4d2e41" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>determine_maximum_overlap_occupations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0c76a0f310461e9c787ec5f3eba312e7" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>determine_number_of_particles_by_aufbau</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a2679844554745f373b2efec45d28ab7b" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diagonal_orbital_hessian</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8eafb122403592282c32f1a4edbde36a" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_diagonal_damping</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae937f72a4934ccd07930cccff0547217" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_diagonal_damping</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae82790d04b09e22131069b1704ff78f1" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_diagonal_damping_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af634030ca79755dafc326d376ee59b0f" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_epsilon</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ade110ab568a8a4a14ba6291b92d1edb7" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_epsilon</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa6437b2c942e0b9ac96450591c9d0e08" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_epsilon_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a627b0e7935c98b1b384c3d81cf0be3eb" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_error_matrix</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a72d41a684e3de3cfbb28b987d85b7de5" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_error_matrix</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1abc31a0cf719060b3af827ae15c4513eb" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_error_matrix_diagonal</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1afb8fc1f218fc83c9e5b693f2e32767f3" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_error_matrix_element</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a904dab52fdbc113cdf189fd9b7c4356e" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_error_vector</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a621060c1575cfd21feb65a8636bacf07" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_error_vector</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a63ce4220ad107f3197c4886835a0f638" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_residual</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1afabbeaad658ca706bf352cdc214f5c24" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_residual</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a12d32ccbb8c805ff5253ca2cfcf02c34" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_restart_factor</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a453fb7458cb95e7a00f7e015478d6a36" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_restart_factor</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a860146bf0eb3d033305ab70477d1a058" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_restart_factor_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa23d78c738f7c05258a65277a7ff2ba2" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a5058bce20583c2b8df9476c0e713ec94" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab742a684ae7c7abb4cbfd64d209964ef" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_threshold_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae14dbfc7d0f3a03b9e111dfc11b30f5e" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>diis_weights</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab0d080b6888f0915aa23ea142a68a1f2" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>ediis_linear_term</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0f0b2a94fc04e9bf1eda4e1cf547e957" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>ediis_quadratic_term</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4a0879a8c93a543d2011fc6e14628360" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>ediis_weights</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a57b7f1d5a457f1f365aad8bbff84e877" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>empty_block</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1adcb4d5fe06438d9f39283b4575997ad6" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>error_norm</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa8cb8267076a491496a1af442795c67a" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>error_norm</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1d0673dc9ec81952eb756196dcb48ac5" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>error_norm_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a9d43322a239ef06896de16364622e3ae" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>evaluate_rotation</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ac00963d321be12035de9aece9cc8f326" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>extrapolate_density</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ac666fc7e301c6ca725c5bbc3a9685ef4" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>extrapolate_fock</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af3e94cb59031195a7a836f8551c8096b" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>fixed_number_of_particles_per_block</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8ab0ea39136d92c157c45cba1b1f1ade" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>fixed_number_of_particles_per_block_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a178704c06de01f31c6cce3c5871fb4aa" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>fock_builder_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae7da2200faddeeb2027e2e1e8e60e864" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>form_rotation_matrices</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a02660ac2ea37b2db05e279c536e87934" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>frozen_occupations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab46784ee78994ad43742969d75f6574a" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>frozen_occupations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a40459414333a2fc9a9b4d960d2de3ce2" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>frozen_occupations_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a653c4a357d5f7856e4441dbd59d13890" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_density_matrix_block</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab21294662e1f2558b29e6cedc6300718" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_energy</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a43bdad00e9e22b7b40a377480857f8d4" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_fock_build</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a325f1538e5fc350c13e66838cef13b64" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_fock_matrix</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a88996ab0286cd3456d4b7d91656df0f4" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_fock_matrix_block</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4ffb5cd61bce928fd5a3d46657381df2" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_index</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a537ae55f63c1a96a15025c47a59d821b" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_lowest_energy_after_index</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aff327fdda23834c22fa61048dc12d1f5" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_orbital_block</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a2ab9acb5bc76179c1bd63bd8a95a98a4" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_orbital_occupation_block</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a419a31b06513b66c3d9836c24d9c561f" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_orbital_occupations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a31954e994daecb7c8ac07ef063a3508a" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_orbitals</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ac6c5ba9873cbd926433d1d7827eaedd4" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>get_solution</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6b492ca1e0f7d8f03a6e7465232895ce" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>initial_level_shift_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a38bdbc6d77676038e447b7493835e918" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>initialize_with_fock</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a582f71dacbb5aaf5e3ee62b35ab58e30" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>initialize_with_orbitals</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a5d11cda99d54a87a939d3ed5c229ac55" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>largest_index</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a54cc44e76575beed4ac7dc5045de5d59" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>level_shift_factor_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a338090149468d43e06cb5576415f3d88" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>level_shifting_step</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a268ea9ddb743a9ba6fdb46d71812c498" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>make_history_entry</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab93c09a73bed231b6a68618032a17669" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>matricise</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8a9c6d8e7d24d1b4a88caede12e82369" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>matricise</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4374bf535922770ef07a05a54f6173ef" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>matrix_dimension</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8c383e2d9a47abd3a4dc3cf9dbb68fc7" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_history_length</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4e2a07b396907c2eb74ae79f53fbf264" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_history_length</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8d62f812e103bcfef7a02c3d4590273c" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_history_length_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a3f0c11a985ab3f3a4ffc84823d7e94c6" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_iterations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ad19c77082867c330aee32b6f68df246b" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_iterations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4be19cea6627ee3e603759aeceeadb4d" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_iterations_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a852d54e2d9f35f325b20c7ad98653f2c" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_occupation_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae7c6e9c9fa478058d07407a143d95c96" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_rotation_step</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a5d9eb5bc89dd46aada6e25b7b869552c" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>minimal_error_sampling_algorithm_weights</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a84941dce0da3f27ddbef80fb77b75952" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>minimal_gradient_projection_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4a038bd03dd1d31bedd748405a03a38d" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>norm</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1468c6c6674a84debe50ff331d8968a9" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>number_of_blocks_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae1f81465b3f0b2ebb00a4be2ec4b386c" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>number_of_blocks_per_particle_type_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a33c12f52b363d055006ffc04fcbda753" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>number_of_fock_evaluations_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae995abee8e40b0f2c1538929ca18f7ce" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>number_of_particles_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8ee859e6748aecd2d56e67c3c6f64c6b" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>occupation_difference</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa745cbf9964b38c2e90929dd7022178c" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>occupied_orbitals</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae761774741a6f35ae6c89b0c73ca403f" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>occupied_threshold_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa8f17504ffd6e60ce91eb024b9aec425" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>optimal_damping_step</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af189ef00b9219e6a3c005df8da8a84ce" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>optimal_damping_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a5a4283cc873207a4c4a24f39ed771241" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>optimal_damping_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af36dfa775b8217c143e7b3f50e7c4465" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>optimal_damping_threshold_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ad0d124b2b71abde6b2eae30f5f77f653" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>orbital_gradient_vector</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6cd0d3b49acd94f9493b6864c7a60aa9" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>orbital_history_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae928e6fa4559fe7071c1b6ccc0fbb963" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>orbital_occupations_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a20ab6894d7a07d543ae6f4fa17ba1d88" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>particle_block_offset</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4900cac172f996458cf104e27be12b1c" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>precondition_search_direction</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a83718b48c4f1180324b256f013e11ce9" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>print_history</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1cd4b2212f3985975fd5c4898be2211f" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>reset_history</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1fd3382fcf50adaaaf5a4c2f7570af6e" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>rotate_orbitals</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0e46cd54304afa2a530f4ef787fb2335" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>run</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae9684d09e04bbc8123acd7f79cf6bbd5" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>run_optimal_damping</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a887856626f6da6faa815291512686819" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>SCFSolver</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8296026ef41ef7eb23c4bf1ef2d4cda7" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>steepest_descent_step</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ac36c550850e8abd38362539aa0f23dad" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>unoccupied_orbitals</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a924d6a3808cc3254bd2395bdc719f27a" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>update_occupations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a30550d11d4b92f250e62bdc08e4920eb" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>vectorise</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a9fb1d49a6bab8a9e2e508119897cb734" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>vectorise</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aef36f1506aef3398f939985c0fc47c91" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>verbosity</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a921d51f72394adda3b735d1715f78548" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>verbosity</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8721ce7f6613fcaaec88871af626a44d" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>verbosity_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

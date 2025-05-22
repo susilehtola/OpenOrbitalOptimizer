@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="namespaceOpenOrbitalOptimizer_1_1ConjugateGradients" kind="namespace" language="C++">
+    <compoundname>OpenOrbitalOptimizer::ConjugateGradients</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="cg__optimizer_8hpp_1ac3a6f16f781c902bbb9acba32717f382" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Col&lt; T &gt;</type>
+        <definition>arma::Col&lt; T &gt; OpenOrbitalOptimizer::ConjugateGradients::cg_optimize</definition>
+        <argsstring>(const arma::Col&lt; T &gt; &amp;x0, const std::function&lt; std::pair&lt; T, arma::Col&lt; T &gt; &gt;(arma::Col&lt; T &gt;)&gt; &amp;fx, T f_tol=1e-8, T df_tol=1e-6, T x_tol=100 *std::numeric_limits&lt; T &gt;::epsilon(), size_t max_iter=1000)</argsstring>
+        <name>cg_optimize</name>
+        <qualifiedname>OpenOrbitalOptimizer::ConjugateGradients::cg_optimize</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; T &gt; &amp;</type>
+          <declname>x0</declname>
+        </param>
+        <param>
+          <type>const std::function&lt; std::pair&lt; T, arma::Col&lt; T &gt; &gt;(arma::Col&lt; T &gt;)&gt; &amp;</type>
+          <declname>fx</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>f_tol</declname>
+          <defval>1e-8</defval>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>df_tol</declname>
+          <defval>1e-6</defval>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>x_tol</declname>
+          <defval>100 *std::numeric_limits&lt; T &gt;::epsilon()</defval>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>max_iter</declname>
+          <defval>1000</defval>
+        </param>
+        <briefdescription>
+<para>Conjugate gradient optimization. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>Current estimate for parameters</para>
+<para>Evaluate initial point</para>
+<para>Old search direction</para>
+<para>Update the gradients</para>
+<para>Form the search direction</para>
+<para>Use Polak-Ribière rule</para>
+<para>Reset bad search direction</para>
+<para>Convergence check</para>
+<para>Helper for line search</para>
+<para>Perform brute force line search</para>
+<para>Find the minimum value</para>
+<para>Now we have bracketed the minimum, use golden section search.</para>
+<para>Update the current point</para>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/cg_optimizer.hpp" line="17" column="15" bodyfile="openorbitaloptimizer/cg_optimizer.hpp" bodystart="17" bodyend="87"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/cg_optimizer.hpp" line="13" column="3"/>
+  </compounddef>
+</doxygen>

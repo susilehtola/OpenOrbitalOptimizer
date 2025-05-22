@@ -1,0 +1,388 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="namespaceOpenOrbitalOptimizer" kind="namespace" language="C++">
+    <compoundname>OpenOrbitalOptimizer</compoundname>
+    <innerclass refid="classOpenOrbitalOptimizer_1_1SCFSolver" prot="public">OpenOrbitalOptimizer::SCFSolver</innerclass>
+    <innernamespace refid="namespaceOpenOrbitalOptimizer_1_1ConjugateGradients">OpenOrbitalOptimizer::ConjugateGradients</innernamespace>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="scfsolver_8hpp_1ab1a46bbbf240814183c990eb4f381ef9" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Mat&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalBlock =  arma::Mat&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalBlock</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalBlock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A symmetry block of orbitals is defined by the corresponding N x N matrix of orbital coefficients </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="19" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1ad8356304bd9645dc06f25e08486b3209" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; OrbitalBlock&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Orbitals =  std::vector&lt;OrbitalBlock&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>Orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::Orbitals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The set of orbitals is defined by a vector of orbital blocks, corresponding to each symmetry block of each particle type </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="22" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1ad0212b3437feeacaf55b7f463834e5f6" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Mat&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalGradientBlock =  arma::Mat&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalGradientBlock</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalGradientBlock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A symmetry block of orbital gradients is defined by the corresponding N x N matrix </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="26" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1a227427533a51b30945d013540984285d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; OrbitalGradientBlock&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalGradients =  std::vector&lt;OrbitalGradientBlock&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalGradients</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalGradients</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The set of orbital gradients is defined by a vector of orbital blocks, corresponding to each symmetry block of each particle type </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="30" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1a019333ebb732bf83407f8b2b12853c17" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Mat&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock =  arma::Mat&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>DiagonalOrbitalHessianBlock</name>
+        <qualifiedname>OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A symmetry block of diagonal orbital Hessians is defined by the corresponding N x N matrix </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="34" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1aa9d44dd6675fe7fffd6664a9897d6a7a" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; DiagonalOrbitalHessianBlock&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::DiagonalOrbitalHessians =  std::vector&lt;DiagonalOrbitalHessianBlock&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>DiagonalOrbitalHessians</name>
+        <qualifiedname>OpenOrbitalOptimizer::DiagonalOrbitalHessians</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The set of diagonal orbital Hessians is defined by a vector of orbital blocks, corresponding to each symmetry block of each particle type </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="38" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1a3a0c14682872a34cddd9a87dff0c279e" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Col&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalBlockOccupations =  arma::Col&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalBlockOccupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalBlockOccupations</qualifiedname>
+        <briefdescription>
+<para>The occupations for each orbitals are floating point numbers. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="41" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1a212991319ba2606d94c5a9625f5dab75" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; OrbitalBlockOccupations&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalOccupations =  std::vector&lt;OrbitalBlockOccupations&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalOccupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalOccupations</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The occupations for the whole set of orbitals are again a vector </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="44" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1a7f58c7669e557c1579ae105091c049f7" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename Torb</type>
+          </param>
+          <param>
+            <type>typename Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::pair&lt; Orbitals&lt; Torb &gt;, OrbitalOccupations&lt; Tbase &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::DensityMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;,OrbitalOccupations&lt;Tbase&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>DensityMatrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::DensityMatrix</qualifiedname>
+        <briefdescription>
+<para>The pair of orbitals and occupations defines the density matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="47" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1a8ce47781df3621bd46f829cdfaeefca9" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; arma::Col&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalEnergies =  std::vector&lt;arma::Col&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalEnergies</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalEnergies</qualifiedname>
+        <briefdescription>
+<para>Orbital energies are stored as a vector of vectors. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="50" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1a6b41e65a070e128ced040cf53e108e5d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Mat&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::FockMatrixBlock =  arma::Mat&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>FockMatrixBlock</name>
+        <qualifiedname>OpenOrbitalOptimizer::FockMatrixBlock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A symmetry block in a Fock matrix is likewise defined by a N x N matrix </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="54" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1af3b246cbddd338d3ca5e675d8906169e" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; FockMatrixBlock&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::FockMatrix =  std::vector&lt;FockMatrixBlock&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>FockMatrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::FockMatrix</qualifiedname>
+        <briefdescription>
+<para>The whole set of Fock matrices is a vector of blocks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="56" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1aab82444d6d39af38e10f75ef4cf07924" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename Torb</type>
+          </param>
+          <param>
+            <type>typename Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::pair&lt; Orbitals&lt; Torb &gt;, OrbitalEnergies&lt; Tbase &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::DiagonalizedFockMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;,OrbitalEnergies&lt;Tbase&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>DiagonalizedFockMatrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::DiagonalizedFockMatrix</qualifiedname>
+        <briefdescription>
+<para>The return of Fock matrix diagonalization is. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="58" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1aa53c0be96b15a930c3b932ff060b3b63" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename Torb</type>
+          </param>
+          <param>
+            <type>typename Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::pair&lt; Tbase, FockMatrix&lt; Torb &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::FockBuilderReturn =  std::pair&lt;Tbase, FockMatrix&lt;Torb&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>FockBuilderReturn</name>
+        <qualifiedname>OpenOrbitalOptimizer::FockBuilderReturn</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The Fock matrix builder returns the energy and the Fock matrices for each orbital block </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="62" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1a773efc6f1b83c1b693f3c84021a8540d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename Torb</type>
+          </param>
+          <param>
+            <type>typename Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::function&lt; FockBuilderReturn&lt; Torb, Tbase &gt;(const DensityMatrix&lt; Torb, Tbase &gt; &amp;)&gt;</type>
+        <definition>using OpenOrbitalOptimizer::FockBuilder =  std::function&lt;FockBuilderReturn&lt;Torb, Tbase&gt;(const DensityMatrix&lt;Torb, Tbase&gt; &amp;)&gt;</definition>
+        <argsstring></argsstring>
+        <name>FockBuilder</name>
+        <qualifiedname>OpenOrbitalOptimizer::FockBuilder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The Fock builder takes in the orbitals and orbital occupations, and returns the energy and Fock matrices </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="65" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1a2c84d2590c434f7efe17cf8e9742bc4f" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename Torb</type>
+          </param>
+          <param>
+            <type>typename Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::tuple&lt; DensityMatrix&lt; Torb, Tbase &gt;, FockBuilderReturn&lt; Torb, Tbase &gt;, size_t &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalHistoryEntry =  std::tuple&lt;DensityMatrix&lt;Torb, Tbase&gt;, FockBuilderReturn&lt;Torb, Tbase&gt;, size_t&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalHistoryEntry</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalHistoryEntry</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The history of orbital optimization is defined by the orbitals and their occupations - together the density matrix - and the resulting energy and Fock matrix </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="70" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1aa838241af37ab93d2036264726ec3e1d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename Torb</type>
+          </param>
+          <param>
+            <type>typename Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; OrbitalHistoryEntry&lt; Torb, Tbase &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalHistory =  std::vector&lt;OrbitalHistoryEntry&lt;Torb, Tbase&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalHistory</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalHistory</qualifiedname>
+        <briefdescription>
+<para>The history is then a vector. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="72" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="scfsolver_8hpp_1acfc0fbdd5627666f55d4b72accdbc6fc" prot="public" static="no">
+        <type>std::tuple&lt; size_t, arma::uword, arma::uword &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalRotation =  std::tuple&lt;size_t, arma::uword, arma::uword&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalRotation</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalRotation</qualifiedname>
+        <briefdescription>
+<para>List of orbital rotation angles: block index and orbital indices. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="75" column="3" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="75" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/cg_optimizer.hpp" line="12" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="dir_3072c93c56dfbbd2cb4eee0809487533" kind="dir">
+    <compoundname>openorbitaloptimizer</compoundname>
+    <innerfile refid="cg__optimizer_8hpp">cg_optimizer.hpp</innerfile>
+    <innerfile refid="scfsolver_8hpp">scfsolver.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/"/>
+  </compounddef>
+</doxygen>

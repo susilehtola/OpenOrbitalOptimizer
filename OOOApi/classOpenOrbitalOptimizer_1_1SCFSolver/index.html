@@ -1,0 +1,1995 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Class OpenOrbitalOptimizer::SCFSolver - OpenOrbitalOptimizer Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#class-openorbitaloptimizerscfsolver" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenOrbitalOptimizer Docs" class="md-header__button md-logo" aria-label="OpenOrbitalOptimizer Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenOrbitalOptimizer Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Class OpenOrbitalOptimizer::SCFSolver
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenOrbitalOptimizer Docs" class="md-nav__button md-logo" aria-label="OpenOrbitalOptimizer Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenOrbitalOptimizer Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OpenOrbitalOptimizer Docs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How-To Guides
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Explanation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    OpenOrbitalOptimizer API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            OpenOrbitalOptimizer API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API documentation for OpenOrbitalOptimizer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../links/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Links
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Classes
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Classes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../annotated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Class List
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Class Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hierarchy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Class Hierarchy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../class_members/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Class Members
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../class_member_functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Class Member Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../class_member_variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Class Member Variables
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../class_member_typedefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Class Member Typedefs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../class_member_enums/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Class Member Enumerations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Namespaces
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            Namespaces
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespaces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Namespace List
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespace_members/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Namespace Members
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespace_member_functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Namespace Member Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespace_member_variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Namespace Member Variables
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespace_member_typedefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Namespace Member Typedefs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespace_member_enums/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Namespace Member Enumerations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Variables
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../macros/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Macros
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#public-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Functions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-functions-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Functions Documentation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Public Functions Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-scfsolver" class="md-nav__link">
+    <span class="md-ellipsis">
+      function SCFSolver
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-add_entry-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function add_entry [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-add_entry-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function add_entry [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-brute_force_search_for_lowest_configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      function brute_force_search_for_lowest_configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-callback_function" class="md-nav__link">
+    <span class="md-ellipsis">
+      function callback_function
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-compute_orbitals" class="md-nav__link">
+    <span class="md-ellipsis">
+      function compute_orbitals
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-converged" class="md-nav__link">
+    <span class="md-ellipsis">
+      function converged
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-convergence_threshold-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function convergence_threshold [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-convergence_threshold-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function convergence_threshold [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-density_matrix_difference" class="md-nav__link">
+    <span class="md-ellipsis">
+      function density_matrix_difference
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-determine_number_of_particles_by_aufbau" class="md-nav__link">
+    <span class="md-ellipsis">
+      function determine_number_of_particles_by_aufbau
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-diis_diagonal_damping-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function diis_diagonal_damping [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-diis_diagonal_damping-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function diis_diagonal_damping [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-diis_epsilon-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function diis_epsilon [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-diis_epsilon-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function diis_epsilon [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-diis_restart_factor-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function diis_restart_factor [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-diis_restart_factor-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function diis_restart_factor [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-diis_threshold-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function diis_threshold [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-diis_threshold-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function diis_threshold [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-error_norm-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function error_norm [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-error_norm-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function error_norm [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-fixed_number_of_particles_per_block" class="md-nav__link">
+    <span class="md-ellipsis">
+      function fixed_number_of_particles_per_block
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-frozen_occupations-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function frozen_occupations [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-frozen_occupations-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function frozen_occupations [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-get_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      function get_energy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-get_fock_build" class="md-nav__link">
+    <span class="md-ellipsis">
+      function get_fock_build
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-get_fock_matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      function get_fock_matrix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-get_orbital_occupations" class="md-nav__link">
+    <span class="md-ellipsis">
+      function get_orbital_occupations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-get_orbitals" class="md-nav__link">
+    <span class="md-ellipsis">
+      function get_orbitals
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-get_solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      function get_solution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-initialize_with_fock" class="md-nav__link">
+    <span class="md-ellipsis">
+      function initialize_with_fock
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-initialize_with_orbitals" class="md-nav__link">
+    <span class="md-ellipsis">
+      function initialize_with_orbitals
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-maximum_history_length-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function maximum_history_length [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-maximum_history_length-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function maximum_history_length [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-maximum_iterations-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function maximum_iterations [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-maximum_iterations-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function maximum_iterations [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-norm" class="md-nav__link">
+    <span class="md-ellipsis">
+      function norm
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-optimal_damping_threshold-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function optimal_damping_threshold [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-optimal_damping_threshold-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function optimal_damping_threshold [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-particle_block_offset" class="md-nav__link">
+    <span class="md-ellipsis">
+      function particle_block_offset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-print_history" class="md-nav__link">
+    <span class="md-ellipsis">
+      function print_history
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-reset_history" class="md-nav__link">
+    <span class="md-ellipsis">
+      function reset_history
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      function run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-run_optimal_damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      function run_optimal_damping
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-update_occupations" class="md-nav__link">
+    <span class="md-ellipsis">
+      function update_occupations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-verbosity-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      function verbosity [1/2]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-verbosity-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      function verbosity [2/2]
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="class-openorbitaloptimizerscfsolver">Class OpenOrbitalOptimizer::SCFSolver</h1>
+<p><strong>template &lt;typename Torb, typename Tbase&gt;</strong></p>
+<p><a href="../annotated/"><strong>ClassList</strong></a> <strong>&gt;</strong> <a href="../namespaceOpenOrbitalOptimizer/"><strong>OpenOrbitalOptimizer</strong></a> <strong>&gt;</strong> <a href="./"><strong>SCFSolver</strong></a></p>
+<p><em>SCF solver class.</em> </p>
+<ul>
+<li><code>#include &lt;scfsolver.hpp&gt;</code></li>
+</ul>
+<h2 id="public-functions">Public Functions</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"></td>
+<td style="text-align: left;"><a href="#function-scfsolver"><strong>SCFSolver</strong></a> (const arma::uvec &amp; number_of_blocks_per_particle_type, const arma::Col&lt; Tbase &gt; &amp; maximum_occupation, const arma::Col&lt; Tbase &gt; &amp; number_of_particles, const FockBuilder&lt; Torb, Tbase &gt; &amp; fock_builder, const std::vector&lt; std::string &gt; &amp; block_descriptions) <br><em>Constructor.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-add_entry-12"><strong>add_entry</strong></a> (const DensityMatrix&lt; Torb, Tbase &gt; &amp; density) <br><em>Add entry to history, return value is True if energy was lowered.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-add_entry-22"><strong>add_entry</strong></a> (const DensityMatrix&lt; Torb, Tbase &gt; &amp; density, const FockBuilderReturn&lt; Torb, Tbase &gt; &amp; fock) <br><em>Add entry to history, return value is True if energy was lowered.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-brute_force_search_for_lowest_configuration"><strong>brute_force_search_for_lowest_configuration</strong></a> () <br><em>Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-callback_function"><strong>callback_function</strong></a> (std::function&lt; void(const std::map&lt; std::string, std::any &gt; &amp;)&gt; callback_function=nullptr) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">DiagonalizedFockMatrix&lt; Torb, Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-compute_orbitals"><strong>compute_orbitals</strong></a> (const FockMatrix&lt; Torb &gt; &amp; fock) const<br><em>Computes orbitals and orbital energies by diagonalizing the Fock matrix.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-converged"><strong>converged</strong></a> () const<br><em>Check if we are converged.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-convergence_threshold-12"><strong>convergence_threshold</strong></a> () const<br><em>Get convergence threshold.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-convergence_threshold-22"><strong>convergence_threshold</strong></a> (Tbase convergence_threshold) <br><em>Set verbosity.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-density_matrix_difference"><strong>density_matrix_difference</strong></a> (size_t ihist, size_t jhist) <br><em>Density matrix difference norm.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">arma::Col&lt; Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-determine_number_of_particles_by_aufbau"><strong>determine_number_of_particles_by_aufbau</strong></a> (const OrbitalEnergies&lt; Tbase &gt; &amp; orbital_energies) const<br><em>Determine number of particles in each block.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-diis_diagonal_damping-12"><strong>diis_diagonal_damping</strong></a> () const<br><em>Damping factor for DIIS diagonal.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-diis_diagonal_damping-22"><strong>diis_diagonal_damping</strong></a> (Tbase eps) <br><em>Damping factor for DIIS diagonal.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-diis_epsilon-12"><strong>diis_epsilon</strong></a> () const<br><em>When to start mixing in DIIS.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-diis_epsilon-22"><strong>diis_epsilon</strong></a> (Tbase eps) <br><em>When to start mixing in DIIS.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-diis_restart_factor-12"><strong>diis_restart_factor</strong></a> () const<br><em>DIIS restart criterion.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-diis_restart_factor-22"><strong>diis_restart_factor</strong></a> (Tbase eps) <br><em>DIIS restart criterion.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-diis_threshold-12"><strong>diis_threshold</strong></a> () const<br><em>When to switch over to DIIS.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-diis_threshold-22"><strong>diis_threshold</strong></a> (Tbase eps) <br><em>When to switch over to DIIS.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">std::string</td>
+<td style="text-align: left;"><a href="#function-error_norm-12"><strong>error_norm</strong></a> () const<br><em>Get the used error norm.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-error_norm-22"><strong>error_norm</strong></a> (const std::string &amp; error_norm) <br><em>Set the used error norm.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-fixed_number_of_particles_per_block"><strong>fixed_number_of_particles_per_block</strong></a> (const arma::Col&lt; Tbase &gt; &amp; number_of_particles_per_block) <br><em>Fix the number of occupied orbitals per block.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-frozen_occupations-12"><strong>frozen_occupations</strong></a> () const<br><em>Get frozen occupations.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-frozen_occupations-22"><strong>frozen_occupations</strong></a> (bool frozen) <br><em>Set frozen occupations.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-get_energy"><strong>get_energy</strong></a> (size_t ihist=0) const<br><em>Get the energy for the n:th entry.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">FockBuilderReturn&lt; Torb, Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-get_fock_build"><strong>get_fock_build</strong></a> (size_t ihist=0) const<br><em>Get the Fock matrix builder return.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">FockMatrix&lt; Torb &gt;</td>
+<td style="text-align: left;"><a href="#function-get_fock_matrix"><strong>get_fock_matrix</strong></a> (size_t ihist=0) const<br><em>Get the Fock matrix for the ihist:th entry.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">OrbitalOccupations&lt; Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-get_orbital_occupations"><strong>get_orbital_occupations</strong></a> (size_t ihist=0) const<br><em>Get the orbital occupations.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Orbitals&lt; Torb &gt;</td>
+<td style="text-align: left;"><a href="#function-get_orbitals"><strong>get_orbitals</strong></a> (size_t ihist=0) const<br><em>Get the orbitals.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">DensityMatrix&lt; Torb, Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-get_solution"><strong>get_solution</strong></a> (size_t ihist=0) const<br><em>Get the SCF solution.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-initialize_with_fock"><strong>initialize_with_fock</strong></a> (const FockMatrix&lt; Torb &gt; &amp; fock_guess) <br><em>Initialize the solver with a guess Fock matrix.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-initialize_with_orbitals"><strong>initialize_with_orbitals</strong></a> (const Orbitals&lt; Torb &gt; &amp; orbitals, const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations) <br><em>Initialize with precomputed orbitals and occupations.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int</td>
+<td style="text-align: left;"><a href="#function-maximum_history_length-12"><strong>maximum_history_length</strong></a> () const<br><em>Get maximum_history_length.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-maximum_history_length-22"><strong>maximum_history_length</strong></a> (int maximum_history_length) <br><em>Set maximum_history_length.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-maximum_iterations-12"><strong>maximum_iterations</strong></a> () const<br><em>Get the maximum number of iterations.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-maximum_iterations-22"><strong>maximum_iterations</strong></a> (size_t maxit) <br><em>Set the maximum number of iterations.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-norm"><strong>norm</strong></a> (const arma::Mat&lt; Tbase &gt; &amp; mat, std::string norm="") const<br><em>Evaluate the norm.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-optimal_damping_threshold-12"><strong>optimal_damping_threshold</strong></a> () const<br><em>Use optimal damping when max error bigger than this.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-optimal_damping_threshold-22"><strong>optimal_damping_threshold</strong></a> (Tbase eps) <br><em>Use optimal damping when max error bigger than this.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">arma::uword</td>
+<td style="text-align: left;"><a href="#function-particle_block_offset"><strong>particle_block_offset</strong></a> (size_t iparticle) const<br><em>Determines the offset for the blocks of the iparticle:th particle.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-print_history"><strong>print_history</strong></a> () const<br><em>Print the DIIS history.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-reset_history"><strong>reset_history</strong></a> () <br><em>Reset the DIIS history.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-run"><strong>run</strong></a> () <br><em>Run the SCF.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-run_optimal_damping"><strong>run_optimal_damping</strong></a> () <br><em>Run optimal damping.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">OrbitalOccupations&lt; Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-update_occupations"><strong>update_occupations</strong></a> (const OrbitalEnergies&lt; Tbase &gt; &amp; orbital_energies) const<br><em>Determines occupations based on the current orbital energies.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int</td>
+<td style="text-align: left;"><a href="#function-verbosity-12"><strong>verbosity</strong></a> () const<br><em>Get verbosity.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-verbosity-22"><strong>verbosity</strong></a> (int verbosity) <br><em>Set verbosity.</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="public-functions-documentation">Public Functions Documentation</h2>
+<h3 id="function-scfsolver">function SCFSolver</h3>
+<p><em>Constructor.</em> </p>
+<pre><code class="language-C++">inline OpenOrbitalOptimizer::SCFSolver::SCFSolver (
+    const arma::uvec &amp; number_of_blocks_per_particle_type,
+    const arma::Col&lt; Tbase &gt; &amp; maximum_occupation,
+    const arma::Col&lt; Tbase &gt; &amp; number_of_particles,
+    const FockBuilder&lt; Torb, Tbase &gt; &amp; fock_builder,
+    const std::vector&lt; std::string &gt; &amp; block_descriptions
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-add_entry-12">function add_entry [1/2]</h3>
+<p><em>Add entry to history, return value is True if energy was lowered.</em> </p>
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::add_entry (
+    const DensityMatrix&lt; Torb, Tbase &gt; &amp; density
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-add_entry-22">function add_entry [2/2]</h3>
+<p><em>Add entry to history, return value is True if energy was lowered.</em> </p>
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::add_entry (
+    const DensityMatrix&lt; Torb, Tbase &gt; &amp; density,
+    const FockBuilderReturn&lt; Torb, Tbase &gt; &amp; fock
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-brute_force_search_for_lowest_configuration">function brute_force_search_for_lowest_configuration</h3>
+<p><em>Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::brute_force_search_for_lowest_configuration () 
+</code></pre>
+<hr>
+
+<h3 id="function-callback_function">function callback_function</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::callback_function (
+    std::function&lt; void(const std::map&lt; std::string, std::any &gt; &amp;)&gt; callback_function=nullptr
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-compute_orbitals">function compute_orbitals</h3>
+<p><em>Computes orbitals and orbital energies by diagonalizing the Fock matrix.</em> </p>
+<pre><code class="language-C++">inline DiagonalizedFockMatrix&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver::compute_orbitals (
+    const FockMatrix&lt; Torb &gt; &amp; fock
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-converged">function converged</h3>
+<p><em>Check if we are converged.</em> </p>
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::converged () const
+</code></pre>
+<hr>
+
+<h3 id="function-convergence_threshold-12">function convergence_threshold [1/2]</h3>
+<p><em>Get convergence threshold.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::convergence_threshold () const
+</code></pre>
+<hr>
+
+<h3 id="function-convergence_threshold-22">function convergence_threshold [2/2]</h3>
+<p><em>Set verbosity.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::convergence_threshold (
+    Tbase convergence_threshold
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-density_matrix_difference">function density_matrix_difference</h3>
+<p><em>Density matrix difference norm.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::density_matrix_difference (
+    size_t ihist,
+    size_t jhist
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-determine_number_of_particles_by_aufbau">function determine_number_of_particles_by_aufbau</h3>
+<p><em>Determine number of particles in each block.</em> </p>
+<pre><code class="language-C++">inline arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver::determine_number_of_particles_by_aufbau (
+    const OrbitalEnergies&lt; Tbase &gt; &amp; orbital_energies
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-diis_diagonal_damping-12">function diis_diagonal_damping [1/2]</h3>
+<p><em>Damping factor for DIIS diagonal.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_diagonal_damping () const
+</code></pre>
+<hr>
+
+<h3 id="function-diis_diagonal_damping-22">function diis_diagonal_damping [2/2]</h3>
+<p><em>Damping factor for DIIS diagonal.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::diis_diagonal_damping (
+    Tbase eps
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-diis_epsilon-12">function diis_epsilon [1/2]</h3>
+<p><em>When to start mixing in DIIS.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_epsilon () const
+</code></pre>
+<hr>
+
+<h3 id="function-diis_epsilon-22">function diis_epsilon [2/2]</h3>
+<p><em>When to start mixing in DIIS.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::diis_epsilon (
+    Tbase eps
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-diis_restart_factor-12">function diis_restart_factor [1/2]</h3>
+<p><em>DIIS restart criterion.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_restart_factor () const
+</code></pre>
+<hr>
+
+<h3 id="function-diis_restart_factor-22">function diis_restart_factor [2/2]</h3>
+<p><em>DIIS restart criterion.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::diis_restart_factor (
+    Tbase eps
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-diis_threshold-12">function diis_threshold [1/2]</h3>
+<p><em>When to switch over to DIIS.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_threshold () const
+</code></pre>
+<hr>
+
+<h3 id="function-diis_threshold-22">function diis_threshold [2/2]</h3>
+<p><em>When to switch over to DIIS.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::diis_threshold (
+    Tbase eps
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-error_norm-12">function error_norm [1/2]</h3>
+<p><em>Get the used error norm.</em> </p>
+<pre><code class="language-C++">inline std::string OpenOrbitalOptimizer::SCFSolver::error_norm () const
+</code></pre>
+<hr>
+
+<h3 id="function-error_norm-22">function error_norm [2/2]</h3>
+<p><em>Set the used error norm.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::error_norm (
+    const std::string &amp; error_norm
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-fixed_number_of_particles_per_block">function fixed_number_of_particles_per_block</h3>
+<p><em>Fix the number of occupied orbitals per block.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::fixed_number_of_particles_per_block (
+    const arma::Col&lt; Tbase &gt; &amp; number_of_particles_per_block
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-frozen_occupations-12">function frozen_occupations [1/2]</h3>
+<p><em>Get frozen occupations.</em> </p>
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::frozen_occupations () const
+</code></pre>
+<hr>
+
+<h3 id="function-frozen_occupations-22">function frozen_occupations [2/2]</h3>
+<p><em>Set frozen occupations.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::frozen_occupations (
+    bool frozen
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-get_energy">function get_energy</h3>
+<p><em>Get the energy for the n:th entry.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::get_energy (
+    size_t ihist=0
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-get_fock_build">function get_fock_build</h3>
+<p><em>Get the Fock matrix builder return.</em> </p>
+<pre><code class="language-C++">inline FockBuilderReturn&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver::get_fock_build (
+    size_t ihist=0
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-get_fock_matrix">function get_fock_matrix</h3>
+<p><em>Get the Fock matrix for the ihist:th entry.</em> </p>
+<pre><code class="language-C++">inline FockMatrix&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver::get_fock_matrix (
+    size_t ihist=0
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-get_orbital_occupations">function get_orbital_occupations</h3>
+<p><em>Get the orbital occupations.</em> </p>
+<pre><code class="language-C++">inline OrbitalOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver::get_orbital_occupations (
+    size_t ihist=0
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-get_orbitals">function get_orbitals</h3>
+<p><em>Get the orbitals.</em> </p>
+<pre><code class="language-C++">inline Orbitals&lt; Torb &gt; OpenOrbitalOptimizer::SCFSolver::get_orbitals (
+    size_t ihist=0
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-get_solution">function get_solution</h3>
+<p><em>Get the SCF solution.</em> </p>
+<pre><code class="language-C++">inline DensityMatrix&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver::get_solution (
+    size_t ihist=0
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-initialize_with_fock">function initialize_with_fock</h3>
+<p><em>Initialize the solver with a guess Fock matrix.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::initialize_with_fock (
+    const FockMatrix&lt; Torb &gt; &amp; fock_guess
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-initialize_with_orbitals">function initialize_with_orbitals</h3>
+<p><em>Initialize with precomputed orbitals and occupations.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::initialize_with_orbitals (
+    const Orbitals&lt; Torb &gt; &amp; orbitals,
+    const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-maximum_history_length-12">function maximum_history_length [1/2]</h3>
+<p><em>Get maximum_history_length.</em> </p>
+<pre><code class="language-C++">inline int OpenOrbitalOptimizer::SCFSolver::maximum_history_length () const
+</code></pre>
+<hr>
+
+<h3 id="function-maximum_history_length-22">function maximum_history_length [2/2]</h3>
+<p><em>Set maximum_history_length.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::maximum_history_length (
+    int maximum_history_length
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-maximum_iterations-12">function maximum_iterations [1/2]</h3>
+<p><em>Get the maximum number of iterations.</em> </p>
+<pre><code class="language-C++">inline size_t OpenOrbitalOptimizer::SCFSolver::maximum_iterations () const
+</code></pre>
+<hr>
+
+<h3 id="function-maximum_iterations-22">function maximum_iterations [2/2]</h3>
+<p><em>Set the maximum number of iterations.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::maximum_iterations (
+    size_t maxit
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-norm">function norm</h3>
+<p><em>Evaluate the norm.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
+    const arma::Mat&lt; Tbase &gt; &amp; mat,
+    std::string norm=&quot;&quot;
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-optimal_damping_threshold-12">function optimal_damping_threshold [1/2]</h3>
+<p><em>Use optimal damping when max error bigger than this.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::optimal_damping_threshold () const
+</code></pre>
+<hr>
+
+<h3 id="function-optimal_damping_threshold-22">function optimal_damping_threshold [2/2]</h3>
+<p><em>Use optimal damping when max error bigger than this.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::optimal_damping_threshold (
+    Tbase eps
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-particle_block_offset">function particle_block_offset</h3>
+<p><em>Determines the offset for the blocks of the iparticle:th particle.</em> </p>
+<pre><code class="language-C++">inline arma::uword OpenOrbitalOptimizer::SCFSolver::particle_block_offset (
+    size_t iparticle
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-print_history">function print_history</h3>
+<p><em>Print the DIIS history.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::print_history () const
+</code></pre>
+<hr>
+
+<h3 id="function-reset_history">function reset_history</h3>
+<p><em>Reset the DIIS history.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::reset_history () 
+</code></pre>
+<hr>
+
+<h3 id="function-run">function run</h3>
+<p><em>Run the SCF.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::run () 
+</code></pre>
+<hr>
+
+<h3 id="function-run_optimal_damping">function run_optimal_damping</h3>
+<p><em>Run optimal damping.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::run_optimal_damping () 
+</code></pre>
+<hr>
+
+<h3 id="function-update_occupations">function update_occupations</h3>
+<p><em>Determines occupations based on the current orbital energies.</em> </p>
+<pre><code class="language-C++">inline OrbitalOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver::update_occupations (
+    const OrbitalEnergies&lt; Tbase &gt; &amp; orbital_energies
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-verbosity-12">function verbosity [1/2]</h3>
+<p><em>Get verbosity.</em> </p>
+<pre><code class="language-C++">inline int OpenOrbitalOptimizer::SCFSolver::verbosity () const
+</code></pre>
+<hr>
+
+<h3 id="function-verbosity-22">function verbosity [2/2]</h3>
+<p><em>Set verbosity.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::verbosity (
+    int verbosity
+) 
+</code></pre>
+<hr>
+
+<hr />
+<p>The documentation for this class was generated from the following file <code>openorbitaloptimizer/scfsolver.hpp</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
