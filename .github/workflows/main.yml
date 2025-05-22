@@ -71,12 +71,13 @@ jobs:
         channels:
           - conda-forge
         dependencies:
-          - cmake >=3.12
+          - cmake
           - ninja
           - cxx-compiler
           - armadillo
           - libxc-c
           - nlohmann_json
+          - integratorxx
           - catch2  # for IntXX
           - libblas * *netlib  # netlib compensates for faulty conda windows config
           - liblapack * *netlib
