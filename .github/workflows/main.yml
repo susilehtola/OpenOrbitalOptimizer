@@ -184,6 +184,8 @@ jobs:
 
   release_docs:
     needs: [build-test-repo]
+    permissions:
+      contents: write
     defaults:
       run:
         shell: bash -l {0}
