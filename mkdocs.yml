@@ -16,10 +16,6 @@ plugins:
 
 nav:
   - OpenOrbitalOptimizer Docs: index.md
-  - tutorials.md
-  - How-To Guides: how-to-guides.md
-  - reference.md
-  - explanation.md
   - OpenOrbitalOptimizer API:
       - "OOOApi/index.md"
       - "Links": "OOOApi/links.md"
