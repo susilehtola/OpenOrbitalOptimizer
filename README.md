@@ -58,13 +58,23 @@ single-precision or double-precision complex-orbitals.
 
 
 A minimal example of using the library is as follows:
-```
+```c++
 OpenOrbitalOptimizer::SCFSolver<double, double> scfsolver(number_of_blocks_per_particle_type, maximum_occupations, number_of_particles, fock_builder, block_descriptions);
-scfsolver.convergence_threshold(maximum_diis_error); // set convergence threshold for orbital gradient
-scfsolver.callback_function(callback_function); // set a custom callback function, used to customize the printout of the library
-scfsolver.initialize_with_fock_matrix(guess_fock_matrix); // initializes the orbitals and occupations by diagonalizing the given guess for the Fock matrix
-// scfsolver.initialize_with_orbitals(guess_orbitals, guess_orbital_occupations); // alternatively, one can also initialize the solver by specifying the orbitals and occupations directly
-scfsolver.run(); // runs the solver
+
+scfsolver.convergence_threshold(maximum_diis_error);
+// set convergence threshold for orbital gradient
+
+scfsolver.callback_function(callback_function);
+// set a custom callback function, used to customize the printout of the library
+
+scfsolver.initialize_with_fock_matrix(guess_fock_matrix);
+// initializes the orbitals and occupations by diagonalizing the given guess for the Fock matrix
+
+// scfsolver.initialize_with_orbitals(guess_orbitals, guess_orbital_occupations);
+// alternatively, one can also initialize the solver by specifying the orbitals and occupations directly
+
+scfsolver.run();
+// runs the solver
 ```
 
 The arguments to the constructor are as follows
