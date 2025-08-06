@@ -89,6 +89,8 @@ namespace OpenOrbitalOptimizer {
     std::vector<std::string> block_descriptions_;
     /// Callback function
     std::function<void(const std::map<std::string,std::any> & data)> callback_function_;
+    /// Callback function to allow calling program to judge convergence (trumps convergence_threshold_)
+    std::function<bool(const std::map<std::string,std::any> & data)> callback_convergence_function_;
 
     /** (Optional) fixed number of particles in each symmetry, affects
         the way occupations are assigned in Aufbau. These are used if
@@ -1705,7 +1707,7 @@ namespace OpenOrbitalOptimizer {
       return convergence_threshold_;
     }
 
-    /// Set verbosity
+    /// Set convergence threshold (unused if callback_convergence_function set)
     void convergence_threshold(Tbase convergence_threshold) {
       convergence_threshold_ = convergence_threshold;
     }
@@ -2002,7 +2004,17 @@ namespace OpenOrbitalOptimizer {
 
     /// Check if we are converged
     bool converged() const {
-      return norm(diis_error_vector(0)) <= convergence_threshold_;
+        if(callback_convergence_function_) {
+
+            // Data to pass to callback function
+            std::map<std::string, std::any> callback_data;
+            callback_data["dE"] = get_energy() - old_energy_;
+            callback_data["diis_error"] = norm(diis_error_vector(0));
+
+            return callback_convergence_function_(callback_data);
+        } else {
+            return norm(diis_error_vector(0)) <= convergence_threshold_;
+        }
     }
 
     /// Run the SCF
@@ -2426,6 +2438,9 @@ namespace OpenOrbitalOptimizer {
 
     void callback_function(std::function<void(const std::map<std::string,std::any> &)> callback_function = nullptr) {
       callback_function_ = callback_function;
+    }
+    void callback_convergence_function(std::function<bool(const std::map<std::string,std::any> &)> callback_convergence_function = nullptr) {
+      callback_convergence_function_ = callback_convergence_function;
     }
   };
 }
