@@ -12,7 +12,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
     
     
       
@@ -20,7 +20,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
       
       
 
@@ -891,6 +891,7 @@ namespace OpenOrbitalOptimizer {
     FockBuilder&lt;Torb, Tbase&gt; fock_builder_;
     std::vector&lt;std::string&gt; block_descriptions_;
     std::function&lt;void(const std::map&lt;std::string,std::any&gt; &amp; data)&gt; callback_function_;
+    std::function&lt;bool(const std::map&lt;std::string,std::any&gt; &amp; data)&gt; callback_convergence_function_;
 
     arma::Col&lt;Tbase&gt; fixed_number_of_particles_per_block_;
     bool frozen_occupations_;
@@ -921,6 +922,8 @@ namespace OpenOrbitalOptimizer {
     Tbase occupied_threshold_ = 1e-6;
     Tbase initial_level_shift_ = 1.0;
     Tbase level_shift_factor_ = 2.0;
+
+    Tbase old_energy_ = 0.0;
 
     /* Internal functions */
     bool empty_block(size_t iblock) const {
@@ -2687,11 +2690,21 @@ namespace OpenOrbitalOptimizer {
     }
 
     bool converged() const {
-      return norm(diis_error_vector(0)) &lt;= convergence_threshold_;
+        if(callback_convergence_function_) {
+
+            // Data to pass to callback function
+            std::map&lt;std::string, std::any&gt; callback_data;
+            callback_data[&quot;dE&quot;] = get_energy() - old_energy_;
+            callback_data[&quot;diis_error&quot;] = norm(diis_error_vector(0));
+
+            return callback_convergence_function_(callback_data);
+        } else {
+            return norm(diis_error_vector(0)) &lt;= convergence_threshold_;
+        }
     }
 
     void run() {
-      Tbase old_energy = 0.0;
+      old_energy_ = 0.0;
       // Number of consecutive steps that the procedure failed to decrease the energy
       int failed_iterations = 0;
       size_t noda_steps = 0;
@@ -2699,14 +2712,14 @@ namespace OpenOrbitalOptimizer {
         // Compute DIIS error
         Tbase diis_error = norm(diis_error_vector(0));
         Tbase diis_max_error = arma::norm(diis_error_vector(0),&quot;inf&quot;);
-        Tbase dE = get_energy() - old_energy;
+        Tbase dE = get_energy() - old_energy_;
 
         // Data to pass to callback function
         std::map&lt;std::string, std::any&gt; callback_data;
         callback_data[&quot;iter&quot;] = iteration;
         callback_data[&quot;nfock&quot;] = number_of_fock_evaluations_;
         callback_data[&quot;E&quot;] = get_energy();
-        callback_data[&quot;dE&quot;] = get_energy() - old_energy;
+        callback_data[&quot;dE&quot;] = get_energy() - old_energy_;
         callback_data[&quot;diis_error&quot;] = diis_error;
         callback_data[&quot;diis_max_error&quot;] = diis_max_error;
 
@@ -2756,7 +2769,7 @@ namespace OpenOrbitalOptimizer {
         // Do ODA if necessary
         if(noda_steps&gt;0) {
           noda_steps--;
-          old_energy = get_energy();
+          old_energy_ = get_energy();
           if(verbosity_&gt;=5) {
             if(diis_max_error &gt;= optimal_damping_threshold_)
               printf(&quot;Optimal damping step due to large DIIS max error %e\n&quot;, diis_max_error);
@@ -2798,7 +2811,7 @@ namespace OpenOrbitalOptimizer {
             callback_function_(callback_data);
 
           // Perform extrapolation.
-          old_energy = get_energy();
+          old_energy_ = get_energy();
           if(!attempt_extrapolation(weights)) {
             if(verbosity_&gt;=10) printf(&quot;Warning: did not go down in energy!\n&quot;);
             // Increment number of consecutive failed iterations
@@ -2814,12 +2827,12 @@ namespace OpenOrbitalOptimizer {
     }
 
     void run_optimal_damping() {
-      Tbase old_energy = 0.0;
+      old_energy_ = 0.0;
       for(size_t iteration=1; iteration &lt;= maximum_iterations_; iteration++) {
         // Compute DIIS error
         Tbase diis_error = norm(diis_error_vector(0));
         Tbase diis_max_error = arma::norm(diis_error_vector(0),&quot;inf&quot;);
-        Tbase dE = get_energy() - old_energy;
+        Tbase dE = get_energy() - old_energy_;
 
         if(verbosity_&gt;=5) {
           printf(&quot;\n\n&quot;);
@@ -2833,7 +2846,7 @@ namespace OpenOrbitalOptimizer {
         callback_data[&quot;iter&quot;] = iteration;
         callback_data[&quot;nfock&quot;] = number_of_fock_evaluations_;
         callback_data[&quot;E&quot;] = get_energy();
-        callback_data[&quot;dE&quot;] = get_energy() - old_energy;
+        callback_data[&quot;dE&quot;] = get_energy() - old_energy_;
         callback_data[&quot;diis_error&quot;] = diis_error;
         callback_data[&quot;diis_max_error&quot;] = diis_max_error;
         callback_data[&quot;step&quot;] = std::string(&quot;ODA&quot;);
@@ -2853,7 +2866,7 @@ namespace OpenOrbitalOptimizer {
         if(callback_function_)
           callback_function_(callback_data);
 
-        old_energy = get_energy();
+        old_energy_ = get_energy();
         if(not optimal_damping_step())
           throw std::logic_error(&quot;Could not find descent step!\n&quot;);
 
@@ -3104,6 +3117,10 @@ namespace OpenOrbitalOptimizer {
     void callback_function(std::function&lt;void(const std::map&lt;std::string,std::any&gt; &amp;)&gt; callback_function = nullptr) {
       callback_function_ = callback_function;
     }
+
+    void callback_convergence_function(std::function&lt;bool(const std::map&lt;std::string,std::any&gt; &amp;)&gt; callback_convergence_function = nullptr) {
+      callback_convergence_function_ = callback_convergence_function;
+    }
   };
 }
 </code></pre>
@@ -3158,7 +3175,7 @@ namespace OpenOrbitalOptimizer {
       <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.56ea9cef.min.js"></script>
+      <script src="../../assets/javascripts/bundle.50899def.min.js"></script>
       
     
   </body>

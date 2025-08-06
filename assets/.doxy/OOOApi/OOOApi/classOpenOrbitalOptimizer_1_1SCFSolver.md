@@ -58,11 +58,12 @@ _SCF solver class._
 |  bool | [**add\_entry**](#function-add_entry-12) (const DensityMatrix&lt; Torb, Tbase &gt; & density) <br>_Add entry to history, return value is True if energy was lowered._  |
 |  bool | [**add\_entry**](#function-add_entry-22) (const DensityMatrix&lt; Torb, Tbase &gt; & density, const FockBuilderReturn&lt; Torb, Tbase &gt; & fock) <br>_Add entry to history, return value is True if energy was lowered._  |
 |  void | [**brute\_force\_search\_for\_lowest\_configuration**](#function-brute_force_search_for_lowest_configuration) () <br>_Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search._  |
+|  void | [**callback\_convergence\_function**](#function-callback_convergence_function) (std::function&lt; bool(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_convergence\_function=nullptr) <br> |
 |  void | [**callback\_function**](#function-callback_function) (std::function&lt; void(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_function=nullptr) <br> |
 |  DiagonalizedFockMatrix&lt; Torb, Tbase &gt; | [**compute\_orbitals**](#function-compute_orbitals) (const FockMatrix&lt; Torb &gt; & fock) const<br>_Computes orbitals and orbital energies by diagonalizing the Fock matrix._  |
 |  bool | [**converged**](#function-converged) () const<br>_Check if we are converged._  |
 |  Tbase | [**convergence\_threshold**](#function-convergence_threshold-12) () const<br>_Get convergence threshold._  |
-|  void | [**convergence\_threshold**](#function-convergence_threshold-22) (Tbase convergence\_threshold) <br>_Set verbosity._  |
+|  void | [**convergence\_threshold**](#function-convergence_threshold-22) (Tbase convergence\_threshold) <br>_Set convergence threshold (unused if callback\_convergence\_function set)_  |
 |  Tbase | [**density\_matrix\_difference**](#function-density_matrix_difference) (size\_t ihist, size\_t jhist) <br>_Density matrix difference norm._  |
 |  arma::Col&lt; Tbase &gt; | [**determine\_number\_of\_particles\_by\_aufbau**](#function-determine_number_of_particles_by_aufbau) (const OrbitalEnergies&lt; Tbase &gt; & orbital\_energies) const<br>_Determine number of particles in each block._  |
 |  Tbase | [**diis\_diagonal\_damping**](#function-diis_diagonal_damping-12) () const<br>_Damping factor for DIIS diagonal._  |
@@ -201,6 +202,21 @@ inline void OpenOrbitalOptimizer::SCFSolver::brute_force_search_for_lowest_confi
 
 
 
+### function callback\_convergence\_function 
+
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::callback_convergence_function (
+    std::function< bool(const std::map< std::string, std::any > &)> callback_convergence_function=nullptr
+) 
+```
+
+
+
+
+<hr>
+
+
+
 ### function callback\_function 
 
 ```C++
@@ -262,7 +278,7 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::convergence_threshold () const
 
 ### function convergence\_threshold [2/2]
 
-_Set verbosity._ 
+_Set convergence threshold (unused if callback\_convergence\_function set)_ 
 ```C++
 inline void OpenOrbitalOptimizer::SCFSolver::convergence_threshold (
     Tbase convergence_threshold

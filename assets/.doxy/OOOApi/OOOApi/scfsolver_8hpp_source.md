@@ -60,6 +60,7 @@ namespace OpenOrbitalOptimizer {
     FockBuilder<Torb, Tbase> fock_builder_;
     std::vector<std::string> block_descriptions_;
     std::function<void(const std::map<std::string,std::any> & data)> callback_function_;
+    std::function<bool(const std::map<std::string,std::any> & data)> callback_convergence_function_;
 
     arma::Col<Tbase> fixed_number_of_particles_per_block_;
     bool frozen_occupations_;
@@ -90,6 +91,8 @@ namespace OpenOrbitalOptimizer {
     Tbase occupied_threshold_ = 1e-6;
     Tbase initial_level_shift_ = 1.0;
     Tbase level_shift_factor_ = 2.0;
+
+    Tbase old_energy_ = 0.0;
 
     /* Internal functions */
     bool empty_block(size_t iblock) const {
@@ -1856,11 +1859,21 @@ namespace OpenOrbitalOptimizer {
     }
 
     bool converged() const {
-      return norm(diis_error_vector(0)) <= convergence_threshold_;
+        if(callback_convergence_function_) {
+
+            // Data to pass to callback function
+            std::map<std::string, std::any> callback_data;
+            callback_data["dE"] = get_energy() - old_energy_;
+            callback_data["diis_error"] = norm(diis_error_vector(0));
+
+            return callback_convergence_function_(callback_data);
+        } else {
+            return norm(diis_error_vector(0)) <= convergence_threshold_;
+        }
     }
 
     void run() {
-      Tbase old_energy = 0.0;
+      old_energy_ = 0.0;
       // Number of consecutive steps that the procedure failed to decrease the energy
       int failed_iterations = 0;
       size_t noda_steps = 0;
@@ -1868,14 +1881,14 @@ namespace OpenOrbitalOptimizer {
         // Compute DIIS error
         Tbase diis_error = norm(diis_error_vector(0));
         Tbase diis_max_error = arma::norm(diis_error_vector(0),"inf");
-        Tbase dE = get_energy() - old_energy;
+        Tbase dE = get_energy() - old_energy_;
 
         // Data to pass to callback function
         std::map<std::string, std::any> callback_data;
         callback_data["iter"] = iteration;
         callback_data["nfock"] = number_of_fock_evaluations_;
         callback_data["E"] = get_energy();
-        callback_data["dE"] = get_energy() - old_energy;
+        callback_data["dE"] = get_energy() - old_energy_;
         callback_data["diis_error"] = diis_error;
         callback_data["diis_max_error"] = diis_max_error;
 
@@ -1925,7 +1938,7 @@ namespace OpenOrbitalOptimizer {
         // Do ODA if necessary
         if(noda_steps>0) {
           noda_steps--;
-          old_energy = get_energy();
+          old_energy_ = get_energy();
           if(verbosity_>=5) {
             if(diis_max_error >= optimal_damping_threshold_)
               printf("Optimal damping step due to large DIIS max error %e\n", diis_max_error);
@@ -1967,7 +1980,7 @@ namespace OpenOrbitalOptimizer {
             callback_function_(callback_data);
 
           // Perform extrapolation.
-          old_energy = get_energy();
+          old_energy_ = get_energy();
           if(!attempt_extrapolation(weights)) {
             if(verbosity_>=10) printf("Warning: did not go down in energy!\n");
             // Increment number of consecutive failed iterations
@@ -1983,12 +1996,12 @@ namespace OpenOrbitalOptimizer {
     }
 
     void run_optimal_damping() {
-      Tbase old_energy = 0.0;
+      old_energy_ = 0.0;
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
         Tbase diis_error = norm(diis_error_vector(0));
         Tbase diis_max_error = arma::norm(diis_error_vector(0),"inf");
-        Tbase dE = get_energy() - old_energy;
+        Tbase dE = get_energy() - old_energy_;
 
         if(verbosity_>=5) {
           printf("\n\n");
@@ -2002,7 +2015,7 @@ namespace OpenOrbitalOptimizer {
         callback_data["iter"] = iteration;
         callback_data["nfock"] = number_of_fock_evaluations_;
         callback_data["E"] = get_energy();
-        callback_data["dE"] = get_energy() - old_energy;
+        callback_data["dE"] = get_energy() - old_energy_;
         callback_data["diis_error"] = diis_error;
         callback_data["diis_max_error"] = diis_max_error;
         callback_data["step"] = std::string("ODA");
@@ -2022,7 +2035,7 @@ namespace OpenOrbitalOptimizer {
         if(callback_function_)
           callback_function_(callback_data);
 
-        old_energy = get_energy();
+        old_energy_ = get_energy();
         if(not optimal_damping_step())
           throw std::logic_error("Could not find descent step!\n");
 
@@ -2272,6 +2285,10 @@ namespace OpenOrbitalOptimizer {
 
     void callback_function(std::function<void(const std::map<std::string,std::any> &)> callback_function = nullptr) {
       callback_function_ = callback_function;
+    }
+
+    void callback_convergence_function(std::function<bool(const std::map<std::string,std::any> &)> callback_convergence_function = nullptr) {
+      callback_convergence_function_ = callback_convergence_function;
     }
   };
 }
