@@ -2439,6 +2439,7 @@ namespace OpenOrbitalOptimizer {
     void callback_function(std::function<void(const std::map<std::string,std::any> &)> callback_function = nullptr) {
       callback_function_ = callback_function;
     }
+
     void callback_convergence_function(std::function<bool(const std::map<std::string,std::any> &)> callback_convergence_function = nullptr) {
       callback_convergence_function_ = callback_convergence_function;
     }
