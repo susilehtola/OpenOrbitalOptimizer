@@ -2081,6 +2081,10 @@ namespace OpenOrbitalOptimizer {
             // The orbitals are so bad we can't trust A/EDIIS or DIIS
             noda_steps = 1;
           }
+          if(frozen_occupations_) {
+            // Don't let ODA overwrite frozen occs
+            noda_steps = 0;
+          }
         }
 
         // Do ODA if necessary
