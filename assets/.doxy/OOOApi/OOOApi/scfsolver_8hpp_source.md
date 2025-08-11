@@ -371,7 +371,9 @@ namespace OpenOrbitalOptimizer {
       // matrix such that the last diagonal element is one; Eckert et
       // al, J. Comput. Chem 18. 1473-1483 (1997)
       arma::Col<Tbase> Bdiag(arma::diagvec(B));
-      B.submat(0,0,N-1,N-1) /= arma::min(Bdiag.subvec(0,N-1));
+      Tbase diagmin = arma::min(Bdiag.subvec(0,N-1));
+      if(diagmin != 0.0)
+        B.submat(0,0,N-1,N-1) /= diagmin;
 
       // Right-hand side of equation is
       arma::Col<Tbase> rh(N+1, arma::fill::zeros);
@@ -1932,6 +1934,10 @@ namespace OpenOrbitalOptimizer {
           if(diis_max_error >= optimal_damping_threshold_) {
             // The orbitals are so bad we can't trust A/EDIIS or DIIS
             noda_steps = 1;
+          }
+          if(frozen_occupations_) {
+            // Don't let ODA overwrite frozen occs
+            noda_steps = 0;
           }
         }
 

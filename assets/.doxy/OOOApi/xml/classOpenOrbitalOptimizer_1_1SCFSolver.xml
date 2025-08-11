@@ -899,7 +899,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="417" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="417" bodyend="464"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="417" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="417" bodyend="466"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6ba11cf4ca492e50c756c581e9f7f6f4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Col&lt; Tbase &gt;</type>
@@ -925,7 +925,7 @@
 <para>Matrix of search directions</para>
 <para>Evaluate initial point</para>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="466" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="466" bodyend="618"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="468" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="468" bodyend="620"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aae75cda50c005140c92910dc12b83eb4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Col&lt; Tbase &gt;</type>
@@ -940,7 +940,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="621" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="621" bodyend="635"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="623" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="623" bodyend="637"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab0d080b6888f0915aa23ea142a68a1f2" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Col&lt; Tbase &gt;</type>
@@ -955,7 +955,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="638" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="638" bodyend="644"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="640" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="640" bodyend="646"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1c465733343c39dee257be60135bd49c" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Mat&lt; Tbase &gt;</type>
@@ -970,7 +970,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="647" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="647" bodyend="667"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="649" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="649" bodyend="669"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0f0b2a94fc04e9bf1eda4e1cf547e957" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Mat&lt; Tbase &gt;</type>
@@ -985,7 +985,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="670" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="670" bodyend="688"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="672" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="672" bodyend="690"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a878ab4b8d6084eb623ef0c0e0e1d4da7" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Col&lt; Tbase &gt;</type>
@@ -1000,7 +1000,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="691" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="691" bodyend="693"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="693" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="693" bodyend="695"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4a0879a8c93a543d2011fc6e14628360" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Col&lt; Tbase &gt;</type>
@@ -1015,7 +1015,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="696" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="696" bodyend="698"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="698" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="698" bodyend="700"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5d9eb5bc89dd46aada6e25b7b869552c" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::tuple&lt; arma::Col&lt; Tbase &gt;, std::string &gt;</type>
@@ -1034,7 +1034,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="701" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="701" bodyend="746"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="703" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="703" bodyend="748"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a3b18503cbff62bd23d8070a4b0e0375d" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1053,7 +1053,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="749" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="749" bodyend="766"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="751" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="751" bodyend="768"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8ee859e6748aecd2d56e67c3c6f64c6b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1076,7 +1076,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="769" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="769" bodyend="783"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="771" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="771" bodyend="785"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac666fc7e301c6ca725c5bbc3a9685ef4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FockMatrix&lt; Torb &gt;</type>
@@ -1095,7 +1095,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="786" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="786" bodyend="810"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="788" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="788" bodyend="812"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac00963d321be12035de9aece9cc8f326" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>DensityMatrix&lt; Torb, Tbase &gt;</type>
@@ -1114,7 +1114,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="813" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="813" bodyend="846"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="815" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="815" bodyend="848"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2c1a8fd383a2654e8827aeab6a4d2e41" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalOccupations&lt; Tbase &gt;</type>
@@ -1141,7 +1141,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="849" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="849" bodyend="877"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="851" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="851" bodyend="879"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa04b785045a04e49bdf6e45d04fb4624" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1172,7 +1172,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="880" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="880" bodyend="899"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="882" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="882" bodyend="901"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6c0c7f717ca7c606f133584a38202cd1" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -1196,7 +1196,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="902" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="902" bodyend="911"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="904" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="904" bodyend="913"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6535a0dc7766bcbfac83ede96582d43e" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -1215,7 +1215,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="914" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="914" bodyend="925"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="916" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="916" bodyend="927"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa8f17504ffd6e60ce91eb024b9aec425" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -1230,7 +1230,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="928" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="928" bodyend="1067"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="930" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="930" bodyend="1069"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa3f4c8f4a100e667f5639372749c4c86" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1245,7 +1245,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1070" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1070" bodyend="1095"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1072" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1072" bodyend="1097"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ad68ab86dfd297a6d07e11af5cf14bc48" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; OrbitalRotation &gt;</type>
@@ -1260,7 +1260,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1098" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1098" bodyend="1130"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1100" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1100" bodyend="1132"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ad0d124b2b71abde6b2eae30f5f77f653" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Col&lt; Tbase &gt;</type>
@@ -1275,7 +1275,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1133" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1133" bodyend="1165"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1135" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1135" bodyend="1167"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2679844554745f373b2efec45d28ab7b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Col&lt; Tbase &gt;</type>
@@ -1290,7 +1290,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1168" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1168" bodyend="1196"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1170" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1170" bodyend="1198"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4900cac172f996458cf104e27be12b1c" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Col&lt; Tbase &gt;</type>
@@ -1318,7 +1318,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1199" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1199" bodyend="1231"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1201" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1201" bodyend="1233"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae7da2200faddeeb2027e2e1e8e60e864" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Orbitals&lt; Torb &gt;</type>
@@ -1337,7 +1337,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1234" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1234" bodyend="1277"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1236" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1236" bodyend="1279"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae7c6e9c9fa478058d07407a143d95c96" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1356,7 +1356,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1280" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1280" bodyend="1300"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1282" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1282" bodyend="1302"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1fd3382fcf50adaaaf5a4c2f7570af6e" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Orbitals&lt; Torb &gt;</type>
@@ -1375,7 +1375,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1303" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1303" bodyend="1337"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1305" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1305" bodyend="1339"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a268ea9ddb743a9ba6fdb46d71812c498" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalHistoryEntry&lt; Torb, Tbase &gt;</type>
@@ -1398,7 +1398,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1339" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1339" bodyend="1342"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1341" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1341" bodyend="1344"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a9d43322a239ef06896de16364622e3ae" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalHistoryEntry&lt; Torb, Tbase &gt;</type>
@@ -1417,7 +1417,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1344" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1344" bodyend="1354"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1346" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1346" bodyend="1356"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a338090149468d43e06cb5576415f3d88" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1432,7 +1432,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1356" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1356" bodyend="1398"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1358" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1358" bodyend="1400"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8296026ef41ef7eb23c4bf1ef2d4cda7" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1447,7 +1447,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1400" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1400" bodyend="1578"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1402" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1402" bodyend="1580"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa745cbf9964b38c2e90929dd7022178c" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; arma::uvec &gt;</type>
@@ -1466,7 +1466,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1581" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1581" bodyend="1587"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1583" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1583" bodyend="1589"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac36c550850e8abd38362539aa0f23dad" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; arma::uvec &gt;</type>
@@ -1485,7 +1485,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1590" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1590" bodyend="1596"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1592" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1592" bodyend="1598"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -1522,7 +1522,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1600" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1600" bodyend="1618"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1602" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1602" bodyend="1620"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a38bdbc6d77676038e447b7493835e918" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1541,7 +1541,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1621" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1621" bodyend="1634"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1623" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1623" bodyend="1636"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a582f71dacbb5aaf5e3ee62b35ab58e30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1564,7 +1564,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1637" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1637" bodyend="1678"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1639" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1639" bodyend="1680"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af3e94cb59031195a7a836f8551c8096b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1583,7 +1583,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1681" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1681" bodyend="1683"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1683" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1683" bodyend="1685"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a02660ac2ea37b2db05e279c536e87934" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -1598,7 +1598,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1686" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1686" bodyend="1688"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1688" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1688" bodyend="1690"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab46784ee78994ad43742969d75f6574a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1617,7 +1617,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1691" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1691" bodyend="1693"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1693" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1693" bodyend="1695"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aef36f1506aef3398f939985c0fc47c91" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -1632,7 +1632,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1696" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1696" bodyend="1698"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1698" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1698" bodyend="1700"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a921d51f72394adda3b735d1715f78548" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1651,7 +1651,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1701" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1701" bodyend="1703"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1703" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1703" bodyend="1705"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1a1933d8e73fe81a5dec2e2f75cba6ed" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1666,7 +1666,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1706" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1706" bodyend="1708"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1708" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1708" bodyend="1710"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1afee8343f85cff1b49507d214ddcb8092" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1685,7 +1685,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1711" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1711" bodyend="1713"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1713" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1713" bodyend="1715"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab21294662e1f2558b29e6cedc6300718" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1705,7 +1705,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1716" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1716" bodyend="1720"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1718" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1718" bodyend="1722"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2fb5211e7daf74bd4539d34df25124b6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1728,7 +1728,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1724" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1724" bodyend="1732"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1726" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1726" bodyend="1734"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1adcb4d5fe06438d9f39283b4575997ad6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -1743,7 +1743,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1735" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1735" bodyend="1737"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1737" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1737" bodyend="1739"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4a038bd03dd1d31bedd748405a03a38d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1767,7 +1767,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1740" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1740" bodyend="1751"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1742" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1742" bodyend="1753"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa8cb8267076a491496a1af442795c67a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1786,7 +1786,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1754" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1754" bodyend="1760"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1756" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1756" bodyend="1762"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a3f0c11a985ab3f3a4ffc84823d7e94c6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -1801,7 +1801,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1763" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1763" bodyend="1765"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1765" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1765" bodyend="1767"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ad19c77082867c330aee32b6f68df246b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1820,7 +1820,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1768" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1768" bodyend="1770"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1770" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1770" bodyend="1772"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af634030ca79755dafc326d376ee59b0f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1835,7 +1835,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1773" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1773" bodyend="1775"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1775" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1775" bodyend="1777"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ade110ab568a8a4a14ba6291b92d1edb7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1854,7 +1854,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1778" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1778" bodyend="1780"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1780" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1780" bodyend="1782"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa23d78c738f7c05258a65277a7ff2ba2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1869,7 +1869,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1783" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1783" bodyend="1785"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1785" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1785" bodyend="1787"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5058bce20583c2b8df9476c0e713ec94" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1888,7 +1888,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1788" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1788" bodyend="1790"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1790" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1790" bodyend="1792"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8eafb122403592282c32f1a4edbde36a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1903,7 +1903,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1793" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1793" bodyend="1795"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1795" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1795" bodyend="1797"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae937f72a4934ccd07930cccff0547217" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1922,7 +1922,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1798" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1798" bodyend="1800"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1800" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1800" bodyend="1802"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a12d32ccbb8c805ff5253ca2cfcf02c34" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1937,7 +1937,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1803" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1803" bodyend="1805"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1805" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1805" bodyend="1807"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a453fb7458cb95e7a00f7e015478d6a36" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1956,7 +1956,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1808" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1808" bodyend="1810"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1810" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1810" bodyend="1812"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af189ef00b9219e6a3c005df8da8a84ce" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1971,7 +1971,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1813" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1813" bodyend="1815"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1815" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1815" bodyend="1817"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5a4283cc873207a4c4a24f39ed771241" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1990,7 +1990,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1818" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1818" bodyend="1820"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1820" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1820" bodyend="1822"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8c383e2d9a47abd3a4dc3cf9dbb68fc7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -2005,7 +2005,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1823" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1823" bodyend="1825"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1825" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1825" bodyend="1827"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4e2a07b396907c2eb74ae79f53fbf264" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2024,7 +2024,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1828" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1828" bodyend="1830"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1830" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1830" bodyend="1832"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a947e5a5cc12070b4f441424c85d574c5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2043,7 +2043,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1833" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1833" bodyend="1843"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1835" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1835" bodyend="1845"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a73a5a99a48840b0e19ae2ef4a8f04de8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2066,7 +2066,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1846" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1846" bodyend="1895"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1848" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1848" bodyend="1897"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a83718b48c4f1180324b256f013e11ce9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2081,7 +2081,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1898" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1898" bodyend="1902"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1900" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1900" bodyend="1904"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1cd4b2212f3985975fd5c4898be2211f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2096,7 +2096,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1905" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1905" bodyend="1908"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1907" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1907" bodyend="1910"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a05154d8013f3c8c326ded36a2bfd0f6a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>DiagonalizedFockMatrix&lt; Torb, Tbase &gt;</type>
@@ -2115,7 +2115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1911" column="28" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1911" bodyend="1932"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1913" column="28" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1913" bodyend="1934"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a20ab6894d7a07d543ae6f4fa17ba1d88" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::uword</type>
@@ -2134,7 +2134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1935" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1935" bodyend="1937"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1937" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1937" bodyend="1939"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0c76a0f310461e9c787ec5f3eba312e7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>arma::Col&lt; Tbase &gt;</type>
@@ -2153,7 +2153,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1940" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1940" bodyend="1974"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1942" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1942" bodyend="1976"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a924d6a3808cc3254bd2395bdc719f27a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalOccupations&lt; Tbase &gt;</type>
@@ -2172,7 +2172,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1977" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1977" bodyend="2003"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1979" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1979" bodyend="2005"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a05e8fd7e915665580418ab47e44629e5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2187,7 +2187,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2006" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2006" bodyend="2018"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2008" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2008" bodyend="2020"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0e46cd54304afa2a530f4ef787fb2335" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2202,7 +2202,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2021" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2021" bodyend="2142"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2023" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2023" bodyend="2148"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae9684d09e04bbc8123acd7f79cf6bbd5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2217,7 +2217,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2145" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2145" bodyend="2198"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2151" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2151" bodyend="2204"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac6c5ba9873cbd926433d1d7827eaedd4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>DensityMatrix&lt; Torb, Tbase &gt;</type>
@@ -2237,7 +2237,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2201" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2201" bodyend="2203"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2207" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2207" bodyend="2209"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a31954e994daecb7c8ac07ef063a3508a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Orbitals&lt; Torb &gt;</type>
@@ -2257,7 +2257,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2206" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2206" bodyend="2208"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2212" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2212" bodyend="2214"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a419a31b06513b66c3d9836c24d9c561f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalOccupations&lt; Tbase &gt;</type>
@@ -2277,7 +2277,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2211" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2211" bodyend="2213"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2217" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2217" bodyend="2219"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a43bdad00e9e22b7b40a377480857f8d4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FockBuilderReturn&lt; Torb, Tbase &gt;</type>
@@ -2297,7 +2297,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2216" column="23" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2216" bodyend="2218"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2222" column="23" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2222" bodyend="2224"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a325f1538e5fc350c13e66838cef13b64" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FockMatrix&lt; Torb &gt;</type>
@@ -2317,7 +2317,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2221" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2221" bodyend="2223"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2227" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2227" bodyend="2229"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1c8c9606adb3ddef58c791a6ccf028a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2332,7 +2332,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2227" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2227" bodyend="2437"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2233" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2233" bodyend="2443"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a7f4222276dfeecdd45be72ef733df016" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2351,7 +2351,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2439" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2439" bodyend="2441"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2445" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2445" bodyend="2447"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae140f5487bbff0063dadaa15739c1c77" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2370,7 +2370,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2443" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2443" bodyend="2445"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2449" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2449" bodyend="2451"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -2378,7 +2378,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="openorbitaloptimizer/scfsolver.hpp" line="78" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="78" bodyend="2446"/>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="78" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="78" bodyend="2452"/>
     <listofallmembers>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a947e5a5cc12070b4f441424c85d574c5" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>add_entry</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a73a5a99a48840b0e19ae2ef4a8f04de8" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>add_entry</name></member>
