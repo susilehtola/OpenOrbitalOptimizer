@@ -4,7 +4,7 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")  # foil
 
 project(
   OpenOrbitalOptimizer
-  VERSION 0.1.0
+  VERSION 0.2.0
   DESCRIPTION
     "A library orbital optimization problems in quantum chemistry"
   HOMEPAGE_URL "https://github.com/susilehtola/OpenOrbitalOptimizer"
@@ -17,7 +17,7 @@ include(GNUInstallDirs)
 include(autocmake_safeguards)
 
 # Version of libraries
-set(SOVERSION 0.1.0)
+set(SOVERSION 0.2.0)
 
 set(ooo OpenOrbitalOptimizer)  # Namespace
 
