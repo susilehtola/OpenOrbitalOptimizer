@@ -829,13 +829,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v020-2025-mm-dd-unreleased" class="md-nav__link">
+  <a href="#v020-2025-08-12" class="md-nav__link">
     <span class="md-ellipsis">
-      v0.2.0 / 2025-MM-DD (Unreleased)
+      v0.2.0 / 2025-08-12
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="v0.2.0 / 2025-MM-DD (Unreleased)">
+    <nav class="md-nav" aria-label="v0.2.0 / 2025-08-12">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -943,19 +943,29 @@
 #### Misc.
 -->
 
-<h2 id="v020-2025-mm-dd-unreleased">v0.2.0 / 2025-MM-DD (Unreleased)</h2>
+<h2 id="v020-2025-08-12">v0.2.0 / 2025-08-12</h2>
 <h4 id="breaking-changes">Breaking Changes</h4>
 <h4 id="new-features">New Features</h4>
 <h4 id="enhancements">Enhancements</h4>
 <ul>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/26">#26</a> add callback so caller can
+   apply its own convergence criteria.</li>
 <li>MESA should use Aufbau occupations not MOM</li>
 <li>Undo minimum error criterion by Garza and Scuseria to avoid penalizing large steps leading to a decrease in energy</li>
 <li>Increase <code>pure_ediis_factor</code></li>
 <li>Implement callback functionality</li>
 </ul>
 <h4 id="bug-fixes">Bug Fixes</h4>
+<ul>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/27">#27</a> fix a <code>Col::subvec()</code> error
+   with minimal basis sets.</li>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/27">#27</a> fix UHF with frozen
+   occupations by disabling ODA.</li>
+</ul>
 <h4 id="misc">Misc.</h4>
 <ul>
+<li>Added user guide to readme</li>
+<li>Deploy docs site</li>
 <li>Fix GCC 15 warnings</li>
 </ul>
 <h2 id="v010-2025-03-30">v0.1.0 / 2025-03-30</h2>
