@@ -2444,7 +2444,7 @@ namespace OpenOrbitalOptimizer {
       }
     }
 
-    void callback_function(std::function<void(const std::map<std::string,std::any> &)> callback_function = nullptr) {
+    void callback_function(std::function<void(const std::map<std::string,std::any> &)> callback_function) {
       callback_function_ = callback_function;
     }
 
