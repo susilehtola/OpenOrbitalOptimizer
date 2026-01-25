@@ -731,8 +731,7 @@ namespace OpenOrbitalOptimizer {
       if(verbosity_>=10)
         density_projections.t().print("Density projections");
 
-      arma::uword idx;
-      density_projections.max(idx);
+      arma::uword idx = density_projections.index_max();
       if(verbosity_>=10)
         printf("Max density projection %e with %s weights\n",density_projections(idx),weight_legend[idx].c_str());
 
@@ -864,7 +863,7 @@ namespace OpenOrbitalOptimizer {
           // Projections for this orbital
           auto projection = orbital_projections.col(iorb);
           // Find the maximum index
-          auto maximal_projection_index = arma::index_max(projection);
+          auto maximal_projection_index = projection.index_max();
           auto maximal_projection = projection(maximal_projection_index);
           // Store projection
           new_occupations[iblock][maximal_projection_index] = reference_occupations[iblock](iorb);
