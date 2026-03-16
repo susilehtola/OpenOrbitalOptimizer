@@ -98,6 +98,9 @@ if (${ooo}_BUILD_TESTING)
     add_subdirectory(tests)
 endif()
 
+# Compile the external interface library
+add_subdirectory(src)
+
 set(export_properties
   "${ooo}_VERSION"
   )

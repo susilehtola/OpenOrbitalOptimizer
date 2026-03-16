@@ -1,0 +1,10 @@
+add_library(
+  copenorbital
+  SHARED
+  extern.cpp
+)
+target_link_libraries(
+  copenorbital
+  PRIVATE
+    ${ooo}::OpenOrbitalOptimizer
+  )

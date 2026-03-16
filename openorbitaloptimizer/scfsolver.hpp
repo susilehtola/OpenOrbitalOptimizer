@@ -2038,6 +2038,7 @@ namespace OpenOrbitalOptimizer {
         callback_data["dE"] = get_energy() - old_energy_;
         callback_data["diis_error"] = diis_error;
         callback_data["diis_max_error"] = diis_max_error;
+        callback_data["history_size"] = orbital_history_.size();
 
         if(verbosity_>=5) {
           printf("\n\n");
@@ -2171,6 +2172,7 @@ namespace OpenOrbitalOptimizer {
         callback_data["diis_error"] = diis_error;
         callback_data["diis_max_error"] = diis_max_error;
         callback_data["step"] = std::string("ODA");
+        callback_data["history_size"] = orbital_history_.size();
 
         // Convergence check
         if(converged()) {
@@ -2441,7 +2443,7 @@ namespace OpenOrbitalOptimizer {
       }
     }
 
-    void callback_function(std::function<void(const std::map<std::string,std::any> &)> callback_function = nullptr) {
+    void callback_function(std::function<void(const std::map<std::string,std::any> &)> callback_function) {
       callback_function_ = callback_function;
     }
 
