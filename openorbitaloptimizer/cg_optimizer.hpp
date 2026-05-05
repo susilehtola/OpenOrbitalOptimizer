@@ -32,9 +32,12 @@ namespace OpenOrbitalOptimizer {
         previous_direction = current_direction;
         current_direction = -current_gradient;
         if(iteration>0) {
-          /// Use Polak-Ribière rule
-          auto gamma = arma::dot(current_gradient,current_gradient-previous_gradient)/arma::dot(previous_gradient, previous_gradient);
-          current_direction += gamma*previous_direction;
+          /// Use Polak-Ribière rule, falling back to steepest descent if the previous gradient vanished
+          auto denom = arma::dot(previous_gradient, previous_gradient);
+          if(denom > std::numeric_limits<T>::min()) {
+            auto gamma = arma::dot(current_gradient,current_gradient-previous_gradient)/denom;
+            current_direction += gamma*previous_direction;
+          }
         }
         if(arma::dot(current_direction, current_gradient) > 0.0)
           /// Reset bad search direction

@@ -305,6 +305,7 @@ namespace OpenOrbitalOptimizer {
           size *= 2;
         }
         mat[iblock] = matricise(vec.subvec(ioff, ioff+size-1), dim(iblock), dim(iblock));
+        ioff += size;
       }
       return mat;
     }
@@ -1559,7 +1560,7 @@ namespace OpenOrbitalOptimizer {
                 printf("Error: energy did not decrease in line search! Decreasing trial step size\n");
                 fflush(stdout);
               }
-              step = std::max(10.0*predicted_step, step/2.0);
+              step = std::min(10.0*predicted_step, step/2.0);
             }
           }
         }
@@ -1715,7 +1716,7 @@ namespace OpenOrbitalOptimizer {
 
     /// Get the energy for the n:th entry
     Tbase get_energy(size_t ihist=0) const {
-      if(ihist>orbital_history_.size())
+      if(ihist>=orbital_history_.size())
         throw std::logic_error("Invalid entry!\n");
       return std::get<1>(orbital_history_[ihist]).first;
     }
