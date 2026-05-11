@@ -239,6 +239,7 @@ namespace OpenOrbitalOptimizer {
           size *= 2;
         }
         mat[iblock] = matricise(vec.subvec(ioff, ioff+size-1), dim(iblock), dim(iblock));
+        ioff += size;
       }
       return mat;
     }
@@ -647,8 +648,7 @@ namespace OpenOrbitalOptimizer {
       if(verbosity_>=10)
         density_projections.t().print("Density projections");
 
-      arma::uword idx;
-      density_projections.max(idx);
+      arma::uword idx = density_projections.index_max();
       if(verbosity_>=10)
         printf("Max density projection %e with %s weights\n",density_projections(idx),weight_legend[idx].c_str());
 
@@ -775,7 +775,7 @@ namespace OpenOrbitalOptimizer {
           // Projections for this orbital
           auto projection = orbital_projections.col(iorb);
           // Find the maximum index
-          auto maximal_projection_index = arma::index_max(projection);
+          auto maximal_projection_index = projection.index_max();
           auto maximal_projection = projection(maximal_projection_index);
           // Store projection
           new_occupations[iblock][maximal_projection_index] = reference_occupations[iblock](iorb);
@@ -1455,7 +1455,7 @@ namespace OpenOrbitalOptimizer {
                 printf("Error: energy did not decrease in line search! Decreasing trial step size\n");
                 fflush(stdout);
               }
-              step = std::max(10.0*predicted_step, step/2.0);
+              step = std::min(10.0*predicted_step, step/2.0);
             }
           }
         }
@@ -1598,7 +1598,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     Tbase get_energy(size_t ihist=0) const {
-      if(ihist>orbital_history_.size())
+      if(ihist>=orbital_history_.size())
         throw std::logic_error("Invalid entry!\n");
       return std::get<1>(orbital_history_[ihist]).first;
     }

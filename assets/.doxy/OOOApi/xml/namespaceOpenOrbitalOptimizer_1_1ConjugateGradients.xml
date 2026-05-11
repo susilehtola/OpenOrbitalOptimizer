@@ -53,7 +53,7 @@
 <para>Old search direction</para>
 <para>Update the gradients</para>
 <para>Form the search direction</para>
-<para>Use Polak-Ribière rule</para>
+<para>Use Polak-Ribière rule, falling back to steepest descent if the previous gradient vanished</para>
 <para>Reset bad search direction</para>
 <para>Convergence check</para>
 <para>Helper for line search</para>
@@ -62,7 +62,7 @@
 <para>Now we have bracketed the minimum, use golden section search.</para>
 <para>Update the current point</para>
         </inbodydescription>
-        <location file="openorbitaloptimizer/cg_optimizer.hpp" line="17" column="15" bodyfile="openorbitaloptimizer/cg_optimizer.hpp" bodystart="17" bodyend="87"/>
+        <location file="openorbitaloptimizer/cg_optimizer.hpp" line="17" column="15" bodyfile="openorbitaloptimizer/cg_optimizer.hpp" bodystart="17" bodyend="90"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
