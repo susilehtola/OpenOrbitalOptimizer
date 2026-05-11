@@ -5,6 +5,12 @@ for ``openorbital.SCFSolver``, providing a robust SCF convergence layer
 on top of PySCF's integral and exchange-correlation machinery.
 """
 
+from .atomic import OpenOrbitalAtomicSCF
+from .diatomic import OpenOrbitalDiatomicSCF
 from .molecular import OpenOrbitalSCF
 
-__all__ = ["OpenOrbitalSCF"]
+__all__ = [
+    "OpenOrbitalSCF",
+    "OpenOrbitalAtomicSCF",
+    "OpenOrbitalDiatomicSCF",
+]
