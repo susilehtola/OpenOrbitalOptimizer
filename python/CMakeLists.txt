@@ -9,12 +9,20 @@ set_target_properties(
   )
 
 # Copy the Python facade alongside the extension so the build tree
-# is directly importable as ``openorbital``.
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/openorbital/__init__.py
-  ${CMAKE_CURRENT_BINARY_DIR}/openorbital/__init__.py
-  COPYONLY
-  )
+# is directly importable as ``openorbital``. Mirror every .py file
+# under the source ``openorbital/`` package -- including subpackages
+# such as ``openorbital.pyscf`` -- into the build tree at the same
+# relative path.
+file(GLOB_RECURSE _ooo_py_files
+     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/openorbital
+     ${CMAKE_CURRENT_SOURCE_DIR}/openorbital/*.py)
+foreach(_pyfile IN LISTS _ooo_py_files)
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/openorbital/${_pyfile}
+    ${CMAKE_CURRENT_BINARY_DIR}/openorbital/${_pyfile}
+    COPYONLY
+    )
+endforeach()
 
 # Optional install target: install both the extension and the Python
 # facade into the same site-packages directory.

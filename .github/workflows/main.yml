@@ -182,6 +182,77 @@ jobs:
         cmake --build . --target atomtest
         ./atomtest --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 3 --sto 0 --basis "${{github.workspace}}/tests/cc-pvdz.json"
 
+  build-test-python:
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+          - lane: linux-gnu
+            runs-on: ubuntu-latest
+            python-version: "3.10"
+
+    name: "Python • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.lane }}"
+    runs-on: ${{ matrix.cfg.runs-on }}
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+    - name: Checkout OpenOrbitalOptimizer
+      uses: actions/checkout@v4
+
+    - name: Write a Conda Env File
+      run: |
+        cat > export-py.yaml <<EOF
+        name: test-py
+        channels:
+          - conda-forge
+        dependencies:
+          - cmake
+          - ninja
+          - cxx-compiler
+          - armadillo
+          - pybind11
+          - numpy
+          - pytest
+          - pyscf
+        EOF
+        cat export-py.yaml
+
+    - name: Create Conda Environment
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: ${{ matrix.cfg.python-version }}
+        activate-environment: test-py
+        channels: conda-forge
+        environment-file: export-py.yaml
+        show-channel-urls: true
+        auto-activate-base: false
+        add-pip-as-python-dependency: true
+        conda-remove-defaults: true
+
+    - name: Environment Information
+      run: |
+        conda info
+        conda list
+
+    - name: Build OpenOrbitalOptimizer Python bindings
+      run: |
+        cmake \
+          -S . \
+          -B build-py \
+          -G "Ninja" \
+          -D CMAKE_BUILD_TYPE=Release \
+          -D OpenOrbitalOptimizer_BUILD_PYTHON=ON \
+          -D OpenOrbitalOptimizer_BUILD_TESTING=OFF \
+          -D CMAKE_CXX_COMPILER=${CXX} \
+          -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}"
+        cmake --build build-py
+
+    - name: Run Python tests
+      run: |
+        PYTHONPATH="${PWD}/build-py/python" python -m pytest -v python/tests
+
   release_docs:
     needs: [build-test-repo]
     permissions:
