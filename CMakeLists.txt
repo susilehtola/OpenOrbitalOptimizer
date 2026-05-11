@@ -46,6 +46,9 @@ message(STATUS "Showing option ${ooo}_INSTALL_CMAKEDIR: ${${ooo}_INSTALL_CMAKEDI
 option(${ooo}_BUILD_TESTING "Build test-suite" ${PROJECT_IS_TOP_LEVEL})
 message(STATUS "Showing option ${ooo}_BUILD_TESTING: ${${ooo}_BUILD_TESTING}")
 
+option(${ooo}_BUILD_PYTHON "Build Python bindings via pybind11" OFF)
+message(STATUS "Showing option ${ooo}_BUILD_PYTHON: ${${ooo}_BUILD_PYTHON}")
+
 # ====  Build  ==================================================================
 add_library(libooo INTERFACE)
 
@@ -96,6 +99,10 @@ target_link_libraries(
 if (${ooo}_BUILD_TESTING)
     enable_testing()
     add_subdirectory(tests)
+endif()
+
+if (${ooo}_BUILD_PYTHON)
+    add_subdirectory(python)
 endif()
 
 set(export_properties
