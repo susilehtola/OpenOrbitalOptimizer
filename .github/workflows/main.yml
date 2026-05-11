@@ -11,31 +11,36 @@ on:
 
 jobs:
   build-test-repo:
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         cfg:
           - lane: linux-gnu
             runs-on: ubuntu-latest
-            python-version: "3.10"
+            python-version: "3.12"
             cmargs: ""
+          - lane: linux-clang
+            runs-on: ubuntu-latest
+            python-version: "3.12"
+            cmargs: >
+              -D CMAKE_CXX_COMPILER=clang++
           - lane: linux-icpx
             runs-on: ubuntu-latest
-            python-version: "3.10"
+            python-version: "3.12"
             cmargs: >
               -D CMAKE_CXX_COMPILER=icpx
+          - lane: linux-arm64-gnu
+            runs-on: ubuntu-24.04-arm
+            python-version: "3.12"
+            cmargs: ""
           - lane: macos-silicon-clang
             runs-on: macos-latest
-            python-version: "3.10"
+            python-version: "3.12"
             cmargs: ""
-          - lane: macos-intel-clang
-            runs-on: macos-13
-            python-version: "3.10"
-            cmargs: ""
-            # Library/include/ compensates for faulty conda windows config
           - lane: windows-clang
             runs-on: windows-latest
-            python-version: "3.10"
+            python-version: "3.12"
             cmargs: >
               -D CMAKE_CXX_COMPILER=clang-cl
               -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
@@ -48,15 +53,7 @@ jobs:
 
     steps:
     - name: Checkout OpenOrbitalOptimizer
-      uses: actions/checkout@v4
-
-    - name: Checkout IntegratorXX
-      uses: actions/checkout@v4
-      with:
-        #repository: wavefunction91/IntegratorXX
-        repository: loriab/IntegratorXX
-        ref: windows
-        path: IntXX
+      uses: actions/checkout@v5
 
     - name: Prepare compiler environment, vcvarsall (W)
       if: runner.os == 'Windows'
@@ -83,10 +80,12 @@ jobs:
           - liblapack * *netlib
           #- dummy1
         EOF
-        # MacOS: sed -E -i.bak "s;;;g" export.yaml
         if [[ "${{ matrix.cfg.lane }}" == "linux-icpx" ]]; then
-          :
           sed -i "s/#- dummy1/- dpcpp_linux-64/g" export.yaml
+        fi
+        if [[ "${{ matrix.cfg.lane }}" == "linux-clang" ]]; then
+          echo "  - clang_linux-64" >> export.yaml
+          echo "  - clangxx_linux-64" >> export.yaml
         fi
         cat export.yaml
 
@@ -98,7 +97,7 @@ jobs:
         channels: conda-forge
         environment-file: export.yaml
         show-channel-urls: true
-        auto-activate-base: false
+        auto-activate: false
         add-pip-as-python-dependency: true
         conda-remove-defaults: true
 
@@ -106,23 +105,6 @@ jobs:
       run: |
         conda info
         conda list
-
-    - name: Build & Install IntegratorXX
-      if: false
-      working-directory: ./IntXX
-      run: |
-        cmake \
-          -S . \
-          -B build \
-          -G "Ninja" \
-          -D CMAKE_BUILD_TYPE=Release \
-          -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
-          -D CMAKE_INSTALL_LIBDIR=lib \
-          -D CMAKE_CXX_COMPILER=${CXX} \
-          -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
-          -D INTEGRATORXX_ENABLE_TESTS=OFF \
-          ${{ matrix.cfg.cmargs }}
-        cmake --build build --target install
 
     - name: Build & Install OpenOrbitalOptimizer
       run: |
@@ -136,8 +118,6 @@ jobs:
           -D CMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library" \
           ${{ matrix.cfg.cmargs }}
         cmake --build build --target install
-      # needed when build intXX from src
-      #   -D IntegratorXX_DIR="${{github.workspace}}/installed/lib/cmake/IntegratorXX"
 
     - name: Test
       run: ctest --output-on-failure --test-dir build/
@@ -183,15 +163,20 @@ jobs:
         ./atomtest --Z 8 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --M 3 --sto 0 --basis "${{github.workspace}}/tests/cc-pvdz.json"
 
   build-test-python:
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         cfg:
           - lane: linux-gnu
             runs-on: ubuntu-latest
-            python-version: "3.10"
+          - lane: linux-arm64-gnu
+            runs-on: ubuntu-24.04-arm
+          - lane: macos-silicon-clang
+            runs-on: macos-latest
+        python-version: ["3.11", "3.12", "3.13"]
 
-    name: "Python • 🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.lane }}"
+    name: "Python • 🐍 ${{ matrix.python-version }} • ${{ matrix.cfg.lane }}"
     runs-on: ${{ matrix.cfg.runs-on }}
     defaults:
       run:
@@ -199,7 +184,7 @@ jobs:
 
     steps:
     - name: Checkout OpenOrbitalOptimizer
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Write a Conda Env File
       run: |
@@ -222,12 +207,12 @@ jobs:
     - name: Create Conda Environment
       uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: ${{ matrix.cfg.python-version }}
+        python-version: ${{ matrix.python-version }}
         activate-environment: test-py
         channels: conda-forge
         environment-file: export-py.yaml
         show-channel-urls: true
-        auto-activate-base: false
+        auto-activate: false
         add-pip-as-python-dependency: true
         conda-remove-defaults: true
 
@@ -254,6 +239,7 @@ jobs:
         PYTHONPATH="${PWD}/build-py/python" python -m pytest -v python/tests
 
   release_docs:
+    timeout-minutes: 15
     needs: [build-test-repo]
     permissions:
       contents: write
@@ -265,14 +251,14 @@ jobs:
       matrix:
         cfg:
           - label: MkDocs
-            python-version: "3.10"
+            python-version: "3.12"
             runs-on: ubuntu-latest
 
     name: "🐍 ${{ matrix.cfg.python-version }} • ${{ matrix.cfg.label }}"
     runs-on: ${{ matrix.cfg.runs-on }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Write a Conda Env File
       run: |
@@ -300,7 +286,7 @@ jobs:
         activate-environment: test
         environment-file: export.yaml
         python-version: ${{ matrix.cfg.python-version }}
-        auto-activate-base: false
+        auto-activate: false
         show-channel-urls: true
         add-pip-as-python-dependency: true
         channels: conda-forge,nodefaults
