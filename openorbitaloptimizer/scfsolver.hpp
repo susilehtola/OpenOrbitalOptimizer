@@ -315,14 +315,20 @@ namespace OpenOrbitalOptimizer {
       // Error is measured by FPS-SPF = FP - PF, since we have a unit metric.
       auto F = get_fock_matrix_block(ihist, iblock);
       auto P = get_density_matrix_block(ihist, iblock);
-      arma::Mat<Torb> PF = P*F;
-      PF -= arma::trans(PF);
+
+      // Though F and P should be symmetric by construction, explicitly symmetrize
+      // them and compute commutator to avoid symmetry-related numerical issues.
+      arma::Mat<Torb> F_sym = 0.5 * (F + F.t());
+      arma::Mat<Torb> P_sym = 0.5 * (P + P.t());
+      arma::Mat<Torb> FP = F_sym * P_sym;
+      arma::Mat<Torb> PF = P_sym * F_sym;
+      arma::Mat<Torb> commutator = FP - PF;
 
       // To make the L^infty error independent of the underlying basis
       // set, we project the residual into the best orbitals we have
       auto C = get_orbital_block(0, iblock);
-      PF = C.t() * PF * C;
-      return PF;
+      commutator = C.t() * commutator * C;
+      return commutator;
     }
 
     /// Compute DIIS residual
@@ -2070,7 +2076,7 @@ namespace OpenOrbitalOptimizer {
         }
 
         if(noda_steps == 0) {
-          if(failed_iterations >= maximum_history_length_/2) {
+          if(failed_iterations >= maximum_history_length_) {
             // Run the same number of steps using ODA
             noda_steps = maximum_history_length_/2;
             if(verbosity_>=5) {
