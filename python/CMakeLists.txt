@@ -3,16 +3,27 @@
 # default. Silences the CMP0148 deprecation warning on CMake >= 3.27
 # and works with current and future pybind11 releases.
 #
-# When called inside an activated conda environment, bias CMake's
-# FindPython toward CONDA_PREFIX. CMake's default search strategy
-# is "highest version on the system", which on multi-arch Debian /
-# Ubuntu CI runners often picks the system python that lacks
-# development headers (its pyconfig.h is the multi-arch stub) and
-# breaks the build. Setting Python_ROOT_DIR points the search at the
-# conda env's python, which is what the user actually wanted.
-if(DEFINED ENV{CONDA_PREFIX} AND NOT DEFINED Python_ROOT_DIR
-   AND NOT DEFINED Python_EXECUTABLE)
-  set(Python_ROOT_DIR "$ENV{CONDA_PREFIX}")
+# When called inside an activated conda environment, point CMake's
+# FindPython at the conda interpreter. CMake's default "highest
+# version on the system" search picks /usr/bin/python3.12 on multi-
+# arch Debian / Ubuntu CI runners (whose pyconfig.h is a stub that
+# only resolves when the system python-dev package is installed)
+# and on macOS picks the system python (which has the wrong ABI for
+# the conda-built .so), breaking either the build or the test step.
+#
+# Python_ROOT_DIR is only a hint and gets merged with the default
+# search list; Python_EXECUTABLE is the documented hard override and
+# is what we need here.
+if(DEFINED ENV{CONDA_PREFIX} AND NOT DEFINED Python_EXECUTABLE)
+  if(WIN32)
+    set(_oo_conda_python "$ENV{CONDA_PREFIX}/python.exe")
+  else()
+    set(_oo_conda_python "$ENV{CONDA_PREFIX}/bin/python")
+  endif()
+  if(EXISTS "${_oo_conda_python}")
+    set(Python_EXECUTABLE "${_oo_conda_python}")
+  endif()
+  unset(_oo_conda_python)
 endif()
 
 set(PYBIND11_FINDPYTHON ON)
