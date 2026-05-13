@@ -132,6 +132,8 @@ namespace OpenOrbitalOptimizer {
     Tbase density_restart_factor_ = 1e-4;
     /// History length
     int maximum_history_length_ = 10;
+    /// Steps with no DIIS energy improvement after which to use ODA. Previously maximum_history_length_/2
+    int oda_restart_steps_ = 5;
     /// Convergence threshold for orbital gradient
     Tbase convergence_threshold_ = 1e-7;
     /// Norm to use by default: root-mean-square error
@@ -1837,6 +1839,16 @@ namespace OpenOrbitalOptimizer {
       maximum_history_length_ = maximum_history_length;
     }
 
+    /// Get oda_restart_steps
+    int oda_restart_steps() const {
+      return oda_restart_steps_;
+    }
+
+    /// Set oda_restart_steps
+    void oda_restart_steps(int oda_restart_steps) {
+      oda_restart_steps_ = oda_restart_steps;
+    }
+
     /// Add entry to history, return value is True if energy was lowered
     bool add_entry(const DensityMatrix<Torb, Tbase> & density) {
       // Compute the Fock matrix
@@ -2076,8 +2088,8 @@ namespace OpenOrbitalOptimizer {
         }
 
         if(noda_steps == 0) {
-          if(failed_iterations >= maximum_history_length_) {
-            // Run the same number of steps using ODA
+          if(failed_iterations >= oda_restart_steps()) {
+            // Run ODA for half the history length
             noda_steps = maximum_history_length_/2;
             if(verbosity_>=5) {
               printf("Switching to optimal damping for next iterations\n");
