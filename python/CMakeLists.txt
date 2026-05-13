@@ -1,3 +1,8 @@
+# Use the modern FindPython module rather than the deprecated
+# FindPythonLibs / FindPythonInterp that pybind11 falls back to by
+# default. Silences the CMP0148 deprecation warning on CMake >= 3.27
+# and works with current and future pybind11 releases.
+set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(_ext _ext.cpp)
