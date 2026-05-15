@@ -55,15 +55,55 @@ endforeach()
 
 # Optional install target: install both the extension and the Python
 # facade into the same site-packages directory.
+#
+# Python_SITELIB is the absolute site-packages path of the chosen
+# interpreter (e.g. /usr/lib/python3.14/site-packages). Passing it
+# directly to install(DESTINATION) makes CMake use it verbatim and
+# silently bypass CMAKE_INSTALL_PREFIX, so an off-root install would
+# still try to write into the system site-packages and fail without
+# root. Convert it to a path relative to Python_PREFIX so CMake
+# resolves it under CMAKE_INSTALL_PREFIX as documented. Users with a
+# layout where Python_SITELIB is not under Python_PREFIX, or who
+# want a different target, can override via
+# OpenOrbitalOptimizer_PYTHON_INSTALL_DIR.
 include(GNUInstallDirs)
 if (Python_SITELIB)
+  if (NOT DEFINED OpenOrbitalOptimizer_PYTHON_INSTALL_DIR)
+    # Ask sysconfig for the platlib path with an empty base, which
+    # gives the canonical relative layout (e.g. "lib/python3.14/
+    # site-packages") that pip would use under --prefix=<install
+    # prefix>. This avoids distro quirks where Python_SITELIB and
+    # sys.prefix disagree (Fedora: prefix=/usr, sitelib=/usr/local/
+    # lib/python3.X/site-packages; Debian "posix_local" scheme).
+    execute_process(
+      COMMAND "${Python_EXECUTABLE}" -c
+      "import sysconfig, os; print(sysconfig.get_path('platlib', vars={'base': '', 'platbase': ''}).lstrip(os.sep))"
+      OUTPUT_VARIABLE _ooo_sitelib_rel
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      RESULT_VARIABLE _ooo_sitelib_status
+      )
+    if (NOT _ooo_sitelib_status EQUAL 0 OR _ooo_sitelib_rel STREQUAL "")
+      # sysconfig failed: fall back to the absolute path, which then
+      # ignores CMAKE_INSTALL_PREFIX (CMake's documented behaviour for
+      # absolute DESTINATIONs).
+      set(OpenOrbitalOptimizer_PYTHON_INSTALL_DIR "${Python_SITELIB}")
+    else()
+      set(OpenOrbitalOptimizer_PYTHON_INSTALL_DIR "${_ooo_sitelib_rel}")
+    endif()
+    unset(_ooo_sitelib_rel)
+    unset(_ooo_sitelib_status)
+  endif()
+  message(STATUS
+    "OpenOrbitalOptimizer Python install dir: "
+    "${OpenOrbitalOptimizer_PYTHON_INSTALL_DIR}/openorbital "
+    "(under CMAKE_INSTALL_PREFIX if relative)")
   install(
     TARGETS _ext
-    LIBRARY DESTINATION ${Python_SITELIB}/openorbital
+    LIBRARY DESTINATION ${OpenOrbitalOptimizer_PYTHON_INSTALL_DIR}/openorbital
     )
   install(
     DIRECTORY openorbital/
-    DESTINATION ${Python_SITELIB}/openorbital
+    DESTINATION ${OpenOrbitalOptimizer_PYTHON_INSTALL_DIR}/openorbital
     FILES_MATCHING PATTERN "*.py"
     )
 endif()
