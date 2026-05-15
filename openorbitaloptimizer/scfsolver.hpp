@@ -323,7 +323,8 @@ namespace OpenOrbitalOptimizer {
       arma::Mat<Torb> F_sym = 0.5 * (F + F.t());
       arma::Mat<Torb> P_sym = 0.5 * (P + P.t());
       arma::Mat<Torb> PF = P_sym * F_sym;
-      arma::Mat<Torb> commutator = PF - PF.t();
+      arma::Mat<Torb> FP = F_sym * P_sym;
+      arma::Mat<Torb> commutator = PF - FP;
 
       // To make the L^infty error independent of the underlying basis
       // set, we project the residual into the best orbitals we have
