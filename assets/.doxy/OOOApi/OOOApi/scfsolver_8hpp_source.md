@@ -84,6 +84,7 @@ namespace OpenOrbitalOptimizer {
 
     Tbase density_restart_factor_ = 1e-4;
     int maximum_history_length_ = 10;
+    int oda_restart_steps_ = 5;
     Tbase convergence_threshold_ = 1e-7;
     std::string error_norm_ = "rms";
 
@@ -248,14 +249,20 @@ namespace OpenOrbitalOptimizer {
       // Error is measured by FPS-SPF = FP - PF, since we have a unit metric.
       auto F = get_fock_matrix_block(ihist, iblock);
       auto P = get_density_matrix_block(ihist, iblock);
-      arma::Mat<Torb> PF = P*F;
-      PF -= arma::trans(PF);
+
+      // Though F and P should be symmetric by construction, explicitly symmetrize
+      // them and compute commutator to avoid symmetry-related numerical issues.
+      arma::Mat<Torb> F_sym = 0.5 * (F + F.t());
+      arma::Mat<Torb> P_sym = 0.5 * (P + P.t());
+      arma::Mat<Torb> PF = P_sym * F_sym;
+      arma::Mat<Torb> FP = F_sym * P_sym;
+      arma::Mat<Torb> commutator = PF - FP;
 
       // To make the L^infty error independent of the underlying basis
       // set, we project the residual into the best orbitals we have
       auto C = get_orbital_block(0, iblock);
-      PF = C.t() * PF * C;
-      return PF;
+      commutator = C.t() * commutator * C;
+      return commutator;
     }
 
     std::vector<arma::Mat<Torb>> diis_residual(size_t ihist) const {
@@ -1695,6 +1702,14 @@ namespace OpenOrbitalOptimizer {
       maximum_history_length_ = maximum_history_length;
     }
 
+    int oda_restart_steps() const {
+      return oda_restart_steps_;
+    }
+
+    void oda_restart_steps(int oda_restart_steps) {
+      oda_restart_steps_ = oda_restart_steps;
+    }
+
     bool add_entry(const DensityMatrix<Torb, Tbase> & density) {
       // Compute the Fock matrix
       auto fock = fock_builder_(density);
@@ -1924,8 +1939,8 @@ namespace OpenOrbitalOptimizer {
         }
 
         if(noda_steps == 0) {
-          if(failed_iterations >= maximum_history_length_/2) {
-            // Run the same number of steps using ODA
+          if(failed_iterations >= oda_restart_steps()) {
+            // Run ODA for half the history length
             noda_steps = maximum_history_length_/2;
             if(verbosity_>=5) {
               printf("Switching to optimal damping for next iterations\n");

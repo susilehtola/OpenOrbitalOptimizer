@@ -963,15 +963,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v020-2025-08-12" class="md-nav__link">
+  <a href="#v030-2026-mm-dd-unreleased" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.2.0 / 2025-08-12
+        v0.3.0 / 2026-MM-DD (Unreleased)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="v0.2.0 / 2025-08-12">
+    <nav class="md-nav" aria-label="v0.3.0 / 2026-MM-DD (Unreleased)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1035,6 +1035,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#v020-2025-08-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.2.0 / 2025-08-12
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.2.0 / 2025-08-12">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enhancements_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misc.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v010-2025-03-30" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1047,7 +1119,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new-features_1" class="md-nav__link">
+  <a href="#new-features_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1081,7 +1153,7 @@
 
 <h1 id="changelog">Changelog</h1>
 <!--
-## vX.Y.0 / 2025-MM-DD (Unreleased)
+## vX.Y.0 / YYYY-MM-DD (Unreleased)
 
 #### Breaking Changes
 
@@ -1094,10 +1166,46 @@
 #### Misc.
 -->
 
-<h2 id="v020-2025-08-12">v0.2.0 / 2025-08-12</h2>
+<h2 id="v030-2026-mm-dd-unreleased">v0.3.0 / 2026-MM-DD (Unreleased)</h2>
 <h4 id="breaking-changes">Breaking Changes</h4>
 <h4 id="new-features">New Features</h4>
+<ul>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/34">#34</a> Add Python interface!
+  This covers the most common <code>SCFSolver&lt;double, double&gt;</code> case; others added upon request.</li>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/34">#34</a> Add a PySCF integration layer
+  with three usage-aware drivers, exposed as the <code>openorbital</code> package.</li>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/35">#35</a> Add option <code>oda_restart_steps</code>
+  to set the number of steps with no DIIS energy improvement after which to use ODA independently of
+  DIIS history length. Previously used <code>maximum_history_length</code>/2</li>
+</ul>
 <h4 id="enhancements">Enhancements</h4>
+<ul>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/35">#35</a> Explicitly symmetrize matices
+  for DIIS error calculation to avoid numerical issues.</li>
+</ul>
+<h4 id="bug-fixes">Bug Fixes</h4>
+<ul>
+<li>Fix four correctness bugs in SCF solver and CG optimizer</li>
+<li>get_energy: bounds check used &gt; instead of &gt;=, allowing out-of-bounds access when
+    <code>ihist == orbital_history_.size()</code>.</li>
+<li>matricise(vec, dim): the per-block offset was never advanced, so every block read from offset 0
+    of the input vector.</li>
+<li>steepest_descent line search: the "decrease step" branch used std::max, which actually grew the
+    step whenever the parabolic prediction was larger than step/20, stalling the search.</li>
+<li>CG Polak-Ribière: divided by dot(g_prev, g_prev) without guarding against a zero previous gradient,
+    propagating NaN into the search direction. Fall back to steepest descent in that case.</li>
+</ul>
+<h4 id="misc">Misc.</h4>
+<ul>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/30">#30</a> <code>max(idx)</code> has been deprecated
+  in Armadillo in favor of <code>index_max()</code> so switching to the new syntax.</li>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/36">#36</a> Use modern FindPython with pybind11 module.</li>
+<li>Added a <code>CLAUDE.md</code> file to aid agents.</li>
+</ul>
+<h2 id="v020-2025-08-12">v0.2.0 / 2025-08-12</h2>
+<h4 id="breaking-changes_1">Breaking Changes</h4>
+<h4 id="new-features_1">New Features</h4>
+<h4 id="enhancements_1">Enhancements</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/26">#26</a> add callback so caller can
    apply its own convergence criteria.</li>
@@ -1106,21 +1214,21 @@
 <li>Increase <code>pure_ediis_factor</code></li>
 <li>Implement callback functionality</li>
 </ul>
-<h4 id="bug-fixes">Bug Fixes</h4>
+<h4 id="bug-fixes_1">Bug Fixes</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/27">#27</a> fix a <code>Col::subvec()</code> error
    with minimal basis sets.</li>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/27">#27</a> fix UHF with frozen
    occupations by disabling ODA.</li>
 </ul>
-<h4 id="misc">Misc.</h4>
+<h4 id="misc_1">Misc.</h4>
 <ul>
 <li>Added user guide to readme</li>
 <li>Deploy docs site</li>
 <li>Fix GCC 15 warnings</li>
 </ul>
 <h2 id="v010-2025-03-30">v0.1.0 / 2025-03-30</h2>
-<h4 id="new-features_1">New Features</h4>
+<h4 id="new-features_2">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/20">#20</a> Intf -- allow OOO and
    IntegratorXX to work on Windows.</li>

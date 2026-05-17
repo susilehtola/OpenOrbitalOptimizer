@@ -92,6 +92,8 @@ _SCF solver class._
 |  size\_t | [**maximum\_iterations**](#function-maximum_iterations-12) () const<br>_Get the maximum number of iterations._  |
 |  void | [**maximum\_iterations**](#function-maximum_iterations-22) (size\_t maxit) <br>_Set the maximum number of iterations._  |
 |  Tbase | [**norm**](#function-norm) (const arma::Mat&lt; Tbase &gt; & mat, std::string norm="") const<br>_Evaluate the norm._  |
+|  int | [**oda\_restart\_steps**](#function-oda_restart_steps-12) () const<br>_Get oda\_restart\_steps._  |
+|  void | [**oda\_restart\_steps**](#function-oda_restart_steps-22) (int oda\_restart\_steps) <br>_Set oda\_restart\_steps._  |
 |  Tbase | [**optimal\_damping\_threshold**](#function-optimal_damping_threshold-12) () const<br>_Use optimal damping when max error bigger than this._  |
 |  void | [**optimal\_damping\_threshold**](#function-optimal_damping_threshold-22) (Tbase eps) <br>_Use optimal damping when max error bigger than this._  |
 |  arma::uword | [**particle\_block\_offset**](#function-particle_block_offset) (size\_t iparticle) const<br>_Determines the offset for the blocks of the iparticle:th particle._  |
@@ -718,6 +720,36 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
     const arma::Mat< Tbase > & mat,
     std::string norm=""
 ) const
+```
+
+
+
+
+<hr>
+
+
+
+### function oda\_restart\_steps [1/2]
+
+_Get oda\_restart\_steps._ 
+```C++
+inline int OpenOrbitalOptimizer::SCFSolver::oda_restart_steps () const
+```
+
+
+
+
+<hr>
+
+
+
+### function oda\_restart\_steps [2/2]
+
+_Set oda\_restart\_steps._ 
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::oda_restart_steps (
+    int oda_restart_steps
+) 
 ```
 
 

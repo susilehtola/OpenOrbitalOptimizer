@@ -23,6 +23,7 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af36dfa775b8217c143e7b3f50e7c4465" kind="variable"><name>optimal_damping_threshold_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4e22eb6ac92d1d95ae1c4a6f75c888b6" kind="variable"><name>density_restart_factor_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8d62f812e103bcfef7a02c3d4590273c" kind="variable"><name>maximum_history_length_</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8cb89e566cd5b76243c2ba1e68324e17" kind="variable"><name>oda_restart_steps_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a46235bb5948a944dafbda86fa88f5e0e" kind="variable"><name>convergence_threshold_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1d0673dc9ec81952eb756196dcb48ac5" kind="variable"><name>error_norm_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a84941dce0da3f27ddbef80fb77b75952" kind="variable"><name>minimal_gradient_projection_</name></member>
@@ -112,6 +113,8 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a5a4283cc873207a4c4a24f39ed771241" kind="function"><name>optimal_damping_threshold</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8c383e2d9a47abd3a4dc3cf9dbb68fc7" kind="function"><name>maximum_history_length</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4e2a07b396907c2eb74ae79f53fbf264" kind="function"><name>maximum_history_length</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af3c08155e5d06addaf89dd3b9fccff18" kind="function"><name>oda_restart_steps</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a3fd58682ef2e2a5ba74d88ea52111e8d" kind="function"><name>oda_restart_steps</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a947e5a5cc12070b4f441424c85d574c5" kind="function"><name>add_entry</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a73a5a99a48840b0e19ae2ef4a8f04de8" kind="function"><name>add_entry</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a83718b48c4f1180324b256f013e11ce9" kind="function"><name>print_history</name></member>
