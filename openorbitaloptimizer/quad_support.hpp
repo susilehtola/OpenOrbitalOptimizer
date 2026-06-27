@@ -33,14 +33,21 @@
 #include <ostream>
 
 /// libstdc++ does not provide a stream output operator for _Float128.
-/// Without one, any ostream insertion is ambiguous because the implicit
-/// conversions to float / double / long double all rank equally.
-/// Provide an explicit overload routed through long double — precision
-/// past ~19 digits is lost in print, but this is a development-time
-/// diagnostic path, not a serialisation format.
+/// Without one, any ostream insertion on x86-64 is ambiguous because the
+/// implicit conversions to float / double / long double all rank
+/// equally. Provide an explicit overload routed through long double —
+/// precision past ~19 digits is lost in print, but this is a
+/// development-time diagnostic path, not a serialisation format.
+///
+/// On targets where long double already is binary128 (aarch64, PowerPC
+/// IEEE long double, ...) the existing operator<<(long double) is an
+/// exact match for _Float128 too, and adding our overload would itself
+/// create an ambiguity. Skip it there.
+#if !defined(__FLT128_MANT_DIG__) || __LDBL_MANT_DIG__ != __FLT128_MANT_DIG__
 inline std::ostream & operator<<(std::ostream & os, _Float128 x) {
   return os << static_cast<long double>(x);
 }
+#endif
 
 #include <Eigen/Core>
 
