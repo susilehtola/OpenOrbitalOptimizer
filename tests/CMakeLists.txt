@@ -84,3 +84,38 @@ set_tests_properties(
     NAME openorbopt/cplxdouble-double/build
     COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-instantiation-cplxdouble-double
   )
+
+  # Quad-precision (_Float128) instantiations. These require C++23 because
+  # libstdc++'s std::sqrt/exp/log/... overloads for _Float128 are gated by
+  # __cpp_lib_extended_float. Excluded from the default build; opt-in via
+  # the ctest targets.
+  add_executable(
+    openorbopt-instantiation-quad-real
+    EXCLUDE_FROM_ALL
+    quad_real.cpp
+  )
+  target_compile_features(openorbopt-instantiation-quad-real PRIVATE cxx_std_23)
+  target_link_libraries(
+    openorbopt-instantiation-quad-real
+    PRIVATE
+    ${ooo}::OpenOrbitalOptimizer
+  )
+  add_executable(
+    openorbopt-instantiation-quad-complex
+    EXCLUDE_FROM_ALL
+    quad_complex.cpp
+  )
+  target_compile_features(openorbopt-instantiation-quad-complex PRIVATE cxx_std_23)
+  target_link_libraries(
+    openorbopt-instantiation-quad-complex
+    PRIVATE
+    ${ooo}::OpenOrbitalOptimizer
+  )
+  add_test(  # Test #7
+    NAME openorbopt/quad-real/build
+    COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-instantiation-quad-real
+  )
+  add_test(  # Test #8
+    NAME openorbopt/quad-complex/build
+    COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-instantiation-quad-complex
+  )
