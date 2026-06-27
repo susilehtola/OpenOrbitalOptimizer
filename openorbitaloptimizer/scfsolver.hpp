@@ -465,7 +465,7 @@ namespace OpenOrbitalOptimizer {
       }
 
       // Find minimum
-      Vector<double> yguess(xguess.size());
+      Vector<Tbase> yguess(xguess.size());
       for(size_t i=0;i<xguess.size();i++)
         yguess[i] = fx(xguess[i]);
 
@@ -1021,8 +1021,8 @@ namespace OpenOrbitalOptimizer {
       };
 
       // Solve roots
-      Tbase x1 = (-b - sqrt(b*b - 4*a*c))/(2*a);
-      Tbase x2 = (-b + sqrt(b*b - 4*a*c))/(2*a);
+      Tbase x1 = (-b - std::sqrt(b*b - 4*a*c))/(2*a);
+      Tbase x2 = (-b + std::sqrt(b*b - 4*a*c))/(2*a);
       bool x1ok = x1 > 0.0 and x1<=1.0;
       bool x2ok = x2 > 0.0 and x2<=1.0;
 
