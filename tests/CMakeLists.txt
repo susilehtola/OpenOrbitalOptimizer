@@ -11,6 +11,7 @@ target_link_libraries(
   openorbopt-atomtest
   PRIVATE
     ${ooo}::OpenOrbitalOptimizer
+    armadillo  # atomicsolver.hpp + the SCFSolver bridge in this test
     Libxc::xc
     IntegratorXX::IntegratorXX
     nlohmann_json::nlohmann_json

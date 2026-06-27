@@ -72,29 +72,35 @@ endif()
 
 add_library(${ooo}::OpenOrbitalOptimizer ALIAS libooo)
 
-find_package(Armadillo REQUIRED CONFIG)
-if (NOT TARGET armadillo)
-    message(FATAL "Require detecting an Armadillo target")
-endif()
-# [Mar 2025] Conda Windows target is wrong. Compensate with:
-# * -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
-# or use the block below, duplicated in ${ooo}Config.cmake
-# Block below is cautious so if bad dir exists, may still need abov
-get_property(_iid TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-if(NOT EXISTS "${_iid}")
-  if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-    if(DEFINED ENV{CONDA_PREFIX})
-      message(STATUS "healing armadillo.INTERFACE_INCLUDE_DIRECTORIES from ${_iid} to $ENV{CONDA_PREFIX}\\Library\\include")
-      set_property(TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES "$ENV{CONDA_PREFIX}\\Library\\include")
-    endif()
-  endif()
-endif()
+find_package(Eigen3 REQUIRED NO_MODULE)
 
 target_link_libraries(
   libooo
   INTERFACE
-    armadillo  # upstream target is not namespaced
+    Eigen3::Eigen
   )
+
+# tests/atomicsolver.hpp still uses Armadillo; require it only when the
+# test-suite is being built.
+if (${ooo}_BUILD_TESTING)
+  find_package(Armadillo REQUIRED CONFIG)
+  if (NOT TARGET armadillo)
+      message(FATAL "Require detecting an Armadillo target")
+  endif()
+  # [Mar 2025] Conda Windows target is wrong. Compensate with:
+  # * -D CMAKE_CXX_FLAGS="-I${CONDA_PREFIX}\\Library\\include"
+  # or use the block below, duplicated in ${ooo}Config.cmake
+  # Block below is cautious so if bad dir exists, may still need abov
+  get_property(_iid TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+  if(NOT EXISTS "${_iid}")
+    if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+      if(DEFINED ENV{CONDA_PREFIX})
+        message(STATUS "healing armadillo.INTERFACE_INCLUDE_DIRECTORIES from ${_iid} to $ENV{CONDA_PREFIX}\\Library\\include")
+        set_property(TARGET armadillo PROPERTY INTERFACE_INCLUDE_DIRECTORIES "$ENV{CONDA_PREFIX}\\Library\\include")
+      endif()
+    endif()
+  endif()
+endif()
 
 if (${ooo}_BUILD_TESTING)
     enable_testing()

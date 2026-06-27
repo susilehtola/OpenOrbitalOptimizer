@@ -6,10 +6,11 @@
 #include <openorbitaloptimizer/scfsolver.hpp>
 #include <nlohmann/json.hpp>
 #include "cmdline.h"
+#include "eigen_arma_bridge.hpp"
 
 namespace OpenOrbitalOptimizer {
   // Instantiate all types of SCFSolver just to check it compiles
-  template class SCFSolver<double, double>;
+  template class SCFSolver<double, false>;
 
   namespace AtomicSolver {
 
@@ -440,7 +441,7 @@ namespace OpenOrbitalOptimizer {
       return E;
     }
 
-    OpenOrbitalOptimizer::SCFSolver<double, double> restricted_scf(int Z, int Q, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
+    OpenOrbitalOptimizer::SCFSolver<double, false> restricted_scf(int Z, int Q, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
       // Form the orthogonal orbital basis
       std::vector<arma::mat> X(form_X(linear_dependency_threshold, radial_basis));
 
@@ -463,15 +464,17 @@ namespace OpenOrbitalOptimizer {
         block_descriptions[l] = oss.str();
       }
 
-      // Form the Fock matrix guess
-      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(radial_basis.size());
+      // Form the Fock matrix guess (built in Armadillo, then bridged to Eigen)
+      std::vector<arma::mat> fock_guess_arma(radial_basis.size());
       for(size_t i=0;i<X.size();i++)
-        fock_guess[i] = X[i].t() * (Hcore[i].first+Hcore[i].second) * X[i];
+        fock_guess_arma[i] = X[i].t() * (Hcore[i].first+Hcore[i].second) * X[i];
+      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(eaa::to_eigen(fock_guess_arma));
 
-      // Fock builder
+      // Fock builder. The SCF solver hands us Eigen-shaped density data;
+      // we bridge it to Armadillo so atomicsolver routines work unchanged.
       OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, X, Ngrid, x_func_id, c_func_id, Hcore, verbosity](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
-        const auto & orbitals = dm.first;
-        const auto & occupations = dm.second;
+        const std::vector<arma::mat> orbitals = eaa::to_arma(dm.first);
+        const std::vector<arma::vec> occupations = eaa::to_arma(dm.second);
 
         // Form the density matrix in the original basis
         std::vector<arma::mat> P(orbitals.size());
@@ -526,11 +529,15 @@ namespace OpenOrbitalOptimizer {
           printf("Total energy    % .10f\n",Etot);
         }
 
-        return std::make_pair(Etot, fock);
+        return std::make_pair(Etot, eaa::to_eigen(fock));
       };
 
       // Initialize SCF solver
-      OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
+      OpenOrbitalOptimizer::SCFSolver<double, false> scfsolver(
+          eaa::to_eigen(number_of_blocks_per_particle_type),
+          eaa::to_eigen(maximum_occupation),
+          eaa::to_eigen(number_of_particles),
+          fock_builder, block_descriptions);
       scfsolver.verbosity(verbosity);
       scfsolver.convergence_threshold(convergence_threshold);
       scfsolver.initialize_with_fock(fock_guess);
@@ -556,7 +563,7 @@ namespace OpenOrbitalOptimizer {
       return scfsolver;
     }
 
-    OpenOrbitalOptimizer::SCFSolver<double, double> unrestricted_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
+    OpenOrbitalOptimizer::SCFSolver<double, false> unrestricted_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
       // Form the orthogonal orbital basis
       std::vector<arma::mat> X(form_X(linear_dependency_threshold, radial_basis));
 
@@ -600,16 +607,17 @@ namespace OpenOrbitalOptimizer {
         block_descriptions[l+radial_basis.size()] = oss.str();
       }
 
-      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(2*radial_basis.size());
+      std::vector<arma::mat> fock_guess_arma(2*radial_basis.size());
       for(size_t i=0;i<X.size();i++) {
-        fock_guess[i] = X[i].t() * (Hcore[i].first+Hcore[i].second) * X[i];
-        fock_guess[i+radial_basis.size()] = fock_guess[i];
+        fock_guess_arma[i] = X[i].t() * (Hcore[i].first+Hcore[i].second) * X[i];
+        fock_guess_arma[i+radial_basis.size()] = fock_guess_arma[i];
       }
+      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(eaa::to_eigen(fock_guess_arma));
 
-      // Fock builder
+      // Fock builder. Eigen ↔ Armadillo conversion at the boundary.
       OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, X, Ngrid, x_func_id, c_func_id, Hcore, verbosity](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
-        const auto & orbitals = dm.first;
-        const auto & occupations = dm.second;
+        const std::vector<arma::mat> orbitals = eaa::to_arma(dm.first);
+        const std::vector<arma::vec> occupations = eaa::to_arma(dm.second);
 
         // Form the spin-up and spin-down density matrices in the original basis
         assert(orbitals.size()%2==0);
@@ -670,11 +678,15 @@ namespace OpenOrbitalOptimizer {
           printf("Total energy       % .10f\n",Etot);
         }
 
-        return std::make_pair(Etot, fock);
+        return std::make_pair(Etot, eaa::to_eigen(fock));
       };
 
       // Initialize SCF solver
-      OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
+      OpenOrbitalOptimizer::SCFSolver<double, false> scfsolver(
+          eaa::to_eigen(number_of_blocks_per_particle_type),
+          eaa::to_eigen(maximum_occupation),
+          eaa::to_eigen(number_of_particles),
+          fock_builder, block_descriptions);
       scfsolver.verbosity(verbosity);
       scfsolver.convergence_threshold(convergence_threshold);
       scfsolver.initialize_with_fock(fock_guess);
@@ -700,7 +712,7 @@ namespace OpenOrbitalOptimizer {
       return scfsolver;
     }
 
-    OpenOrbitalOptimizer::SCFSolver<double, double> unrestricted_neo_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int epc_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & protonic_basis, double proton_mass, int verbosity, bool core_excitation) {
+    OpenOrbitalOptimizer::SCFSolver<double, false> unrestricted_neo_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int epc_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & protonic_basis, double proton_mass, int verbosity, bool core_excitation) {
       // Form the orthogonal orbital basis
       std::vector<arma::mat> X(form_X(linear_dependency_threshold, radial_basis));
       std::vector<arma::mat> Xp(form_X(linear_dependency_threshold, protonic_basis));
@@ -752,10 +764,10 @@ namespace OpenOrbitalOptimizer {
         block_descriptions[l+2*radial_basis.size()] = oss.str();
       }
 
-      // Fock builder
+      // Fock builder. Eigen ↔ Armadillo conversion at the boundary.
       OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, protonic_basis, X, Xp, Ngrid, x_func_id, c_func_id, epc_func_id, Hcore, Hpcore, verbosity](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
-        const auto & orbitals = dm.first;
-        const auto & occupations = dm.second;
+        const std::vector<arma::mat> orbitals = eaa::to_arma(dm.first);
+        const std::vector<arma::vec> occupations = eaa::to_arma(dm.second);
 
         // Form the spin-up and spin-down density matrices in the original basis
         size_t Nblocks = radial_basis.size();
@@ -834,11 +846,15 @@ namespace OpenOrbitalOptimizer {
           printf("Total energy           % .10f\n",Etot);
         }
 
-        return std::make_pair(Etot, fock);
+        return std::make_pair(Etot, eaa::to_eigen(fock));
       };
 
       // Initialize SCF solver
-      OpenOrbitalOptimizer::SCFSolver scfsolver(number_of_blocks_per_particle_type, maximum_occupation, number_of_particles, fock_builder, block_descriptions);
+      OpenOrbitalOptimizer::SCFSolver<double, false> scfsolver(
+          eaa::to_eigen(number_of_blocks_per_particle_type),
+          eaa::to_eigen(maximum_occupation),
+          eaa::to_eigen(number_of_particles),
+          fock_builder, block_descriptions);
       scfsolver.convergence_threshold(convergence_threshold);
       scfsolver.verbosity(verbosity);
 
@@ -846,8 +862,8 @@ namespace OpenOrbitalOptimizer {
         // Run a calculation with the point nucleus to initialize the electronic orbitals
         OpenOrbitalOptimizer::SCFSolver esolver(unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, false));
         auto electronic_dm(esolver.get_solution());
-        const auto & orbitals = electronic_dm.first;
-        const auto & occupations = electronic_dm.second;
+        const std::vector<arma::mat> orbitals = eaa::to_arma(electronic_dm.first);
+        const std::vector<arma::vec> occupations = eaa::to_arma(electronic_dm.second);
 
         // Compute the electronic density matrix
         size_t Nblocks = radial_basis.size();
@@ -864,16 +880,16 @@ namespace OpenOrbitalOptimizer {
           Ptot[iblock] = Pa + Pb;
         }
 
-        // Guess Fock matrix from converged calculation
-        auto fock_guess = esolver.get_fock_build().second;
+        // Guess Fock matrix from converged calculation (bridged to Armadillo)
+        std::vector<arma::mat> fock_guess_arma = eaa::to_arma(esolver.get_fock_build().second);
 
         // Compute the Coulomb potential
         auto coulomb_pe = OpenOrbitalOptimizer::AtomicSolver::build_J(protonic_basis, radial_basis, Ptot);
         for(size_t iblock=0; iblock<Npblocks; iblock++) {
-          fock_guess.push_back(Xp[iblock].t() * (Hpcore[iblock].first - coulomb_pe[iblock] ) * Xp[iblock]);
+          fock_guess_arma.push_back(Xp[iblock].t() * (Hpcore[iblock].first - coulomb_pe[iblock] ) * Xp[iblock]);
         }
 
-        scfsolver.initialize_with_fock(fock_guess);
+        scfsolver.initialize_with_fock(eaa::to_eigen(fock_guess_arma));
       }
 
       scfsolver.run();
