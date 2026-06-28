@@ -320,14 +320,14 @@ namespace OpenOrbitalOptimizer {
         nelem += block.size();
 
       Vector<Tbase> return_vector(nelem);
-      size_t ioff=0;
+      Index ioff = 0;
       for(auto & block: error_vectors) {
         if(block.size()>0) {
-          return_vector.segment(ioff, (ioff+block.size()-(ioff)+1)-1) = block;
+          return_vector.segment(ioff, block.size()) = block;
           ioff += block.size();
         }
       }
-      if(ioff!=nelem)
+      if(ioff != static_cast<Index>(nelem))
         throw std::logic_error("Indexing error!\n");
 
       return return_vector;

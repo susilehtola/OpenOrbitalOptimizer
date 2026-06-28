@@ -25,7 +25,8 @@ PYBIND11_MODULE(_ext, m) {
   py::class_<Solver>(m, "SCFSolver",
       "SCF solver supporting fractional/degenerate occupations through\n"
       "skeleton density matrices and bi-level ODA + preconditioned CG\n"
-      "minimization. Templated on (double, real).")
+      "minimization. Bound for SCFSolver<double, IsComplex=false>:\n"
+      "double-precision real orbital coefficients and energies.")
     .def(py::init<IndexVector, Vector<double>, Vector<double>,
                   FockBuilder<double, double>, std::vector<std::string>>(),
          py::arg("number_of_blocks_per_particle_type"),
