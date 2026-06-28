@@ -71,7 +71,7 @@ jobs:
           - cmake
           - ninja
           - cxx-compiler
-          - armadillo
+          - eigen
           - libxc-c
           - nlohmann_json
           - integratorxx
@@ -137,7 +137,7 @@ jobs:
           include(CMakePrintHelpers)
           cmake_print_properties(
             TARGETS
-              armadillo
+              Eigen3::Eigen
               IntegratorXX::IntegratorXX
               OpenOrbitalOptimizer::OpenOrbitalOptimizer
             PROPERTIES
@@ -196,7 +196,7 @@ jobs:
           - cmake
           - ninja
           - cxx-compiler
-          - armadillo
+          - eigen
           - pybind11
           - numpy
           - pytest

@@ -1,6 +1,6 @@
 #include <openorbitaloptimizer/scfsolver.hpp>
 
-template class OpenOrbitalOptimizer::SCFSolver<float, float>;
+template class OpenOrbitalOptimizer::SCFSolver<float, true>;
 
 int main(void) {
   return 0;

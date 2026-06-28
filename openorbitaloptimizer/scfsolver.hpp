@@ -7,82 +7,37 @@
 */
 
 #pragma once
-#include <any>
-#include <map>
-#include <vector>
-#include <armadillo>
+#include "types.hpp"
+#include "eigen_compat.hpp"
 #include "cg_optimizer.hpp"
 
+#include <any>
+#include <cmath>
+#include <cstdio>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+
 namespace OpenOrbitalOptimizer {
-  /// A symmetry block of orbitals is defined by the corresponding N x
-  /// N matrix of orbital coefficients
-  template<typename T> using OrbitalBlock = arma::Mat<T>;
-  /// The set of orbitals is defined by a vector of orbital blocks,
-  /// corresponding to each symmetry block of each particle type
-  template<typename T> using Orbitals = std::vector<OrbitalBlock<T>>;
 
-  /// A symmetry block of orbital gradients is defined by the
-  /// corresponding N x N matrix
-  template<typename T> using OrbitalGradientBlock = arma::Mat<T>;
-  /// The set of orbital gradients is defined by a vector of orbital
-  /// blocks, corresponding to each symmetry block of each particle
-  /// type
-  template<typename T> using OrbitalGradients = std::vector<OrbitalGradientBlock<T>>;
-
-  /// A symmetry block of diagonal orbital Hessians is defined by the
-  /// corresponding N x N matrix
-  template<typename T> using DiagonalOrbitalHessianBlock = arma::Mat<T>;
-  /// The set of diagonal orbital Hessians is defined by a vector of orbital
-  /// blocks, corresponding to each symmetry block of each particle
-  /// type
-  template<typename T> using DiagonalOrbitalHessians = std::vector<DiagonalOrbitalHessianBlock<T>>;
-
-  /// The occupations for each orbitals are floating point numbers
-  template<typename T> using OrbitalBlockOccupations = arma::Col<T>;
-  /// The occupations for the whole set of orbitals are again a
-  /// vector
-  template<typename T> using OrbitalOccupations = std::vector<OrbitalBlockOccupations<T>>;
-
-  /// The pair of orbitals and occupations defines the density matrix
-  template<typename Torb, typename Tbase> using DensityMatrix = std::pair<Orbitals<Torb>,OrbitalOccupations<Tbase>>;
-
-  /// Orbital energies are stored as a vector of vectors
-  template<typename T> using OrbitalEnergies = std::vector<arma::Col<T>>;
-
-  /// A symmetry block in a Fock matrix is likewise defined by a N x
-  /// N matrix
-  template<typename T> using FockMatrixBlock = arma::Mat<T>;
-  /// The whole set of Fock matrices is a vector of blocks
-  template<typename T> using FockMatrix = std::vector<FockMatrixBlock<T>>;
-  /// The return of Fock matrix diagonalization is
-  template<typename Torb, typename Tbase> using DiagonalizedFockMatrix = std::pair<Orbitals<Torb>,OrbitalEnergies<Tbase>>;
-
-  /// The Fock matrix builder returns the energy and the Fock
-  /// matrices for each orbital block
-  template<typename Torb, typename Tbase> using FockBuilderReturn = std::pair<Tbase, FockMatrix<Torb>>;
-  /// The Fock builder takes in the orbitals and orbital occupations,
-  /// and returns the energy and Fock matrices
-  template<typename Torb, typename Tbase> using FockBuilder = std::function<FockBuilderReturn<Torb, Tbase>(const DensityMatrix<Torb, Tbase> &)>;
-
-  /// The history of orbital optimization is defined by the orbitals
-  /// and their occupations - together the density matrix - and the
-  /// resulting energy and Fock matrix
-  template<typename Torb, typename Tbase> using OrbitalHistoryEntry = std::tuple<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>, size_t>;
-  /// The history is then a vector
-  template<typename Torb, typename Tbase> using OrbitalHistory = std::vector<OrbitalHistoryEntry<Torb, Tbase>>;
-
-  /// List of orbital rotation angles: block index and orbital indices
-  using OrbitalRotation = std::tuple<size_t, arma::uword, arma::uword>;
-
-  /// SCF solver class
-  template<typename Torb, typename Tbase> class SCFSolver {
+  /// SCF solver class. Templated on the real type Tbase (e.g. float,
+  /// double, __float128) and a boolean IsComplex selecting between real
+  /// and complex orbital coefficients. The orbital scalar type Torb is
+  /// std::conditional_t<IsComplex, std::complex<Tbase>, Tbase>.
+  template<typename Tbase, bool IsComplex> class SCFSolver {
+  public:
+    /// Orbital scalar type derived from <Tbase, IsComplex>.
+    using Torb = OrbitalScalar<Tbase, IsComplex>;
+  private:
     /* Input data section */
     /// The number of orbital blocks per particle type (length ntypes)
-    arma::uvec number_of_blocks_per_particle_type_;
+    IndexVector number_of_blocks_per_particle_type_;
     /// The maximal capacity of each orbital block
-    arma::Col<Tbase> maximum_occupation_;
+    Vector<Tbase> maximum_occupation_;
     /// The number of particles of each class in total (length ntypes, used to determine Aufbau occupations)
-    arma::Col<Tbase> number_of_particles_;
+    Vector<Tbase> number_of_particles_;
     /// The Fock builder used to evaluate energies and Fock matrices
     FockBuilder<Torb, Tbase> fock_builder_;
     /// Descriptions of the blocks
@@ -96,7 +51,7 @@ namespace OpenOrbitalOptimizer {
         the way occupations are assigned in Aufbau. These are used if
         the array has the expected size.
     */
-    arma::Col<Tbase> fixed_number_of_particles_per_block_;
+    Vector<Tbase> fixed_number_of_particles_per_block_;
     /// (Optional) freeze occupations altogether to their previous values
     bool frozen_occupations_;
 
@@ -157,14 +112,14 @@ namespace OpenOrbitalOptimizer {
       // Check if Fock matrix has zero dimension
       if(iblock>=std::get<0>(orbital_history_[0]).first.size())
         throw std::logic_error("Trying to check empty block for nonexistent index!\n");
-      return std::get<1>(orbital_history_[0]).second[iblock].n_elem == 0;
+      return std::get<1>(orbital_history_[0]).second[iblock].size() == 0;
     }
 
     /// Get a block of the density matrix for the ihist:th entry
-    arma::Mat<Torb> get_density_matrix_block(size_t ihist, size_t iblock) const {
+    Matrix<Torb> get_density_matrix_block(size_t ihist, size_t iblock) const {
       const auto orbitals = get_orbital_block(ihist, iblock);
       const auto occupations = get_orbital_occupation_block(ihist, iblock);
-      return orbitals * arma::diagmat(occupations) * arma::trans(orbitals);
+      return orbitals * (occupations).asDiagonal() * (orbitals).adjoint();
     }
 
     /// Get a block of the orbital occupations for the ihist:th entry
@@ -227,115 +182,113 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Matrix dimensions
-    arma::uvec matrix_dimension() const {
+    IndexVector matrix_dimension() const {
       const auto & fock = std::get<1>(orbital_history_[0]).second;
-      arma::uvec dim(fock.size());
+      IndexVector dim(fock.size());
       for(size_t i=0;i<fock.size();i++)
-        dim(i) = fock[i].n_cols;
+        dim(i) = fock[i].cols();
       return dim;
     }
 
     /// Get a block of the Fock matrix for the ihist:th entry
-    arma::Mat<Torb> get_fock_matrix_block(size_t ihist, size_t iblock) const {
+    Matrix<Torb> get_fock_matrix_block(size_t ihist, size_t iblock) const {
       return std::get<1>(orbital_history_[ihist]).second[iblock];
     }
 
-    /// Vectorise
-    arma::Col<Tbase> vectorise(const arma::Mat<Torb> & mat) const {
-      if constexpr (arma::is_real<Torb>::value) {
-        return arma::vectorise(mat);
-      } else {
-        return arma::join_cols(arma::vectorise(arma::real(mat)),arma::vectorise(arma::imag(mat)));
-      }
+    /// Vectorise a single Torb matrix to a real Tbase vector. For complex
+    /// Torb, stack real-then-imag parts (matches arma::vectorise + split).
+    Vector<Tbase> vectorise(const Matrix<Torb> & mat) const {
+      return vectorise_real_imag(mat);
     }
 
-    /// Vectorise
-    arma::Col<Tbase> vectorise(const std::vector<arma::Mat<Torb>> & mat) const {
+    /// Vectorise a vector of Torb matrices into one long real Tbase vector.
+    Vector<Tbase> vectorise(const std::vector<Matrix<Torb>> & mat) const {
       // Compute length of return vector
       size_t N=0;
 
-      std::vector<arma::Col<Tbase>> vectors(mat.size());
+      std::vector<Vector<Tbase>> vectors(mat.size());
       for(size_t iblock=0;iblock<mat.size();iblock++) {
-        if(mat[iblock].n_elem==0)
+        if(mat[iblock].size()==0)
           continue;
         vectors[iblock]=vectorise(mat[iblock]);
-        N += vectors[iblock].n_elem;
+        N += vectors[iblock].size();
       }
 
-      arma::Col<Tbase> v(N,arma::fill::zeros);
+      Vector<Tbase> v = Vector<Tbase>::Zero(N);
       size_t ioff=0;
       for(size_t iblock=0;iblock<vectors.size();iblock++) {
-        if(mat[iblock].n_elem==0)
+        if(mat[iblock].size()==0)
           continue;
-        v.subvec(ioff,ioff+vectors[iblock].n_elem-1)=vectors[iblock];
-        ioff += vectors[iblock].n_elem;
+        v.segment(ioff, vectors[iblock].size()) = vectors[iblock];
+        ioff += vectors[iblock].size();
       }
 
       return v;
     }
 
-    arma::Mat<Torb> matricise(const arma::Col<Tbase> & vec, size_t nrows, size_t ncols) const {
-      if constexpr (arma::is_real<Torb>::value) {
-        if(vec.n_elem != nrows*ncols) {
+    Matrix<Torb> matricise(const Vector<Tbase> & vec, size_t nrows, size_t ncols) const {
+      if constexpr (!Eigen::NumTraits<Torb>::IsComplex) {
+        if(vec.size() != (Index)(nrows*ncols)) {
           std::ostringstream oss;
-          oss << "Matricise error: expected " << nrows*ncols << " elements for " << nrows << " x " << ncols << " real matrix, but got " << vec.n_elem << " instead!\n";
+          oss << "Matricise error: expected " << nrows*ncols << " elements for " << nrows << " x " << ncols << " real matrix, but got " << vec.size() << " instead!\n";
           throw std::logic_error(oss.str());
         }
-        return arma::Mat<Torb>(vec.memptr(), nrows, ncols);
+        return Eigen::Map<const Matrix<Torb>>(vec.data(), nrows, ncols);
       } else {
-        if(vec.n_elem != 2*nrows*ncols) {
+        if(vec.size() != (Index)(2*nrows*ncols)) {
           std::ostringstream oss;
-          oss << "Matricise error: expected " << 2*nrows*ncols << " elements for " << nrows << " x " << ncols << " complex matrix, but got " << vec.n_elem << " instead!\n";
+          oss << "Matricise error: expected " << 2*nrows*ncols << " elements for " << nrows << " x " << ncols << " complex matrix, but got " << vec.size() << " instead!\n";
           throw std::logic_error(oss.str());
         }
 
-        arma::Mat<Tbase> real(vec.memptr(), nrows, ncols);
-        arma::Mat<Tbase> imag(vec.memptr()+nrows*ncols, nrows, ncols);
-        arma::Mat<Torb> mat(real*std::complex<Tbase>(1.0,0.0) + imag*std::complex<Tbase>(0.0,1.0));
+        Eigen::Map<const Matrix<Tbase>> real_part(vec.data(), nrows, ncols);
+        Eigen::Map<const Matrix<Tbase>> imag_part(vec.data()+nrows*ncols, nrows, ncols);
+        Matrix<Torb> mat = real_part.template cast<Torb>()
+                          + imag_part.template cast<Torb>() * std::complex<Tbase>(Tbase{0}, Tbase{1});
         return mat;
       }
     }
 
-    std::vector<arma::Mat<Torb>> matricise(const arma::Col<Tbase> & vec, const arma::uvec & dim) const {
-      std::vector<arma::Mat<Torb>> mat(dim.n_elem);
+    std::vector<Matrix<Torb>> matricise(const Vector<Tbase> & vec, const IndexVector & dim) const {
+      std::vector<Matrix<Torb>> mat(dim.size());
       size_t ioff = 0;
-      for(size_t iblock=0; iblock<dim.n_elem; iblock++) {
-        if(dim(iblock)==0)
+      for(Index iblock=0; iblock<dim.size(); iblock++) {
+        if(dim[iblock]==0)
           continue;
-        size_t size = dim(iblock)*dim(iblock);
-        if constexpr (not arma::is_real<Torb>::value) {
-          size *= 2;
+        size_t sz = (size_t)dim[iblock] * (size_t)dim[iblock];
+        if constexpr (Eigen::NumTraits<Torb>::IsComplex) {
+          sz *= 2;
         }
-        mat[iblock] = matricise(vec.subvec(ioff, ioff+size-1), dim(iblock), dim(iblock));
-        ioff += size;
+        mat[iblock] = matricise(vec.segment(ioff, sz), dim[iblock], dim[iblock]);
+        ioff += sz;
       }
       return mat;
     }
 
     /// Compute DIIS residual
-    arma::Mat<Torb> diis_residual(size_t ihist, size_t iblock) const {
+    Matrix<Torb> diis_residual(size_t ihist, size_t iblock) const {
       // Error is measured by FPS-SPF = FP - PF, since we have a unit metric.
       auto F = get_fock_matrix_block(ihist, iblock);
       auto P = get_density_matrix_block(ihist, iblock);
 
       // Though F and P should be symmetric by construction, explicitly symmetrize
       // them and compute commutator to avoid symmetry-related numerical issues.
-      arma::Mat<Torb> F_sym = 0.5 * (F + F.t());
-      arma::Mat<Torb> P_sym = 0.5 * (P + P.t());
-      arma::Mat<Torb> PF = P_sym * F_sym;
-      arma::Mat<Torb> FP = F_sym * P_sym;
-      arma::Mat<Torb> commutator = PF - FP;
+      Matrix<Torb> F_sym = 0.5 * (F + F.adjoint());
+      Matrix<Torb> P_sym = 0.5 * (P + P.adjoint());
+      Matrix<Torb> PF = P_sym * F_sym;
+      Matrix<Torb> FP = F_sym * P_sym;
+      Matrix<Torb> commutator = PF - FP;
 
       // To make the L^infty error independent of the underlying basis
       // set, we project the residual into the best orbitals we have
       auto C = get_orbital_block(0, iblock);
-      commutator = C.t() * commutator * C;
+      commutator = C.adjoint() * commutator * C;
       return commutator;
     }
 
     /// Compute DIIS residual
-    std::vector<arma::Mat<Torb>> diis_residual(size_t ihist) const {
-      std::vector<arma::Mat<Torb>> residuals(number_of_blocks_);
+    std::vector<Matrix<Torb>> diis_residual(size_t ihist) const {
+      std::vector<Matrix<Torb>> residuals(number_of_blocks_);
       for(size_t iblock=0; iblock<number_of_blocks_; iblock++) {
         if(empty_block(iblock))
           continue;
@@ -345,20 +298,20 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Form DIIS error vector for ihist:th entry
-    arma::Col<Tbase> diis_error_vector(size_t ihist, size_t iblock) const {
+    Vector<Tbase> diis_error_vector(size_t ihist, size_t iblock) const {
       return vectorise(diis_residual(ihist, iblock));
     }
 
     /// Form DIIS error vector for ihist:th entry
-    arma::Col<Tbase> diis_error_vector(size_t ihist) const {
+    Vector<Tbase> diis_error_vector(size_t ihist) const {
       // Form error vectors
-      std::vector<arma::Col<Tbase>> error_vectors(number_of_blocks_);
+      std::vector<Vector<Tbase>> error_vectors(number_of_blocks_);
       for(size_t iblock = 0; iblock<number_of_blocks_;iblock++) {
         error_vectors[iblock] = diis_error_vector(ihist, iblock);
         if(verbosity_>=20)
           printf("ihist %i block %i error vector norm %e\n", (int) ihist, (int) iblock, norm(error_vectors[iblock]));
         if(verbosity_>=30)
-          error_vectors[iblock].print();
+          std::cout << error_vectors[iblock] << std::endl;
       }
 
       // Compound error vector
@@ -366,15 +319,15 @@ namespace OpenOrbitalOptimizer {
       for(auto & block: error_vectors)
         nelem += block.size();
 
-      arma::Col<Tbase> return_vector(nelem);
-      size_t ioff=0;
+      Vector<Tbase> return_vector(nelem);
+      Index ioff = 0;
       for(auto & block: error_vectors) {
         if(block.size()>0) {
-          return_vector.subvec(ioff,ioff+block.size()-1) = block;
+          return_vector.segment(ioff, block.size()) = block;
           ioff += block.size();
         }
       }
-      if(ioff!=nelem)
+      if(ioff != static_cast<Index>(nelem))
         throw std::logic_error("Indexing error!\n");
 
       return return_vector;
@@ -386,18 +339,18 @@ namespace OpenOrbitalOptimizer {
       for(size_t iblock=0; iblock<number_of_blocks_; iblock++) {
         if(empty_block(iblock))
           continue;
-        arma::Col<Tbase> ei(diis_error_vector(ihist, iblock));
-        arma::Col<Tbase> ej(diis_error_vector(jhist, iblock));
-        el += arma::dot(ei,ej);
+        Vector<Tbase> ei(diis_error_vector(ihist, iblock));
+        Vector<Tbase> ej(diis_error_vector(jhist, iblock));
+        el += (ei).dot(ej);
       }
       return el;
     }
 
     /// Form DIIS error matrix
-    arma::Mat<Tbase> diis_error_matrix(const std::vector<size_t> & mask) const {
+    Matrix<Tbase> diis_error_matrix(const std::vector<size_t> & mask) const {
       // The error matrix is given by the orbital gradient dot products
       const size_t N=mask.size();
-      arma::Mat<Tbase> B(N,N,arma::fill::zeros);
+      Matrix<Tbase> B = Matrix<Tbase>::Zero(N, N);
 
       for(size_t ihist=0; ihist<N; ihist++) {
         for(size_t jhist=0; jhist<=ihist; jhist++) {
@@ -407,15 +360,15 @@ namespace OpenOrbitalOptimizer {
       return B;
     }
 
-    arma::Col<Tbase> diis_error_matrix_diagonal() const {
-      arma::Col<Tbase> B(orbital_history_.size(),arma::fill::zeros);
-      for(size_t ihist=0; ihist<B.n_elem; ihist++) {
+    Vector<Tbase> diis_error_matrix_diagonal() const {
+      Vector<Tbase> B = Vector<Tbase>::Zero(orbital_history_.size());
+      for(size_t ihist=0; ihist<(size_t)B.size(); ihist++) {
         B(ihist) = diis_error_matrix_element(ihist, ihist);
       }
       return B;
     }
 
-    arma::Mat<Tbase> diis_error_matrix() const {
+    Matrix<Tbase> diis_error_matrix() const {
       std::vector<size_t> mask(orbital_history_.size());
       for(size_t i=0;i<mask.size();i++)
         mask[i]=i;
@@ -423,15 +376,15 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Calculate DIIS weights
-    arma::Col<Tbase> diis_weights() const {
+    Vector<Tbase> diis_weights() const {
       // Only use reference points with error residuals that are sufficiently small
       std::vector<size_t> history_mask(orbital_history_.size());
       for(size_t i=0;i<history_mask.size();i++)
         history_mask[i]=i;
-      arma::Col<Tbase> residuals(history_mask.size());
+      Vector<Tbase> residuals(history_mask.size());
       for(size_t i=0;i<residuals.size();i++)
         residuals(i) = diis_error_matrix_element(history_mask[i], history_mask[i]);
-      Tbase min_residual = arma::min(residuals);
+      Tbase min_residual = (residuals).minCoeff();
       for(size_t i=history_mask.size()-1;i<history_mask.size();i--)
         // Criterion from Chupin et al, 2012
         if(residuals(i)*diis_restart_factor_ > min_residual)
@@ -442,42 +395,41 @@ namespace OpenOrbitalOptimizer {
 
       // Set up the DIIS error matrix
       const size_t N=history_mask.size();
-      arma::Mat<Tbase> B(N+1,N+1,arma::fill::value(-1.0));
-      B.submat(0,0,N-1,N-1)=diis_error_matrix(history_mask);
+      Matrix<Tbase> B = Matrix<Tbase>::Constant(N+1, N+1, -1.0);
+      B.block(0, 0, (N-1)-(0)+1, (N-1)-(0)+1)=diis_error_matrix(history_mask);
       B(N,N)=0.0;
 
       // Apply the diagonal damping
-      B.submat(0,0,N-1,N-1).diag() *= 1.0+diis_diagonal_damping_;
+      B.block(0, 0, (N-1)-(0)+1, (N-1)-(0)+1).diagonal() *= 1.0+diis_diagonal_damping_;
 
       // To improve numerical conditioning, scale entries of error
       // matrix such that the last diagonal element is one; Eckert et
       // al, J. Comput. Chem 18. 1473-1483 (1997)
-      arma::Col<Tbase> Bdiag(arma::diagvec(B));
-      Tbase diagmin = arma::min(Bdiag.subvec(0,N-1));
+      Vector<Tbase> Bdiag((B).diagonal());
+      Tbase diagmin = (Bdiag.segment(0, (N-1)-(0)+1).minCoeff());
       if(diagmin != 0.0)
-        B.submat(0,0,N-1,N-1) /= diagmin;
+        B.block(0, 0, (N-1)-(0)+1, (N-1)-(0)+1) /= diagmin;
 
       // Right-hand side of equation is
-      arma::Col<Tbase> rh(N+1, arma::fill::zeros);
+      Vector<Tbase> rh = Vector<Tbase>::Zero(N+1);
       rh(N)=-1.0;
 
       // Solve the equation
-      arma::Col<Tbase> diis_weights;
-      arma::solve(diis_weights, B, rh);
-      diis_weights=diis_weights.subvec(0,N-1);
+      Vector<Tbase> sol = B.colPivHouseholderQr().solve(rh);
+      Vector<Tbase> diis_weights = sol.head(N);
 
       // Pad to full space
-      arma::Col<Tbase> diis_weights_full(orbital_history_.size(),arma::fill::zeros);
+      Vector<Tbase> diis_weights_full = Vector<Tbase>::Zero(orbital_history_.size());
       for(size_t i=0;i<history_mask.size();i++)
         diis_weights_full[history_mask[i]] = diis_weights[i];
 
       return diis_weights_full;
     }
     /// Calculate ADIIS weights by minimizing quadratic form
-    arma::Col<Tbase> aediis_weights(const arma::Col<Tbase> & b, const arma::Mat<Tbase> & A) const {
-      if(b.n_elem==1) {
+    Vector<Tbase> aediis_weights(const Vector<Tbase> & b, const Matrix<Tbase> & A) const {
+      if(b.size()==1) {
         // Nothing to optimize
-        return arma::ones<arma::Col<Tbase>>(b.n_elem);
+        return Vector<Tbase>::Ones(b.size());
       }
 
       // Parameters
@@ -485,43 +437,44 @@ namespace OpenOrbitalOptimizer {
       const Tbase df_tol = 1e-8;
 
       // Function to evaluate function value
-      std::function<Tbase(const arma::Col<Tbase> & x)> fx = [b, A](const arma::Col<Tbase> & x) {
-        return 0.5*arma::as_scalar(x.t()*A*x) + arma::dot(b,x);
+      std::function<Tbase(const Vector<Tbase> & x)> fx = [b, A](const Vector<Tbase> & x) {
+        return Tbase(0.5)*(x.transpose()*A*x).value() + b.dot(x);
       };
 
       // Function to determine optimal step
-      std::function<Tbase(const arma::Col<Tbase> &, const arma::Col<Tbase> &)> optimal_step = [b, A](const arma::Col<Tbase> & current_direction, const arma::Col<Tbase> & x) {
-        return -(arma::as_scalar(current_direction.t()*A*x) + arma::dot(b,current_direction)) / (arma::as_scalar(current_direction.t()*A*current_direction));
+      std::function<Tbase(const Vector<Tbase> &, const Vector<Tbase> &)> optimal_step = [b, A](const Vector<Tbase> & current_direction, const Vector<Tbase> & x) {
+        return -((current_direction.transpose()*A*x).value() + b.dot(current_direction))
+               / (current_direction.transpose()*A*current_direction).value();
       };
 
       /// Make initial guesses for parameters
-      std::vector<arma::Col<Tbase>> xguess;
+      std::vector<Vector<Tbase>> xguess;
       // Center point
-      xguess.push_back(arma::Col<Tbase>(b.n_elem,arma::fill::value(1.0/b.n_elem)));
+      xguess.push_back(Vector<Tbase>::Constant(b.size(), 1.0/b.size()));
       // "Gauss" points
-      for(size_t i=0;i<b.n_elem;i++) {
-        arma::Col<Tbase> xtr(b.n_elem,arma::fill::value(1.0/(b.n_elem+2)));
+      for(size_t i=0;i<b.size();i++) {
+        Vector<Tbase> xtr = Vector<Tbase>::Constant(b.size(), Tbase(1)/(b.size()+2));
         xtr(i) *= 3;
         xguess.push_back(xtr);
       }
       // End points
-      for(size_t i=0;i<b.n_elem;i++) {
-        arma::Col<Tbase> xtr(b.n_elem,arma::fill::zeros);
+      for(size_t i=0;i<b.size();i++) {
+        Vector<Tbase> xtr = Vector<Tbase>::Zero(b.size());
         xtr(i) = 1.0;
         xguess.push_back(xtr);
       }
 
       // Find minimum
-      arma::vec yguess(xguess.size());
+      Vector<Tbase> yguess(xguess.size());
       for(size_t i=0;i<xguess.size();i++)
         yguess[i] = fx(xguess[i]);
 
-      arma::uvec idx(arma::sort_index(yguess,"ascend"));
-      arma::Col<Tbase> x = xguess[idx[0]];
-      //x.t().print("Initial x");
+      IndexVector idx(sort_index_ascending(yguess));
+      Vector<Tbase> x = xguess[idx[0]];
+      //std::cout << "Initial x" << ": " << x.transpose() << std::endl;
 
       /// Matrix of search directions
-      arma::Mat<Tbase> search_directions(b.n_elem,b.n_elem,arma::fill::eye);
+      Matrix<Tbase> search_directions = Matrix<Tbase>::Identity(b.size(), b.size());
 
       /// Evaluate initial point
       auto current_point = fx(x);
@@ -531,8 +484,8 @@ namespace OpenOrbitalOptimizer {
       for(size_t imacro=0; imacro<max_iter; imacro++) {
         Tbase curval(current_point);
 
-        for(size_t i=0; i<b.n_elem; i++) {
-          arma::Col<Tbase> c_i(search_directions.col(i));
+        for(size_t i=0; i<b.size(); i++) {
+          Vector<Tbase> c_i(search_directions.col(i));
           // x -> (1-step)*x + step*c_i = x + step*(c_i-x)
           Tbase step = optimal_step(c_i-x, x);
           if(!std::isnormal(step))
@@ -552,7 +505,7 @@ namespace OpenOrbitalOptimizer {
         //printf("Macroiteration %i changed energy by %e\n", imacro, dE);
 
         // Update in x
-        arma::Col<Tbase> dx = x - old_x;
+        Vector<Tbase> dx = x - old_x;
 
         // Repeat line search along this direction
         Tbase step = optimal_step(dx, x);
@@ -567,32 +520,32 @@ namespace OpenOrbitalOptimizer {
         }
         old_x = x;
 
-        //x.t().print("x");
+        //std::cout << "x" << ": " << x.transpose() << std::endl;
         if(dE > -df_tol) {
           if(verbosity_ >= 10) {
             printf("A/EDIIS weights converged in %i macroiterations\n",(int) imacro);
-            //x.t().print("xconv");
+            //std::cout << "xconv" << ": " << x.transpose() << std::endl;
           }
           break;
         } else if(imacro==max_iter-1) {
           if(verbosity_ >= 10) {
             printf("A/EDIIS weights did not converge in %i macroiterations, dE=%e\n", (int) imacro, dE);
-            //x.t().print("xfinal");
+            //std::cout << "xfinal" << ": " << x.transpose() << std::endl;
           }
         }
 
         /*
         // Rotate search directions. Generate a random ordering of the columns
-        arma::uvec randperm(arma::randperm(search_directions.n_cols));
+        IndexVector randperm(arma::randperm(search_directions.cols()));
         search_directions=search_directions.cols(randperm);
         // Mix the vectors together
-        for(size_t i=0;i<search_directions.n_cols;i++)
+        for(size_t i=0;i<search_directions.cols();i++)
           for(size_t j=0;j<i;j++) {
-            arma::Col<Tbase> randu(1);
+            Vector<Tbase> randu(1);
             randu.randu();
 
-            arma::Col<Tbase> newi = (1-randu(0))*search_directions.col(i) + randu(0)*search_directions.col(j);
-            arma::Col<Tbase> newj = (1-randu(0))*search_directions.col(j) + randu(0)*search_directions.col(i);
+            Vector<Tbase> newi = (1-randu(0))*search_directions.col(i) + randu(0)*search_directions.col(j);
+            Vector<Tbase> newj = (1-randu(0))*search_directions.col(j) + randu(0)*search_directions.col(i);
             search_directions.col(i) = newi;
             search_directions.col(j) = newj;
           }
@@ -601,12 +554,12 @@ namespace OpenOrbitalOptimizer {
 
       // Handle the edge case where the last matrix has zero norm
       if(x(0)==0.0) {
-        x.zeros();
+        x.setZero();
         x(0)=1.0;
         // Reset search directions
-        search_directions.eye();
-        for(size_t i=0; i<b.n_elem; i++) {
-          arma::Col<Tbase> c_i(search_directions.col(i));
+        search_directions.setIdentity();
+        for(size_t i=0; i<b.size(); i++) {
+          Vector<Tbase> c_i(search_directions.col(i));
           // x -> (1-step)*x + step*c_i = x + step*(c_i-x)
           Tbase step = optimal_step(c_i-x, x);
           if(!std::isnormal(step))
@@ -619,7 +572,7 @@ namespace OpenOrbitalOptimizer {
             }
           }
         }
-        //x.t().print("Using suboptimal solution instead");
+        //std::cout << "Using suboptimal solution instead" << ": " << x.transpose() << std::endl;
       }
 
       //printf("Current energy %e\n",current_point);
@@ -629,8 +582,8 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// ADIIS linear term: <D_i - D_0 | F_i - F_0>
-    arma::Col<Tbase> adiis_linear_term() const {
-      arma::Col<Tbase> ret(orbital_history_.size(),arma::fill::zeros);
+    Vector<Tbase> adiis_linear_term() const {
+      Vector<Tbase> ret = Vector<Tbase>::Zero(orbital_history_.size());
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
         if(empty_block(iblock))
           continue;
@@ -638,16 +591,16 @@ namespace OpenOrbitalOptimizer {
         const auto & Fn = get_fock_matrix_block(0, iblock);
         for(size_t ihist=0;ihist<ret.size();ihist++) {
           // D_i - D_n
-          arma::Mat<Torb> dD(get_density_matrix_block(ihist, iblock) - Dn);
-          ret(ihist) += 2.0*std::real(arma::trace(dD*Fn));
+          Matrix<Torb> dD(get_density_matrix_block(ihist, iblock) - Dn);
+          ret(ihist) += 2.0*std::real((dD*Fn).trace());
         }
       }
       return ret;
     }
 
     /// EDIIS linear term: list of energies
-    arma::Col<Tbase> ediis_linear_term() const {
-      arma::Col<Tbase> ret(orbital_history_.size(),arma::fill::zeros);
+    Vector<Tbase> ediis_linear_term() const {
+      Vector<Tbase> ret = Vector<Tbase>::Zero(orbital_history_.size());
       for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
         ret(ihist) = get_energy(ihist);
       }
@@ -655,8 +608,8 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// ADIIS quadratic term: <D_i - D_n | F_j - F_n>
-    arma::Mat<Tbase> adiis_quadratic_term() const {
-      arma::Mat<Tbase> ret(orbital_history_.size(),orbital_history_.size(),arma::fill::zeros);
+    Matrix<Tbase> adiis_quadratic_term() const {
+      Matrix<Tbase> ret = Matrix<Tbase>::Zero(orbital_history_.size(), orbital_history_.size());
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
         if(empty_block(iblock))
           continue;
@@ -665,54 +618,54 @@ namespace OpenOrbitalOptimizer {
         for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
           for(size_t jhist=0;jhist<orbital_history_.size();jhist++) {
             // D_i - D_n
-            arma::Mat<Torb> dD(get_density_matrix_block(ihist, iblock) - Dn);
+            Matrix<Torb> dD(get_density_matrix_block(ihist, iblock) - Dn);
             // F_j - F_n
-            arma::Mat<Torb> dF(get_fock_matrix_block(jhist, iblock) - Fn);
-            ret(ihist,jhist) += std::real(arma::trace(dD*dF));
+            Matrix<Torb> dF(get_fock_matrix_block(jhist, iblock) - Fn);
+            ret(ihist,jhist) += std::real((dD*dF).trace());
           }
         }
       }
       // Only the symmetric part matters; we also multiply by two
       // since we define the quadratic model as 0.5*x^T A x + b x
-      return ret+ret.t();
+      return ret+ret.adjoint();
     }
 
     /// EDIIS quadratic term: -0.5*<D_i - D_j | F_i - F_j>
-    arma::Mat<Tbase> ediis_quadratic_term() const {
-      arma::Mat<Tbase> ret(orbital_history_.size(),orbital_history_.size(),arma::fill::zeros);
+    Matrix<Tbase> ediis_quadratic_term() const {
+      Matrix<Tbase> ret = Matrix<Tbase>::Zero(orbital_history_.size(), orbital_history_.size());
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
         if(empty_block(iblock))
           continue;
         for(size_t ihist=0;ihist<orbital_history_.size();ihist++) {
           for(size_t jhist=0;jhist<orbital_history_.size();jhist++) {
             // D_i - D_j
-            arma::Mat<Torb> dD(get_density_matrix_block(ihist, iblock) - get_density_matrix_block(jhist, iblock));
+            Matrix<Torb> dD(get_density_matrix_block(ihist, iblock) - get_density_matrix_block(jhist, iblock));
             // F_i - F_j
-            arma::Mat<Torb> dF(get_fock_matrix_block(ihist, iblock) - get_fock_matrix_block(jhist, iblock));
-            ret(ihist,jhist) -= std::real(arma::trace(dD*dF));
+            Matrix<Torb> dF(get_fock_matrix_block(ihist, iblock) - get_fock_matrix_block(jhist, iblock));
+            ret(ihist,jhist) -= std::real((dD*dF).trace());
           }
         }
       }
       // Only the symmetric part matters; the factor 0.5 already
       // exists in the base model
-      return 0.5*(ret+ret.t());
+      return 0.5*(ret+ret.adjoint());
     }
 
     /// Calculate ADIIS weights
-    arma::Col<Tbase> adiis_weights() const {
+    Vector<Tbase> adiis_weights() const {
       return aediis_weights(adiis_linear_term(), adiis_quadratic_term());
     }
 
     /// Calculate EDIIS weights
-    arma::Col<Tbase> ediis_weights() const {
+    Vector<Tbase> ediis_weights() const {
       return aediis_weights(ediis_linear_term(), ediis_quadratic_term());
     }
 
     /** Minimal Error Sampling Algorithm (MESA), doi:10.14288/1.0372885 */
-    std::tuple<arma::Col<Tbase>,std::string> minimal_error_sampling_algorithm_weights(Tbase aediis_coeff) const {
+    std::tuple<Vector<Tbase>,std::string> minimal_error_sampling_algorithm_weights(Tbase aediis_coeff) const {
       // Form DIIS and ADIIS weights
-      arma::Col<Tbase> diis_w(diis_weights());
-      if(verbosity_>=10) diis_w.t().print("DIIS weights");
+      Vector<Tbase> diis_w(diis_weights());
+      if(verbosity_>=10) std::cout << "DIIS weights" << ": " << diis_w.transpose() << std::endl;
       if(aediis_coeff == 0.0) {
         std::string step = "DIIS";
         return std::make_tuple(diis_w,step);
@@ -720,32 +673,33 @@ namespace OpenOrbitalOptimizer {
 
       // Get various extrapolation weights
       const size_t N = orbital_history_.size();
-      arma::Col<Tbase> adiis_w(adiis_weights());
-      if(verbosity_>=10) adiis_w.t().print("ADIIS weights");
-      arma::Col<Tbase> ediis_w(ediis_weights());
-      if(verbosity_>=10) ediis_w.t().print("EDIIS weights");
+      Vector<Tbase> adiis_w(adiis_weights());
+      if(verbosity_>=10) std::cout << "ADIIS weights" << ": " << adiis_w.transpose() << std::endl;
+      Vector<Tbase> ediis_w(ediis_weights());
+      if(verbosity_>=10) std::cout << "EDIIS weights" << ": " << ediis_w.transpose() << std::endl;
 
       // Candidates
-      arma::Mat<Tbase> candidate_w(N, 2, arma::fill::zeros);
+      Matrix<Tbase> candidate_w = Matrix<Tbase>::Zero(N, 2);
       size_t icol=0;
       candidate_w.col(icol++) = adiis_w;
       candidate_w.col(icol++) = ediis_w;
       const std::vector<std::string> weight_legend({"ADIIS", "EDIIS"});
       std::string step;
 
-      arma::Col<Tbase> density_projections(candidate_w.n_cols, arma::fill::zeros);
-      for(size_t iw=0;iw<candidate_w.n_cols;iw++) {
+      Vector<Tbase> density_projections = Vector<Tbase>::Zero(candidate_w.cols());
+      for(size_t iw=0;iw<candidate_w.cols();iw++) {
         density_projections(iw) = density_projection(candidate_w.col(iw));
       }
       if(verbosity_>=10)
-        density_projections.t().print("Density projections");
+        std::cout << "Density projections" << ": " << density_projections.transpose() << std::endl;
 
-      arma::uword idx = density_projections.index_max();
+      Index idx;
+      density_projections.maxCoeff(&idx);
       if(verbosity_>=10)
         printf("Max density projection %e with %s weights\n",density_projections(idx),weight_legend[idx].c_str());
 
-      arma::Col<Tbase> aediis_w = candidate_w.col(idx);
-      arma::Col<Tbase> weights(aediis_coeff * aediis_w + (1.0 - aediis_coeff) * diis_w);
+      Vector<Tbase> aediis_w = candidate_w.col(idx);
+      Vector<Tbase> weights(aediis_coeff * aediis_w + (1.0 - aediis_coeff) * diis_w);
       if(aediis_coeff == 1.0) {
         step = weight_legend[idx];
       } else {
@@ -756,7 +710,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Compute density change with given weights
-    Tbase density_projection(const arma::Col<Tbase> & weights) const {
+    Tbase density_projection(const Vector<Tbase> & weights) const {
       // Get the extrapolated Fock matrix
       auto fock(extrapolate_fock(weights));
 
@@ -779,24 +733,24 @@ namespace OpenOrbitalOptimizer {
     Tbase occupation_difference(const OrbitalOccupations<Tbase> & old_occ, const OrbitalOccupations<Tbase> & new_occ) const {
       Tbase diff = 0.0;
       for(size_t iblock = 0; iblock<old_occ.size(); iblock++) {
-        if(old_occ[iblock].n_elem==0)
+        if(old_occ[iblock].size()==0)
           continue;
-        size_t n = std::min(new_occ[iblock].n_elem, old_occ[iblock].n_elem);
-        diff += arma::sum(arma::abs(new_occ[iblock].subvec(0,n-1)-old_occ[iblock].subvec(0,n-1)));
-        if(new_occ[iblock].n_elem>n)
-          diff += arma::sum(arma::abs(new_occ[iblock].subvec(n,new_occ[iblock].n_elem-1)));
-        else if(old_occ[iblock].n_elem>n)
-          diff += arma::sum(arma::abs(old_occ[iblock].subvec(n,old_occ[iblock].n_elem-1)));
+        Index n = std::min(new_occ[iblock].size(), old_occ[iblock].size());
+        diff += (new_occ[iblock].head(n) - old_occ[iblock].head(n)).array().abs().sum();
+        if(new_occ[iblock].size()>n)
+          diff += new_occ[iblock].tail(new_occ[iblock].size()-n).array().abs().sum();
+        else if(old_occ[iblock].size()>n)
+          diff += old_occ[iblock].tail(old_occ[iblock].size()-n).array().abs().sum();
       }
 
       return diff;
     }
 
     /// Perform DIIS extrapolation of Fock matrix
-    FockMatrix<Torb> extrapolate_fock(const arma::Col<Tbase> & weights) const {
-      if(weights.n_elem != orbital_history_.size()) {
+    FockMatrix<Torb> extrapolate_fock(const Vector<Tbase> & weights) const {
+      if(weights.size() != orbital_history_.size()) {
         std::ostringstream oss;
-        oss << "Inconsistent weights: " << weights.n_elem << " elements vs orbital history of size " << orbital_history_.size() << "!\n";
+        oss << "Inconsistent weights: " << weights.size() << " elements vs orbital history of size " << orbital_history_.size() << "!\n";
         throw std::logic_error(oss.str());
       }
 
@@ -807,7 +761,7 @@ namespace OpenOrbitalOptimizer {
           continue;
         // Apply the DIIS weight
         for(size_t ihist = 0; ihist < orbital_history_.size(); ihist++) {
-          arma::Mat<Torb> block = weights(ihist) * get_fock_matrix_block(ihist, iblock);
+          Matrix<Torb> block = weights(ihist) * get_fock_matrix_block(ihist, iblock);
           if(ihist==0) {
             extrapolated_fock[iblock] = block;
           } else {
@@ -820,23 +774,23 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Perform DIIS extrapolation of density matrix
-    DensityMatrix<Torb, Tbase> extrapolate_density(const arma::Col<Tbase> & weights) const {
-      if(weights.n_elem != orbital_history_.size()) {
+    DensityMatrix<Torb, Tbase> extrapolate_density(const Vector<Tbase> & weights) const {
+      if(weights.size() != orbital_history_.size()) {
         std::ostringstream oss;
-        oss << "Inconsistent weights: " << weights.n_elem << " elements vs orbital history of size " << orbital_history_.size() << "!\n";
+        oss << "Inconsistent weights: " << weights.size() << " elements vs orbital history of size " << orbital_history_.size() << "!\n";
         throw std::logic_error(oss.str());
       }
 
       // Form DIIS extrapolated density matrix
-      std::vector<arma::Mat<Torb>> orbitals(number_of_blocks_);
-      std::vector<arma::Col<Tbase>> occupations(number_of_blocks_);
+      std::vector<Matrix<Torb>> orbitals(number_of_blocks_);
+      std::vector<Vector<Tbase>> occupations(number_of_blocks_);
       for(size_t iblock = 0; iblock < number_of_blocks_; iblock++) {
         if(empty_block(iblock))
           continue;
 
-        arma::Mat<Torb> dm_block;
+        Matrix<Torb> dm_block;
         for(size_t ihist = 0; ihist < orbital_history_.size(); ihist++) {
-          arma::Mat<Torb> block = weights(ihist) * get_density_matrix_block(ihist, iblock);
+          Matrix<Torb> block = weights(ihist) * get_density_matrix_block(ihist, iblock);
           if(ihist==0) {
             dm_block = block;
           } else {
@@ -845,11 +799,17 @@ namespace OpenOrbitalOptimizer {
         }
 
         // Flip the sign so that the orbitals come in increasing occupation
-        arma::eig_sym(occupations[iblock], orbitals[iblock], -dm_block);
-        occupations[iblock] *= -1;
+        Matrix<Torb> neg_dm = -dm_block;
+        Eigen::SelfAdjointEigenSolver<Matrix<Torb>> es(neg_dm);
+        occupations[iblock] = es.eigenvalues();
+        orbitals[iblock] = es.eigenvectors();
+        occupations[iblock] *= Tbase{-1};
         // Zero out numerically zero occupations
-        arma::uvec zeroidx(arma::find(arma::abs(occupations[iblock])<=10*maximum_occupation_(iblock)*std::numeric_limits<Tbase>::epsilon()));
-        occupations[iblock](zeroidx).zeros();
+        const Tbase zero_tol = 10*maximum_occupation_[iblock]*std::numeric_limits<Tbase>::epsilon();
+        for(Index k=0; k<occupations[iblock].size(); k++) {
+          if(std::abs(occupations[iblock][k]) <= zero_tol)
+            occupations[iblock][k] = Tbase{0};
+        }
       }
 
       return std::make_pair(orbitals,occupations);
@@ -859,25 +819,25 @@ namespace OpenOrbitalOptimizer {
     OrbitalOccupations<Tbase> determine_maximum_overlap_occupations(const OrbitalOccupations<Tbase> & reference_occupations, const Orbitals<Torb> & C_reference, const Orbitals<Torb> & C_new) const {
       OrbitalOccupations<Tbase> new_occupations(reference_occupations);
       for(size_t iblock=0; iblock<new_occupations.size(); iblock++) {
-        if(C_reference[iblock].n_elem == 0)
+        if(C_reference[iblock].size() == 0)
           continue;
         // Initialize
-        new_occupations[iblock].zeros();
+        new_occupations[iblock].setZero();
 
         // Magnitude of the overlap between the new orbitals and the reference ones
-        arma::Mat<Tbase> orbital_projections(arma::abs(C_new[iblock].t()*C_reference[iblock]));
+        Matrix<Tbase> orbital_projections = (C_new[iblock].adjoint() * C_reference[iblock]).array().abs().matrix();
 
         // Occupy the orbitals in ascending energy, especially if there are unoccupied orbitals in-between
-        for(size_t iorb=0; iorb<reference_occupations[iblock].n_elem; iorb++) {
+        for(size_t iorb=0; iorb<reference_occupations[iblock].size(); iorb++) {
           // Projections for this orbital
-          auto projection = orbital_projections.col(iorb);
+          Vector<Tbase> projection = orbital_projections.col(iorb);
           // Find the maximum index
-          auto maximal_projection_index = projection.index_max();
-          auto maximal_projection = projection(maximal_projection_index);
+          Index maximal_projection_index;
+          Tbase maximal_projection = projection.maxCoeff(&maximal_projection_index);
           // Store projection
           new_occupations[iblock][maximal_projection_index] = reference_occupations[iblock](iorb);
           // and reset the corresponding row so that the orbital can't be reused
-          orbital_projections.row(maximal_projection_index).zeros();
+          orbital_projections.row(maximal_projection_index).setZero();
 
           //printf("Symmetry %i: reference orbital %i with occupation %.3f matches new orbital %i with projection %e\n",(int) iblock, (int) iorb, reference_occupations[iblock](iorb), (int) maximal_projection_index, maximal_projection);
         }
@@ -893,7 +853,7 @@ namespace OpenOrbitalOptimizer {
 
       Tbase ovl=0.0;
       for(size_t iblock=0; iblock<lorb.size(); iblock++) {
-        if(lorb[iblock].n_elem==0)
+        if(lorb[iblock].size()==0)
           continue;
         // Get orbital coefficients and occupations
         const auto & lC = lorb[iblock];
@@ -901,15 +861,15 @@ namespace OpenOrbitalOptimizer {
         const auto & rC = rorb[iblock];
         const auto & ro = rocc[iblock];
         // Compute projection
-        arma::Mat<Torb> Pl(lC*arma::diagmat(lo)*lC.t());
-        arma::Mat<Torb> Pr(rC*arma::diagmat(ro)*rC.t());
-        ovl += std::real(arma::trace(Pl*Pr));
+        Matrix<Torb> Pl(lC*(lo).asDiagonal()*lC.adjoint());
+        Matrix<Torb> Pr(rC*(ro).asDiagonal()*rC.adjoint());
+        ovl += std::real((Pl*Pr).trace());
       }
       return ovl;
     }
 
     /// Attempt extrapolation with given weights
-    bool attempt_extrapolation(const arma::Col<Tbase> & weights, bool density=false) {
+    bool attempt_extrapolation(const Vector<Tbase> & weights, bool density=false) {
       // Get the extrapolated Fock matrix
       if(not density) {
         auto fock(extrapolate_fock(weights));
@@ -944,51 +904,53 @@ namespace OpenOrbitalOptimizer {
       auto new_occupations = update_occupations(new_orbital_energies);
 
       // Form the new density matrix
-      std::vector<arma::Mat<Torb>> dm_new(new_orbitals.size());
+      std::vector<Matrix<Torb>> dm_new(new_orbitals.size());
       for(size_t iblock=0; iblock<new_orbitals.size(); iblock++) {
-        if(new_orbitals[iblock].n_cols == 0)
+        if(new_orbitals[iblock].cols() == 0)
           continue;
-        dm_new[iblock] = new_orbitals[iblock] * arma::diagmat(new_occupations[iblock]) * arma::trans(new_orbitals[iblock]);
+        dm_new[iblock] = new_orbitals[iblock] * (new_occupations[iblock]).asDiagonal() * (new_orbitals[iblock]).adjoint();
       }
 
       // Compute the energy gradient for each particle type for the density matrix mixing: P -> (1-lambda)*Pcurrent + lambda*Pnew
-      size_t nparticles = number_of_blocks_per_particle_type_.n_elem;
-      arma::Col<Tbase> dEdlambda(nparticles, arma::fill::zeros);
+      size_t nparticles = number_of_blocks_per_particle_type_.size();
+      Vector<Tbase> dEdlambda = Vector<Tbase>::Zero(nparticles);
       for(size_t iparticle=0;iparticle<nparticles;iparticle++) {
         size_t block_offset = particle_block_offset(iparticle);
         for(size_t iblock=block_offset;iblock<block_offset+number_of_blocks_per_particle_type_(iparticle);iblock++) {
           if(empty_block(iblock))
             continue;
           // Current density matrix
-          arma::Mat<Torb> fock_current(get_fock_matrix_block(0, iblock));
-          arma::Mat<Torb> dm_current(get_density_matrix_block(0, iblock));
-          dEdlambda(iparticle) += std::real(arma::trace(fock_current*(dm_new[iblock] - dm_current)));
+          Matrix<Torb> fock_current(get_fock_matrix_block(0, iblock));
+          Matrix<Torb> dm_current(get_density_matrix_block(0, iblock));
+          dEdlambda(iparticle) += std::real((fock_current*(dm_new[iblock] - dm_current)).trace());
         }
       }
       if(verbosity_>=10)
-        dEdlambda.t().print("Optimal damping: dE/dlambda");
+        std::cout << "Optimal damping: dE/dlambda" << ": " << dEdlambda.transpose() << std::endl;
 
       // Search direction is therefore
-      arma::Col<Tbase> search_direction = -dEdlambda;
+      Vector<Tbase> search_direction = -dEdlambda;
       // As we start the search from the current density matrix,
       // lambda=0 at the outset and we set any negative directions as
       // invalid
-      arma::uvec negative_indices = arma::find(search_direction < 0.0);
-      if(negative_indices.n_elem)
-        search_direction(negative_indices).zeros();
+      IndexVector negative_indices = find_indices_where(search_direction,
+        [](Tbase v){return v < Tbase{0};});
+      for(Index k=0;k<negative_indices.size();k++)
+        search_direction[negative_indices[k]] = Tbase{0};
 
-      arma::uvec valid_directions = arma::find(search_direction != 0);
-      if(valid_directions.n_elem==0) {
+      IndexVector valid_directions = find_indices_where(search_direction,
+        [](Tbase v){return v != Tbase{0};});
+      if(valid_directions.size()==0) {
         // No valid search directions!
         return false;
       }
 
       // The resulting trial is therefore the step that takes us to
       // the edge
-      arma::Col<Tbase> lambda_trial = search_direction/arma::max(search_direction);
+      Vector<Tbase> lambda_trial = search_direction/(search_direction).maxCoeff();
 
       // Helper function
-      std::function<DensityMatrix<Torb, Tbase>(const arma::Col<Tbase> &)> interpolate_dm = [&](const arma::Col<Tbase> & step) {
+      std::function<DensityMatrix<Torb, Tbase>(const Vector<Tbase> &)> interpolate_dm = [&](const Vector<Tbase> & step) {
         Orbitals<Torb> new_orbs(number_of_blocks_);
         OrbitalOccupations<Tbase> new_occs(number_of_blocks_);
         for(size_t iparticle=0;iparticle<nparticles;iparticle++) {
@@ -996,13 +958,19 @@ namespace OpenOrbitalOptimizer {
           for(size_t iblock=block_offset;iblock<block_offset+number_of_blocks_per_particle_type_(iparticle);iblock++) {
             if(empty_block(iblock))
               continue;
-            arma::Mat<Torb> dm_block((1-step(iparticle))*get_density_matrix_block(0, iblock) + step(iparticle)*dm_new[iblock]);
+            Matrix<Torb> dm_block((1-step(iparticle))*get_density_matrix_block(0, iblock) + step(iparticle)*dm_new[iblock]);
             // Flip the sign so that the orbitals come in increasing occupation
-            arma::eig_sym(new_occs[iblock], new_orbs[iblock], -dm_block);
-            new_occs[iblock] *= -1;
+            Matrix<Torb> neg_dm = -dm_block;
+            Eigen::SelfAdjointEigenSolver<Matrix<Torb>> es(neg_dm);
+            new_occs[iblock] = es.eigenvalues();
+            new_orbs[iblock] = es.eigenvectors();
+            new_occs[iblock] *= Tbase{-1};
             // Zero out numerically zero occupations
-            arma::uvec zeroidx(arma::find(arma::abs(new_occs[iblock])<=10*maximum_occupation_(iblock)*std::numeric_limits<Tbase>::epsilon()));
-            new_occs[iblock](zeroidx).zeros();
+            const Tbase ztol = 10*maximum_occupation_[iblock]*std::numeric_limits<Tbase>::epsilon();
+            for(Index k=0; k<new_occs[iblock].size(); k++) {
+              if(std::abs(new_occs[iblock][k]) <= ztol)
+                new_occs[iblock][k] = Tbase{0};
+            }
           }
         }
         return std::make_pair(new_orbs, new_occs);
@@ -1020,21 +988,21 @@ namespace OpenOrbitalOptimizer {
       Tbase E0 = std::get<1>(orbital_history_[0]).first;
       Tbase E1 = std::get<1>(orbital_history_[1]).first;
       // and the gradients along the path are
-      Tbase dE0 = arma::dot(dEdlambda, lambda_trial);
+      Tbase dE0 = (dEdlambda).dot( lambda_trial);
 
-      arma::Col<Tbase> dEdlambda2(nparticles, arma::fill::zeros);
+      Vector<Tbase> dEdlambda2 = Vector<Tbase>::Zero(nparticles);
       for(size_t iparticle=0;iparticle<nparticles;iparticle++) {
         size_t block_offset = particle_block_offset(iparticle);
         for(size_t iblock=block_offset;iblock<block_offset+number_of_blocks_per_particle_type_(iparticle);iblock++) {
           if(empty_block(iblock))
             continue;
           // Current density matrix
-          arma::Mat<Torb> fock_new(get_fock_matrix_block(1, iblock));
-          arma::Mat<Torb> dm_current(get_density_matrix_block(0, iblock));
-          dEdlambda2(iparticle) += std::real(arma::trace(fock_new*(dm_new[iblock] - dm_current)));
+          Matrix<Torb> fock_new(get_fock_matrix_block(1, iblock));
+          Matrix<Torb> dm_current(get_density_matrix_block(0, iblock));
+          dEdlambda2(iparticle) += std::real((fock_new*(dm_new[iblock] - dm_current)).trace());
         }
       }
-      Tbase dE1 = arma::dot(dEdlambda2, lambda_trial);
+      Tbase dE1 = (dEdlambda2).dot( lambda_trial);
 
       // Fit cubic
       Tbase d = E0;
@@ -1053,8 +1021,8 @@ namespace OpenOrbitalOptimizer {
       };
 
       // Solve roots
-      Tbase x1 = (-b - sqrt(b*b - 4*a*c))/(2*a);
-      Tbase x2 = (-b + sqrt(b*b - 4*a*c))/(2*a);
+      Tbase x1 = (-b - std::sqrt(b*b - 4*a*c))/(2*a);
+      Tbase x2 = (-b + std::sqrt(b*b - 4*a*c))/(2*a);
       bool x1ok = x1 > 0.0 and x1<=1.0;
       bool x2ok = x2 > 0.0 and x2<=1.0;
 
@@ -1078,26 +1046,30 @@ namespace OpenOrbitalOptimizer {
 
     /// Clean up history from incorrect occupations
     void cleanup() {
-      arma::Col<Tbase> density_differences(orbital_history_.size()-1,arma::fill::zeros);
+      Vector<Tbase> density_differences = Vector<Tbase>::Zero(orbital_history_.size()-1);
       for(size_t ihist=1;ihist<orbital_history_.size();ihist++) {
         density_differences(ihist-1)=density_matrix_difference(ihist, 0);
       }
       if(verbosity_ >= 10) {
-        density_differences.t().print("Density differences");
+        std::cout << "Density differences" << ": " << density_differences.transpose() << std::endl;
       } else if(verbosity_>=5) {
         printf("Density matrix difference %e between lowest-energy and newest entry\n",density_differences(0));
       }
 
       // Sort the differences
-      arma::uvec idx(arma::sort_index(density_differences,"ascend"));
+      IndexVector idx = sort_index_ascending(density_differences);
       // Pick the indices that don't satisfy the criterion
-      arma::uvec sub_idx(arma::find(density_restart_factor_*density_differences(idx) > density_differences(idx(0))));
-      if(sub_idx.n_elem) {
-        idx=idx(sub_idx);
-        idx=arma::sort(idx,"descend");
+      Tbase ref = density_differences[idx[0]];
+      std::vector<Index> to_remove;
+      for(Index k=0; k<idx.size(); k++) {
+        if(density_restart_factor_*density_differences[idx[k]] > ref)
+          to_remove.push_back(idx[k]);
+      }
+      if(!to_remove.empty()) {
+        std::sort(to_remove.begin(), to_remove.end(), std::greater<Index>{});
         if(verbosity_>=10)
-          printf("Removing %i entries corresponding to large change in density matrix\n",(int) idx.n_elem);
-        for(auto ihistm1: idx) {
+          printf("Removing %i entries corresponding to large change in density matrix\n",(int) to_remove.size());
+        for(Index ihistm1: to_remove) {
           // Remember the off-by-one in the indices
           orbital_history_.erase(orbital_history_.begin()+ihistm1+1);
         }
@@ -1114,7 +1086,7 @@ namespace OpenOrbitalOptimizer {
       for(size_t iblock = 0; iblock < reference_occupations.size(); iblock++) {
         if(empty_block(iblock))
           continue;
-        arma::uvec occupied_indices = arma::find(reference_occupations[iblock] > 0.0);
+        IndexVector occupied_indices = find_indices_where(reference_occupations[iblock], [](Tbase v){return v > Tbase{0};});
         for(size_t io1 = 0; io1 < occupied_indices.size(); io1++)
           for(size_t io2 = 0; io2 < io1; io2++) {
             auto o1 = occupied_indices[io1];
@@ -1129,8 +1101,8 @@ namespace OpenOrbitalOptimizer {
         if(empty_block(iblock))
           continue;
         // Find the occupied and virtual blocks
-        arma::uvec occupied_indices = arma::find(reference_occupations[iblock] > 0.0);
-        arma::uvec virtual_indices = arma::find(reference_occupations[iblock] == 0.0);
+        IndexVector occupied_indices = find_indices_where(reference_occupations[iblock], [](Tbase v){return v > Tbase{0};});
+        IndexVector virtual_indices = find_indices_where(reference_occupations[iblock], [](Tbase v){return v == Tbase{0};});
         for(auto o: occupied_indices)
           for(auto v: virtual_indices)
             dofs.push_back(std::make_tuple(iblock, o, v));
@@ -1140,15 +1112,15 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Formulate the orbital gradient vector
-    arma::Col<Tbase> orbital_gradient_vector() const {
+    Vector<Tbase> orbital_gradient_vector() const {
       // Get the degrees of freedom
       auto dof_list = degrees_of_freedom();
-      arma::Col<Tbase> orb_grad;
+      Vector<Tbase> orb_grad;
 
-      if constexpr (arma::is_real<Torb>::value) {
-        orb_grad.zeros(dof_list.size());
+      if constexpr (!Eigen::NumTraits<Torb>::IsComplex) {
+        orb_grad.setZero(dof_list.size());
       } else {
-        orb_grad.zeros(2*dof_list.size());
+        orb_grad.setZero(2*dof_list.size());
       }
 
       // Extract the orbital gradient
@@ -1161,29 +1133,29 @@ namespace OpenOrbitalOptimizer {
         auto orbital_block = get_orbital_block(0, iblock);
         auto occ_block = get_orbital_occupation_block(0, iblock);
 
-        arma::Mat<Torb> fock_mo = orbital_block.t() * fock_block * orbital_block;
+        Matrix<Torb> fock_mo = orbital_block.adjoint() * fock_block * orbital_block;
         orb_grad(idof) = 2*std::real(fock_mo(iorb,jorb))*(occ_block(jorb)-occ_block(iorb));
-        if constexpr (!arma::is_real<Torb>::value) {
+        if constexpr (!!Eigen::NumTraits<Torb>::IsComplex) {
           orb_grad(dof_list.size() + idof) = 2*std::imag(fock_mo(iorb,jorb))*(occ_block(jorb)-occ_block(iorb));
         }
       }
 
-      if(orb_grad.has_nan())
+      if(orb_grad.hasNaN())
         throw std::logic_error("Orbital gradient has NaNs");
 
       return orb_grad;
     }
 
     /// Formulate the diagonal orbital Hessian
-    arma::Col<Tbase> diagonal_orbital_hessian() const {
+    Vector<Tbase> diagonal_orbital_hessian() const {
       // Get the degrees of freedom
       auto dof_list = degrees_of_freedom();
-      arma::Col<Tbase> orb_hess;
+      Vector<Tbase> orb_hess;
 
-      if constexpr (arma::is_real<Torb>::value) {
-        orb_hess.zeros(dof_list.size());
+      if constexpr (!Eigen::NumTraits<Torb>::IsComplex) {
+        orb_hess.setZero(dof_list.size());
       } else {
-        orb_hess.zeros(2*dof_list.size());
+        orb_hess.setZero(2*dof_list.size());
       }
 
       // Extract the orbital hessient
@@ -1196,9 +1168,9 @@ namespace OpenOrbitalOptimizer {
         auto orbital_block = get_orbital_block(0, iblock);
         auto occ_block = get_orbital_occupation_block(0, iblock);
 
-        arma::Mat<Torb> fock_mo = orbital_block.t() * fock_block * orbital_block;
+        Matrix<Torb> fock_mo = orbital_block.adjoint() * fock_block * orbital_block;
         orb_hess(idof) = 2*std::real((fock_mo(iorb,iorb)-fock_mo(jorb,jorb))*(occ_block(jorb)-occ_block(iorb)));
-        if constexpr (!arma::is_real<Torb>::value) {
+        if constexpr (!!Eigen::NumTraits<Torb>::IsComplex) {
           orb_hess(dof_list.size() + idof) = orb_hess(idof);
         }
       }
@@ -1206,29 +1178,29 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Formulate the diagonal orbital Hessian
-    arma::Col<Tbase> precondition_search_direction(const arma::Col<Tbase> & gradient, const arma::Col<Tbase> & diagonal_hessian, Tbase shift=0.1) const {
-      if(gradient.n_elem != diagonal_hessian.n_elem)
+    Vector<Tbase> precondition_search_direction(const Vector<Tbase> & gradient, const Vector<Tbase> & diagonal_hessian, Tbase shift=0.1) const {
+      if(gradient.size() != diagonal_hessian.size())
         throw std::logic_error("precondition_search_direction: gradient and diagonal hessian have different size!\n");
 
       // Build positive definite diagonal Hessian
-      arma::Col<Tbase> positive_hessian(diagonal_hessian);
-      positive_hessian += (-arma::min(diagonal_hessian)+shift)*arma::ones<arma::Col<Tbase>>(positive_hessian.n_elem);
+      Vector<Tbase> positive_hessian(diagonal_hessian);
+      positive_hessian += (-(diagonal_hessian).minCoeff()+shift)*Vector<Tbase>::Ones(positive_hessian.size());
 
       Tbase normalized_projection;
-      Tbase maximum_spread = arma::max(positive_hessian);
-      arma::Col<Tbase> preconditioned_direction;
+      Tbase maximum_spread = (positive_hessian).maxCoeff();
+      Vector<Tbase> preconditioned_direction;
       while(true) {
         // Normalize the largest values
-        arma::Col<Tbase> normalized_hessian(positive_hessian);
-        arma::uvec idx(arma::find(normalized_hessian>maximum_spread));
-        normalized_hessian(idx) = maximum_spread*arma::ones<arma::Col<Tbase>>(idx.n_elem);
+        Vector<Tbase> normalized_hessian(positive_hessian);
+        IndexVector idx(find_indices_where(normalized_hessian, [&](Tbase v){return v > maximum_spread;}));
+        normalized_hessian(idx) = maximum_spread*Vector<Tbase>::Ones(idx.size());
 
         // and divide the gradient by its square root
-        preconditioned_direction = gradient/arma::sqrt(normalized_hessian);
-        if(preconditioned_direction.has_nan())
+        preconditioned_direction = (gradient.array() / normalized_hessian.array().sqrt()).matrix();
+        if(preconditioned_direction.hasNaN())
           throw std::logic_error("Preconditioned search direction has NaNs");
 
-        normalized_projection = arma::dot(preconditioned_direction, gradient) / std::sqrt(arma::norm(preconditioned_direction,2)*arma::norm(gradient, 2));
+        normalized_projection = (preconditioned_direction).dot( gradient) / std::sqrt((preconditioned_direction).norm()*(gradient).norm());
         if(normalized_projection >= minimal_gradient_projection_) {
           return preconditioned_direction;
         } else {
@@ -1241,14 +1213,14 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Rotation matrices
-    Orbitals<Torb> form_rotation_matrices(const arma::Col<Tbase> & x) const {
+    Orbitals<Torb> form_rotation_matrices(const Vector<Tbase> & x) const {
       const Orbitals<Torb> reference_orbitals(get_orbitals());
 
       // Get the degrees of freedom
       auto dof_list = degrees_of_freedom();
-      arma::Col<Tbase> orb_grad(dof_list.size());
+      Vector<Tbase> orb_grad(dof_list.size());
       // Sort them by symmetry
-      std::vector<std::vector<std::tuple<arma::uword, arma::uword, size_t>>> blocked_dof(reference_orbitals.size());
+      std::vector<std::vector<std::tuple<Index, Index, size_t>>> blocked_dof(reference_orbitals.size());
       for(size_t idof=0; idof<dof_list.size(); idof++) {
         auto dof = dof_list[idof];
         auto iblock = std::get<0>(dof);
@@ -1263,7 +1235,7 @@ namespace OpenOrbitalOptimizer {
         if(empty_block(iblock))
           continue;
         // Collect the rotation parameters
-        kappa[iblock].zeros(reference_orbitals[iblock].n_cols, reference_orbitals[iblock].n_cols);
+        kappa[iblock].setZero(reference_orbitals[iblock].cols(), reference_orbitals[iblock].cols());
         for(auto dof: blocked_dof[iblock]) {
           auto iorb = std::get<0>(dof);
           auto jorb = std::get<1>(dof);
@@ -1271,7 +1243,7 @@ namespace OpenOrbitalOptimizer {
           kappa[iblock](iorb,jorb) = x(idof);
         }
         // imaginary parameters
-        if constexpr (!arma::is_real<Torb>::value) {
+        if constexpr (!!Eigen::NumTraits<Torb>::IsComplex) {
           for(auto dof: blocked_dof[iblock]) {
             auto iorb = std::get<0>(dof);
             auto jorb = std::get<1>(dof);
@@ -1280,28 +1252,29 @@ namespace OpenOrbitalOptimizer {
           }
         }
         // Antisymmetrize
-        kappa[iblock] -= arma::trans(kappa[iblock]);
+        kappa[iblock] -= (kappa[iblock]).adjoint();
       }
 
       return kappa;
     }
 
     /// Determine maximum step size; doi:10.1016/j.sigpro.2009.03.015
-    Tbase maximum_rotation_step(const arma::Col<Tbase> & x) const {
+    Tbase maximum_rotation_step(const Vector<Tbase> & x) const {
       // Get the rotation matrices
       auto kappa(form_rotation_matrices(x));
 
       Tbase maximum_step = std::numeric_limits<Tbase>::max();
       for(size_t iblock=0; iblock < kappa.size(); iblock++) {
-        if(kappa[iblock].n_elem==0)
+        if(kappa[iblock].size()==0)
           continue;
-        arma::Col<Tbase> eval;
-        arma::Mat<std::complex<Tbase>> evec;
-        arma::Mat<std::complex<Tbase>> kappa_imag(kappa[iblock]*std::complex<Tbase>(0.0,-1.0));
-        arma::eig_sym(eval, evec, kappa_imag);
+        Matrix<std::complex<Tbase>> kappa_imag =
+            kappa[iblock].template cast<std::complex<Tbase>>() *
+            std::complex<Tbase>(Tbase{0}, Tbase{-1});
+        Eigen::SelfAdjointEigenSolver<Matrix<std::complex<Tbase>>> es(kappa_imag);
+        Vector<Tbase> eval = es.eigenvalues();
 
         // Assume objective function is 4th order in orbitals
-        Tbase block_maximum = 0.5*M_PI/arma::max(arma::abs(eval));
+        Tbase block_maximum = Tbase(0.5*M_PI)/(eval.array().abs().maxCoeff());
         // The maximum allowed step is determined as the minimum of the block-wise steps
         maximum_step = std::min(maximum_step, block_maximum);
       }
@@ -1310,7 +1283,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Rotate the orbitals through the given parameters
-    Orbitals<Torb> rotate_orbitals(const arma::Col<Tbase> & x) const {
+    Orbitals<Torb> rotate_orbitals(const Vector<Tbase> & x) const {
       auto kappa(form_rotation_matrices(x));
 
       // Rotate the orbitals
@@ -1320,24 +1293,26 @@ namespace OpenOrbitalOptimizer {
           continue;
 
         // Exponentiated kappa
-        arma::Mat<Torb> expkappa;
+        Matrix<Torb> expkappa;
 
-#if 0
-        expkappa = arma::expmat(kappa[iblock]);
-#else
-        // Do eigendecomposition
-        arma::Col<Tbase> eval;
-        arma::Mat<std::complex<Tbase>> evec;
-        arma::Mat<std::complex<Tbase>> kappa_imag(kappa[iblock]*std::complex<Tbase>(0.0,-1.0));
-        arma::eig_sym(eval, evec, kappa_imag);
-        // Exponentiate
-        arma::Mat<std::complex<Tbase>> expkappa_imag(evec*arma::diagmat(arma::exp(eval*std::complex<Tbase>(0.0,1.0)))*evec.t());
-        if constexpr (arma::is_real<Torb>::value) {
-          expkappa = arma::real(expkappa_imag);
+        // Do eigendecomposition of -i*kappa (Hermitian) -> real evals,
+        // complex evecs. Then exp(kappa) = evec * diag(exp(i*eval)) * evec^H.
+        Matrix<std::complex<Tbase>> kappa_imag =
+            kappa[iblock].template cast<std::complex<Tbase>>() *
+            std::complex<Tbase>(Tbase{0}, Tbase{-1});
+        Eigen::SelfAdjointEigenSolver<Matrix<std::complex<Tbase>>> es(kappa_imag);
+        Vector<Tbase> eval = es.eigenvalues();
+        Matrix<std::complex<Tbase>> evec = es.eigenvectors();
+        // Build exp(i*eval) as a complex diagonal
+        Vector<std::complex<Tbase>> exp_diag(eval.size());
+        for(Index k=0; k<eval.size(); ++k)
+          exp_diag[k] = std::exp(std::complex<Tbase>(Tbase{0}, eval[k]));
+        Matrix<std::complex<Tbase>> expkappa_imag = evec * exp_diag.asDiagonal() * evec.adjoint();
+        if constexpr (!Eigen::NumTraits<Torb>::IsComplex) {
+          expkappa = expkappa_imag.real();
         } else {
           expkappa = expkappa_imag;
         }
-#endif
 
         // Do the rotation
         new_orbitals[iblock] = new_orbitals[iblock]*expkappa;
@@ -1351,7 +1326,7 @@ namespace OpenOrbitalOptimizer {
       return std::make_tuple(density_matrix, fock, index++);
     }
     /// Evaluate the energy with a given orbital rotation vector
-    OrbitalHistoryEntry<Torb, Tbase> evaluate_rotation(const arma::Col<Tbase> & x) {
+    OrbitalHistoryEntry<Torb, Tbase> evaluate_rotation(const Vector<Tbase> & x) {
       // Rotate orbitals
       auto new_orbitals(rotate_orbitals(x));
       // Compute the Fock matrix
@@ -1384,11 +1359,11 @@ namespace OpenOrbitalOptimizer {
         for(size_t iblock=0; iblock<fock.size(); iblock++) {
           if(empty_block(iblock))
             continue;
-          arma::Col<Tbase> fractional_occupations(get_orbital_occupation_block(0, iblock)/maximum_occupation_(iblock));
-          fractional_occupations = arma::ones<arma::Col<Tbase>>(fractional_occupations.n_elem) - fractional_occupations;
-          arma::Mat<Torb> orbitals(get_orbital_block(0, iblock));
+          Vector<Tbase> fractional_occupations(get_orbital_occupation_block(0, iblock)/maximum_occupation_(iblock));
+          fractional_occupations = Vector<Tbase>::Ones(fractional_occupations.size()) - fractional_occupations;
+          Matrix<Torb> orbitals(get_orbital_block(0, iblock));
 
-          shifted_fock[iblock] += level_shift *(orbitals * arma::diagmat(fractional_occupations) * orbitals.t());
+          shifted_fock[iblock] += level_shift *(orbitals * (fractional_occupations).asDiagonal() * orbitals.adjoint());
         }
 
         // Add new Fock matrix
@@ -1420,7 +1395,7 @@ namespace OpenOrbitalOptimizer {
       auto search_direction = precondition_search_direction(-gradient, diagonal_hessian);
 
       // Ensure that the search direction is down-hill
-      if(arma::dot(search_direction, gradient) >= 0.0) {
+      if((search_direction).dot( gradient) >= 0.0) {
         throw std::logic_error("Search direction is not down-hill?\n");
       }
 
@@ -1456,22 +1431,22 @@ namespace OpenOrbitalOptimizer {
       auto initial_energy(evaluate_step(0.0));
 
       static int iter=0;
-      arma::Col<Tbase> ttest(arma::linspace<arma::Col<Tbase>>(0.0,1.0,51)*Tmu);
+      Vector<Tbase> ttest(linspace<Tbase>(0.0,1.0,51)*Tmu);
 
 #if 0
-      arma::Mat<Tbase> data(ttest.n_elem, 2);
+      Matrix<Tbase> data(ttest.size(), 2);
       data.col(0)=ttest;
-      for(size_t i=0;i<ttest.n_elem;i++)
+      for(size_t i=0;i<ttest.size();i++)
         data(i,1) = scan_step(ttest(i));
       std::ostringstream oss;
       oss << "scan_" << iter << ".dat";
-      data.save(oss.str(),arma::raw_ascii);
+      save_raw_ascii(data, oss.str());
       iter++;
 
       // Test the routines
       auto dof_list = degrees_of_freedom();
       auto g(search_direction);
-      for(size_t i=0;i<g.n_elem;i++) {
+      for(size_t i=0;i<g.size();i++) {
         auto dof(dof_list[i]);
         auto iblock = std::get<0>(dof);
         auto iorb = std::get<1>(dof);
@@ -1482,7 +1457,7 @@ namespace OpenOrbitalOptimizer {
 
         std::function<Tbase(Tbase)> eval = [this, search_direction, i](Tbase xi){
           auto p(search_direction);
-          p.zeros();
+          p.setZero();
           p(i) = xi;
           auto entry = evaluate_rotation(p);
           return std::get<1>(entry).first;
@@ -1505,9 +1480,9 @@ namespace OpenOrbitalOptimizer {
         printf("h(%3i), block %i orbitals %i-%i, % e vs % e (three-point % e) difference % e ratio % e\n",i,iblock, iorb, jorb, diagonal_hessian(i),h4diff,h2diff,diagonal_hessian(i)-h4diff,diagonal_hessian(i)/h4diff);
         fflush(stdout);
       }
-      gradient.print("Analytic gradient");
-      g.print("Finite difference gradient");
-      (gradient/g).print("Ratio");
+      std::cout << "Analytic gradient:\n" << gradient << std::endl;
+      std::cout << "Finite difference gradient:\n" << g << std::endl;
+      std::cout << "Ratio:\n" << (gradient.array()/g.array()).matrix() << std::endl;
 #endif
 
       // Line search
@@ -1531,7 +1506,7 @@ namespace OpenOrbitalOptimizer {
         // Now we can fit a second order polynomial y = a x^2 + dE x +
         // initial_energy to our data: we know the initial value and the slope, and
         // the observed value.
-        auto dE = arma::dot(gradient, search_direction);
+        auto dE = (gradient).dot( search_direction);
         auto a = (trial_energy - dE*step - initial_energy)/(step*step);
 
         if(verbosity_>=10) {
@@ -1574,42 +1549,42 @@ namespace OpenOrbitalOptimizer {
         }
       }
       if(not search_success) {
-        arma::Col<Tbase> ttest(arma::logspace<arma::Col<Tbase>>(-16,4,101)*Tmu);
-        arma::Mat<Tbase> data(ttest.n_elem, 2);
+        Vector<Tbase> ttest(logspace<Tbase>(-16,4,101)*Tmu);
+        Matrix<Tbase> data(ttest.size(), 2);
         data.col(0)=ttest/Tmu;
-        for(size_t i=0;i<ttest.n_elem;i++) {
+        for(size_t i=0;i<ttest.size();i++) {
           data(i,1) = scan_step(ttest(i));
           printf("%e %e % e % e\n",data(i,0),data(i,0)*Tmu,data(i,1),data(i,1)-get_energy());
           fflush(stdout);
         }
-        data.save("linesearch.dat",arma::raw_ascii);
+        save_raw_ascii(data, "linesearch.dat");
         throw std::runtime_error("Failed to find suitable step size.\n");
       }
     }
 
     /// List of occupied orbitals
-    std::vector<arma::uvec> occupied_orbitals(const OrbitalOccupations<Tbase> & occupations) {
-      std::vector<arma::uvec> occ_idx(occupations.size());
+    std::vector<IndexVector> occupied_orbitals(const OrbitalOccupations<Tbase> & occupations) {
+      std::vector<IndexVector> occ_idx(occupations.size());
       for(size_t l=0;l<occupations.size();l++) {
-        occ_idx[l]=arma::find(occupations[l]>=occupied_threshold_);
+        occ_idx[l]=find_indices_where(occupations[l], [&](Tbase v){return v >= occupied_threshold_;});
       }
       return occ_idx;
     }
 
     /// List of occupied orbitals
-    std::vector<arma::uvec> unoccupied_orbitals(const OrbitalOccupations<Tbase> & occupations) {
-      std::vector<arma::uvec> virt_idx(occupations.size());
+    std::vector<IndexVector> unoccupied_orbitals(const OrbitalOccupations<Tbase> & occupations) {
+      std::vector<IndexVector> virt_idx(occupations.size());
       for(size_t l=0;l<occupations.size();l++) {
-        virt_idx[l]=arma::find(occupations[l]<occupied_threshold_);
+        virt_idx[l]=find_indices_where(occupations[l], [&](Tbase v){return v < occupied_threshold_;});
       }
       return virt_idx;
     }
 
   public:
     /// Constructor
-    SCFSolver(const arma::uvec & number_of_blocks_per_particle_type, const arma::Col<Tbase> & maximum_occupation, const arma::Col<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions), frozen_occupations_(false), verbosity_(5) {
+    SCFSolver(const IndexVector & number_of_blocks_per_particle_type, const Vector<Tbase> & maximum_occupation, const Vector<Tbase> & number_of_particles, const FockBuilder<Torb, Tbase> & fock_builder, const std::vector<std::string> & block_descriptions) : number_of_blocks_per_particle_type_(number_of_blocks_per_particle_type), maximum_occupation_(maximum_occupation), number_of_particles_(number_of_particles), fock_builder_(fock_builder), block_descriptions_(block_descriptions), frozen_occupations_(false), verbosity_(5) {
       // Run sanity checks
-      number_of_blocks_ = arma::sum(number_of_blocks_per_particle_type_);
+      number_of_blocks_ = (number_of_blocks_per_particle_type_).sum();
       if(maximum_occupation_.size() != number_of_blocks_) {
         std::ostringstream oss;
         oss << "Vector of maximum occupation is not of expected length! Got " << maximum_occupation_.size() << " elements, expected " << number_of_blocks_ << "!\n";
@@ -1660,13 +1635,13 @@ namespace OpenOrbitalOptimizer {
       for(size_t iblock=0;iblock<number_of_blocks_;iblock++) {
         if(empty_block(iblock))
           continue;
-        if(get_orbital_block(0,iblock).n_cols != get_fock_matrix_block(0,iblock).n_cols) {
-          printf("get_orbital_block(0,iblock).n_cols=%i != get_fock_matrix_block(0,iblock).n_cols)=%i\n",(int) get_orbital_block(0,iblock).n_cols,(int) get_fock_matrix_block(0,iblock).n_cols);
+        if(get_orbital_block(0,iblock).cols() != get_fock_matrix_block(0,iblock).cols()) {
+          printf("get_orbital_block(0,iblock).cols()=%i != get_fock_matrix_block(0,iblock).cols())=%i\n",(int) get_orbital_block(0,iblock).cols(),(int) get_fock_matrix_block(0,iblock).cols());
           consistent=false;
         }
-        if(get_orbital_occupation_block(0,iblock).n_elem != get_fock_matrix_block(0,iblock).n_cols) {
+        if(get_orbital_occupation_block(0,iblock).size() != get_fock_matrix_block(0,iblock).cols()) {
           if(verbosity_>=10)
-            printf("get_orbital_occupation_block(0,iblock).n_elem=%i != get_fock_matrix_block(0,iblock).n_cols=%i\n",(int) get_orbital_occupation_block(0,iblock).n_elem,(int) get_fock_matrix_block(0,iblock).n_cols);
+            printf("get_orbital_occupation_block(0,iblock).size()=%i != get_fock_matrix_block(0,iblock).cols()=%i\n",(int) get_orbital_occupation_block(0,iblock).size(),(int) get_fock_matrix_block(0,iblock).cols());
           consistent=false;
         }
       }
@@ -1688,7 +1663,7 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Fix the number of occupied orbitals per block
-    void fixed_number_of_particles_per_block(const arma::Col<Tbase> & number_of_particles_per_block) {
+    void fixed_number_of_particles_per_block(const Vector<Tbase> & number_of_particles_per_block) {
       fixed_number_of_particles_per_block_ = number_of_particles_per_block;
     }
 
@@ -1746,17 +1721,23 @@ namespace OpenOrbitalOptimizer {
       return error_norm_;
     }
 
-    /// Evaluate the norm
-    Tbase norm(const arma::Mat<Tbase> & mat, std::string norm="") const {
-      if(norm == "")
-        norm=error_norm_;
-      if(norm == "rms") {
-        // rms isn't implemented in Armadillo for some reason
-        if(mat.n_elem == 0)
-          return 0;
-        return arma::norm(mat,"fro")/std::sqrt(1.0*mat.n_elem);
+    /// Evaluate the norm. Accepts both Matrix<Tbase> and Vector<Tbase>.
+    template <typename Derived>
+    Tbase norm(const Eigen::MatrixBase<Derived> & mat, std::string nrm = "") const {
+      if(nrm == "")
+        nrm = error_norm_;
+      if(nrm == "rms") {
+        if(mat.size() == 0)
+          return Tbase{0};
+        return mat.norm() / std::sqrt(Tbase(mat.size()));
+      } else if(nrm == "fro" || nrm == "2") {
+        return mat.norm();
+      } else if(nrm == "inf") {
+        return mat.template lpNorm<Eigen::Infinity>();
+      } else if(nrm == "1") {
+        return mat.template lpNorm<1>();
       } else {
-        return arma::norm(mat, norm.c_str());
+        throw std::logic_error("Unknown norm: " + nrm);
       }
     }
 
@@ -1765,7 +1746,7 @@ namespace OpenOrbitalOptimizer {
       // Set the norm
       error_norm_ = error_norm;
       // and check that it is a valid option
-      arma::Col<Tbase> test(1,arma::fill::ones);
+      Vector<Tbase> test = Vector<Tbase>::Ones(1);
       (void) norm(test);
     }
 
@@ -1874,12 +1855,12 @@ namespace OpenOrbitalOptimizer {
         throw std::logic_error("Got +-infinite total energy!\n");
       }
       for(size_t iblock=0;iblock<fock.second.size();iblock++) {
-        if(fock.second[iblock].n_rows==0)
+        if(fock.second[iblock].rows()==0)
           continue;
-        if(fock.second[iblock].has_nan()) {
+        if(fock.second[iblock].hasNaN()) {
           throw std::logic_error("Got NaN in Fock matrix!\n");
         }
-        if(fock.second[iblock].has_inf()) {
+        if(fock.second[iblock].array().isInf().any()) {
           throw std::logic_error("Got +-infinity in Fock matrix!\n");
         }
       }
@@ -1936,14 +1917,17 @@ namespace OpenOrbitalOptimizer {
 
       // Diagonalize all blocks
       for(size_t iblock = 0; iblock < fock.size(); iblock++) {
-        if(fock[iblock].n_elem==0)
+        if(fock[iblock].size()==0)
           continue;
         // Symmetrize Fock matrix
-        arma::Mat<Torb> fsymm(0.5*(fock[iblock]+fock[iblock].t()));
-        arma::eig_sym(diagonalized_fock.second[iblock], diagonalized_fock.first[iblock], fsymm);
+        Matrix<Torb> fsymm = Tbase(0.5)*(fock[iblock] + fock[iblock].adjoint());
+        Eigen::SelfAdjointEigenSolver<Matrix<Torb>> es(fsymm);
+        diagonalized_fock.second[iblock] = es.eigenvalues();
+        diagonalized_fock.first[iblock] = es.eigenvectors();
 
         if(verbosity_>=10) {
-          diagonalized_fock.second[iblock].t().print(block_descriptions_[iblock] + " orbital energies");
+          std::cout << block_descriptions_[iblock] << " orbital energies: "
+                    << diagonalized_fock.second[iblock].transpose() << std::endl;
         }
         fflush(stdout);
       }
@@ -1952,13 +1936,13 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Determines the offset for the blocks of the iparticle:th particle
-    arma::uword particle_block_offset(size_t iparticle) const {
-      return (iparticle>0) ? arma::sum(number_of_blocks_per_particle_type_.subvec(0,iparticle-1)) : 0;
+    Index particle_block_offset(size_t iparticle) const {
+      return (iparticle>0) ? number_of_blocks_per_particle_type_.head(iparticle).sum() : Index{0};
     }
 
     /// Determine number of particles in each block
-    arma::Col<Tbase> determine_number_of_particles_by_aufbau(const OrbitalEnergies<Tbase> & orbital_energies) const {
-      arma::Col<Tbase> number_of_particles(number_of_blocks_, arma::fill::zeros);
+    Vector<Tbase> determine_number_of_particles_by_aufbau(const OrbitalEnergies<Tbase> & orbital_energies) const {
+      Vector<Tbase> number_of_particles = Vector<Tbase>::Zero(number_of_blocks_);
 
       // Loop over particle types
       for(size_t particle_type = 0; particle_type < number_of_blocks_per_particle_type_.size(); particle_type++) {
@@ -1999,17 +1983,17 @@ namespace OpenOrbitalOptimizer {
         return get_orbital_occupations();
 
       // Number of particles per block
-      arma::Col<Tbase> number_of_particles = (fixed_number_of_particles_per_block_.n_elem == number_of_blocks_) ? fixed_number_of_particles_per_block_ : determine_number_of_particles_by_aufbau(orbital_energies);
+      Vector<Tbase> number_of_particles = (fixed_number_of_particles_per_block_.size() == number_of_blocks_) ? fixed_number_of_particles_per_block_ : determine_number_of_particles_by_aufbau(orbital_energies);
 
       // Determine the number of occupied orbitals
       OrbitalOccupations<Tbase> occupations(orbital_energies.size());
       for(size_t iblock=0; iblock<orbital_energies.size(); iblock++) {
-        if(orbital_energies[iblock].n_elem==0)
+        if(orbital_energies[iblock].size()==0)
           continue;
-        occupations[iblock].zeros(orbital_energies[iblock].size());
+        occupations[iblock].setZero(orbital_energies[iblock].size());
 
         Tbase num_left = number_of_particles(iblock);
-        for(size_t iorb=0; iorb < occupations[iblock].n_elem; iorb++) {
+        for(size_t iorb=0; iorb < occupations[iblock].size(); iorb++) {
           auto fill = std::min(maximum_occupation_(iblock), num_left);
           occupations[iblock](iorb) = fill;
           num_left -= fill;
@@ -2046,7 +2030,7 @@ namespace OpenOrbitalOptimizer {
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
         Tbase diis_error = norm(diis_error_vector(0));
-        Tbase diis_max_error = arma::norm(diis_error_vector(0),"inf");
+        Tbase diis_max_error = (diis_error_vector(0)).template lpNorm<Eigen::Infinity>();
         Tbase dE = get_energy() - old_energy_;
 
         // Data to pass to callback function
@@ -2082,8 +2066,9 @@ namespace OpenOrbitalOptimizer {
           const auto occupations = get_orbital_occupations();
           auto occ_idx(occupied_orbitals(occupations));
           for(size_t l=0;l<occ_idx.size();l++) {
-            if(occ_idx[l].n_elem)
-              occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
+            if(occ_idx[l].size())
+              std::cout << block_descriptions_[l] << " occupations: "
+                        << occupations[l].head(occ_idx[l].maxCoeff()+1).transpose() << std::endl;
           }
         }
 
@@ -2136,13 +2121,13 @@ namespace OpenOrbitalOptimizer {
               aediis_coeff = 1.0;
             }
           }
-          arma::Col<Tbase> weights;
+          Vector<Tbase> weights;
           std::string step;
           std::tie(weights, step) = minimal_error_sampling_algorithm_weights(aediis_coeff);
           if(verbosity_>=5)
             printf("%s step\n",step.c_str());
           if(verbosity_>=10)
-            weights.t().print("Extrapolation weights");
+            std::cout << "Extrapolation weights" << ": " << weights.transpose() << std::endl;
 
           // Do the callback
           callback_data["step"] = step;
@@ -2171,7 +2156,7 @@ namespace OpenOrbitalOptimizer {
       for(size_t iteration=1; iteration <= maximum_iterations_; iteration++) {
         // Compute DIIS error
         Tbase diis_error = norm(diis_error_vector(0));
-        Tbase diis_max_error = arma::norm(diis_error_vector(0),"inf");
+        Tbase diis_max_error = (diis_error_vector(0)).template lpNorm<Eigen::Infinity>();
         Tbase dE = get_energy() - old_energy_;
 
         if(verbosity_>=5) {
@@ -2214,8 +2199,9 @@ namespace OpenOrbitalOptimizer {
           const auto occupations = get_orbital_occupations();
           auto occ_idx(occupied_orbitals(occupations));
           for(size_t l=0;l<occ_idx.size();l++) {
-            if(occ_idx[l].n_elem)
-              occupations[l].subvec(0,arma::max(occ_idx[l])).t().print(block_descriptions_[l] + " occupations");
+            if(occ_idx[l].size())
+              std::cout << block_descriptions_[l] << " occupations: "
+                        << occupations[l].head(occ_idx[l].maxCoeff()+1).transpose() << std::endl;
           }
         }
       }
@@ -2273,19 +2259,19 @@ namespace OpenOrbitalOptimizer {
       frozen_occupations_ = false;
       while(true) {
         // Count the number of particles in each block
-        arma::Col<Tbase> number_of_particles_per_block(number_of_blocks_,arma::fill::zeros);
+        Vector<Tbase> number_of_particles_per_block = Vector<Tbase>::Zero(number_of_blocks_);
         for(size_t iblock=0; iblock<number_of_particles_per_block.size(); iblock++) {
           if(empty_block(iblock))
             continue;
-          number_of_particles_per_block[iblock] = arma::sum(reference_occupations[iblock]);
+          number_of_particles_per_block[iblock] = (reference_occupations[iblock]).sum();
         }
-        number_of_particles_per_block.t().print("Number of particles per block");
+        std::cout << "Number of particles per block" << ": " << number_of_particles_per_block.transpose() << std::endl;
 
         // List of occupations and resulting energies
-        std::vector<std::pair<arma::Col<Tbase>,Tbase>> list_of_energies;
+        std::vector<std::pair<Vector<Tbase>,Tbase>> list_of_energies;
 
         // Loop over particle types. We have a double loop, since finding the lowest state in UHF probably requires this
-        for(size_t iparticle=0; iparticle<number_of_blocks_per_particle_type_.n_elem; iparticle++) {
+        for(size_t iparticle=0; iparticle<number_of_blocks_per_particle_type_.size(); iparticle++) {
           size_t iblock_start = particle_block_offset(iparticle);
           size_t iblock_end = iblock_start + number_of_blocks_per_particle_type_(iparticle);
 
@@ -2297,8 +2283,8 @@ namespace OpenOrbitalOptimizer {
 
               // Maximum number to move
               Tbase num_i_source = number_of_particles_per_block[iblock_source];
-              Tbase i_target_capacity = reference_occupations[iblock_target].n_elem*maximum_occupation_[iblock_target];
-              Tbase i_target_capacity_left = i_target_capacity - arma::sum(reference_occupations[iblock_target]);
+              Tbase i_target_capacity = reference_occupations[iblock_target].size()*maximum_occupation_[iblock_target];
+              Tbase i_target_capacity_left = i_target_capacity - (reference_occupations[iblock_target]).sum();
               int num_i_max = std::ceil(std::min(num_i_source, i_target_capacity_left));
               num_i_max = std::min(num_i_max, (int) std::round(std::min(maximum_occupation_[iblock_source], maximum_occupation_[iblock_target])));
 
@@ -2316,7 +2302,7 @@ namespace OpenOrbitalOptimizer {
                 fixed_number_of_particles_per_block_ = trial_number;
 
                 printf("isource = %i itarget = %i imoved = %f\n", iblock_source, iblock_target, i_moved);
-                trial_number.t().print("trial number of particles");
+                std::cout << "trial number of particles" << ": " << trial_number.transpose() << std::endl;
                 fflush(stdout);
 
                 // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
@@ -2328,7 +2314,7 @@ namespace OpenOrbitalOptimizer {
                 // Add the result to the list
                 list_of_energies.push_back(std::make_pair(trial_number, get_energy()));
                 // Reset the restriction
-                arma::Col<Tbase> dummy;
+                Vector<Tbase> dummy;
                 fixed_number_of_particles_per_block_ = dummy;
               }
             }
@@ -2359,14 +2345,14 @@ namespace OpenOrbitalOptimizer {
 
                     // Maximum number to move
                     Tbase num_i_source = number_of_particles_per_block[iblock_source];
-                    Tbase i_target_capacity = reference_occupations[iblock_target].n_elem*maximum_occupation_[iblock_target];
-                    Tbase i_target_capacity_left = i_target_capacity - arma::sum(reference_occupations[iblock_target]);
+                    Tbase i_target_capacity = reference_occupations[iblock_target].size()*maximum_occupation_[iblock_target];
+                    Tbase i_target_capacity_left = i_target_capacity - (reference_occupations[iblock_target]).sum();
                     int num_i_max = std::ceil(std::min(num_i_source, i_target_capacity_left));
                     num_i_max = std::min(num_i_max, (int) std::round(std::min(maximum_occupation_[iblock_source], maximum_occupation_[iblock_target])));
 
                     Tbase num_j_source = number_of_particles_per_block[jblock_source];
-                    Tbase j_target_capacity = reference_occupations[jblock_target].n_elem*maximum_occupation_[jblock_target];
-                    Tbase j_target_capacity_left = j_target_capacity - arma::sum(reference_occupations[jblock_target]);
+                    Tbase j_target_capacity = reference_occupations[jblock_target].size()*maximum_occupation_[jblock_target];
+                    Tbase j_target_capacity_left = j_target_capacity - (reference_occupations[jblock_target]).sum();
                     int num_j_max = std::ceil(std::min(num_j_source, j_target_capacity_left));
                     num_j_max = std::min(num_j_max, (int) std::round(std::min(maximum_occupation_[jblock_source], maximum_occupation_[jblock_target])));
 
@@ -2407,7 +2393,7 @@ namespace OpenOrbitalOptimizer {
 
                         printf("isource = %i itarget = %i imoved = %f\n", iblock_source, iblock_target, i_moved);
                         printf("jsource = %i jtarget = %i jmoved = %f\n", jblock_source, jblock_target, j_moved);
-                        trial_number.t().print("trial number of particles");
+                        std::cout << "trial number of particles" << ": " << trial_number.transpose() << std::endl;
                         fflush(stdout);
 
                         // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
@@ -2419,7 +2405,7 @@ namespace OpenOrbitalOptimizer {
                         // Add the result to the list
                         list_of_energies.push_back(std::make_pair(trial_number, get_energy()));
                         // Reset the restriction
-                        arma::Col<Tbase> dummy;
+                        Vector<Tbase> dummy;
                         fixed_number_of_particles_per_block_ = dummy;
                       }
                   }
@@ -2428,12 +2414,12 @@ namespace OpenOrbitalOptimizer {
         }
 
         // Sort the list in ascending order
-        std::sort(list_of_energies.begin(), list_of_energies.end(), [](const std::pair<arma::Col<Tbase>,Tbase> & a, const std::pair<arma::Col<Tbase>,Tbase> & b) {return a.second < b.second;});
+        std::sort(list_of_energies.begin(), list_of_energies.end(), [](const std::pair<Vector<Tbase>,Tbase> & a, const std::pair<Vector<Tbase>,Tbase> & b) {return a.second < b.second;});
 
         printf("Configurations\n");
         for(size_t iconf=0;iconf<list_of_energies.size();iconf++) {
           printf("%4i E= % .10f with occupations\n",(int) iconf, list_of_energies[iconf].second);
-          list_of_energies[iconf].first.t().print();
+          std::cout << list_of_energies[iconf].first.transpose() << std::endl;
         }
 
         if(list_of_energies[0].second < reference_energy) {
