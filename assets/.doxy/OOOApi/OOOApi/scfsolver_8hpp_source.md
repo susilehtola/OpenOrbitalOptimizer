@@ -483,22 +483,6 @@ namespace OpenOrbitalOptimizer {
           }
         }
 
-        /*
-        // Rotate search directions. Generate a random ordering of the columns
-        IndexVector randperm(arma::randperm(search_directions.cols()));
-        search_directions=search_directions.cols(randperm);
-        // Mix the vectors together
-        for(size_t i=0;i<search_directions.cols();i++)
-          for(size_t j=0;j<i;j++) {
-            Vector<Tbase> randu(1);
-            randu.randu();
-
-            Vector<Tbase> newi = (1-randu(0))*search_directions.col(i) + randu(0)*search_directions.col(j);
-            Vector<Tbase> newj = (1-randu(0))*search_directions.col(j) + randu(0)*search_directions.col(i);
-            search_directions.col(i) = newi;
-            search_directions.col(j) = newj;
-          }
-        */
       }
 
       // Handle the edge case where the last matrix has zero norm
