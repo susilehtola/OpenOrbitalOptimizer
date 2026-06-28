@@ -3,7 +3,10 @@
   <compounddef id="dir_3072c93c56dfbbd2cb4eee0809487533" kind="dir">
     <compoundname>openorbitaloptimizer</compoundname>
     <innerfile refid="cg__optimizer_8hpp">cg_optimizer.hpp</innerfile>
+    <innerfile refid="eigen__compat_8hpp">eigen_compat.hpp</innerfile>
+    <innerfile refid="quad__support_8hpp">quad_support.hpp</innerfile>
     <innerfile refid="scfsolver_8hpp">scfsolver.hpp</innerfile>
+    <innerfile refid="types_8hpp">types.hpp</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

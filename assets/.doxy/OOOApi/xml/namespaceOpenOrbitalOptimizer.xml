@@ -5,30 +5,145 @@
     <innerclass refid="classOpenOrbitalOptimizer_1_1SCFSolver" prot="public">OpenOrbitalOptimizer::SCFSolver</innerclass>
     <innernamespace refid="namespaceOpenOrbitalOptimizer_1_1ConjugateGradients">OpenOrbitalOptimizer::ConjugateGradients</innernamespace>
     <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="scfsolver_8hpp_1ab1a46bbbf240814183c990eb4f381ef9" prot="public" static="no">
+      <memberdef kind="typedef" id="eigen__compat_8hpp_1ab6d3889d9982a2c18039ede09d74a583" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
-        <type>arma::Mat&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalBlock =  arma::Mat&lt;T&gt;</definition>
+        <type>typename Eigen::NumTraits&lt; T &gt;::Real</type>
+        <definition>using OpenOrbitalOptimizer::RealOf =  typename Eigen::NumTraits&lt;T&gt;::Real</definition>
+        <argsstring></argsstring>
+        <name>RealOf</name>
+        <qualifiedname>OpenOrbitalOptimizer::RealOf</qualifiedname>
+        <briefdescription>
+<para>Real component type of a (possibly complex) scalar. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="28" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="types_8hpp_1a3f0484d3fc919ef5f4fef9ed1271cea0" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Matrix =  Eigen::Matrix&lt;T, Eigen::Dynamic, Eigen::Dynamic&gt;</definition>
+        <argsstring></argsstring>
+        <name>Matrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::Matrix</qualifiedname>
+        <briefdescription>
+<para>Dense matrix alias. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/types.hpp" line="27" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="types_8hpp_1a46b4f99efd161f0e9d8a40140b5ab97a" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>Eigen::Matrix&lt; T, Eigen::Dynamic, 1 &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Vector =  Eigen::Matrix&lt;T, Eigen::Dynamic, 1&gt;</definition>
+        <argsstring></argsstring>
+        <name>Vector</name>
+        <qualifiedname>OpenOrbitalOptimizer::Vector</qualifiedname>
+        <briefdescription>
+<para>Dense column-vector alias. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/types.hpp" line="30" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="types_8hpp_1a969a98950723c337864d375176ee4051" prot="public" static="no">
+        <type>Eigen::Index</type>
+        <definition>using OpenOrbitalOptimizer::Index =  Eigen::Index</definition>
+        <argsstring></argsstring>
+        <name>Index</name>
+        <qualifiedname>OpenOrbitalOptimizer::Index</qualifiedname>
+        <briefdescription>
+<para>Index type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/types.hpp" line="32" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="types_8hpp_1a654aeaf2c63cbcfb783b2f3c7ea53d49" prot="public" static="no">
+        <type>Eigen::Matrix&lt; Index, Eigen::Dynamic, 1 &gt;</type>
+        <definition>using OpenOrbitalOptimizer::IndexVector =  Eigen::Matrix&lt;Index, Eigen::Dynamic, 1&gt;</definition>
+        <argsstring></argsstring>
+        <name>IndexVector</name>
+        <qualifiedname>OpenOrbitalOptimizer::IndexVector</qualifiedname>
+        <briefdescription>
+<para>Index column vector (replacement for arma::uvec). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/types.hpp" line="34" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="types_8hpp_1ab5c0bbb2fa9d032fa087494925fe0b08" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class Tbase</type>
+          </param>
+          <param>
+            <type>bool</type>
+            <declname>IsComplex</declname>
+            <defname>IsComplex</defname>
+          </param>
+        </templateparamlist>
+        <type>std::conditional_t&lt; IsComplex, std::complex&lt; Tbase &gt;, Tbase &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalScalar =  std::conditional_t&lt;IsComplex, std::complex&lt;Tbase&gt;, Tbase&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalScalar</name>
+        <qualifiedname>OpenOrbitalOptimizer::OrbitalScalar</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Resolves the orbital scalar type from (Tbase, IsComplex): Tbase for IsComplex=false, std::complex&lt;Tbase&gt; for IsComplex=true. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/types.hpp" line="39" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="types_8hpp_1ae82d42a70db69fcd99ee90251beb472b" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>Matrix&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalBlock =  Matrix&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalBlock</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalBlock</qualifiedname>
         <briefdescription>
+<para>Orbital coefficients in one symmetry block (rows = basis, cols = orbitals). </para>
         </briefdescription>
         <detaileddescription>
-<para>A symmetry block of orbitals is defined by the corresponding N x N matrix of orbital coefficients </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="19" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="19" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="42" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="42" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1ad8356304bd9645dc06f25e08486b3209" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1ad8356304bd9645dc06f25e08486b3209" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
         <type>std::vector&lt; OrbitalBlock&lt; T &gt; &gt;</type>
@@ -37,38 +152,38 @@
         <name>Orbitals</name>
         <qualifiedname>OpenOrbitalOptimizer::Orbitals</qualifiedname>
         <briefdescription>
+<para>One OrbitalBlock per symmetry block, per particle type. </para>
         </briefdescription>
         <detaileddescription>
-<para>The set of orbitals is defined by a vector of orbital blocks, corresponding to each symmetry block of each particle type </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="22" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="22" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="44" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="44" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1ad0212b3437feeacaf55b7f463834e5f6" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1ac921c8812a4b7464681f2b6ccd7e8ad2" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
-        <type>arma::Mat&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalGradientBlock =  arma::Mat&lt;T&gt;</definition>
+        <type>Matrix&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalGradientBlock =  Matrix&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalGradientBlock</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalGradientBlock</qualifiedname>
         <briefdescription>
+<para>Block-diagonal orbital gradient. </para>
         </briefdescription>
         <detaileddescription>
-<para>A symmetry block of orbital gradients is defined by the corresponding N x N matrix </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="26" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="26" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="47" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="47" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1a227427533a51b30945d013540984285d" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1a227427533a51b30945d013540984285d" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
         <type>std::vector&lt; OrbitalGradientBlock&lt; T &gt; &gt;</type>
@@ -79,36 +194,35 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>The set of orbital gradients is defined by a vector of orbital blocks, corresponding to each symmetry block of each particle type </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="30" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="30" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="48" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="48" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1a019333ebb732bf83407f8b2b12853c17" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1a96432d5f3a8ede2daba0354c83ab29b1" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
-        <type>arma::Mat&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock =  arma::Mat&lt;T&gt;</definition>
+        <type>Matrix&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock =  Matrix&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>DiagonalOrbitalHessianBlock</name>
         <qualifiedname>OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock</qualifiedname>
         <briefdescription>
+<para>Diagonal orbital Hessian (one column per orbital). </para>
         </briefdescription>
         <detaileddescription>
-<para>A symmetry block of diagonal orbital Hessians is defined by the corresponding N x N matrix </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="34" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="34" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="51" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="51" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1aa9d44dd6675fe7fffd6664a9897d6a7a" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1aa9d44dd6675fe7fffd6664a9897d6a7a" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
         <type>std::vector&lt; DiagonalOrbitalHessianBlock&lt; T &gt; &gt;</type>
@@ -119,36 +233,35 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>The set of diagonal orbital Hessians is defined by a vector of orbital blocks, corresponding to each symmetry block of each particle type </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="38" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="38" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="52" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="52" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1a3a0c14682872a34cddd9a87dff0c279e" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1ab1ee38c8a07681a4ccc9dcbf6685eb95" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
-        <type>arma::Col&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalBlockOccupations =  arma::Col&lt;T&gt;</definition>
+        <type>Vector&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalBlockOccupations =  Vector&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalBlockOccupations</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalBlockOccupations</qualifiedname>
         <briefdescription>
-<para>The occupations for each orbitals are floating point numbers. </para>
+<para>Real-valued occupations in one symmetry block. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="41" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="41" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="55" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="55" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1a212991319ba2606d94c5a9625f5dab75" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1a212991319ba2606d94c5a9625f5dab75" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
         <type>std::vector&lt; OrbitalBlockOccupations&lt; T &gt; &gt;</type>
@@ -159,79 +272,78 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>The occupations for the whole set of orbitals are again a vector </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="44" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="44" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="56" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="56" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1a7f58c7669e557c1579ae105091c049f7" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1af8ece4fcb196c317d23632712f94e07d" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename Torb</type>
+            <type>class Torb</type>
           </param>
           <param>
-            <type>typename Tbase</type>
+            <type>class Tbase</type>
           </param>
         </templateparamlist>
         <type>std::pair&lt; Orbitals&lt; Torb &gt;, OrbitalOccupations&lt; Tbase &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::DensityMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;,OrbitalOccupations&lt;Tbase&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::DensityMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalOccupations&lt;Tbase&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>DensityMatrix</name>
         <qualifiedname>OpenOrbitalOptimizer::DensityMatrix</qualifiedname>
         <briefdescription>
-<para>The pair of orbitals and occupations defines the density matrix. </para>
+<para>Density matrix bundle: orbitals + occupations. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="47" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="47" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="60" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="60" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1a8ce47781df3621bd46f829cdfaeefca9" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1a3be1e7605fcf4cff97e0c1e4ffe5a488" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
-        <type>std::vector&lt; arma::Col&lt; T &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalEnergies =  std::vector&lt;arma::Col&lt;T&gt;&gt;</definition>
+        <type>std::vector&lt; Vector&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalEnergies =  std::vector&lt;Vector&lt;T&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalEnergies</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalEnergies</qualifiedname>
         <briefdescription>
-<para>Orbital energies are stored as a vector of vectors. </para>
+<para>Real-valued orbital energies in one symmetry block. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="50" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="50" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="63" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="63" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1a6b41e65a070e128ced040cf53e108e5d" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1aff4cab780e011cda23daeba0f6947fb4" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
-        <type>arma::Mat&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::FockMatrixBlock =  arma::Mat&lt;T&gt;</definition>
+        <type>Matrix&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::FockMatrixBlock =  Matrix&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>FockMatrixBlock</name>
         <qualifiedname>OpenOrbitalOptimizer::FockMatrixBlock</qualifiedname>
         <briefdescription>
+<para>Fock matrix in one symmetry block. </para>
         </briefdescription>
         <detaileddescription>
-<para>A symmetry block in a Fock matrix is likewise defined by a N x N matrix </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="54" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="54" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="66" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="66" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1af3b246cbddd338d3ca5e675d8906169e" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1af3b246cbddd338d3ca5e675d8906169e" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type>class T</type>
           </param>
         </templateparamlist>
         <type>std::vector&lt; FockMatrixBlock&lt; T &gt; &gt;</type>
@@ -240,44 +352,43 @@
         <name>FockMatrix</name>
         <qualifiedname>OpenOrbitalOptimizer::FockMatrix</qualifiedname>
         <briefdescription>
-<para>The whole set of Fock matrices is a vector of blocks. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="56" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="56" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="67" column="15" bodyfile="openorbitaloptimizer/types.hpp" bodystart="67" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1aab82444d6d39af38e10f75ef4cf07924" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1a94441b13ffeb32bc80f40744d0e47dd5" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename Torb</type>
+            <type>class Torb</type>
           </param>
           <param>
-            <type>typename Tbase</type>
+            <type>class Tbase</type>
           </param>
         </templateparamlist>
         <type>std::pair&lt; Orbitals&lt; Torb &gt;, OrbitalEnergies&lt; Tbase &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::DiagonalizedFockMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;,OrbitalEnergies&lt;Tbase&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::DiagonalizedFockMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalEnergies&lt;Tbase&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>DiagonalizedFockMatrix</name>
         <qualifiedname>OpenOrbitalOptimizer::DiagonalizedFockMatrix</qualifiedname>
         <briefdescription>
-<para>The return of Fock matrix diagonalization is. </para>
+<para>Diagonalized Fock matrix: orbitals + energies. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="58" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="58" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="71" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="71" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1aa53c0be96b15a930c3b932ff060b3b63" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1aa53c0be96b15a930c3b932ff060b3b63" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename Torb</type>
+            <type>class Torb</type>
           </param>
           <param>
-            <type>typename Tbase</type>
+            <type>class Tbase</type>
           </param>
         </templateparamlist>
         <type>std::pair&lt; Tbase, FockMatrix&lt; Torb &gt; &gt;</type>
@@ -286,21 +397,21 @@
         <name>FockBuilderReturn</name>
         <qualifiedname>OpenOrbitalOptimizer::FockBuilderReturn</qualifiedname>
         <briefdescription>
+<para>Fock builder return value: (energy, Fock). </para>
         </briefdescription>
         <detaileddescription>
-<para>The Fock matrix builder returns the energy and the Fock matrices for each orbital block </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="62" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="62" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="75" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="75" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1a773efc6f1b83c1b693f3c84021a8540d" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1a773efc6f1b83c1b693f3c84021a8540d" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename Torb</type>
+            <type>class Torb</type>
           </param>
           <param>
-            <type>typename Tbase</type>
+            <type>class Tbase</type>
           </param>
         </templateparamlist>
         <type>std::function&lt; FockBuilderReturn&lt; Torb, Tbase &gt;(const DensityMatrix&lt; Torb, Tbase &gt; &amp;)&gt;</type>
@@ -309,21 +420,21 @@
         <name>FockBuilder</name>
         <qualifiedname>OpenOrbitalOptimizer::FockBuilder</qualifiedname>
         <briefdescription>
+<para>User-supplied Fock builder callback signature. </para>
         </briefdescription>
         <detaileddescription>
-<para>The Fock builder takes in the orbitals and orbital occupations, and returns the energy and Fock matrices </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="65" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="65" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="79" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="79" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1a2c84d2590c434f7efe17cf8e9742bc4f" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1a2c84d2590c434f7efe17cf8e9742bc4f" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename Torb</type>
+            <type>class Torb</type>
           </param>
           <param>
-            <type>typename Tbase</type>
+            <type>class Tbase</type>
           </param>
         </templateparamlist>
         <type>std::tuple&lt; DensityMatrix&lt; Torb, Tbase &gt;, FockBuilderReturn&lt; Torb, Tbase &gt;, size_t &gt;</type>
@@ -332,21 +443,21 @@
         <name>OrbitalHistoryEntry</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalHistoryEntry</qualifiedname>
         <briefdescription>
+<para>Single history entry: density, Fock-builder output, generation id. </para>
         </briefdescription>
         <detaileddescription>
-<para>The history of orbital optimization is defined by the orbitals and their occupations - together the density matrix - and the resulting energy and Fock matrix </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="70" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="70" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="83" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="83" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1aa838241af37ab93d2036264726ec3e1d" prot="public" static="no">
+      <memberdef kind="typedef" id="types_8hpp_1aa838241af37ab93d2036264726ec3e1d" prot="public" static="no">
         <templateparamlist>
           <param>
-            <type>typename Torb</type>
+            <type>class Torb</type>
           </param>
           <param>
-            <type>typename Tbase</type>
+            <type>class Tbase</type>
           </param>
         </templateparamlist>
         <type>std::vector&lt; OrbitalHistoryEntry&lt; Torb, Tbase &gt; &gt;</type>
@@ -355,34 +466,421 @@
         <name>OrbitalHistory</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalHistory</qualifiedname>
         <briefdescription>
-<para>The history is then a vector. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="72" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="72" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="85" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="85" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="scfsolver_8hpp_1acfc0fbdd5627666f55d4b72accdbc6fc" prot="public" static="no">
-        <type>std::tuple&lt; size_t, arma::uword, arma::uword &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalRotation =  std::tuple&lt;size_t, arma::uword, arma::uword&gt;</definition>
+      <memberdef kind="typedef" id="types_8hpp_1a1c526d91037dc0333914ab09df6b10f9" prot="public" static="no">
+        <type>std::tuple&lt; size_t, Index, Index &gt;</type>
+        <definition>using OpenOrbitalOptimizer::OrbitalRotation =  std::tuple&lt;size_t, Index, Index&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalRotation</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalRotation</qualifiedname>
         <briefdescription>
-<para>List of orbital rotation angles: block index and orbital indices. </para>
+<para>(block index, orbital i, orbital j) describing a single orbital rotation. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="75" column="3" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="75" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="88" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="88" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="eigen__compat_8hpp_1a5efc9a191303c088c6fd76b5894d9d86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>Vector&lt; T &gt;</type>
+        <definition>Vector&lt; T &gt; OpenOrbitalOptimizer::join_columns</definition>
+        <argsstring>(const std::vector&lt; Vector&lt; T &gt; &gt; &amp;parts)</argsstring>
+        <name>join_columns</name>
+        <qualifiedname>OpenOrbitalOptimizer::join_columns</qualifiedname>
+        <param>
+          <type>const std::vector&lt; Vector&lt; T &gt; &gt; &amp;</type>
+          <declname>parts</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Stack a vector of column vectors into one long column vector. Replaces arma::join_cols on Cols. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="33" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="33" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1ae3fcef05c7e2c36fb643d3d52513e9c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::enable_if_t&lt;!Eigen::NumTraits&lt; T &gt;::IsComplex, Vector&lt; T &gt; &gt;</type>
+        <definition>std::enable_if_t&lt;!Eigen::NumTraits&lt; T &gt;::IsComplex, Vector&lt; T &gt; &gt; OpenOrbitalOptimizer::vectorise_real_imag</definition>
+        <argsstring>(const Matrix&lt; T &gt; &amp;M)</argsstring>
+        <name>vectorise_real_imag</name>
+        <qualifiedname>OpenOrbitalOptimizer::vectorise_real_imag</qualifiedname>
+        <param>
+          <type>const Matrix&lt; T &gt; &amp;</type>
+          <declname>M</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Vectorise a real-valued matrix to a column vector (column-major), with no real/imag splitting. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="49" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="49" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1ae974527b7c83771ed802e66327e65c4d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::enable_if_t&lt; Eigen::NumTraits&lt; T &gt;::IsComplex, Vector&lt; RealOf&lt; T &gt; &gt; &gt;</type>
+        <definition>std::enable_if_t&lt; Eigen::NumTraits&lt; T &gt;::IsComplex, Vector&lt; RealOf&lt; T &gt; &gt; &gt; OpenOrbitalOptimizer::vectorise_real_imag</definition>
+        <argsstring>(const Matrix&lt; T &gt; &amp;M)</argsstring>
+        <name>vectorise_real_imag</name>
+        <qualifiedname>OpenOrbitalOptimizer::vectorise_real_imag</qualifiedname>
+        <param>
+          <type>const Matrix&lt; T &gt; &amp;</type>
+          <declname>M</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Vectorise a complex-valued matrix into a real column vector by stacking the real part on top of the imaginary part. Mirrors the layout the SCF solver relies on for real-valued optimisation over complex orbital rotations. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="59" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="59" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1ac9f5a20e1e7b35cd54b587bbc51b1912" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::enable_if_t&lt;!Eigen::NumTraits&lt; T &gt;::IsComplex, Matrix&lt; T &gt; &gt;</type>
+        <definition>std::enable_if_t&lt;!Eigen::NumTraits&lt; T &gt;::IsComplex, Matrix&lt; T &gt; &gt; OpenOrbitalOptimizer::unvectorise_real_imag</definition>
+        <argsstring>(const Vector&lt; T &gt; &amp;v, Index rows, Index cols)</argsstring>
+        <name>unvectorise_real_imag</name>
+        <qualifiedname>OpenOrbitalOptimizer::unvectorise_real_imag</qualifiedname>
+        <param>
+          <type>const Vector&lt; T &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>Index</type>
+          <declname>rows</declname>
+        </param>
+        <param>
+          <type>Index</type>
+          <declname>cols</declname>
+        </param>
+        <briefdescription>
+<para>Inverse of vectorise_real_imag for the real case. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="75" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="75" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1a69e99a58739cd178442688e7840b5153" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>Matrix&lt; std::complex&lt; T &gt; &gt;</type>
+        <definition>Matrix&lt; std::complex&lt; T &gt; &gt; OpenOrbitalOptimizer::unvectorise_real_imag_complex</definition>
+        <argsstring>(const Vector&lt; T &gt; &amp;v, Index rows, Index cols)</argsstring>
+        <name>unvectorise_real_imag_complex</name>
+        <qualifiedname>OpenOrbitalOptimizer::unvectorise_real_imag_complex</qualifiedname>
+        <param>
+          <type>const Vector&lt; T &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>Index</type>
+          <declname>rows</declname>
+        </param>
+        <param>
+          <type>Index</type>
+          <declname>cols</declname>
+        </param>
+        <briefdescription>
+<para>Inverse of vectorise_real_imag for the complex case. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="82" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="82" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1ae57d9b32d9026c96bff8b307f1a91def" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Vec</type>
+          </param>
+          <param>
+            <type>class Pred</type>
+          </param>
+        </templateparamlist>
+        <type>IndexVector</type>
+        <definition>IndexVector OpenOrbitalOptimizer::find_indices_where</definition>
+        <argsstring>(const Vec &amp;v, Pred pred)</argsstring>
+        <name>find_indices_where</name>
+        <qualifiedname>OpenOrbitalOptimizer::find_indices_where</qualifiedname>
+        <param>
+          <type>const Vec &amp;</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>Pred</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Find every index i where pred(v[i]) is true. Stand-in for arma::find(some_predicate). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="94" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="94" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1a50cb07b3e01c3487de37be3d1ae91918" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>IndexVector</type>
+        <definition>IndexVector OpenOrbitalOptimizer::sort_index_ascending</definition>
+        <argsstring>(const Vector&lt; T &gt; &amp;v)</argsstring>
+        <name>sort_index_ascending</name>
+        <qualifiedname>OpenOrbitalOptimizer::sort_index_ascending</qualifiedname>
+        <param>
+          <type>const Vector&lt; T &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the indices that sort v in ascending order (stable). Stand-in for arma::sort_index. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="109" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="109" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1a51d8f949f79d19fe7b42d3c730685c2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>Vector&lt; T &gt;</type>
+        <definition>Vector&lt; T &gt; OpenOrbitalOptimizer::linspace</definition>
+        <argsstring>(T a, T b, Index n)</argsstring>
+        <name>linspace</name>
+        <qualifiedname>OpenOrbitalOptimizer::linspace</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>Index</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>arma::linspace(a, b, n) replacement returning n equally-spaced points [a, b]. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="120" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="120" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1a175dbe375d14e0d5fa7af99b86bc47bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>Vector&lt; T &gt;</type>
+        <definition>Vector&lt; T &gt; OpenOrbitalOptimizer::logspace</definition>
+        <argsstring>(T a, T b, Index n)</argsstring>
+        <name>logspace</name>
+        <qualifiedname>OpenOrbitalOptimizer::logspace</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>Index</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Logarithmically-spaced points 10^a ... 10^b (n points). Mirrors arma::logspace. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="135" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="135" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1a4371e67353436276aec216b65bf8f4dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Vec</type>
+          </param>
+        </templateparamlist>
+        <type>Index</type>
+        <definition>Index OpenOrbitalOptimizer::index_max_abs</definition>
+        <argsstring>(const Vec &amp;v)</argsstring>
+        <name>index_max_abs</name>
+        <qualifiedname>OpenOrbitalOptimizer::index_max_abs</qualifiedname>
+        <param>
+          <type>const Vec &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Index of the largest absolute value in v (matches arma&apos;s index_max for real and arma&apos;s index_max(abs(v)) for complex). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="145" column="9" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="145" bodyend="155"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1a0d302095fa4d81807c5979f6243d2c0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Mat</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::save_raw_ascii</definition>
+        <argsstring>(const Mat &amp;M, const std::string &amp;filename)</argsstring>
+        <name>save_raw_ascii</name>
+        <qualifiedname>OpenOrbitalOptimizer::save_raw_ascii</qualifiedname>
+        <param>
+          <type>const Mat &amp;</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Dump a dense matrix as ASCII (one row per line, space-separated). Stand-in for arma::Mat::save(name, arma::raw_ascii). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="160" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="160" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1ab5234ea49d41628358745d71c3482f53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Mat</type>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::has_nan</definition>
+        <argsstring>(const Mat &amp;M)</argsstring>
+        <name>has_nan</name>
+        <qualifiedname>OpenOrbitalOptimizer::has_nan</qualifiedname>
+        <param>
+          <type>const Mat &amp;</type>
+          <declname>M</declname>
+        </param>
+        <briefdescription>
+<para>True iff M contains a NaN. Eigen has allFinite() but not has_nan(). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="175" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="175" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1a96b5b2cde8ddc98f7ca1a6b0b593d2cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Mat</type>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::has_inf</definition>
+        <argsstring>(const Mat &amp;M)</argsstring>
+        <name>has_inf</name>
+        <qualifiedname>OpenOrbitalOptimizer::has_inf</qualifiedname>
+        <param>
+          <type>const Mat &amp;</type>
+          <declname>M</declname>
+        </param>
+        <briefdescription>
+<para>True iff M contains an infinity. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="181" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="181" bodyend="183"/>
+      </memberdef>
+      <memberdef kind="function" id="eigen__compat_8hpp_1aecaf6e06801a764ebafe7e24fca30071" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class V1</type>
+          </param>
+          <param>
+            <type>class V2</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto OpenOrbitalOptimizer::dot_nonconj</definition>
+        <argsstring>(const V1 &amp;a, const V2 &amp;b)</argsstring>
+        <name>dot_nonconj</name>
+        <qualifiedname>OpenOrbitalOptimizer::dot_nonconj</qualifiedname>
+        <param>
+          <type>const V1 &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const V2 &amp;</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>arma::dot for complex vectors is non-conjugating; Eigen&apos;s a.dot(b) is conjugating. Provide a non-conjugating dot for parity. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="188" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="188" bodyend="190"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="openorbitaloptimizer/cg_optimizer.hpp" line="12" column="1"/>
+    <location file="openorbitaloptimizer/cg_optimizer.hpp" line="19" column="1"/>
   </compounddef>
 </doxygen>

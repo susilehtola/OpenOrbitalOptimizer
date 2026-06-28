@@ -2,6 +2,11 @@
 # Class Member Enums
 
 
-Nothing related to **Class Member Enums** found.
+
+## n
+
+* **NumTraits&lt; \_Float128 &gt;** ([**Eigen::NumTraits&lt; \_Float128 &gt;**](structEigen_1_1NumTraits_3_01__Float128_01_4.md))
+
+
 
 

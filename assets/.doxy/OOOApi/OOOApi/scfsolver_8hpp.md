@@ -10,11 +10,17 @@
 
 
 
-* `#include <any>`
-* `#include <map>`
-* `#include <vector>`
-* `#include <armadillo>`
+* `#include "types.hpp"`
+* `#include "eigen_compat.hpp"`
 * `#include "cg_optimizer.hpp"`
+* `#include <any>`
+* `#include <cmath>`
+* `#include <cstdio>`
+* `#include <iostream>`
+* `#include <map>`
+* `#include <sstream>`
+* `#include <stdexcept>`
+* `#include <string>`
 
 
 
@@ -39,7 +45,7 @@
 
 | Type | Name |
 | ---: | :--- |
-| class | [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md) &lt;typename Torb, typename Tbase&gt;<br>_SCF solver class._  |
+| class | [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md) &lt;typename Tbase, IsComplex&gt;<br> |
 
 
 

@@ -19,6 +19,17 @@
 * **FockMatrixBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
+## i
+
+* **Index** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **IndexVector** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+
+
+## m
+
+* **Matrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+
+
 ## o
 
 * **OrbitalBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
@@ -30,7 +41,18 @@
 * **OrbitalHistoryEntry** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 * **OrbitalOccupations** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 * **OrbitalRotation** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **OrbitalScalar** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 * **Orbitals** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+
+
+## r
+
+* **RealOf** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+
+
+## v
+
+* **Vector** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 

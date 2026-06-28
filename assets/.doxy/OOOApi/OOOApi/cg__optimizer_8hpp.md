@@ -10,7 +10,13 @@
 
 
 
-* `#include <armadillo>`
+* `#include "eigen_compat.hpp"`
+* `#include "types.hpp"`
+* `#include <cmath>`
+* `#include <functional>`
+* `#include <limits>`
+* `#include <stdexcept>`
+* `#include <utility>`
 
 
 

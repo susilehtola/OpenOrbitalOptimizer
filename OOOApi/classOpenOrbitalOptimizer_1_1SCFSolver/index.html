@@ -963,6 +963,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#public-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#public-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -970,6 +981,45 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detailed Description
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-types-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Types Documentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Public Types Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#typedef-torb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        typedef Torb
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1558,12 +1608,27 @@
 
 
 <h1 id="class-openorbitaloptimizerscfsolver">Class OpenOrbitalOptimizer::SCFSolver</h1>
-<p><strong>template &lt;typename Torb, typename Tbase&gt;</strong></p>
+<p><strong>template &lt;typename Tbase, bool IsComplex&gt;</strong></p>
 <p><a href="../annotated/"><strong>ClassList</strong></a> <strong>&gt;</strong> <a href="../namespaceOpenOrbitalOptimizer/"><strong>OpenOrbitalOptimizer</strong></a> <strong>&gt;</strong> <a href="./"><strong>SCFSolver</strong></a></p>
-<p><em>SCF solver class.</em> </p>
+<p><a href="#detailed-description">More...</a></p>
 <ul>
 <li><code>#include &lt;scfsolver.hpp&gt;</code></li>
 </ul>
+<h2 id="public-types">Public Types</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">typedef OrbitalScalar&lt; Tbase, IsComplex &gt;</td>
+<td style="text-align: left;"><a href="#typedef-torb"><strong>Torb</strong></a>  <br><em>Orbital scalar type derived from &lt;Tbase, IsComplex&gt;.</em></td>
+</tr>
+</tbody>
+</table>
 <h2 id="public-functions">Public Functions</h2>
 <table>
 <thead>
@@ -1575,15 +1640,15 @@
 <tbody>
 <tr>
 <td style="text-align: right;"></td>
-<td style="text-align: left;"><a href="#function-scfsolver"><strong>SCFSolver</strong></a> (const arma::uvec &amp; number_of_blocks_per_particle_type, const arma::Col&lt; Tbase &gt; &amp; maximum_occupation, const arma::Col&lt; Tbase &gt; &amp; number_of_particles, const FockBuilder&lt; Torb, Tbase &gt; &amp; fock_builder, const std::vector&lt; std::string &gt; &amp; block_descriptions) <br><em>Constructor.</em></td>
+<td style="text-align: left;"><a href="#function-scfsolver"><strong>SCFSolver</strong></a> (const IndexVector &amp; number_of_blocks_per_particle_type, const Vector&lt; Tbase &gt; &amp; maximum_occupation, const Vector&lt; Tbase &gt; &amp; number_of_particles, const FockBuilder&lt; <a href="./#typedef-torb"><strong>Torb</strong></a>, Tbase &gt; &amp; fock_builder, const std::vector&lt; std::string &gt; &amp; block_descriptions) <br><em>Constructor.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">bool</td>
-<td style="text-align: left;"><a href="#function-add_entry-12"><strong>add_entry</strong></a> (const DensityMatrix&lt; Torb, Tbase &gt; &amp; density) <br><em>Add entry to history, return value is True if energy was lowered.</em></td>
+<td style="text-align: left;"><a href="#function-add_entry-12"><strong>add_entry</strong></a> (const DensityMatrix&lt; <a href="./#typedef-torb"><strong>Torb</strong></a>, Tbase &gt; &amp; density) <br><em>Add entry to history, return value is True if energy was lowered.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">bool</td>
-<td style="text-align: left;"><a href="#function-add_entry-22"><strong>add_entry</strong></a> (const DensityMatrix&lt; Torb, Tbase &gt; &amp; density, const FockBuilderReturn&lt; Torb, Tbase &gt; &amp; fock) <br><em>Add entry to history, return value is True if energy was lowered.</em></td>
+<td style="text-align: left;"><a href="#function-add_entry-22"><strong>add_entry</strong></a> (const DensityMatrix&lt; <a href="./#typedef-torb"><strong>Torb</strong></a>, Tbase &gt; &amp; density, const FockBuilderReturn&lt; <a href="./#typedef-torb"><strong>Torb</strong></a>, Tbase &gt; &amp; fock) <br><em>Add entry to history, return value is True if energy was lowered.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
@@ -1598,8 +1663,8 @@
 <td style="text-align: left;"><a href="#function-callback_function"><strong>callback_function</strong></a> (std::function&lt; void(const std::map&lt; std::string, std::any &gt; &amp;)&gt; callback_function=nullptr) <br></td>
 </tr>
 <tr>
-<td style="text-align: right;">DiagonalizedFockMatrix&lt; Torb, Tbase &gt;</td>
-<td style="text-align: left;"><a href="#function-compute_orbitals"><strong>compute_orbitals</strong></a> (const FockMatrix&lt; Torb &gt; &amp; fock) const<br><em>Computes orbitals and orbital energies by diagonalizing the Fock matrix.</em></td>
+<td style="text-align: right;">DiagonalizedFockMatrix&lt; <a href="./#typedef-torb"><strong>Torb</strong></a>, Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-compute_orbitals"><strong>compute_orbitals</strong></a> (const FockMatrix&lt; <a href="./#typedef-torb"><strong>Torb</strong></a> &gt; &amp; fock) const<br><em>Computes orbitals and orbital energies by diagonalizing the Fock matrix.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">bool</td>
@@ -1618,7 +1683,7 @@
 <td style="text-align: left;"><a href="#function-density_matrix_difference"><strong>density_matrix_difference</strong></a> (size_t ihist, size_t jhist) <br><em>Density matrix difference norm.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;">arma::Col&lt; Tbase &gt;</td>
+<td style="text-align: right;">Vector&lt; Tbase &gt;</td>
 <td style="text-align: left;"><a href="#function-determine_number_of_particles_by_aufbau"><strong>determine_number_of_particles_by_aufbau</strong></a> (const OrbitalEnergies&lt; Tbase &gt; &amp; orbital_energies) const<br><em>Determine number of particles in each block.</em></td>
 </tr>
 <tr>
@@ -1663,7 +1728,7 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-fixed_number_of_particles_per_block"><strong>fixed_number_of_particles_per_block</strong></a> (const arma::Col&lt; Tbase &gt; &amp; number_of_particles_per_block) <br><em>Fix the number of occupied orbitals per block.</em></td>
+<td style="text-align: left;"><a href="#function-fixed_number_of_particles_per_block"><strong>fixed_number_of_particles_per_block</strong></a> (const Vector&lt; Tbase &gt; &amp; number_of_particles_per_block) <br><em>Fix the number of occupied orbitals per block.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">bool</td>
@@ -1678,11 +1743,11 @@
 <td style="text-align: left;"><a href="#function-get_energy"><strong>get_energy</strong></a> (size_t ihist=0) const<br><em>Get the energy for the n:th entry.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;">FockBuilderReturn&lt; Torb, Tbase &gt;</td>
+<td style="text-align: right;">FockBuilderReturn&lt; <a href="./#typedef-torb"><strong>Torb</strong></a>, Tbase &gt;</td>
 <td style="text-align: left;"><a href="#function-get_fock_build"><strong>get_fock_build</strong></a> (size_t ihist=0) const<br><em>Get the Fock matrix builder return.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;">FockMatrix&lt; Torb &gt;</td>
+<td style="text-align: right;">FockMatrix&lt; <a href="./#typedef-torb"><strong>Torb</strong></a> &gt;</td>
 <td style="text-align: left;"><a href="#function-get_fock_matrix"><strong>get_fock_matrix</strong></a> (size_t ihist=0) const<br><em>Get the Fock matrix for the ihist:th entry.</em></td>
 </tr>
 <tr>
@@ -1690,20 +1755,20 @@
 <td style="text-align: left;"><a href="#function-get_orbital_occupations"><strong>get_orbital_occupations</strong></a> (size_t ihist=0) const<br><em>Get the orbital occupations.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;">Orbitals&lt; Torb &gt;</td>
+<td style="text-align: right;">Orbitals&lt; <a href="./#typedef-torb"><strong>Torb</strong></a> &gt;</td>
 <td style="text-align: left;"><a href="#function-get_orbitals"><strong>get_orbitals</strong></a> (size_t ihist=0) const<br><em>Get the orbitals.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;">DensityMatrix&lt; Torb, Tbase &gt;</td>
+<td style="text-align: right;">DensityMatrix&lt; <a href="./#typedef-torb"><strong>Torb</strong></a>, Tbase &gt;</td>
 <td style="text-align: left;"><a href="#function-get_solution"><strong>get_solution</strong></a> (size_t ihist=0) const<br><em>Get the SCF solution.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-initialize_with_fock"><strong>initialize_with_fock</strong></a> (const FockMatrix&lt; Torb &gt; &amp; fock_guess) <br><em>Initialize the solver with a guess Fock matrix.</em></td>
+<td style="text-align: left;"><a href="#function-initialize_with_fock"><strong>initialize_with_fock</strong></a> (const FockMatrix&lt; <a href="./#typedef-torb"><strong>Torb</strong></a> &gt; &amp; fock_guess) <br><em>Initialize the solver with a guess Fock matrix.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-initialize_with_orbitals"><strong>initialize_with_orbitals</strong></a> (const Orbitals&lt; Torb &gt; &amp; orbitals, const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations) <br><em>Initialize with precomputed orbitals and occupations.</em></td>
+<td style="text-align: left;"><a href="#function-initialize_with_orbitals"><strong>initialize_with_orbitals</strong></a> (const Orbitals&lt; <a href="./#typedef-torb"><strong>Torb</strong></a> &gt; &amp; orbitals, const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations) <br><em>Initialize with precomputed orbitals and occupations.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int</td>
@@ -1723,7 +1788,7 @@
 </tr>
 <tr>
 <td style="text-align: right;">Tbase</td>
-<td style="text-align: left;"><a href="#function-norm"><strong>norm</strong></a> (const arma::Mat&lt; Tbase &gt; &amp; mat, std::string norm="") const<br><em>Evaluate the norm.</em></td>
+<td style="text-align: left;"><a href="#function-norm"><strong>norm</strong></a> (const Eigen::MatrixBase&lt; Derived &gt; &amp; mat, std::string nrm="") const<br><em>Evaluate the norm. Accepts both Matrix&lt;Tbase&gt; and Vector&lt;Tbase&gt;.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int</td>
@@ -1742,7 +1807,7 @@
 <td style="text-align: left;"><a href="#function-optimal_damping_threshold-22"><strong>optimal_damping_threshold</strong></a> (Tbase eps) <br><em>Use optimal damping when max error bigger than this.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;">arma::uword</td>
+<td style="text-align: right;">Index</td>
 <td style="text-align: left;"><a href="#function-particle_block_offset"><strong>particle_block_offset</strong></a> (size_t iparticle) const<br><em>Determines the offset for the blocks of the iparticle:th particle.</em></td>
 </tr>
 <tr>
@@ -1775,14 +1840,22 @@
 </tr>
 </tbody>
 </table>
+<h2 id="detailed-description">Detailed Description</h2>
+<p>SCF solver class. Templated on the real type Tbase (e.g. float, double, __float128) and a boolean IsComplex selecting between real and complex orbital coefficients. The orbital scalar type <a href="./#typedef-torb"><strong>Torb</strong></a> is std::conditional_t&lt;IsComplex, std::complex&lt;Tbase&gt;, Tbase&gt;. </p>
+<h2 id="public-types-documentation">Public Types Documentation</h2>
+<h3 id="typedef-torb">typedef Torb</h3>
+<p><em>Orbital scalar type derived from &lt;Tbase, IsComplex&gt;.</em> </p>
+<pre><code class="language-C++">using OpenOrbitalOptimizer::SCFSolver&lt; Tbase, IsComplex &gt;::Torb =  OrbitalScalar&lt;Tbase, IsComplex&gt;;
+</code></pre>
+<hr>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
 <h3 id="function-scfsolver">function SCFSolver</h3>
 <p><em>Constructor.</em> </p>
 <pre><code class="language-C++">inline OpenOrbitalOptimizer::SCFSolver::SCFSolver (
-    const arma::uvec &amp; number_of_blocks_per_particle_type,
-    const arma::Col&lt; Tbase &gt; &amp; maximum_occupation,
-    const arma::Col&lt; Tbase &gt; &amp; number_of_particles,
-    const FockBuilder&lt; Torb, Tbase &gt; &amp; fock_builder,
+    const IndexVector &amp; number_of_blocks_per_particle_type,
+    const Vector&lt; Tbase &gt; &amp; maximum_occupation,
+    const Vector&lt; Tbase &gt; &amp; number_of_particles,
+    const FockBuilder&lt; Torb , Tbase &gt; &amp; fock_builder,
     const std::vector&lt; std::string &gt; &amp; block_descriptions
 ) 
 </code></pre>
@@ -1791,7 +1864,7 @@
 <h3 id="function-add_entry-12">function add_entry [1/2]</h3>
 <p><em>Add entry to history, return value is True if energy was lowered.</em> </p>
 <pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::add_entry (
-    const DensityMatrix&lt; Torb, Tbase &gt; &amp; density
+    const DensityMatrix&lt; Torb , Tbase &gt; &amp; density
 ) 
 </code></pre>
 <hr>
@@ -1799,8 +1872,8 @@
 <h3 id="function-add_entry-22">function add_entry [2/2]</h3>
 <p><em>Add entry to history, return value is True if energy was lowered.</em> </p>
 <pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::add_entry (
-    const DensityMatrix&lt; Torb, Tbase &gt; &amp; density,
-    const FockBuilderReturn&lt; Torb, Tbase &gt; &amp; fock
+    const DensityMatrix&lt; Torb , Tbase &gt; &amp; density,
+    const FockBuilderReturn&lt; Torb , Tbase &gt; &amp; fock
 ) 
 </code></pre>
 <hr>
@@ -1827,7 +1900,7 @@
 
 <h3 id="function-compute_orbitals">function compute_orbitals</h3>
 <p><em>Computes orbitals and orbital energies by diagonalizing the Fock matrix.</em> </p>
-<pre><code class="language-C++">inline DiagonalizedFockMatrix&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver::compute_orbitals (
+<pre><code class="language-C++">inline DiagonalizedFockMatrix&lt; Torb , Tbase &gt; OpenOrbitalOptimizer::SCFSolver::compute_orbitals (
     const FockMatrix&lt; Torb &gt; &amp; fock
 ) const
 </code></pre>
@@ -1864,7 +1937,7 @@
 
 <h3 id="function-determine_number_of_particles_by_aufbau">function determine_number_of_particles_by_aufbau</h3>
 <p><em>Determine number of particles in each block.</em> </p>
-<pre><code class="language-C++">inline arma::Col&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver::determine_number_of_particles_by_aufbau (
+<pre><code class="language-C++">inline Vector&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver::determine_number_of_particles_by_aufbau (
     const OrbitalEnergies&lt; Tbase &gt; &amp; orbital_energies
 ) const
 </code></pre>
@@ -1943,7 +2016,7 @@
 <h3 id="function-fixed_number_of_particles_per_block">function fixed_number_of_particles_per_block</h3>
 <p><em>Fix the number of occupied orbitals per block.</em> </p>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::fixed_number_of_particles_per_block (
-    const arma::Col&lt; Tbase &gt; &amp; number_of_particles_per_block
+    const Vector&lt; Tbase &gt; &amp; number_of_particles_per_block
 ) 
 </code></pre>
 <hr>
@@ -1972,7 +2045,7 @@
 
 <h3 id="function-get_fock_build">function get_fock_build</h3>
 <p><em>Get the Fock matrix builder return.</em> </p>
-<pre><code class="language-C++">inline FockBuilderReturn&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver::get_fock_build (
+<pre><code class="language-C++">inline FockBuilderReturn&lt; Torb , Tbase &gt; OpenOrbitalOptimizer::SCFSolver::get_fock_build (
     size_t ihist=0
 ) const
 </code></pre>
@@ -2004,7 +2077,7 @@
 
 <h3 id="function-get_solution">function get_solution</h3>
 <p><em>Get the SCF solution.</em> </p>
-<pre><code class="language-C++">inline DensityMatrix&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver::get_solution (
+<pre><code class="language-C++">inline DensityMatrix&lt; Torb , Tbase &gt; OpenOrbitalOptimizer::SCFSolver::get_solution (
     size_t ihist=0
 ) const
 </code></pre>
@@ -2056,10 +2129,11 @@
 <hr>
 
 <h3 id="function-norm">function norm</h3>
-<p><em>Evaluate the norm.</em> </p>
-<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
-    const arma::Mat&lt; Tbase &gt; &amp; mat,
-    std::string norm=&quot;&quot;
+<p><em>Evaluate the norm. Accepts both Matrix&lt;Tbase&gt; and Vector&lt;Tbase&gt;.</em> </p>
+<pre><code class="language-C++">template&lt;typename Derived&gt;
+inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
+    const Eigen::MatrixBase&lt; Derived &gt; &amp; mat,
+    std::string nrm=&quot;&quot;
 ) const
 </code></pre>
 <hr>
@@ -2094,7 +2168,7 @@
 
 <h3 id="function-particle_block_offset">function particle_block_offset</h3>
 <p><em>Determines the offset for the blocks of the iparticle:th particle.</em> </p>
-<pre><code class="language-C++">inline arma::uword OpenOrbitalOptimizer::SCFSolver::particle_block_offset (
+<pre><code class="language-C++">inline Index OpenOrbitalOptimizer::SCFSolver::particle_block_offset (
     size_t iparticle
 ) const
 </code></pre>

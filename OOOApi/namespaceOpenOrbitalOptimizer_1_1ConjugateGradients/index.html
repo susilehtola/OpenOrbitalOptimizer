@@ -1030,8 +1030,8 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: right;">arma::Col&lt; T &gt;</td>
-<td style="text-align: left;"><a href="#function-cg_optimize"><strong>cg_optimize</strong></a> (const arma::Col&lt; T &gt; &amp; x0, const std::function&lt; std::pair&lt; T, arma::Col&lt; T &gt; &gt;(arma::Col&lt; T &gt;)&gt; &amp; fx, T f_tol=1e-8, T df_tol=1e-6, T x_tol=100 *std::numeric_limits&lt; T &gt;::epsilon(), size_t max_iter=1000) <br><em>Conjugate gradient optimization.</em></td>
+<td style="text-align: right;">Vector&lt; T &gt;</td>
+<td style="text-align: left;"><a href="#function-cg_optimize"><strong>cg_optimize</strong></a> (const Vector&lt; T &gt; &amp; x0, const std::function&lt; std::pair&lt; T, Vector&lt; T &gt; &gt;(Vector&lt; T &gt;)&gt; &amp; fx, T f_tol=1e-8, T df_tol=1e-6, T x_tol=100 *std::numeric_limits&lt; T &gt;::epsilon(), size_t max_iter=1000) <br><em>Conjugate gradient optimization.</em></td>
 </tr>
 </tbody>
 </table>
@@ -1039,9 +1039,9 @@
 <h3 id="function-cg_optimize">function cg_optimize</h3>
 <p><em>Conjugate gradient optimization.</em> </p>
 <pre><code class="language-C++">template&lt;typename T&gt;
-arma::Col&lt; T &gt; OpenOrbitalOptimizer::ConjugateGradients::cg_optimize (
-    const arma::Col&lt; T &gt; &amp; x0,
-    const std::function&lt; std::pair&lt; T, arma::Col&lt; T &gt; &gt;(arma::Col&lt; T &gt;)&gt; &amp; fx,
+Vector&lt; T &gt; OpenOrbitalOptimizer::ConjugateGradients::cg_optimize (
+    const Vector&lt; T &gt; &amp; x0,
+    const std::function&lt; std::pair&lt; T, Vector&lt; T &gt; &gt;(Vector&lt; T &gt;)&gt; &amp; fx,
     T f_tol=1e-8,
     T df_tol=1e-6,
     T x_tol=100 *std::numeric_limits&lt; T &gt;::epsilon(),

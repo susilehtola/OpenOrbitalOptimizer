@@ -3,23 +3,23 @@
   <compounddef id="namespaceOpenOrbitalOptimizer_1_1ConjugateGradients" kind="namespace" language="C++">
     <compoundname>OpenOrbitalOptimizer::ConjugateGradients</compoundname>
     <sectiondef kind="func">
-      <memberdef kind="function" id="cg__optimizer_8hpp_1ac3a6f16f781c902bbb9acba32717f382" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="cg__optimizer_8hpp_1a8d000a03e2cb7bb5e6c1a95c7c9f340e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename T</type>
           </param>
         </templateparamlist>
-        <type>arma::Col&lt; T &gt;</type>
-        <definition>arma::Col&lt; T &gt; OpenOrbitalOptimizer::ConjugateGradients::cg_optimize</definition>
-        <argsstring>(const arma::Col&lt; T &gt; &amp;x0, const std::function&lt; std::pair&lt; T, arma::Col&lt; T &gt; &gt;(arma::Col&lt; T &gt;)&gt; &amp;fx, T f_tol=1e-8, T df_tol=1e-6, T x_tol=100 *std::numeric_limits&lt; T &gt;::epsilon(), size_t max_iter=1000)</argsstring>
+        <type>Vector&lt; T &gt;</type>
+        <definition>Vector&lt; T &gt; OpenOrbitalOptimizer::ConjugateGradients::cg_optimize</definition>
+        <argsstring>(const Vector&lt; T &gt; &amp;x0, const std::function&lt; std::pair&lt; T, Vector&lt; T &gt; &gt;(Vector&lt; T &gt;)&gt; &amp;fx, T f_tol=1e-8, T df_tol=1e-6, T x_tol=100 *std::numeric_limits&lt; T &gt;::epsilon(), size_t max_iter=1000)</argsstring>
         <name>cg_optimize</name>
         <qualifiedname>OpenOrbitalOptimizer::ConjugateGradients::cg_optimize</qualifiedname>
         <param>
-          <type>const arma::Col&lt; T &gt; &amp;</type>
+          <type>const Vector&lt; T &gt; &amp;</type>
           <declname>x0</declname>
         </param>
         <param>
-          <type>const std::function&lt; std::pair&lt; T, arma::Col&lt; T &gt; &gt;(arma::Col&lt; T &gt;)&gt; &amp;</type>
+          <type>const std::function&lt; std::pair&lt; T, Vector&lt; T &gt; &gt;(Vector&lt; T &gt;)&gt; &amp;</type>
           <declname>fx</declname>
         </param>
         <param>
@@ -62,13 +62,13 @@
 <para>Now we have bracketed the minimum, use golden section search.</para>
 <para>Update the current point</para>
         </inbodydescription>
-        <location file="openorbitaloptimizer/cg_optimizer.hpp" line="17" column="15" bodyfile="openorbitaloptimizer/cg_optimizer.hpp" bodystart="17" bodyend="90"/>
+        <location file="openorbitaloptimizer/cg_optimizer.hpp" line="24" column="12" bodyfile="openorbitaloptimizer/cg_optimizer.hpp" bodystart="24" bodyend="101"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="openorbitaloptimizer/cg_optimizer.hpp" line="13" column="3"/>
+    <location file="openorbitaloptimizer/cg_optimizer.hpp" line="20" column="3"/>
   </compounddef>
 </doxygen>
