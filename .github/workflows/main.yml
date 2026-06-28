@@ -72,6 +72,7 @@ jobs:
           - ninja
           - cxx-compiler
           - eigen
+          - armadillo  # optional, for the armadillo_compat shim test target
           - libxc-c
           - nlohmann_json
           - integratorxx

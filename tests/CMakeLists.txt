@@ -86,6 +86,30 @@ set_tests_properties(
     COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-instantiation-double-complex
   )
 
+  # Armadillo compatibility shim (opt-in for downstream callers that still
+  # carry arma::-shaped data). The core library does not link Armadillo, so
+  # this target is only added when an Armadillo installation is present.
+  find_package(Armadillo CONFIG QUIET)
+  if (Armadillo_FOUND AND TARGET armadillo)
+    add_executable(
+      openorbopt-armadillo-compat
+      EXCLUDE_FROM_ALL
+      armadillo_compat.cpp
+    )
+    target_link_libraries(
+      openorbopt-armadillo-compat
+      PRIVATE
+      ${ooo}::OpenOrbitalOptimizer
+      armadillo
+    )
+    add_test(  # Test #7
+      NAME openorbopt/armadillo-compat/build
+      COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target openorbopt-armadillo-compat
+    )
+  else()
+    message(STATUS "Skipping Armadillo compatibility shim test: Armadillo not found")
+  endif()
+
   # Quad-precision (_Float128) instantiations. Require both the
   # _Float128 language type (GCC extension, plus a recent libstdc++ that
   # has the std::sqrt/... overloads behind __cpp_lib_extended_float) and
