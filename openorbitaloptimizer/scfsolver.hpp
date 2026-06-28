@@ -195,8 +195,8 @@ namespace OpenOrbitalOptimizer {
       return std::get<1>(orbital_history_[ihist]).second[iblock];
     }
 
-    /// Vectorise a single Torb matrix to a real Tbase vector. For complex
-    /// Torb, stack real-then-imag parts (matches arma::vectorise + split).
+    /// Vectorise a single Torb matrix to a real Tbase vector. For
+    /// complex Torb, stack the real and imaginary parts.
     Vector<Tbase> vectorise(const Matrix<Torb> & mat) const {
       return vectorise_real_imag(mat);
     }
@@ -534,22 +534,6 @@ namespace OpenOrbitalOptimizer {
           }
         }
 
-        /*
-        // Rotate search directions. Generate a random ordering of the columns
-        IndexVector randperm(arma::randperm(search_directions.cols()));
-        search_directions=search_directions.cols(randperm);
-        // Mix the vectors together
-        for(size_t i=0;i<search_directions.cols();i++)
-          for(size_t j=0;j<i;j++) {
-            Vector<Tbase> randu(1);
-            randu.randu();
-
-            Vector<Tbase> newi = (1-randu(0))*search_directions.col(i) + randu(0)*search_directions.col(j);
-            Vector<Tbase> newj = (1-randu(0))*search_directions.col(j) + randu(0)*search_directions.col(i);
-            search_directions.col(i) = newi;
-            search_directions.col(j) = newj;
-          }
-        */
       }
 
       // Handle the edge case where the last matrix has zero norm
