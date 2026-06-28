@@ -72,7 +72,6 @@ jobs:
           - ninja
           - cxx-compiler
           - eigen
-          - armadillo  # tests/atomicsolver.hpp still uses Armadillo
           - libxc-c
           - nlohmann_json
           - integratorxx
@@ -135,12 +134,10 @@ jobs:
         find_package(Libxc CONFIG REQUIRED)
         find_package(IntegratorXX CONFIG REQUIRED)
         find_package(nlohmann_json CONFIG REQUIRED)
-        find_package(Armadillo CONFIG REQUIRED)  # tests/atomicsolver.hpp
           include(CMakePrintHelpers)
           cmake_print_properties(
             TARGETS
               Eigen3::Eigen
-              armadillo
               IntegratorXX::IntegratorXX
               OpenOrbitalOptimizer::OpenOrbitalOptimizer
             PROPERTIES
@@ -156,7 +153,6 @@ jobs:
         target_link_libraries(
           atomtest
             OpenOrbitalOptimizer::OpenOrbitalOptimizer
-            armadillo
             Libxc::xc
             IntegratorXX::IntegratorXX
             nlohmann_json::nlohmann_json

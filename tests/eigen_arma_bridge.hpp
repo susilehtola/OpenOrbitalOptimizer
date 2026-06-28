@@ -16,8 +16,10 @@
 #include <utility>
 #include <vector>
 
-/// Adapter helpers for atomtest, which still drives the SCFSolver using
-/// Armadillo-shaped data (atomicsolver.hpp uses arma::mat throughout).
+/// Opt-in adapter helpers for downstream callers that have Armadillo on
+/// their side and want to plug data into the (now Eigen-based) SCFSolver.
+/// Not used by atomtest itself any more; kept here as a utility so the
+/// Armadillo->Eigen migration path stays available without a copy-paste.
 /// Both libraries store dense matrices in column-major order, so the
 /// conversions below are straight memcpys.
 namespace eaa {

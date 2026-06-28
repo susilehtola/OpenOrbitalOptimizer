@@ -6,7 +6,6 @@
 #include <openorbitaloptimizer/scfsolver.hpp>
 #include <nlohmann/json.hpp>
 #include "cmdline.h"
-#include "eigen_arma_bridge.hpp"
 
 namespace OpenOrbitalOptimizer {
   // Instantiate all types of SCFSolver just to check it compiles
@@ -14,7 +13,7 @@ namespace OpenOrbitalOptimizer {
 
   namespace AtomicSolver {
 
-    std::pair<bool, bool> eval_xc(const arma::mat & rho, const arma::mat & sigma, const arma::mat & tau, arma::vec & exc, arma::mat & vxc, arma::mat & vsigma, arma::mat & vtau, int func_id, int nspin) {
+    std::pair<bool, bool> eval_xc(const Eigen::MatrixXd & rho, const Eigen::MatrixXd & sigma, const Eigen::MatrixXd & tau, Eigen::VectorXd & exc, Eigen::MatrixXd & vxc, Eigen::MatrixXd & vsigma, Eigen::MatrixXd & vtau, int func_id, int nspin) {
       // Initialize functional
       xc_func_type func;
       if(xc_func_init(&func, func_id, nspin) != 0) {
@@ -24,42 +23,43 @@ namespace OpenOrbitalOptimizer {
       }
 
       // Energy density and potentials
-      size_t N = rho.n_rows;
-      exc.zeros(N);
+      Eigen::Index N = rho.rows();
+      exc.setZero(N);
       if(nspin==1) {
-        vxc.zeros(1, N);
-        vsigma.zeros(1, N);
-        vtau.zeros(1, N);
+        vxc.setZero(1, N);
+        vsigma.setZero(1, N);
+        vtau.setZero(1, N);
       } else {
-        vxc.zeros(2, N);
-        vsigma.zeros(3, N);
-        vtau.zeros(2, N);
+        vxc.setZero(2, N);
+        vsigma.setZero(3, N);
+        vtau.setZero(2, N);
       }
 
-      // Transpose rho, sigma, and tau
-      arma::mat rhot(rho.t());
-      arma::mat sigmat(sigma.t());
-      arma::mat taut(tau.t());
+      // Transpose rho, sigma, and tau so the spin index runs fastest in
+      // memory, matching libxc's interleaved (up, dn, up, dn, ...) layout.
+      Eigen::MatrixXd rhot   = rho.transpose();
+      Eigen::MatrixXd sigmat = sigma.transpose();
+      Eigen::MatrixXd taut   = tau.transpose();
 
       bool gga=false, mgga=false;
       double *lapl = nullptr, *vlapl = nullptr;
       switch(func.info->family)
         {
         case XC_FAMILY_LDA:
-          xc_lda_exc_vxc(&func, N, rhot.memptr(), exc.memptr(), vxc.memptr());
+          xc_lda_exc_vxc(&func, N, rhot.data(), exc.data(), vxc.data());
           break;
         case XC_FAMILY_GGA:
 #ifdef XC_FAMILY_HYB_GGA
         case XC_FAMILY_HYB_GGA:
 #endif
-          xc_gga_exc_vxc(&func, N, rhot.memptr(), sigmat.memptr(), exc.memptr(), vxc.memptr(), vsigma.memptr());
+          xc_gga_exc_vxc(&func, N, rhot.data(), sigmat.data(), exc.data(), vxc.data(), vsigma.data());
           gga=true;
           break;
         case XC_FAMILY_MGGA:
 #ifdef XC_FAMILY_HYB_MGGA
         case XC_FAMILY_HYB_MGGA:
 #endif
-          xc_mgga_exc_vxc(&func, N, rhot.memptr(), sigmat.memptr(), lapl, taut.memptr(), exc.memptr(), vxc.memptr(), vsigma.memptr(), vlapl, vtau.memptr());
+          xc_mgga_exc_vxc(&func, N, rhot.data(), sigmat.data(), lapl, taut.data(), exc.data(), vxc.data(), vsigma.data(), vlapl, vtau.data());
           gga=true;
           mgga=true;
           break;
@@ -68,196 +68,206 @@ namespace OpenOrbitalOptimizer {
           throw std::logic_error("Case not handled!\n");
         }
 
-      // Back-transpose
-      vxc = vxc.t();
-      vsigma = vsigma.t();
-      vtau = vtau.t();
+      // Back-transpose to (N, nspin*) layout
+      vxc    = vxc.transpose().eval();
+      vsigma = vsigma.transpose().eval();
+      vtau   = vtau.transpose().eval();
 
       return std::make_pair(gga,mgga);
     }
 
-    std::tuple<double,std::vector<arma::mat>> build_xc_unpolarized(const std::vector<std::shared_ptr<const RadialBasis>> & basis, const std::vector<arma::mat> & P, size_t N, int func_id) {
+    std::tuple<double,std::vector<Eigen::MatrixXd>> build_xc_unpolarized(const std::vector<std::shared_ptr<const RadialBasis>> & basis, const std::vector<Eigen::MatrixXd> & P, size_t N, int func_id) {
       assert(basis.size() == P.size());
 
       // Handle case of no functional
       if(func_id==-1) {
-        std::vector<arma::mat> F(basis.size());
+        std::vector<Eigen::MatrixXd> F(basis.size());
         for(size_t l=0;l<basis.size();l++)
-          F[l].zeros(basis[l]->nbf(),basis[l]->nbf());
+          F[l] = Eigen::MatrixXd::Zero(basis[l]->nbf(),basis[l]->nbf());
         return std::make_tuple(0.0,F);
       }
 
       // Get radial grid
       IntegratorXX::TreutlerAhlrichs<double,double> quad(N);
-      arma::vec w(arma::conv_to<arma::vec>::from(quad.weights()));
-      arma::vec r(arma::conv_to<arma::vec>::from(quad.points()));
+      const auto & quad_w = quad.weights();
+      const auto & quad_r = quad.points();
+      Eigen::VectorXd w = Eigen::Map<const Eigen::VectorXd>(quad_w.data(), quad_w.size());
+      Eigen::VectorXd r = Eigen::Map<const Eigen::VectorXd>(quad_r.data(), quad_r.size());
       // Angular factor
       double angfac = 4.0*M_PI;
 
       // Evaluate basis functions
-      std::vector<arma::mat> bf(basis.size()), df(basis.size());
+      std::vector<Eigen::MatrixXd> bf(basis.size()), df(basis.size());
       for(size_t l=0;l<basis.size();l++) {
         bf[l]=basis[l]->eval_f(r);
         df[l]=basis[l]->eval_df(r);
       }
 
-      // Electron density
-      arma::mat rho(r.n_elem,1,arma::fill::zeros);
+      // Electron density (single column => store as Nx1 matrix to match
+      // the libxc convention used by eval_xc above)
+      Eigen::MatrixXd rho = Eigen::MatrixXd::Zero(r.size(),1);
       for(size_t l=0;l<basis.size();l++)
-        rho.col(0) += arma::diagvec(bf[l]*P[l]/angfac*bf[l].t());
+        rho.col(0) += (bf[l]*P[l]/angfac*bf[l].transpose()).diagonal();
 
       // Density gradient
-      arma::vec drho(r.n_elem,1,arma::fill::zeros);
+      Eigen::VectorXd drho = Eigen::VectorXd::Zero(r.size());
       for(size_t l=0;l<basis.size();l++)
-        drho.col(0) += 2.0*arma::diagvec(df[l]*P[l]/angfac*bf[l].t());
+        drho += 2.0*(df[l]*P[l]/angfac*bf[l].transpose()).diagonal();
       // Reduced gradient
-      arma::mat sigma(arma::pow(drho,2));
+      Eigen::MatrixXd sigma = drho.array().square().matrix();
 
       // Kinetic energy density
-      arma::mat tau(r.n_elem,1,arma::fill::zeros);
+      Eigen::MatrixXd tau = Eigen::MatrixXd::Zero(r.size(),1);
       for(size_t l=0;l<basis.size();l++)
-        tau.col(0) += 0.5*arma::diagvec(df[l]*P[l]/angfac*df[l].t());
+        tau.col(0) += 0.5*(df[l]*P[l]/angfac*df[l].transpose()).diagonal();
       for(size_t l=1;l<basis.size();l++)
-        tau.col(0) += 0.5*l*(l+1)*arma::diagvec(bf[l]*P[l]/angfac*bf[l].t())/arma::square(r);
+        tau.col(0).array() += 0.5*l*(l+1)*(bf[l]*P[l]/angfac*bf[l].transpose()).diagonal().array() / r.array().square();
 
       // Energy density and potentials
-      arma::vec exc;
-      arma::mat vxc;
-      arma::mat vsigma;
-      arma::mat vtau;
+      Eigen::VectorXd exc;
+      Eigen::MatrixXd vxc;
+      Eigen::MatrixXd vsigma;
+      Eigen::MatrixXd vtau;
       auto ggamgga = eval_xc(rho, sigma, tau, exc, vxc, vsigma, vtau, func_id, XC_UNPOLARIZED);
       bool gga = std::get<0>(ggamgga);
       bool mgga = std::get<1>(ggamgga);
 
-      //printf("quadrature of density yields %.10f\n",angfac*arma::dot(w, arma::square(r)%rho));
-      //printf("quadrature of tau yields %.10f\n",angfac*arma::dot(w, arma::square(r)%tau));
-
       // xc energy
-      double E = angfac*arma::dot(exc%rho, w%arma::square(r));
+      double E = angfac*(exc.array()*rho.col(0).array()).matrix().dot((w.array()*r.array().square()).matrix());
 
       // Fock matrix, LDA term
-      std::vector<arma::mat> F(basis.size());
-      for(size_t l=0;l<basis.size();l++)
-        F[l] = bf[l].t()*arma::diagmat(w%arma::square(r)%vxc)*bf[l];
+      Eigen::VectorXd r2 = r.array().square().matrix();
+      Eigen::VectorXd w_r2 = (w.array()*r2.array()).matrix();
+      std::vector<Eigen::MatrixXd> F(basis.size());
+      for(size_t l=0;l<basis.size();l++) {
+        Eigen::VectorXd d = (w_r2.array()*vxc.col(0).array()).matrix();
+        F[l] = bf[l].transpose() * d.asDiagonal() * bf[l];
+      }
       if(gga) {
         for(size_t l=0;l<basis.size();l++) {
-          arma::mat Fgga(2*df[l].t()*arma::diagmat(w%arma::square(r)%vsigma%drho)*bf[l]);
-          F[l] += Fgga + Fgga.t();
+          Eigen::VectorXd d = (w_r2.array() * vsigma.col(0).array() * drho.array()).matrix();
+          Eigen::MatrixXd Fgga = 2*df[l].transpose() * d.asDiagonal() * bf[l];
+          F[l] += Fgga + Fgga.transpose();
         }
       }
       if(mgga) {
         for(size_t l=0;l<basis.size();l++) {
-          F[l] += 0.5*df[l].t()*arma::diagmat(w%arma::square(r)%vtau)*df[l];
-          if(l>0)
-            F[l] += 0.5*l*(l+1)*bf[l].t()*arma::diagmat(w%vtau)*bf[l];
+          Eigen::VectorXd d = (w_r2.array() * vtau.col(0).array()).matrix();
+          F[l] += 0.5*df[l].transpose() * d.asDiagonal() * df[l];
+          if(l>0) {
+            Eigen::VectorXd d2 = (w.array() * vtau.col(0).array()).matrix();
+            F[l] += 0.5*l*(l+1)*bf[l].transpose() * d2.asDiagonal() * bf[l];
+          }
         }
       }
 
       return std::make_tuple(E,F);
     }
 
-    std::tuple<double,std::vector<arma::mat>,std::vector<arma::mat>> build_xc_polarized(const std::vector<std::shared_ptr<const RadialBasis>> & basis, const std::vector<arma::mat> & Pa, const std::vector<arma::mat> & Pb, size_t N, int func_id) {
+    std::tuple<double,std::vector<Eigen::MatrixXd>,std::vector<Eigen::MatrixXd>> build_xc_polarized(const std::vector<std::shared_ptr<const RadialBasis>> & basis, const std::vector<Eigen::MatrixXd> & Pa, const std::vector<Eigen::MatrixXd> & Pb, size_t N, int func_id) {
       assert(basis.size() == Pa.size());
       assert(basis.size() == Pb.size());
 
       // Handle case of no functional
       if(func_id==-1) {
-        std::vector<arma::mat> Fa(basis.size()), Fb(basis.size());
+        std::vector<Eigen::MatrixXd> Fa(basis.size()), Fb(basis.size());
         for(size_t l=0;l<basis.size();l++) {
-          Fa[l].zeros(basis[l]->nbf(),basis[l]->nbf());
-          Fb[l].zeros(basis[l]->nbf(),basis[l]->nbf());
+          Fa[l] = Eigen::MatrixXd::Zero(basis[l]->nbf(),basis[l]->nbf());
+          Fb[l] = Eigen::MatrixXd::Zero(basis[l]->nbf(),basis[l]->nbf());
         }
         return std::make_tuple(0.0,Fa,Fb);
       }
 
       // Get radial grid
       IntegratorXX::TreutlerAhlrichs<double,double> quad(N);
-      arma::vec w(arma::conv_to<arma::vec>::from(quad.weights()));
-      arma::vec r(arma::conv_to<arma::vec>::from(quad.points()));
-      // Angular factor
+      const auto & quad_w = quad.weights();
+      const auto & quad_r = quad.points();
+      Eigen::VectorXd w = Eigen::Map<const Eigen::VectorXd>(quad_w.data(), quad_w.size());
+      Eigen::VectorXd r = Eigen::Map<const Eigen::VectorXd>(quad_r.data(), quad_r.size());
       double angfac = 4.0*M_PI;
 
       // Evaluate basis functions
-      std::vector<arma::mat> bf(basis.size()), df(basis.size());
+      std::vector<Eigen::MatrixXd> bf(basis.size()), df(basis.size());
       for(size_t l=0;l<basis.size();l++) {
         bf[l]=basis[l]->eval_f(r);
         df[l]=basis[l]->eval_df(r);
       }
 
-      // Electron density; construct the transpose
-      arma::mat rho(r.n_elem,2,arma::fill::zeros);
+      // Electron density: column 0 = alpha, column 1 = beta
+      Eigen::MatrixXd rho = Eigen::MatrixXd::Zero(r.size(),2);
       for(size_t l=0;l<basis.size();l++) {
-        rho.col(0) += arma::diagvec(bf[l]*Pa[l]/angfac*bf[l].t());
-        rho.col(1) += arma::diagvec(bf[l]*Pb[l]/angfac*bf[l].t());
+        rho.col(0) += (bf[l]*Pa[l]/angfac*bf[l].transpose()).diagonal();
+        rho.col(1) += (bf[l]*Pb[l]/angfac*bf[l].transpose()).diagonal();
       }
-      arma::vec rhotot(rho.col(0)+rho.col(1));
+      Eigen::VectorXd rhotot = rho.col(0) + rho.col(1);
 
-      // Density gradient; construct the transpose
-      arma::mat drho(r.n_elem,2,arma::fill::zeros);
+      // Density gradient
+      Eigen::MatrixXd drho = Eigen::MatrixXd::Zero(r.size(),2);
       for(size_t l=0;l<basis.size();l++) {
-        drho.col(0) += 2.0*arma::diagvec(df[l]*Pa[l]/angfac*bf[l].t());
-        drho.col(1) += 2.0*arma::diagvec(df[l]*Pb[l]/angfac*bf[l].t());
+        drho.col(0) += 2.0*(df[l]*Pa[l]/angfac*bf[l].transpose()).diagonal();
+        drho.col(1) += 2.0*(df[l]*Pb[l]/angfac*bf[l].transpose()).diagonal();
       }
-      // Reduced gradient; construct the transpose
-      arma::mat sigma(r.n_elem,3,arma::fill::zeros);
-      sigma.col(0) = drho.col(0)%drho.col(0);
-      sigma.col(1) = drho.col(0)%drho.col(1);
-      sigma.col(2) = drho.col(1)%drho.col(1);
+      // Reduced gradient
+      Eigen::MatrixXd sigma(r.size(),3);
+      sigma.col(0) = (drho.col(0).array()*drho.col(0).array()).matrix();
+      sigma.col(1) = (drho.col(0).array()*drho.col(1).array()).matrix();
+      sigma.col(2) = (drho.col(1).array()*drho.col(1).array()).matrix();
 
-      // Kinetic energy density; construct the transpose
-      arma::mat tau(r.n_elem,2,arma::fill::zeros);
+      // Kinetic energy density
+      Eigen::MatrixXd tau = Eigen::MatrixXd::Zero(r.size(),2);
       for(size_t l=0;l<basis.size();l++) {
-        tau.col(0) += 0.5*arma::diagvec(df[l]*Pa[l]/angfac*df[l].t());
-        tau.col(1) += 0.5*arma::diagvec(df[l]*Pb[l]/angfac*df[l].t());
+        tau.col(0) += 0.5*(df[l]*Pa[l]/angfac*df[l].transpose()).diagonal();
+        tau.col(1) += 0.5*(df[l]*Pb[l]/angfac*df[l].transpose()).diagonal();
       }
       for(size_t l=1;l<basis.size();l++) {
-        tau.col(0) += 0.5*l*(l+1)*arma::diagvec(bf[l]*Pa[l]/angfac*bf[l].t())/arma::square(r);
-        tau.col(1) += 0.5*l*(l+1)*arma::diagvec(bf[l]*Pb[l]/angfac*bf[l].t())/arma::square(r);
+        tau.col(0).array() += 0.5*l*(l+1)*(bf[l]*Pa[l]/angfac*bf[l].transpose()).diagonal().array() / r.array().square();
+        tau.col(1).array() += 0.5*l*(l+1)*(bf[l]*Pb[l]/angfac*bf[l].transpose()).diagonal().array() / r.array().square();
       }
-      arma::vec tautot(tau.col(0)+tau.col(1));
 
       // Energy density and potentials
-      arma::vec exc;
-      arma::mat vxc;
-      arma::mat vsigma;
-      arma::mat vtau;
+      Eigen::VectorXd exc;
+      Eigen::MatrixXd vxc;
+      Eigen::MatrixXd vsigma;
+      Eigen::MatrixXd vtau;
       auto ggamgga = eval_xc(rho, sigma, tau, exc, vxc, vsigma, vtau, func_id, XC_POLARIZED);
       bool gga = std::get<0>(ggamgga);
       bool mgga = std::get<1>(ggamgga);
 
-#if 0
-      printf("quadrature of alpha density yields %.10f\n",angfac*arma::dot(w, arma::square(r)%rho.col(0)));
-      printf("quadrature of beta  density yields %.10f\n",angfac*arma::dot(w, arma::square(r)%rho.col(1)));
-      printf("quadrature of density yields %.10f\n",angfac*arma::dot(w, arma::square(r)%rhotot));
-      printf("quadrature of alpha tau yields %.10f\n",angfac*arma::dot(w, arma::square(r)%tau.col(0)));
-      printf("quadrature of beta  tau yields %.10f\n",angfac*arma::dot(w, arma::square(r)%tau.col(1)));
-      printf("quadrature of tau yields %.10f\n",angfac*arma::dot(w, arma::square(r)%tautot));
-#endif
-
       // xc energy
-      double E = angfac*arma::dot(exc%rhotot, w%arma::square(r));
+      double E = angfac*(exc.array()*rhotot.array()).matrix().dot((w.array()*r.array().square()).matrix());
+
+      Eigen::VectorXd r2   = r.array().square().matrix();
+      Eigen::VectorXd w_r2 = (w.array()*r2.array()).matrix();
 
       // Fock matrix, LDA term
-      std::vector<arma::mat> Fa(basis.size()), Fb(basis.size());
+      std::vector<Eigen::MatrixXd> Fa(basis.size()), Fb(basis.size());
       for(size_t l=0;l<basis.size();l++) {
-        Fa[l] = bf[l].t()*arma::diagmat(w%arma::square(r)%vxc.col(0))*bf[l];
-        Fb[l] = bf[l].t()*arma::diagmat(w%arma::square(r)%vxc.col(1))*bf[l];
+        Eigen::VectorXd da = (w_r2.array()*vxc.col(0).array()).matrix();
+        Eigen::VectorXd db = (w_r2.array()*vxc.col(1).array()).matrix();
+        Fa[l] = bf[l].transpose() * da.asDiagonal() * bf[l];
+        Fb[l] = bf[l].transpose() * db.asDiagonal() * bf[l];
       }
       if(gga) {
         for(size_t l=0;l<basis.size();l++) {
-          arma::mat Fagga(df[l].t()*arma::diagmat(w%arma::square(r)%(2*vsigma.col(0)%drho.col(0) + vsigma.col(1)%drho.col(1)))*bf[l]);
-          Fa[l] += Fagga + Fagga.t();
-          arma::mat Fbgga(df[l].t()*arma::diagmat(w%arma::square(r)%(2*vsigma.col(2)%drho.col(1) + vsigma.col(1)%drho.col(0)))*bf[l]);
-          Fb[l] += Fbgga + Fbgga.t();
+          Eigen::VectorXd da = (w_r2.array()*(2*vsigma.col(0).array()*drho.col(0).array() + vsigma.col(1).array()*drho.col(1).array())).matrix();
+          Eigen::MatrixXd Fagga = df[l].transpose() * da.asDiagonal() * bf[l];
+          Fa[l] += Fagga + Fagga.transpose();
+          Eigen::VectorXd db = (w_r2.array()*(2*vsigma.col(2).array()*drho.col(1).array() + vsigma.col(1).array()*drho.col(0).array())).matrix();
+          Eigen::MatrixXd Fbgga = df[l].transpose() * db.asDiagonal() * bf[l];
+          Fb[l] += Fbgga + Fbgga.transpose();
         }
       }
       if(mgga) {
         for(size_t l=0;l<basis.size();l++) {
-          Fa[l] += 0.5*df[l].t()*arma::diagmat(w%arma::square(r)%vtau.col(0))*df[l];
-          Fb[l] += 0.5*df[l].t()*arma::diagmat(w%arma::square(r)%vtau.col(1))*df[l];
+          Eigen::VectorXd da = (w_r2.array()*vtau.col(0).array()).matrix();
+          Eigen::VectorXd db = (w_r2.array()*vtau.col(1).array()).matrix();
+          Fa[l] += 0.5*df[l].transpose() * da.asDiagonal() * df[l];
+          Fb[l] += 0.5*df[l].transpose() * db.asDiagonal() * df[l];
           if(l>0) {
-            Fa[l] += 0.5*l*(l+1)*bf[l].t()*arma::diagmat(w%vtau.col(0))*bf[l];
-            Fb[l] += 0.5*l*(l+1)*bf[l].t()*arma::diagmat(w%vtau.col(1))*bf[l];
+            Eigen::VectorXd da2 = (w.array()*vtau.col(0).array()).matrix();
+            Eigen::VectorXd db2 = (w.array()*vtau.col(1).array()).matrix();
+            Fa[l] += 0.5*l*(l+1)*bf[l].transpose() * da2.asDiagonal() * bf[l];
+            Fb[l] += 0.5*l*(l+1)*bf[l].transpose() * db2.asDiagonal() * bf[l];
           }
         }
       }
@@ -265,115 +275,119 @@ namespace OpenOrbitalOptimizer {
       return std::make_tuple(E,Fa,Fb);
     }
 
-    std::tuple<double,std::vector<arma::mat>,std::vector<arma::mat>> build_xc_neo(const std::vector<std::shared_ptr<const RadialBasis>> & pbasis, const std::vector<arma::mat> & Pp, const std::vector<std::shared_ptr<const RadialBasis>> & ebasis, const std::vector<arma::mat> & Pe, size_t N, int func_id) {
+    std::tuple<double,std::vector<Eigen::MatrixXd>,std::vector<Eigen::MatrixXd>> build_xc_neo(const std::vector<std::shared_ptr<const RadialBasis>> & pbasis, const std::vector<Eigen::MatrixXd> & Pp, const std::vector<std::shared_ptr<const RadialBasis>> & ebasis, const std::vector<Eigen::MatrixXd> & Pe, size_t N, int func_id) {
       assert(pbasis.size() == Pp.size());
       assert(ebasis.size() == Pe.size());
 
       // Get radial grid
       IntegratorXX::TreutlerAhlrichs<double,double> quad(N);
-      arma::vec w(arma::conv_to<arma::vec>::from(quad.weights()));
-      arma::vec r(arma::conv_to<arma::vec>::from(quad.points()));
-      // Angular factor
+      const auto & quad_w = quad.weights();
+      const auto & quad_r = quad.points();
+      Eigen::VectorXd w = Eigen::Map<const Eigen::VectorXd>(quad_w.data(), quad_w.size());
+      Eigen::VectorXd r = Eigen::Map<const Eigen::VectorXd>(quad_r.data(), quad_r.size());
       double angfac = 4.0*M_PI;
 
       // Evaluate protonic and electronic basis functions
-      std::vector<arma::mat> pbf(pbasis.size()), pdf(pbasis.size());
+      std::vector<Eigen::MatrixXd> pbf(pbasis.size()), pdf(pbasis.size());
       for(size_t l=0;l<pbasis.size();l++) {
         pbf[l]=pbasis[l]->eval_f(r);
         pdf[l]=pbasis[l]->eval_df(r);
       }
-      std::vector<arma::mat> ebf(ebasis.size()), edf(ebasis.size());
+      std::vector<Eigen::MatrixXd> ebf(ebasis.size()), edf(ebasis.size());
       for(size_t l=0;l<ebasis.size();l++) {
         ebf[l]=ebasis[l]->eval_f(r);
         edf[l]=ebasis[l]->eval_df(r);
       }
 
-      // Proton and electron densities; construct the transposes
-      arma::mat rho(r.n_elem,2,arma::fill::zeros);
+      // Proton and electron densities
+      Eigen::MatrixXd rho = Eigen::MatrixXd::Zero(r.size(),2);
       for(size_t l=0;l<pbasis.size();l++) {
-        rho.col(0) += arma::diagvec(pbf[l]*Pp[l]/angfac*pbf[l].t());
+        rho.col(0) += (pbf[l]*Pp[l]/angfac*pbf[l].transpose()).diagonal();
       }
       for(size_t l=0;l<ebasis.size();l++) {
-        rho.col(1) += arma::diagvec(ebf[l]*Pe[l]/angfac*ebf[l].t());
+        rho.col(1) += (ebf[l]*Pe[l]/angfac*ebf[l].transpose()).diagonal();
       }
-      arma::vec rhotot(rho.col(0)+rho.col(1));
+      Eigen::VectorXd rhotot = rho.col(0)+rho.col(1);
 
-      // Density gradient; construct the transpose
-      arma::mat drho(r.n_elem,2,arma::fill::zeros);
+      // Density gradient
+      Eigen::MatrixXd drho = Eigen::MatrixXd::Zero(r.size(),2);
       for(size_t l=0;l<pbasis.size();l++) {
-        drho.col(0) += 2.0*arma::diagvec(pdf[l]*Pp[l]/angfac*pbf[l].t());
+        drho.col(0) += 2.0*(pdf[l]*Pp[l]/angfac*pbf[l].transpose()).diagonal();
       }
       for(size_t l=0;l<ebasis.size();l++) {
-        drho.col(1) += 2.0*arma::diagvec(edf[l]*Pe[l]/angfac*ebf[l].t());
+        drho.col(1) += 2.0*(edf[l]*Pe[l]/angfac*ebf[l].transpose()).diagonal();
       }
-      // Reduced gradient; construct the transpose
-      arma::mat sigma(r.n_elem,3,arma::fill::zeros);
-      sigma.col(0) = drho.col(0)%drho.col(0);
-      sigma.col(1) = drho.col(0)%drho.col(1);
-      sigma.col(2) = drho.col(1)%drho.col(1);
+      // Reduced gradient
+      Eigen::MatrixXd sigma(r.size(),3);
+      sigma.col(0) = (drho.col(0).array()*drho.col(0).array()).matrix();
+      sigma.col(1) = (drho.col(0).array()*drho.col(1).array()).matrix();
+      sigma.col(2) = (drho.col(1).array()*drho.col(1).array()).matrix();
 
-      // Kinetic energy density; construct the transpose
-      arma::mat tau(r.n_elem,2,arma::fill::zeros);
+      // Kinetic energy density
+      Eigen::MatrixXd tau = Eigen::MatrixXd::Zero(r.size(),2);
       for(size_t l=0;l<pbasis.size();l++) {
-        tau.col(0) += 0.5*arma::diagvec(pdf[l]*Pp[l]/angfac*pdf[l].t());
+        tau.col(0) += 0.5*(pdf[l]*Pp[l]/angfac*pdf[l].transpose()).diagonal();
         if(l>0)
-          tau.col(0) += 0.5*l*(l+1)*arma::diagvec(pbf[l]*Pp[l]/angfac*pbf[l].t())/arma::square(r);
+          tau.col(0).array() += 0.5*l*(l+1)*(pbf[l]*Pp[l]/angfac*pbf[l].transpose()).diagonal().array()/r.array().square();
       }
       for(size_t l=0;l<ebasis.size();l++) {
-        tau.col(1) += 0.5*arma::diagvec(edf[l]*Pe[l]/angfac*edf[l].t());
+        tau.col(1) += 0.5*(edf[l]*Pe[l]/angfac*edf[l].transpose()).diagonal();
         if(l>0)
-          tau.col(1) += 0.5*l*(l+1)*arma::diagvec(ebf[l]*Pe[l]/angfac*ebf[l].t())/arma::square(r);
+          tau.col(1).array() += 0.5*l*(l+1)*(ebf[l]*Pe[l]/angfac*ebf[l].transpose()).diagonal().array()/r.array().square();
       }
-      arma::vec tautot(tau.col(0)+tau.col(1));
 
       // Energy density and potentials
-      arma::vec exc;
-      arma::mat vxc;
-      arma::mat vsigma;
-      arma::mat vtau;
+      Eigen::VectorXd exc;
+      Eigen::MatrixXd vxc;
+      Eigen::MatrixXd vsigma;
+      Eigen::MatrixXd vtau;
       auto ggamgga = eval_xc(rho, sigma, tau, exc, vxc, vsigma, vtau, func_id, XC_POLARIZED);
       bool gga = std::get<0>(ggamgga);
       bool mgga = std::get<1>(ggamgga);
 
-#if 0
-      printf("proton radius %.10f\n",angfac*arma::dot(w, arma::pow(r,3)%rho.col(0)));
-      printf("quadrature of proton   density yields %.10f\n",angfac*arma::dot(w, arma::square(r)%rho.col(0)));
-      printf("quadrature of electron density yields %.10f\n",angfac*arma::dot(w, arma::square(r)%rho.col(1)));
-      printf("quadrature of proton   tau yields %.10f\n",angfac*arma::dot(w, arma::square(r)%tau.col(0)));
-      printf("quadrature of electron tau yields %.10f\n",angfac*arma::dot(w, arma::square(r)%tau.col(1)));
-#endif
-
       // xc energy
-      double E = angfac*arma::dot(exc%rhotot, w%arma::square(r));
+      double E = angfac*(exc.array()*rhotot.array()).matrix().dot((w.array()*r.array().square()).matrix());
+
+      Eigen::VectorXd r2   = r.array().square().matrix();
+      Eigen::VectorXd w_r2 = (w.array()*r2.array()).matrix();
 
       // Fock matrices, LDA term
-      std::vector<arma::mat> Fp(pbasis.size()), Fe(ebasis.size());
+      std::vector<Eigen::MatrixXd> Fp(pbasis.size()), Fe(ebasis.size());
       for(size_t l=0;l<pbasis.size();l++) {
-        Fp[l] = pbf[l].t()*arma::diagmat(w%arma::square(r)%vxc.col(0))*pbf[l];
+        Eigen::VectorXd d = (w_r2.array()*vxc.col(0).array()).matrix();
+        Fp[l] = pbf[l].transpose() * d.asDiagonal() * pbf[l];
       }
       for(size_t l=0;l<ebasis.size();l++) {
-        Fe[l] = ebf[l].t()*arma::diagmat(w%arma::square(r)%vxc.col(1))*ebf[l];
+        Eigen::VectorXd d = (w_r2.array()*vxc.col(1).array()).matrix();
+        Fe[l] = ebf[l].transpose() * d.asDiagonal() * ebf[l];
       }
       if(gga) {
         for(size_t l=0;l<pbasis.size();l++) {
-          arma::mat Fpgga(pdf[l].t()*arma::diagmat(w%arma::square(r)%(2*vsigma.col(0)%drho.col(0) + vsigma.col(1)%drho.col(1)))*pbf[l]);
-          Fp[l] += Fpgga + Fpgga.t();
+          Eigen::VectorXd d = (w_r2.array()*(2*vsigma.col(0).array()*drho.col(0).array() + vsigma.col(1).array()*drho.col(1).array())).matrix();
+          Eigen::MatrixXd Fpgga = pdf[l].transpose() * d.asDiagonal() * pbf[l];
+          Fp[l] += Fpgga + Fpgga.transpose();
         }
         for(size_t l=0;l<ebasis.size();l++) {
-          arma::mat Fegga(edf[l].t()*arma::diagmat(w%arma::square(r)%(2*vsigma.col(2)%drho.col(1) + vsigma.col(1)%drho.col(0)))*ebf[l]);
-          Fe[l] += Fegga + Fegga.t();
+          Eigen::VectorXd d = (w_r2.array()*(2*vsigma.col(2).array()*drho.col(1).array() + vsigma.col(1).array()*drho.col(0).array())).matrix();
+          Eigen::MatrixXd Fegga = edf[l].transpose() * d.asDiagonal() * ebf[l];
+          Fe[l] += Fegga + Fegga.transpose();
         }
       }
       if(mgga) {
         for(size_t l=0;l<pbasis.size();l++) {
-          Fp[l] += 0.5*pdf[l].t()*arma::diagmat(w%arma::square(r)%vtau.col(0))*pdf[l];
-          if(l>0)
-            Fp[l] += 0.5*l*(l+1)*pbf[l].t()*arma::diagmat(w%vtau.col(0))*pbf[l];
+          Eigen::VectorXd d = (w_r2.array()*vtau.col(0).array()).matrix();
+          Fp[l] += 0.5*pdf[l].transpose() * d.asDiagonal() * pdf[l];
+          if(l>0) {
+            Eigen::VectorXd d2 = (w.array()*vtau.col(0).array()).matrix();
+            Fp[l] += 0.5*l*(l+1)*pbf[l].transpose() * d2.asDiagonal() * pbf[l];
+          }
         }
         for(size_t l=0;l<ebasis.size();l++) {
-          Fe[l] += 0.5*edf[l].t()*arma::diagmat(w%arma::square(r)%vtau.col(1))*edf[l];
+          Eigen::VectorXd d = (w_r2.array()*vtau.col(1).array()).matrix();
+          Fe[l] += 0.5*edf[l].transpose() * d.asDiagonal() * edf[l];
           if(l>0) {
-            Fe[l] += 0.5*l*(l+1)*ebf[l].t()*arma::diagmat(w%vtau.col(1))*ebf[l];
+            Eigen::VectorXd d2 = (w.array()*vtau.col(1).array()).matrix();
+            Fe[l] += 0.5*l*(l+1)*ebf[l].transpose() * d2.asDiagonal() * ebf[l];
           }
         }
       }
@@ -381,15 +395,15 @@ namespace OpenOrbitalOptimizer {
       return std::make_tuple(E,Fp,Fe);
     }
 
-    std::vector<arma::mat> build_J(const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & basis, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & Pbasis, const std::vector<arma::mat> & P) {
-      std::vector<arma::mat> J(basis.size());
+    std::vector<Eigen::MatrixXd> build_J(const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & basis, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & Pbasis, const std::vector<Eigen::MatrixXd> & P) {
+      std::vector<Eigen::MatrixXd> J(basis.size());
       for(size_t i=0;i<basis.size();i++) {
-        J[i].zeros(basis[i]->nbf(),basis[i]->nbf());
+        J[i] = Eigen::MatrixXd::Zero(basis[i]->nbf(),basis[i]->nbf());
       }
 
       for(size_t lin=0;lin<Pbasis.size();lin++) {
         // Skip zero blocks
-        if(arma::norm(P[lin],2) == 0.0)
+        if(P[lin].norm() == 0.0)
           continue;
         for(size_t lout=0;lout<basis.size();lout++) {
           J[lout] += basis[lout]->coulomb(Pbasis[lin],P[lin]);
@@ -399,90 +413,102 @@ namespace OpenOrbitalOptimizer {
       return J;
     }
 
-    std::vector<arma::mat> form_X(double linear_dependency_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis) {
-      std::vector<arma::mat> X(radial_basis.size());
+    std::vector<Eigen::MatrixXd> form_X(double linear_dependency_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis) {
+      std::vector<Eigen::MatrixXd> X(radial_basis.size());
       for(size_t i=0;i<X.size();i++) {
         // Overlap matrix
-        arma::mat S(radial_basis[i]->overlap());
+        Eigen::MatrixXd S = radial_basis[i]->overlap();
 
         // Normalization
-        arma::vec normlz(arma::pow(arma::diagvec(S),-0.5));
-        arma::mat Snorm(arma::diagmat(normlz)*S*arma::diagmat(normlz));
+        Eigen::VectorXd normlz = S.diagonal().array().pow(-0.5).matrix();
+        Eigen::MatrixXd Snorm  = normlz.asDiagonal() * S * normlz.asDiagonal();
 
         // Compute X using canonical orthogonalization
-        arma::vec sval;
-        arma::mat svec;
-        arma::eig_sym(sval, svec, Snorm);
-        arma::uvec sidx(arma::find(sval>=linear_dependency_threshold));
-        X[i] = svec.cols(sidx) * arma::diagmat(arma::pow(sval(sidx), -0.5));
-        //sval.print("S eigenvalues");
+        Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(Snorm);
+        Eigen::VectorXd sval = es.eigenvalues();
+        Eigen::MatrixXd svec = es.eigenvectors();
+
+        // Find the columns of svec whose eigenvalues clear the threshold
+        std::vector<Eigen::Index> sidx;
+        sidx.reserve(sval.size());
+        for(Eigen::Index k=0;k<sval.size();k++)
+          if(sval(k) >= linear_dependency_threshold)
+            sidx.push_back(k);
+
+        Eigen::MatrixXd Xi(svec.rows(), sidx.size());
+        Eigen::VectorXd scale(sidx.size());
+        for(size_t k=0;k<sidx.size();k++) {
+          Xi.col(k) = svec.col(sidx[k]);
+          scale(k)  = std::pow(sval(sidx[k]), -0.5);
+        }
+        X[i] = Xi * scale.asDiagonal();
         // Apply normalization
-        X[i] = arma::diagmat(normlz) * X[i];
+        X[i] = normlz.asDiagonal() * X[i];
       }
       return X;
     }
 
-    std::vector<std::pair<arma::mat, arma::mat>> form_core_hamiltonian(const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, double Z, double particle_mass = 1.0) {
-      std::vector<std::pair<arma::mat, arma::mat>> Hcore(radial_basis.size());
+    std::vector<std::pair<Eigen::MatrixXd, Eigen::MatrixXd>> form_core_hamiltonian(const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, double Z, double particle_mass = 1.0) {
+      std::vector<std::pair<Eigen::MatrixXd, Eigen::MatrixXd>> Hcore(radial_basis.size());
       for(size_t i=0;i<radial_basis.size();i++) {
-        arma::mat T = radial_basis[i]->kinetic(i) / particle_mass;
-        arma::mat V = - Z*radial_basis[i]->nuclear_attraction();
+        Eigen::MatrixXd T = radial_basis[i]->kinetic(i) / particle_mass;
+        Eigen::MatrixXd V = - Z*radial_basis[i]->nuclear_attraction();
         Hcore[i] = std::make_pair(T,V);
       }
       return Hcore;
     }
 
-    double coulomb_energy(const std::vector<arma::mat> & P, const std::vector<arma::mat> & J) {
+    double coulomb_energy(const std::vector<Eigen::MatrixXd> & P, const std::vector<Eigen::MatrixXd> & J) {
       assert(P.size()==J.size());
       double E = 0.0;
       for(size_t l=0;l<P.size();l++) {
-        E += 0.5*arma::trace(J[l]*P[l]);
+        E += 0.5*(J[l]*P[l]).trace();
       }
       return E;
     }
 
     OpenOrbitalOptimizer::SCFSolver<double, false> restricted_scf(int Z, int Q, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
       // Form the orthogonal orbital basis
-      std::vector<arma::mat> X(form_X(linear_dependency_threshold, radial_basis));
+      std::vector<Eigen::MatrixXd> X = form_X(linear_dependency_threshold, radial_basis);
 
       // and the core Hamiltonian
-      std::vector<std::pair<arma::mat, arma::mat>> Hcore(form_core_hamiltonian(radial_basis, Z));
+      std::vector<std::pair<Eigen::MatrixXd, Eigen::MatrixXd>> Hcore = form_core_hamiltonian(radial_basis, Z);
 
       // Number of blocks per particle type
-      arma::uvec number_of_blocks_per_particle_type({radial_basis.size()});
+      OpenOrbitalOptimizer::IndexVector number_of_blocks_per_particle_type(1);
+      number_of_blocks_per_particle_type(0) = static_cast<Eigen::Index>(radial_basis.size());
 
-      arma::vec maximum_occupation(radial_basis.size());
+      Eigen::VectorXd maximum_occupation(radial_basis.size());
       for(size_t l=0;l<radial_basis.size();l++)
-        maximum_occupation[l] = 2*(2*l+1);
+        maximum_occupation(l) = 2*(2*l+1);
 
-      arma::vec number_of_particles({(double) (Z-Q)});
+      Eigen::VectorXd number_of_particles(1);
+      number_of_particles(0) = (double) (Z-Q);
 
-      std::vector<std::string> block_descriptions({radial_basis.size()});
+      std::vector<std::string> block_descriptions(radial_basis.size());
       for(size_t l=0;l<radial_basis.size();l++) {
         std::ostringstream oss;
         oss << "l=" << l;
         block_descriptions[l] = oss.str();
       }
 
-      // Form the Fock matrix guess (built in Armadillo, then bridged to Eigen)
-      std::vector<arma::mat> fock_guess_arma(radial_basis.size());
+      // Form the Fock matrix guess
+      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(radial_basis.size());
       for(size_t i=0;i<X.size();i++)
-        fock_guess_arma[i] = X[i].t() * (Hcore[i].first+Hcore[i].second) * X[i];
-      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(eaa::to_eigen(fock_guess_arma));
+        fock_guess[i] = X[i].transpose() * (Hcore[i].first+Hcore[i].second) * X[i];
 
-      // Fock builder. The SCF solver hands us Eigen-shaped density data;
-      // we bridge it to Armadillo so atomicsolver routines work unchanged.
+      // Fock builder. All inputs / outputs are Eigen-typed now.
       OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, X, Ngrid, x_func_id, c_func_id, Hcore, verbosity](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
-        const std::vector<arma::mat> orbitals = eaa::to_arma(dm.first);
-        const std::vector<arma::vec> occupations = eaa::to_arma(dm.second);
+        const auto & orbitals = dm.first;
+        const auto & occupations = dm.second;
 
         // Form the density matrix in the original basis
-        std::vector<arma::mat> P(orbitals.size());
+        std::vector<Eigen::MatrixXd> P(orbitals.size());
         for(size_t l=0;l<P.size();l++) {
           // In the orthonormal basis it is
-          P[l] = orbitals[l] * arma::diagmat(occupations[l]) * orbitals[l].t();
+          P[l] = orbitals[l] * occupations[l].asDiagonal() * orbitals[l].transpose();
           // and in the non-orthonormal basis it is
-          P[l] = X[l] * P[l] * X[l].t();
+          P[l] = X[l] * P[l] * X[l].transpose();
         }
 
         // Form the non-orthonormal basis Fock matrix. Build coulomb
@@ -493,27 +519,19 @@ namespace OpenOrbitalOptimizer {
         auto correlation = OpenOrbitalOptimizer::AtomicSolver::build_xc_unpolarized(radial_basis, P, Ngrid, c_func_id);
 
         // Collect the Fock matrix in the orthonormal basis
-        std::vector<arma::mat> fock(orbitals.size());
+        std::vector<Eigen::MatrixXd> fock(orbitals.size());
         for(size_t l=0; l<fock.size(); l++) {
-          fock[l] = X[l].t() * (Hcore[l].first + Hcore[l].second + coulomb[l] + std::get<1>(exchange)[l] + std::get<1>(correlation)[l]) * X[l];
-
-          arma::Mat J(coulomb[l]);
-          arma::Mat K(std::get<1>(exchange)[l]);
-          double kinasymm(arma::norm(Hcore[l].first-Hcore[l].first.t(),2));
-          double nucasymm(arma::norm(Hcore[l].second-Hcore[l].second.t(),2));
-          double coulasymm(arma::norm(J-J.t(),2));
-          double exchasymm(arma::norm(K-K.t(),2));
-          //printf("l=%i V asymm %e T asymm %e J asymm %e K asymm %e\n",l,nucasymm,kinasymm,coulasymm,exchasymm);
+          fock[l] = X[l].transpose() * (Hcore[l].first + Hcore[l].second + coulomb[l] + std::get<1>(exchange)[l] + std::get<1>(correlation)[l]) * X[l];
         }
 
         // Calculate energy terms
         double Ekin = 0.0;
         for(size_t l=0;l<P.size();l++)
-          Ekin += arma::trace(Hcore[l].first*P[l]);
+          Ekin += (Hcore[l].first*P[l]).trace();
 
         double Enuc = 0.0;
         for(size_t l=0;l<P.size();l++)
-          Enuc += arma::trace(Hcore[l].second*P[l]);
+          Enuc += (Hcore[l].second*P[l]).trace();
 
         double Ej = coulomb_energy(P,coulomb);
         double Ex = std::get<0>(exchange);
@@ -529,20 +547,19 @@ namespace OpenOrbitalOptimizer {
           printf("Total energy    % .10f\n",Etot);
         }
 
-        return std::make_pair(Etot, eaa::to_eigen(fock));
+        return std::make_pair(Etot, fock);
       };
 
       // Initialize SCF solver
       OpenOrbitalOptimizer::SCFSolver<double, false> scfsolver(
-          eaa::to_eigen(number_of_blocks_per_particle_type),
-          eaa::to_eigen(maximum_occupation),
-          eaa::to_eigen(number_of_particles),
+          number_of_blocks_per_particle_type,
+          maximum_occupation,
+          number_of_particles,
           fock_builder, block_descriptions);
       scfsolver.verbosity(verbosity);
       scfsolver.convergence_threshold(convergence_threshold);
       scfsolver.initialize_with_fock(fock_guess);
       scfsolver.run();
-      //scfsolver.brute_force_search_for_lowest_configuration();
 
       if(core_excitation) {
         // Form core-excited state
@@ -565,19 +582,21 @@ namespace OpenOrbitalOptimizer {
 
     OpenOrbitalOptimizer::SCFSolver<double, false> unrestricted_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
       // Form the orthogonal orbital basis
-      std::vector<arma::mat> X(form_X(linear_dependency_threshold, radial_basis));
+      std::vector<Eigen::MatrixXd> X = form_X(linear_dependency_threshold, radial_basis);
 
       // Form the core Hamiltonian
-      std::vector<std::pair<arma::mat,arma::mat>> Hcore(form_core_hamiltonian(radial_basis, Z));
+      std::vector<std::pair<Eigen::MatrixXd,Eigen::MatrixXd>> Hcore = form_core_hamiltonian(radial_basis, Z);
 
       // Number of blocks per particle type
-      arma::uvec number_of_blocks_per_particle_type({radial_basis.size(),radial_basis.size()});
+      OpenOrbitalOptimizer::IndexVector number_of_blocks_per_particle_type(2);
+      number_of_blocks_per_particle_type(0) = static_cast<Eigen::Index>(radial_basis.size());
+      number_of_blocks_per_particle_type(1) = static_cast<Eigen::Index>(radial_basis.size());
 
-      arma::vec maximum_occupation(2*radial_basis.size());
+      Eigen::VectorXd maximum_occupation(2*radial_basis.size());
       for(size_t l=0;l<radial_basis.size();l++)
-        maximum_occupation[l] = 2*l+1;
+        maximum_occupation(l) = 2*l+1;
       for(size_t i=0;i<radial_basis.size();i++) {
-        maximum_occupation[i+radial_basis.size()] = maximum_occupation[i];
+        maximum_occupation(i+radial_basis.size()) = maximum_occupation(i);
       }
 
       bool even_number_of_electrons = ((Z-Q)%2==0);
@@ -593,9 +612,11 @@ namespace OpenOrbitalOptimizer {
       printf("Nela = %i Nelb = %i\n",Nela,Nelb);
       assert(Nela>0);
       assert(Nelb>=0);
-      arma::vec number_of_particles({(double) Nela,(double) Nelb});
+      Eigen::VectorXd number_of_particles(2);
+      number_of_particles(0) = (double) Nela;
+      number_of_particles(1) = (double) Nelb;
 
-      std::vector<std::string> block_descriptions({2*radial_basis.size()});
+      std::vector<std::string> block_descriptions(2*radial_basis.size());
       for(size_t l=0;l<radial_basis.size();l++) {
         std::ostringstream oss;
         oss << "alpha l=" << l;
@@ -607,33 +628,32 @@ namespace OpenOrbitalOptimizer {
         block_descriptions[l+radial_basis.size()] = oss.str();
       }
 
-      std::vector<arma::mat> fock_guess_arma(2*radial_basis.size());
+      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(2*radial_basis.size());
       for(size_t i=0;i<X.size();i++) {
-        fock_guess_arma[i] = X[i].t() * (Hcore[i].first+Hcore[i].second) * X[i];
-        fock_guess_arma[i+radial_basis.size()] = fock_guess_arma[i];
+        fock_guess[i] = X[i].transpose() * (Hcore[i].first+Hcore[i].second) * X[i];
+        fock_guess[i+radial_basis.size()] = fock_guess[i];
       }
-      OpenOrbitalOptimizer::FockMatrix<double> fock_guess(eaa::to_eigen(fock_guess_arma));
 
-      // Fock builder. Eigen ↔ Armadillo conversion at the boundary.
+      // Fock builder
       OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, X, Ngrid, x_func_id, c_func_id, Hcore, verbosity](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
-        const std::vector<arma::mat> orbitals = eaa::to_arma(dm.first);
-        const std::vector<arma::vec> occupations = eaa::to_arma(dm.second);
+        const auto & orbitals = dm.first;
+        const auto & occupations = dm.second;
 
         // Form the spin-up and spin-down density matrices in the original basis
         assert(orbitals.size()%2==0);
         size_t Nblocks = orbitals.size()/2;
-        std::vector<arma::mat> Pa(Nblocks), Pb(Nblocks), Ptot(Nblocks);
+        std::vector<Eigen::MatrixXd> Pa(Nblocks), Pb(Nblocks), Ptot(Nblocks);
         for(size_t iblock=0;iblock<Nblocks;iblock++) {
           size_t ablock = iblock;
           // In the orthonormal basis it is
-          Pa[iblock] = orbitals[ablock] * arma::diagmat(occupations[ablock]) * orbitals[ablock].t();
+          Pa[iblock] = orbitals[ablock] * occupations[ablock].asDiagonal() * orbitals[ablock].transpose();
           // and in the non-orthonormal basis it is
-          Pa[iblock] = X[iblock] * Pa[iblock] * X[iblock].t();
+          Pa[iblock] = X[iblock] * Pa[iblock] * X[iblock].transpose();
           size_t bblock = iblock+Nblocks;
           // In the orthonormal basis it is
-          Pb[iblock] = orbitals[bblock] * arma::diagmat(occupations[bblock]) * orbitals[bblock].t();
+          Pb[iblock] = orbitals[bblock] * occupations[bblock].asDiagonal() * orbitals[bblock].transpose();
           // and in the non-orthonormal basis it is
-          Pb[iblock] = X[iblock] * Pb[iblock] * X[iblock].t();
+          Pb[iblock] = X[iblock] * Pb[iblock] * X[iblock].transpose();
 
           // Since we use same X for both spin channels, total density is
           Ptot[iblock] = Pa[iblock] + Pb[iblock];
@@ -647,22 +667,22 @@ namespace OpenOrbitalOptimizer {
         auto correlation = OpenOrbitalOptimizer::AtomicSolver::build_xc_polarized(radial_basis, Pa, Pb, Ngrid, c_func_id);
 
         // Collect the Fock matrix in the orthonormal basis
-        std::vector<arma::mat> fock(orbitals.size());
+        std::vector<Eigen::MatrixXd> fock(orbitals.size());
         for(size_t iblock=0; iblock<Nblocks; iblock++) {
           // Spin-up Fock
           size_t ablock = iblock, bblock = iblock+Nblocks;
-          fock[ablock] = X[iblock].t() * (Hcore[iblock].first + Hcore[iblock].second + coulomb[iblock] + std::get<1>(exchange)[iblock] + std::get<1>(correlation)[iblock]) * X[iblock];
-          fock[bblock] = X[iblock].t() * (Hcore[iblock].first + Hcore[iblock].second + coulomb[iblock] + std::get<2>(exchange)[iblock] + std::get<2>(correlation)[iblock]) * X[iblock];
+          fock[ablock] = X[iblock].transpose() * (Hcore[iblock].first + Hcore[iblock].second + coulomb[iblock] + std::get<1>(exchange)[iblock] + std::get<1>(correlation)[iblock]) * X[iblock];
+          fock[bblock] = X[iblock].transpose() * (Hcore[iblock].first + Hcore[iblock].second + coulomb[iblock] + std::get<2>(exchange)[iblock] + std::get<2>(correlation)[iblock]) * X[iblock];
         }
 
         // Calculate energy terms
         double Ekin = 0.0;
         for(size_t l=0;l<Ptot.size();l++)
-          Ekin += arma::trace(Hcore[l].first*Ptot[l]);
+          Ekin += (Hcore[l].first*Ptot[l]).trace();
 
         double Enuc = 0.0;
         for(size_t l=0;l<Ptot.size();l++)
-          Enuc += arma::trace(Hcore[l].second*Ptot[l]);
+          Enuc += (Hcore[l].second*Ptot[l]).trace();
 
         double Ej = coulomb_energy(Ptot, coulomb);
         double Ex = std::get<0>(exchange);
@@ -678,20 +698,19 @@ namespace OpenOrbitalOptimizer {
           printf("Total energy       % .10f\n",Etot);
         }
 
-        return std::make_pair(Etot, eaa::to_eigen(fock));
+        return std::make_pair(Etot, fock);
       };
 
       // Initialize SCF solver
       OpenOrbitalOptimizer::SCFSolver<double, false> scfsolver(
-          eaa::to_eigen(number_of_blocks_per_particle_type),
-          eaa::to_eigen(maximum_occupation),
-          eaa::to_eigen(number_of_particles),
+          number_of_blocks_per_particle_type,
+          maximum_occupation,
+          number_of_particles,
           fock_builder, block_descriptions);
       scfsolver.verbosity(verbosity);
       scfsolver.convergence_threshold(convergence_threshold);
       scfsolver.initialize_with_fock(fock_guess);
       scfsolver.run();
-      //scfsolver.brute_force_search_for_lowest_configuration();
 
       if(core_excitation) {
         // Form core-excited state
@@ -714,23 +733,26 @@ namespace OpenOrbitalOptimizer {
 
     OpenOrbitalOptimizer::SCFSolver<double, false> unrestricted_neo_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int epc_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & protonic_basis, double proton_mass, int verbosity, bool core_excitation) {
       // Form the orthogonal orbital basis
-      std::vector<arma::mat> X(form_X(linear_dependency_threshold, radial_basis));
-      std::vector<arma::mat> Xp(form_X(linear_dependency_threshold, protonic_basis));
+      std::vector<Eigen::MatrixXd> X  = form_X(linear_dependency_threshold, radial_basis);
+      std::vector<Eigen::MatrixXd> Xp = form_X(linear_dependency_threshold, protonic_basis);
 
       // Form the electronic core Hamiltonian and nuclear kinetic operator
-      auto Hcore(form_core_hamiltonian(radial_basis, Z));
-      auto Hpcore(form_core_hamiltonian(protonic_basis, Z, proton_mass));
+      auto Hcore  = form_core_hamiltonian(radial_basis, Z);
+      auto Hpcore = form_core_hamiltonian(protonic_basis, Z, proton_mass);
 
       // Number of blocks per particle type
-      arma::uvec number_of_blocks_per_particle_type({radial_basis.size(),radial_basis.size(),protonic_basis.size()});
+      OpenOrbitalOptimizer::IndexVector number_of_blocks_per_particle_type(3);
+      number_of_blocks_per_particle_type(0) = static_cast<Eigen::Index>(radial_basis.size());
+      number_of_blocks_per_particle_type(1) = static_cast<Eigen::Index>(radial_basis.size());
+      number_of_blocks_per_particle_type(2) = static_cast<Eigen::Index>(protonic_basis.size());
 
-      arma::vec maximum_occupation(2*radial_basis.size()+protonic_basis.size());
+      Eigen::VectorXd maximum_occupation(2*radial_basis.size()+protonic_basis.size());
       for(size_t l=0;l<radial_basis.size();l++)
-        maximum_occupation[l] = 2*l+1;
+        maximum_occupation(l) = 2*l+1;
       for(size_t l=0;l<radial_basis.size();l++)
-        maximum_occupation[l+radial_basis.size()] = 2*l+1;
+        maximum_occupation(l+radial_basis.size()) = 2*l+1;
       for(size_t l=0;l<protonic_basis.size();l++)
-        maximum_occupation[l+2*radial_basis.size()] = 2*l+1;
+        maximum_occupation(l+2*radial_basis.size()) = 2*l+1;
 
       bool even_number_of_electrons = ((Z-Q)%2==0);
       bool even_multiplicity = (((M-1)%2)==0);
@@ -745,9 +767,12 @@ namespace OpenOrbitalOptimizer {
       printf("Nela = %i Nelb = %i\n",Nela,Nelb);
       assert(Nela>0);
       assert(Nelb>=0);
-      arma::vec number_of_particles({(double) Nela,(double) Nelb,(double) 1.0});
+      Eigen::VectorXd number_of_particles(3);
+      number_of_particles(0) = (double) Nela;
+      number_of_particles(1) = (double) Nelb;
+      number_of_particles(2) = 1.0;
 
-      std::vector<std::string> block_descriptions({2*radial_basis.size()+protonic_basis.size()});
+      std::vector<std::string> block_descriptions(2*radial_basis.size()+protonic_basis.size());
       for(size_t l=0;l<radial_basis.size();l++) {
         std::ostringstream oss;
         oss << "alpha l=" << l;
@@ -764,35 +789,35 @@ namespace OpenOrbitalOptimizer {
         block_descriptions[l+2*radial_basis.size()] = oss.str();
       }
 
-      // Fock builder. Eigen ↔ Armadillo conversion at the boundary.
+      // Fock builder
       OpenOrbitalOptimizer::FockBuilder<double, double> fock_builder = [radial_basis, protonic_basis, X, Xp, Ngrid, x_func_id, c_func_id, epc_func_id, Hcore, Hpcore, verbosity](const OpenOrbitalOptimizer::DensityMatrix<double, double> & dm) {
-        const std::vector<arma::mat> orbitals = eaa::to_arma(dm.first);
-        const std::vector<arma::vec> occupations = eaa::to_arma(dm.second);
+        const auto & orbitals = dm.first;
+        const auto & occupations = dm.second;
 
         // Form the spin-up and spin-down density matrices in the original basis
         size_t Nblocks = radial_basis.size();
-        std::vector<arma::mat> Pa(Nblocks), Pb(Nblocks), Ptot(Nblocks);
+        std::vector<Eigen::MatrixXd> Pa(Nblocks), Pb(Nblocks), Ptot(Nblocks);
         for(size_t iblock=0;iblock<Nblocks;iblock++) {
           size_t ablock = iblock;
           // In the orthonormal basis it is
-          Pa[iblock] = orbitals[ablock] * arma::diagmat(occupations[ablock]) * orbitals[ablock].t();
+          Pa[iblock] = orbitals[ablock] * occupations[ablock].asDiagonal() * orbitals[ablock].transpose();
           // and in the non-orthonormal basis it is
-          Pa[iblock] = X[iblock] * Pa[iblock] * X[iblock].t();
+          Pa[iblock] = X[iblock] * Pa[iblock] * X[iblock].transpose();
           size_t bblock = iblock+Nblocks;
           // In the orthonormal basis it is
-          Pb[iblock] = orbitals[bblock] * arma::diagmat(occupations[bblock]) * orbitals[bblock].t();
+          Pb[iblock] = orbitals[bblock] * occupations[bblock].asDiagonal() * orbitals[bblock].transpose();
           // and in the non-orthonormal basis it is
-          Pb[iblock] = X[iblock] * Pb[iblock] * X[iblock].t();
+          Pb[iblock] = X[iblock] * Pb[iblock] * X[iblock].transpose();
 
           // Since we use same X for both spin channels, total density is
           Ptot[iblock] = Pa[iblock] + Pb[iblock];
         }
         size_t Npblocks = protonic_basis.size();
-        std::vector<arma::mat> Pproton(Npblocks);
+        std::vector<Eigen::MatrixXd> Pproton(Npblocks);
         for(size_t iblock=0;iblock<Npblocks;iblock++) {
           size_t pblock = iblock+2*Nblocks;
-          Pproton[iblock] = orbitals[pblock] * arma::diagmat(occupations[pblock]) * orbitals[pblock].t();
-          Pproton[iblock] = Xp[iblock] * Pproton[iblock] * Xp[iblock].t();
+          Pproton[iblock] = orbitals[pblock] * occupations[pblock].asDiagonal() * orbitals[pblock].transpose();
+          Pproton[iblock] = Xp[iblock] * Pproton[iblock] * Xp[iblock].transpose();
         }
 
         // Form the non-orthonormal basis Fock matrix. Build coulomb
@@ -807,26 +832,26 @@ namespace OpenOrbitalOptimizer {
         auto pcorrelation = OpenOrbitalOptimizer::AtomicSolver::build_xc_neo(protonic_basis, Pproton, radial_basis, Ptot, Ngrid, epc_func_id);
 
         // Collect the Fock matrix in the orthonormal basis
-        std::vector<arma::mat> fock(orbitals.size());
+        std::vector<Eigen::MatrixXd> fock(orbitals.size());
         for(size_t iblock=0; iblock<Nblocks; iblock++) {
           // Spin-up Fock
           size_t ablock = iblock, bblock = iblock+Nblocks;
-          fock[ablock] = X[iblock].t() * (Hcore[iblock].first + coulomb_ee[iblock] - coulomb_ep[iblock] + std::get<1>(exchange)[iblock] + std::get<1>(correlation)[iblock] + std::get<2>(pcorrelation)[iblock]) * X[iblock];
-          fock[bblock] = X[iblock].t() * (Hcore[iblock].first + coulomb_ee[iblock] - coulomb_ep[iblock] + std::get<2>(exchange)[iblock] + std::get<2>(correlation)[iblock] + std::get<2>(pcorrelation)[iblock]) * X[iblock];
+          fock[ablock] = X[iblock].transpose() * (Hcore[iblock].first + coulomb_ee[iblock] - coulomb_ep[iblock] + std::get<1>(exchange)[iblock] + std::get<1>(correlation)[iblock] + std::get<2>(pcorrelation)[iblock]) * X[iblock];
+          fock[bblock] = X[iblock].transpose() * (Hcore[iblock].first + coulomb_ee[iblock] - coulomb_ep[iblock] + std::get<2>(exchange)[iblock] + std::get<2>(correlation)[iblock] + std::get<2>(pcorrelation)[iblock]) * X[iblock];
         }
         for(size_t iblock=0; iblock<Npblocks; iblock++) {
           size_t pblock = iblock+2*Nblocks;
-          fock[pblock] = Xp[iblock].t() * (Hpcore[iblock].first - coulomb_pe[iblock] + std::get<1>(pcorrelation)[iblock]) * Xp[iblock];
+          fock[pblock] = Xp[iblock].transpose() * (Hpcore[iblock].first - coulomb_pe[iblock] + std::get<1>(pcorrelation)[iblock]) * Xp[iblock];
         }
 
         // Calculate energy terms
         double Ekin = 0.0;
         for(size_t l=0;l<Ptot.size();l++)
-          Ekin += arma::trace(Hcore[l].first*Ptot[l]);
+          Ekin += (Hcore[l].first*Ptot[l]).trace();
 
         double Epkin = 0.0;
         for(size_t l=0;l<Pproton.size();l++)
-          Epkin += arma::trace(Hpcore[l].first*Pproton[l]);
+          Epkin += (Hpcore[l].first*Pproton[l]).trace();
 
         double Ej = coulomb_energy(Ptot,coulomb_ee);
         double Eep = -2*coulomb_energy(Ptot,coulomb_ep);
@@ -846,14 +871,14 @@ namespace OpenOrbitalOptimizer {
           printf("Total energy           % .10f\n",Etot);
         }
 
-        return std::make_pair(Etot, eaa::to_eigen(fock));
+        return std::make_pair(Etot, fock);
       };
 
       // Initialize SCF solver
       OpenOrbitalOptimizer::SCFSolver<double, false> scfsolver(
-          eaa::to_eigen(number_of_blocks_per_particle_type),
-          eaa::to_eigen(maximum_occupation),
-          eaa::to_eigen(number_of_particles),
+          number_of_blocks_per_particle_type,
+          maximum_occupation,
+          number_of_particles,
           fock_builder, block_descriptions);
       scfsolver.convergence_threshold(convergence_threshold);
       scfsolver.verbosity(verbosity);
@@ -862,38 +887,37 @@ namespace OpenOrbitalOptimizer {
         // Run a calculation with the point nucleus to initialize the electronic orbitals
         OpenOrbitalOptimizer::SCFSolver esolver(unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, false));
         auto electronic_dm(esolver.get_solution());
-        const std::vector<arma::mat> orbitals = eaa::to_arma(electronic_dm.first);
-        const std::vector<arma::vec> occupations = eaa::to_arma(electronic_dm.second);
+        const auto & orbitals = electronic_dm.first;
+        const auto & occupations = electronic_dm.second;
 
         // Compute the electronic density matrix
         size_t Nblocks = radial_basis.size();
         size_t Npblocks = protonic_basis.size();
-        std::vector<arma::mat> Ptot(Nblocks);
+        std::vector<Eigen::MatrixXd> Ptot(Nblocks);
         for(size_t iblock=0; iblock<Nblocks; iblock++) {
           size_t ablock = iblock;
           size_t bblock = iblock+Nblocks;
 
           // In the orthonormal basis it is
-          arma::mat Pa = X[iblock] * orbitals[ablock] * arma::diagmat(occupations[ablock]) * orbitals[ablock].t() * X[iblock].t();
-          arma::mat Pb = X[iblock] * orbitals[bblock] * arma::diagmat(occupations[bblock]) * orbitals[bblock].t() * X[iblock].t();
+          Eigen::MatrixXd Pa = X[iblock] * orbitals[ablock] * occupations[ablock].asDiagonal() * orbitals[ablock].transpose() * X[iblock].transpose();
+          Eigen::MatrixXd Pb = X[iblock] * orbitals[bblock] * occupations[bblock].asDiagonal() * orbitals[bblock].transpose() * X[iblock].transpose();
           // Since we use same X for both spin channels, total density is
           Ptot[iblock] = Pa + Pb;
         }
 
-        // Guess Fock matrix from converged calculation (bridged to Armadillo)
-        std::vector<arma::mat> fock_guess_arma = eaa::to_arma(esolver.get_fock_build().second);
+        // Guess Fock matrix from converged calculation
+        std::vector<Eigen::MatrixXd> fock_guess = esolver.get_fock_build().second;
 
         // Compute the Coulomb potential
         auto coulomb_pe = OpenOrbitalOptimizer::AtomicSolver::build_J(protonic_basis, radial_basis, Ptot);
         for(size_t iblock=0; iblock<Npblocks; iblock++) {
-          fock_guess_arma.push_back(Xp[iblock].t() * (Hpcore[iblock].first - coulomb_pe[iblock] ) * Xp[iblock]);
+          fock_guess.push_back(Xp[iblock].transpose() * (Hpcore[iblock].first - coulomb_pe[iblock] ) * Xp[iblock]);
         }
 
-        scfsolver.initialize_with_fock(eaa::to_eigen(fock_guess_arma));
+        scfsolver.initialize_with_fock(fock_guess);
       }
 
       scfsolver.run();
-      //scfsolver.brute_force_search_for_lowest_configuration();
 
       if(core_excitation) {
         // Form core-excited state
@@ -952,7 +976,7 @@ std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasi
         // Exponent is
         double expn = std::stod(entries[1]);
 
-        if(am >= functions.size()) {
+        if(am >= (int)functions.size()) {
           functions.resize(am+1);
         }
         functions[am].push_back(std::make_pair(n, expn));
@@ -972,8 +996,8 @@ std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasi
 
   std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> radial_basis;
   for(size_t am=0; am<functions.size(); am++) {
-    arma::vec exponents(functions[am].size());
-    arma::ivec n_values(functions[am].size());
+    Eigen::VectorXd exponents(functions[am].size());
+    Eigen::VectorXi n_values(functions[am].size());
     for(size_t i=0; i<functions[am].size(); i++) {
       n_values(i) = functions[am][i].first;
       exponents(i) = functions[am][i].second;
@@ -1015,7 +1039,7 @@ std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasi
       int amval = am_value;
       int min_am = cartesian ? 0 : amval;
       for(int am = amval; am>=min_am; am-=2) {
-        if(functions.size()<=am)
+        if((int)functions.size()<=am)
           functions.resize(am+1);
         for(auto & [expn_key, expn_value]: shell_value["exponents"].items()) {
           std::string expn(expn_value);
@@ -1031,17 +1055,16 @@ std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasi
 
   std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> radial_basis;
   for(size_t am=0; am<functions.size(); am++) {
-    arma::vec exponents(functions[am].size());
-    arma::ivec n_values(functions[am].size());
+    Eigen::VectorXd exponents(functions[am].size());
+    Eigen::VectorXi n_values(functions[am].size());
     for(size_t i=0; i<functions[am].size(); i++) {
       n_values(i) = functions[am][i].first;
       exponents(i) = functions[am][i].second;
     }
     radial_basis.push_back(std::make_shared<const OpenOrbitalOptimizer::AtomicSolver::GTOBasis>(exponents, n_values, am));
 
-    std::cout << "am = " << am << " exponents";
-    exponents.t().print();
-    n_values.t().print("n values");
+    std::cout << "am = " << am << " exponents " << exponents.transpose() << std::endl;
+    std::cout << "n values " << n_values.transpose() << std::endl;
   }
 
   return radial_basis;
@@ -1131,12 +1154,12 @@ int main(int argc, char **argv) {
   }
 
   if(pbasisfile.size()) {
-    unrestricted_neo_scf(Z, Q, M, x_func_id, c_func_id, epc_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, protonic_basis, proton_mass, verbosity, core_excitation);
+    OpenOrbitalOptimizer::AtomicSolver::unrestricted_neo_scf(Z, Q, M, x_func_id, c_func_id, epc_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, protonic_basis, proton_mass, verbosity, core_excitation);
   } else {
     if(M==1) {
-      restricted_scf(Z, Q, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, core_excitation);
+      OpenOrbitalOptimizer::AtomicSolver::restricted_scf(Z, Q, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, core_excitation);
     } else {
-      unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, core_excitation);
+      OpenOrbitalOptimizer::AtomicSolver::unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, core_excitation);
     }
   }
   return 0;
