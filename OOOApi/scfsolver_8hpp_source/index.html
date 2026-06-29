@@ -998,9 +998,11 @@
 
 namespace OpenOrbitalOptimizer {
 
-  template&lt;typename Tbase, bool IsComplex&gt; class SCFSolver {
-  public:
-    using Torb = OrbitalScalar&lt;Tbase, IsComplex&gt;;
+  template&lt;typename Torb, typename Tbase&gt; class SCFSolver {
+    static_assert(std::is_same_v&lt;Torb, Tbase&gt; ||
+                  std::is_same_v&lt;Torb, std::complex&lt;Tbase&gt;&gt;,
+                  &quot;SCFSolver&lt;Torb, Tbase&gt;: Torb must be either Tbase or &quot;
+                  &quot;std::complex&lt;Tbase&gt;&quot;);
   private:
     /* Input data section */
     IndexVector number_of_blocks_per_particle_type_;
@@ -3276,6 +3278,15 @@ namespace OpenOrbitalOptimizer {
     }
   };
 }
+
+// If &lt;armadillo&gt; is available in the include path, automatically pull in
+// the Armadillo compatibility shim so downstream code that still uses
+// arma::-typed inputs/outputs gets OpenOrbitalOptimizer::Armadillo::SCFSolver
+// without an extra include. Consumers who do not want Armadillo simply do
+// not have it in their include path; this is a no-op then.
+#if __has_include(&lt;armadillo&gt;)
+#include &quot;armadillo_compat.hpp&quot;
+#endif
 </code></pre>
 
 

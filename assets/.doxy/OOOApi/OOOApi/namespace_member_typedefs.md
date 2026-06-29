@@ -5,18 +5,18 @@
 
 ## d
 
-* **DensityMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **DiagonalOrbitalHessianBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **DiagonalOrbitalHessians** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **DiagonalizedFockMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **DensityMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
+* **DiagonalOrbitalHessianBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
+* **DiagonalOrbitalHessians** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
+* **DiagonalizedFockMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 
 
 ## f
 
-* **FockBuilder** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **FockBuilderReturn** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **FockMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **FockMatrixBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **FockBuilder** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
+* **FockBuilderReturn** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
+* **FockMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
+* **FockMatrixBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 
 
 ## i
@@ -32,17 +32,17 @@
 
 ## o
 
-* **OrbitalBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **OrbitalBlockOccupations** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **OrbitalEnergies** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **OrbitalGradientBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **OrbitalGradients** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **OrbitalBlock** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md), [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **OrbitalBlockOccupations** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md), [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **OrbitalEnergies** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md), [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **OrbitalGradientBlock** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md), [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **OrbitalGradients** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md), [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **OrbitalOccupations** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md), [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **OrbitalRotation** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md), [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **Orbitals** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md), [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 * **OrbitalHistory** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 * **OrbitalHistoryEntry** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **OrbitalOccupations** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **OrbitalRotation** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 * **OrbitalScalar** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **Orbitals** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## r

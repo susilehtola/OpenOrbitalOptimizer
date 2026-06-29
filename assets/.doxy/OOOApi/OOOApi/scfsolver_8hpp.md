@@ -45,7 +45,7 @@
 
 | Type | Name |
 | ---: | :--- |
-| class | [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md) &lt;typename Tbase, IsComplex&gt;<br> |
+| class | [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md) &lt;typename Torb, typename Tbase&gt;<br> |
 
 
 

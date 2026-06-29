@@ -46,6 +46,12 @@
 * **sort\_index\_ascending** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
+## t
+
+* **to\_arma** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
+* **to\_eigen** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
+
+
 ## u
 
 * **unvectorise\_real\_imag** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))

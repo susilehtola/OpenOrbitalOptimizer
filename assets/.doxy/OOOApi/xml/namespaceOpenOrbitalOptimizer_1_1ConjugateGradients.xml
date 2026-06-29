@@ -9,17 +9,17 @@
             <type>typename T</type>
           </param>
         </templateparamlist>
-        <type>Vector&lt; T &gt;</type>
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt;</type>
         <definition>Vector&lt; T &gt; OpenOrbitalOptimizer::ConjugateGradients::cg_optimize</definition>
         <argsstring>(const Vector&lt; T &gt; &amp;x0, const std::function&lt; std::pair&lt; T, Vector&lt; T &gt; &gt;(Vector&lt; T &gt;)&gt; &amp;fx, T f_tol=1e-8, T df_tol=1e-6, T x_tol=100 *std::numeric_limits&lt; T &gt;::epsilon(), size_t max_iter=1000)</argsstring>
         <name>cg_optimize</name>
         <qualifiedname>OpenOrbitalOptimizer::ConjugateGradients::cg_optimize</qualifiedname>
         <param>
-          <type>const Vector&lt; T &gt; &amp;</type>
+          <type>const <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt; &amp;</type>
           <declname>x0</declname>
         </param>
         <param>
-          <type>const std::function&lt; std::pair&lt; T, Vector&lt; T &gt; &gt;(Vector&lt; T &gt;)&gt; &amp;</type>
+          <type>const std::function&lt; std::pair&lt; T, <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt; &gt;(<ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt;)&gt; &amp;</type>
           <declname>fx</declname>
         </param>
         <param>

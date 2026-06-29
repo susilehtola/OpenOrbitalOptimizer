@@ -2,7 +2,7 @@
 
 # Class OpenOrbitalOptimizer::SCFSolver
 
-**template &lt;typename Tbase, bool IsComplex&gt;**
+**template &lt;typename Torb, typename Tbase&gt;**
 
 
 
@@ -30,11 +30,6 @@
 
 
 
-## Public Types
-
-| Type | Name |
-| ---: | :--- |
-| typedef OrbitalScalar&lt; Tbase, IsComplex &gt; | [**Torb**](#typedef-torb)  <br>_Orbital scalar type derived from &lt;Tbase, IsComplex&gt;._  |
 
 
 
@@ -59,18 +54,18 @@
 
 | Type | Name |
 | ---: | :--- |
-|   | [**SCFSolver**](#function-scfsolver) (const IndexVector & number\_of\_blocks\_per\_particle\_type, const Vector&lt; Tbase &gt; & maximum\_occupation, const Vector&lt; Tbase &gt; & number\_of\_particles, const FockBuilder&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb), Tbase &gt; & fock\_builder, const std::vector&lt; std::string &gt; & block\_descriptions) <br>_Constructor._  |
-|  bool | [**add\_entry**](#function-add_entry-12) (const DensityMatrix&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb), Tbase &gt; & density) <br>_Add entry to history, return value is True if energy was lowered._  |
-|  bool | [**add\_entry**](#function-add_entry-22) (const DensityMatrix&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb), Tbase &gt; & density, const FockBuilderReturn&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb), Tbase &gt; & fock) <br>_Add entry to history, return value is True if energy was lowered._  |
+|   | [**SCFSolver**](#function-scfsolver) (const [**IndexVector**](namespaceOpenOrbitalOptimizer.md#typedef-indexvector) & number\_of\_blocks\_per\_particle\_type, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & maximum\_occupation, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles, const [**FockBuilder**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilder)&lt; Torb, Tbase &gt; & fock\_builder, const std::vector&lt; std::string &gt; & block\_descriptions) <br>_Constructor._  |
+|  bool | [**add\_entry**](#function-add_entry-12) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density) <br>_Add entry to history, return value is True if energy was lowered._  |
+|  bool | [**add\_entry**](#function-add_entry-22) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density, const [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; & fock) <br>_Add entry to history, return value is True if energy was lowered._  |
 |  void | [**brute\_force\_search\_for\_lowest\_configuration**](#function-brute_force_search_for_lowest_configuration) () <br>_Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search._  |
 |  void | [**callback\_convergence\_function**](#function-callback_convergence_function) (std::function&lt; bool(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_convergence\_function=nullptr) <br> |
 |  void | [**callback\_function**](#function-callback_function) (std::function&lt; void(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_function=nullptr) <br> |
-|  DiagonalizedFockMatrix&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb), Tbase &gt; | [**compute\_orbitals**](#function-compute_orbitals) (const FockMatrix&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb) &gt; & fock) const<br>_Computes orbitals and orbital energies by diagonalizing the Fock matrix._  |
+|  [**DiagonalizedFockMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-diagonalizedfockmatrix)&lt; Torb, Tbase &gt; | [**compute\_orbitals**](#function-compute_orbitals) (const FockMatrix&lt; Torb &gt; & fock) const<br>_Computes orbitals and orbital energies by diagonalizing the Fock matrix._  |
 |  bool | [**converged**](#function-converged) () const<br>_Check if we are converged._  |
 |  Tbase | [**convergence\_threshold**](#function-convergence_threshold-12) () const<br>_Get convergence threshold._  |
 |  void | [**convergence\_threshold**](#function-convergence_threshold-22) (Tbase convergence\_threshold) <br>_Set convergence threshold (unused if callback\_convergence\_function set)_  |
 |  Tbase | [**density\_matrix\_difference**](#function-density_matrix_difference) (size\_t ihist, size\_t jhist) <br>_Density matrix difference norm._  |
-|  Vector&lt; Tbase &gt; | [**determine\_number\_of\_particles\_by\_aufbau**](#function-determine_number_of_particles_by_aufbau) (const OrbitalEnergies&lt; Tbase &gt; & orbital\_energies) const<br>_Determine number of particles in each block._  |
+|  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; | [**determine\_number\_of\_particles\_by\_aufbau**](#function-determine_number_of_particles_by_aufbau) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determine number of particles in each block._  |
 |  Tbase | [**diis\_diagonal\_damping**](#function-diis_diagonal_damping-12) () const<br>_Damping factor for DIIS diagonal._  |
 |  void | [**diis\_diagonal\_damping**](#function-diis_diagonal_damping-22) (Tbase eps) <br>_Damping factor for DIIS diagonal._  |
 |  Tbase | [**diis\_epsilon**](#function-diis_epsilon-12) () const<br>_When to start mixing in DIIS._  |
@@ -81,32 +76,32 @@
 |  void | [**diis\_threshold**](#function-diis_threshold-22) (Tbase eps) <br>_When to switch over to DIIS._  |
 |  std::string | [**error\_norm**](#function-error_norm-12) () const<br>_Get the used error norm._  |
 |  void | [**error\_norm**](#function-error_norm-22) (const std::string & error\_norm) <br>_Set the used error norm._  |
-|  void | [**fixed\_number\_of\_particles\_per\_block**](#function-fixed_number_of_particles_per_block) (const Vector&lt; Tbase &gt; & number\_of\_particles\_per\_block) <br>_Fix the number of occupied orbitals per block._  |
+|  void | [**fixed\_number\_of\_particles\_per\_block**](#function-fixed_number_of_particles_per_block) (const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles\_per\_block) <br>_Fix the number of occupied orbitals per block._  |
 |  bool | [**frozen\_occupations**](#function-frozen_occupations-12) () const<br>_Get frozen occupations._  |
 |  void | [**frozen\_occupations**](#function-frozen_occupations-22) (bool frozen) <br>_Set frozen occupations._  |
 |  Tbase | [**get\_energy**](#function-get_energy) (size\_t ihist=0) const<br>_Get the energy for the n:th entry._  |
-|  FockBuilderReturn&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb), Tbase &gt; | [**get\_fock\_build**](#function-get_fock_build) (size\_t ihist=0) const<br>_Get the Fock matrix builder return._  |
-|  FockMatrix&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb) &gt; | [**get\_fock\_matrix**](#function-get_fock_matrix) (size\_t ihist=0) const<br>_Get the Fock matrix for the ihist:th entry._  |
+|  [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; | [**get\_fock\_build**](#function-get_fock_build) (size\_t ihist=0) const<br>_Get the Fock matrix builder return._  |
+|  FockMatrix&lt; Torb &gt; | [**get\_fock\_matrix**](#function-get_fock_matrix) (size\_t ihist=0) const<br>_Get the Fock matrix for the ihist:th entry._  |
 |  OrbitalOccupations&lt; Tbase &gt; | [**get\_orbital\_occupations**](#function-get_orbital_occupations) (size\_t ihist=0) const<br>_Get the orbital occupations._  |
-|  Orbitals&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb) &gt; | [**get\_orbitals**](#function-get_orbitals) (size\_t ihist=0) const<br>_Get the orbitals._  |
-|  DensityMatrix&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb), Tbase &gt; | [**get\_solution**](#function-get_solution) (size\_t ihist=0) const<br>_Get the SCF solution._  |
-|  void | [**initialize\_with\_fock**](#function-initialize_with_fock) (const FockMatrix&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb) &gt; & fock\_guess) <br>_Initialize the solver with a guess Fock matrix._  |
-|  void | [**initialize\_with\_orbitals**](#function-initialize_with_orbitals) (const Orbitals&lt; [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb) &gt; & orbitals, const OrbitalOccupations&lt; Tbase &gt; & orbital\_occupations) <br>_Initialize with precomputed orbitals and occupations._  |
+|  [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; | [**get\_orbitals**](#function-get_orbitals) (size\_t ihist=0) const<br>_Get the orbitals._  |
+|  [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; | [**get\_solution**](#function-get_solution) (size\_t ihist=0) const<br>_Get the SCF solution._  |
+|  void | [**initialize\_with\_fock**](#function-initialize_with_fock) (const FockMatrix&lt; Torb &gt; & fock\_guess) <br>_Initialize the solver with a guess Fock matrix._  |
+|  void | [**initialize\_with\_orbitals**](#function-initialize_with_orbitals) (const [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; & orbitals, const OrbitalOccupations&lt; Tbase &gt; & orbital\_occupations) <br>_Initialize with precomputed orbitals and occupations._  |
 |  int | [**maximum\_history\_length**](#function-maximum_history_length-12) () const<br>_Get maximum\_history\_length._  |
 |  void | [**maximum\_history\_length**](#function-maximum_history_length-22) (int maximum\_history\_length) <br>_Set maximum\_history\_length._  |
 |  size\_t | [**maximum\_iterations**](#function-maximum_iterations-12) () const<br>_Get the maximum number of iterations._  |
 |  void | [**maximum\_iterations**](#function-maximum_iterations-22) (size\_t maxit) <br>_Set the maximum number of iterations._  |
-|  Tbase | [**norm**](#function-norm) (const Eigen::MatrixBase&lt; Derived &gt; & mat, std::string nrm="") const<br>_Evaluate the norm. Accepts both Matrix&lt;Tbase&gt; and Vector&lt;Tbase&gt;._  |
+|  Tbase | [**norm**](#function-norm) (const Eigen::MatrixBase&lt; Derived &gt; & mat, std::string nrm="") const<br>_Evaluate the norm. Accepts both_ [_**Matrix&lt;Tbase&gt;**_](namespaceOpenOrbitalOptimizer.md#typedef-matrix) _and_[_**Vector&lt;Tbase&gt;**_](namespaceOpenOrbitalOptimizer.md#typedef-vector) _._ |
 |  int | [**oda\_restart\_steps**](#function-oda_restart_steps-12) () const<br>_Get oda\_restart\_steps._  |
 |  void | [**oda\_restart\_steps**](#function-oda_restart_steps-22) (int oda\_restart\_steps) <br>_Set oda\_restart\_steps._  |
 |  Tbase | [**optimal\_damping\_threshold**](#function-optimal_damping_threshold-12) () const<br>_Use optimal damping when max error bigger than this._  |
 |  void | [**optimal\_damping\_threshold**](#function-optimal_damping_threshold-22) (Tbase eps) <br>_Use optimal damping when max error bigger than this._  |
-|  Index | [**particle\_block\_offset**](#function-particle_block_offset) (size\_t iparticle) const<br>_Determines the offset for the blocks of the iparticle:th particle._  |
+|  [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) | [**particle\_block\_offset**](#function-particle_block_offset) (size\_t iparticle) const<br>_Determines the offset for the blocks of the iparticle:th particle._  |
 |  void | [**print\_history**](#function-print_history) () const<br>_Print the DIIS history._  |
 |  void | [**reset\_history**](#function-reset_history) () <br>_Reset the DIIS history._  |
 |  void | [**run**](#function-run) () <br>_Run the SCF._  |
 |  void | [**run\_optimal\_damping**](#function-run_optimal_damping) () <br>_Run optimal damping._  |
-|  OrbitalOccupations&lt; Tbase &gt; | [**update\_occupations**](#function-update_occupations) (const OrbitalEnergies&lt; Tbase &gt; & orbital\_energies) const<br>_Determines occupations based on the current orbital energies._  |
+|  OrbitalOccupations&lt; Tbase &gt; | [**update\_occupations**](#function-update_occupations) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determines occupations based on the current orbital energies._  |
 |  int | [**verbosity**](#function-verbosity-12) () const<br>_Get verbosity._  |
 |  void | [**verbosity**](#function-verbosity-22) (int verbosity) <br>_Set verbosity._  |
 
@@ -140,26 +135,10 @@
 ## Detailed Description
 
 
-SCF solver class. Templated on the real type Tbase (e.g. float, double, \_\_float128) and a boolean IsComplex selecting between real and complex orbital coefficients. The orbital scalar type [**Torb**](classOpenOrbitalOptimizer_1_1SCFSolver.md#typedef-torb) is std::conditional\_t&lt;IsComplex, std::complex&lt;Tbase&gt;, Tbase&gt;. 
+SCF solver class. Templated on the orbital scalar type Torb (real or complex) and the real type Tbase (e.g. float, double, \_\_float128). Torb must be either Tbase or std::complex&lt;Tbase&gt;; any other combination is rejected at compile time. 
 
 
     
-## Public Types Documentation
-
-
-
-
-### typedef Torb 
-
-_Orbital scalar type derived from &lt;Tbase, IsComplex&gt;._ 
-```C++
-using OpenOrbitalOptimizer::SCFSolver< Tbase, IsComplex >::Torb =  OrbitalScalar<Tbase, IsComplex>;
-```
-
-
-
-
-<hr>
 ## Public Functions Documentation
 
 
@@ -171,9 +150,9 @@ _Constructor._
 ```C++
 inline OpenOrbitalOptimizer::SCFSolver::SCFSolver (
     const IndexVector & number_of_blocks_per_particle_type,
-    const Vector< Tbase > & maximum_occupation,
-    const Vector< Tbase > & number_of_particles,
-    const FockBuilder< Torb , Tbase > & fock_builder,
+    const Vector < Tbase > & maximum_occupation,
+    const Vector < Tbase > & number_of_particles,
+    const FockBuilder < Torb, Tbase > & fock_builder,
     const std::vector< std::string > & block_descriptions
 ) 
 ```
@@ -190,7 +169,7 @@ inline OpenOrbitalOptimizer::SCFSolver::SCFSolver (
 _Add entry to history, return value is True if energy was lowered._ 
 ```C++
 inline bool OpenOrbitalOptimizer::SCFSolver::add_entry (
-    const DensityMatrix< Torb , Tbase > & density
+    const DensityMatrix < Torb, Tbase > & density
 ) 
 ```
 
@@ -206,8 +185,8 @@ inline bool OpenOrbitalOptimizer::SCFSolver::add_entry (
 _Add entry to history, return value is True if energy was lowered._ 
 ```C++
 inline bool OpenOrbitalOptimizer::SCFSolver::add_entry (
-    const DensityMatrix< Torb , Tbase > & density,
-    const FockBuilderReturn< Torb , Tbase > & fock
+    const DensityMatrix < Torb, Tbase > & density,
+    const FockBuilderReturn < Torb, Tbase > & fock
 ) 
 ```
 
@@ -266,7 +245,7 @@ inline void OpenOrbitalOptimizer::SCFSolver::callback_function (
 
 _Computes orbitals and orbital energies by diagonalizing the Fock matrix._ 
 ```C++
-inline DiagonalizedFockMatrix< Torb , Tbase > OpenOrbitalOptimizer::SCFSolver::compute_orbitals (
+inline DiagonalizedFockMatrix < Torb, Tbase > OpenOrbitalOptimizer::SCFSolver::compute_orbitals (
     const FockMatrix< Torb > & fock
 ) const
 ```
@@ -343,8 +322,8 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::density_matrix_difference (
 
 _Determine number of particles in each block._ 
 ```C++
-inline Vector< Tbase > OpenOrbitalOptimizer::SCFSolver::determine_number_of_particles_by_aufbau (
-    const OrbitalEnergies< Tbase > & orbital_energies
+inline Vector < Tbase > OpenOrbitalOptimizer::SCFSolver::determine_number_of_particles_by_aufbau (
+    const OrbitalEnergies < Tbase > & orbital_energies
 ) const
 ```
 
@@ -510,7 +489,7 @@ inline void OpenOrbitalOptimizer::SCFSolver::error_norm (
 _Fix the number of occupied orbitals per block._ 
 ```C++
 inline void OpenOrbitalOptimizer::SCFSolver::fixed_number_of_particles_per_block (
-    const Vector< Tbase > & number_of_particles_per_block
+    const Vector < Tbase > & number_of_particles_per_block
 ) 
 ```
 
@@ -571,7 +550,7 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::get_energy (
 
 _Get the Fock matrix builder return._ 
 ```C++
-inline FockBuilderReturn< Torb , Tbase > OpenOrbitalOptimizer::SCFSolver::get_fock_build (
+inline FockBuilderReturn < Torb, Tbase > OpenOrbitalOptimizer::SCFSolver::get_fock_build (
     size_t ihist=0
 ) const
 ```
@@ -619,7 +598,7 @@ inline OrbitalOccupations< Tbase > OpenOrbitalOptimizer::SCFSolver::get_orbital_
 
 _Get the orbitals._ 
 ```C++
-inline Orbitals< Torb > OpenOrbitalOptimizer::SCFSolver::get_orbitals (
+inline Orbitals < Torb > OpenOrbitalOptimizer::SCFSolver::get_orbitals (
     size_t ihist=0
 ) const
 ```
@@ -635,7 +614,7 @@ inline Orbitals< Torb > OpenOrbitalOptimizer::SCFSolver::get_orbitals (
 
 _Get the SCF solution._ 
 ```C++
-inline DensityMatrix< Torb , Tbase > OpenOrbitalOptimizer::SCFSolver::get_solution (
+inline DensityMatrix < Torb, Tbase > OpenOrbitalOptimizer::SCFSolver::get_solution (
     size_t ihist=0
 ) const
 ```
@@ -668,7 +647,7 @@ inline void OpenOrbitalOptimizer::SCFSolver::initialize_with_fock (
 _Initialize with precomputed orbitals and occupations._ 
 ```C++
 inline void OpenOrbitalOptimizer::SCFSolver::initialize_with_orbitals (
-    const Orbitals< Torb > & orbitals,
+    const Orbitals < Torb > & orbitals,
     const OrbitalOccupations< Tbase > & orbital_occupations
 ) 
 ```
@@ -742,7 +721,7 @@ inline void OpenOrbitalOptimizer::SCFSolver::maximum_iterations (
 
 ### function norm 
 
-_Evaluate the norm. Accepts both Matrix&lt;Tbase&gt; and Vector&lt;Tbase&gt;._ 
+_Evaluate the norm. Accepts both_ [_**Matrix&lt;Tbase&gt;**_](namespaceOpenOrbitalOptimizer.md#typedef-matrix) _and_[_**Vector&lt;Tbase&gt;**_](namespaceOpenOrbitalOptimizer.md#typedef-vector) _._
 ```C++
 template<typename Derived>
 inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
@@ -895,7 +874,7 @@ inline void OpenOrbitalOptimizer::SCFSolver::run_optimal_damping ()
 _Determines occupations based on the current orbital energies._ 
 ```C++
 inline OrbitalOccupations< Tbase > OpenOrbitalOptimizer::SCFSolver::update_occupations (
-    const OrbitalEnergies< Tbase > & orbital_energies
+    const OrbitalEnergies < Tbase > & orbital_energies
 ) const
 ```
 

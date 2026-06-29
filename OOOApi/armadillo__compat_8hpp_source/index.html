@@ -19,7 +19,7 @@
     
     
       
-        <title>File scfsolver.hpp - OpenOrbitalOptimizer Docs</title>
+        <title>File armadillo_compat.hpp - OpenOrbitalOptimizer Docs</title>
       
     
     
@@ -60,7 +60,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#file-scfsolverhpp" class="md-skip">
+        <a href="#file-armadillo_compathpp" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +96,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              File scfsolver.hpp
+              File armadillo_compat.hpp
             
           </span>
         </div>
@@ -956,36 +956,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#namespaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Namespaces
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#classes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Classes
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1001,54 +971,247 @@
 
 
 
-<h1 id="file-scfsolverhpp">File scfsolver.hpp</h1>
-<p><a href="../files/"><strong>FileList</strong></a> <strong>&gt;</strong> <a href="../dir_3072c93c56dfbbd2cb4eee0809487533/"><strong>openorbitaloptimizer</strong></a> <strong>&gt;</strong> <a href="./"><strong>scfsolver.hpp</strong></a></p>
-<p><a href="../scfsolver_8hpp_source/">Go to the source code of this file</a></p>
-<ul>
-<li><code>#include "types.hpp"</code></li>
-<li><code>#include "eigen_compat.hpp"</code></li>
-<li><code>#include "cg_optimizer.hpp"</code></li>
-<li><code>#include &lt;any&gt;</code></li>
-<li><code>#include &lt;cmath&gt;</code></li>
-<li><code>#include &lt;cstdio&gt;</code></li>
-<li><code>#include &lt;iostream&gt;</code></li>
-<li><code>#include &lt;map&gt;</code></li>
-<li><code>#include &lt;sstream&gt;</code></li>
-<li><code>#include &lt;stdexcept&gt;</code></li>
-<li><code>#include &lt;string&gt;</code></li>
-</ul>
-<h2 id="namespaces">Namespaces</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: right;">Type</th>
-<th style="text-align: left;">Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: right;">namespace</td>
-<td style="text-align: left;"><a href="../namespaceOpenOrbitalOptimizer/"><strong>OpenOrbitalOptimizer</strong></a> <br></td>
-</tr>
-</tbody>
-</table>
-<h2 id="classes">Classes</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: right;">Type</th>
-<th style="text-align: left;">Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: right;">class</td>
-<td style="text-align: left;"><a href="../classOpenOrbitalOptimizer_1_1SCFSolver/"><strong>SCFSolver</strong></a> &lt;typename Torb, typename Tbase&gt;<br></td>
-</tr>
-</tbody>
-</table>
-<hr />
-<p>The documentation for this class was generated from the following file <code>openorbitaloptimizer/scfsolver.hpp</code></p>
+<h1 id="file-armadillo_compathpp">File armadillo_compat.hpp</h1>
+<p><a href="../files/"><strong>File List</strong></a> <strong>&gt;</strong> <a href="../dir_3072c93c56dfbbd2cb4eee0809487533/"><strong>openorbitaloptimizer</strong></a> <strong>&gt;</strong> <a href="../armadillo__compat_8hpp/"><strong>armadillo_compat.hpp</strong></a></p>
+<p><a href="../armadillo__compat_8hpp/">Go to the documentation of this file</a></p>
+<pre><code class="language-C++">/*
+ *                This Source Code Form is subject to the
+ *                terms of the Mozilla Public License, v. 2.0.
+ *                If a copy of the MPL was not distributed
+ *                with this file, You can obtain one at
+ *                http://mozilla.org/MPL/2.0/.
+ *
+ *           Copyright (c) 2026 Susi Lehtola
+ */
+
+
+#ifndef OPENORBITALOPTIMIZER_ARMADILLO_COMPAT_HPP
+#define OPENORBITALOPTIMIZER_ARMADILLO_COMPAT_HPP
+
+#include &quot;scfsolver.hpp&quot;
+
+#include &lt;armadillo&gt;
+
+#include &lt;complex&gt;
+#include &lt;functional&gt;
+#include &lt;type_traits&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+namespace OpenOrbitalOptimizer {
+namespace Armadillo {
+
+  // ---- Armadillo &lt;-&gt; Eigen conversion helpers ------------------------
+
+  template &lt;class T&gt;
+  inline OpenOrbitalOptimizer::Matrix&lt;T&gt; to_eigen(const arma::Mat&lt;T&gt; &amp; A) {
+    return Eigen::Map&lt;const OpenOrbitalOptimizer::Matrix&lt;T&gt;&gt;(
+        A.memptr(), A.n_rows, A.n_cols);
+  }
+
+  template &lt;class T&gt;
+  inline OpenOrbitalOptimizer::Vector&lt;T&gt; to_eigen(const arma::Col&lt;T&gt; &amp; v) {
+    return Eigen::Map&lt;const OpenOrbitalOptimizer::Vector&lt;T&gt;&gt;(
+        v.memptr(), v.n_elem);
+  }
+
+  inline OpenOrbitalOptimizer::IndexVector to_eigen(const arma::uvec &amp; v) {
+    OpenOrbitalOptimizer::IndexVector out(v.n_elem);
+    for (arma::uword i = 0; i &lt; v.n_elem; ++i)
+      out[static_cast&lt;OpenOrbitalOptimizer::Index&gt;(i)] =
+          static_cast&lt;OpenOrbitalOptimizer::Index&gt;(v[i]);
+    return out;
+  }
+
+  template &lt;class T&gt;
+  inline arma::Mat&lt;T&gt; to_arma(const OpenOrbitalOptimizer::Matrix&lt;T&gt; &amp; E) {
+    return arma::Mat&lt;T&gt;(E.data(), E.rows(), E.cols());
+  }
+
+  template &lt;class T&gt;
+  inline arma::Col&lt;T&gt; to_arma(const OpenOrbitalOptimizer::Vector&lt;T&gt; &amp; v) {
+    return arma::Col&lt;T&gt;(v.data(), v.size());
+  }
+
+  template &lt;class T&gt;
+  inline std::vector&lt;OpenOrbitalOptimizer::Matrix&lt;T&gt;&gt;
+  to_eigen(const std::vector&lt;arma::Mat&lt;T&gt;&gt; &amp; v) {
+    std::vector&lt;OpenOrbitalOptimizer::Matrix&lt;T&gt;&gt; out;
+    out.reserve(v.size());
+    for (const auto &amp; m : v) out.push_back(to_eigen(m));
+    return out;
+  }
+
+  template &lt;class T&gt;
+  inline std::vector&lt;OpenOrbitalOptimizer::Vector&lt;T&gt;&gt;
+  to_eigen(const std::vector&lt;arma::Col&lt;T&gt;&gt; &amp; v) {
+    std::vector&lt;OpenOrbitalOptimizer::Vector&lt;T&gt;&gt; out;
+    out.reserve(v.size());
+    for (const auto &amp; c : v) out.push_back(to_eigen(c));
+    return out;
+  }
+
+  template &lt;class T&gt;
+  inline std::vector&lt;arma::Mat&lt;T&gt;&gt;
+  to_arma(const std::vector&lt;OpenOrbitalOptimizer::Matrix&lt;T&gt;&gt; &amp; v) {
+    std::vector&lt;arma::Mat&lt;T&gt;&gt; out;
+    out.reserve(v.size());
+    for (const auto &amp; e : v) out.push_back(to_arma(e));
+    return out;
+  }
+
+  template &lt;class T&gt;
+  inline std::vector&lt;arma::Col&lt;T&gt;&gt;
+  to_arma(const std::vector&lt;OpenOrbitalOptimizer::Vector&lt;T&gt;&gt; &amp; v) {
+    std::vector&lt;arma::Col&lt;T&gt;&gt; out;
+    out.reserve(v.size());
+    for (const auto &amp; e : v) out.push_back(to_arma(e));
+    return out;
+  }
+
+  // ---- Legacy container typedefs (Armadillo-shaped) ------------------
+
+  template &lt;class T&gt; using OrbitalBlock = arma::Mat&lt;T&gt;;
+  template &lt;class T&gt; using Orbitals = std::vector&lt;OrbitalBlock&lt;T&gt;&gt;;
+  template &lt;class T&gt; using OrbitalGradientBlock = arma::Mat&lt;T&gt;;
+  template &lt;class T&gt; using OrbitalGradients = std::vector&lt;OrbitalGradientBlock&lt;T&gt;&gt;;
+  template &lt;class T&gt; using DiagonalOrbitalHessianBlock = arma::Mat&lt;T&gt;;
+  template &lt;class T&gt; using DiagonalOrbitalHessians = std::vector&lt;DiagonalOrbitalHessianBlock&lt;T&gt;&gt;;
+  template &lt;class T&gt; using OrbitalBlockOccupations = arma::Col&lt;T&gt;;
+  template &lt;class T&gt; using OrbitalOccupations = std::vector&lt;OrbitalBlockOccupations&lt;T&gt;&gt;;
+  template &lt;class Torb, class Tbase&gt;
+  using DensityMatrix = std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalOccupations&lt;Tbase&gt;&gt;;
+  template &lt;class T&gt; using OrbitalEnergies = std::vector&lt;arma::Col&lt;T&gt;&gt;;
+  template &lt;class T&gt; using FockMatrixBlock = arma::Mat&lt;T&gt;;
+  template &lt;class T&gt; using FockMatrix = std::vector&lt;FockMatrixBlock&lt;T&gt;&gt;;
+  template &lt;class Torb, class Tbase&gt;
+  using DiagonalizedFockMatrix = std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalEnergies&lt;Tbase&gt;&gt;;
+  template &lt;class Torb, class Tbase&gt;
+  using FockBuilderReturn = std::pair&lt;Tbase, FockMatrix&lt;Torb&gt;&gt;;
+  template &lt;class Torb, class Tbase&gt;
+  using FockBuilder = std::function&lt;FockBuilderReturn&lt;Torb, Tbase&gt;(const DensityMatrix&lt;Torb, Tbase&gt; &amp;)&gt;;
+  using OrbitalRotation = std::tuple&lt;size_t, arma::uword, arma::uword&gt;;
+
+  // ---- Legacy SCFSolver&lt;Torb, Tbase&gt; wrapper -------------------------
+
+  template &lt;class Torb, class Tbase&gt;
+  class SCFSolver {
+    using EigenSolver = OpenOrbitalOptimizer::SCFSolver&lt;Torb, Tbase&gt;;
+    using EigenDM = OpenOrbitalOptimizer::DensityMatrix&lt;Torb, Tbase&gt;;
+    using EigenFR = OpenOrbitalOptimizer::FockBuilderReturn&lt;Torb, Tbase&gt;;
+
+    FockBuilder&lt;Torb, Tbase&gt; arma_fock_builder_;
+    EigenSolver impl_;
+
+  public:
+    SCFSolver(const arma::uvec &amp; number_of_blocks_per_particle_type,
+              const arma::Col&lt;Tbase&gt; &amp; maximum_occupation,
+              const arma::Col&lt;Tbase&gt; &amp; number_of_particles,
+              const FockBuilder&lt;Torb, Tbase&gt; &amp; fock_builder,
+              const std::vector&lt;std::string&gt; &amp; block_descriptions)
+      : arma_fock_builder_(fock_builder),
+        impl_(to_eigen(number_of_blocks_per_particle_type),
+              to_eigen(maximum_occupation),
+              to_eigen(number_of_particles),
+              [this](const EigenDM &amp; dm) -&gt; EigenFR {
+                DensityMatrix&lt;Torb, Tbase&gt; arma_dm{
+                    to_arma(dm.first),
+                    to_arma(dm.second)};
+                FockBuilderReturn&lt;Torb, Tbase&gt; arma_ret = arma_fock_builder_(arma_dm);
+                return std::make_pair(arma_ret.first, to_eigen(arma_ret.second));
+              },
+              block_descriptions) {}
+
+    // ---- Pass-through configuration ---------------------------------
+
+    void verbosity(int v)                        { impl_.verbosity(v); }
+    int  verbosity() const                       { return impl_.verbosity(); }
+    void convergence_threshold(Tbase t)          { impl_.convergence_threshold(t); }
+    Tbase convergence_threshold() const          { return impl_.convergence_threshold(); }
+    void maximum_iterations(size_t n)            { impl_.maximum_iterations(n); }
+    size_t maximum_iterations() const            { return impl_.maximum_iterations(); }
+    bool frozen_occupations() const              { return impl_.frozen_occupations(); }
+    void frozen_occupations(bool b)              { impl_.frozen_occupations(b); }
+    void error_norm(const std::string &amp; n)       { impl_.error_norm(n); }
+
+    void diis_epsilon(Tbase e)                   { impl_.diis_epsilon(e); }
+    Tbase diis_epsilon() const                   { return impl_.diis_epsilon(); }
+    void diis_threshold(Tbase e)                 { impl_.diis_threshold(e); }
+    Tbase diis_threshold() const                 { return impl_.diis_threshold(); }
+    void diis_diagonal_damping(Tbase e)          { impl_.diis_diagonal_damping(e); }
+    Tbase diis_diagonal_damping() const          { return impl_.diis_diagonal_damping(); }
+    void diis_restart_factor(Tbase e)            { impl_.diis_restart_factor(e); }
+    Tbase diis_restart_factor() const            { return impl_.diis_restart_factor(); }
+    void optimal_damping_threshold(Tbase e)      { impl_.optimal_damping_threshold(e); }
+    Tbase optimal_damping_threshold() const      { return impl_.optimal_damping_threshold(); }
+    void maximum_history_length(int n)           { impl_.maximum_history_length(n); }
+    int  maximum_history_length() const          { return impl_.maximum_history_length(); }
+    void oda_restart_steps(int n)                { impl_.oda_restart_steps(n); }
+    int  oda_restart_steps() const               { return impl_.oda_restart_steps(); }
+
+    void fixed_number_of_particles_per_block(const arma::Col&lt;Tbase&gt; &amp; v) {
+      impl_.fixed_number_of_particles_per_block(to_eigen(v));
+    }
+
+    // ---- Initialisation ---------------------------------------------
+
+    void initialize_with_fock(const FockMatrix&lt;Torb&gt; &amp; fock_guess) {
+      impl_.initialize_with_fock(to_eigen(fock_guess));
+    }
+    void initialize_with_orbitals(const Orbitals&lt;Torb&gt; &amp; orbitals,
+                                   const OrbitalOccupations&lt;Tbase&gt; &amp; occupations) {
+      impl_.initialize_with_orbitals(to_eigen(orbitals), to_eigen(occupations));
+    }
+
+    // ---- Driving the SCF --------------------------------------------
+
+    void run()                                   { impl_.run(); }
+    void run_optimal_damping()                   { impl_.run_optimal_damping(); }
+    bool converged() const                       { return impl_.converged(); }
+    void brute_force_search_for_lowest_configuration() {
+      impl_.brute_force_search_for_lowest_configuration();
+    }
+
+    // ---- Solution retrieval -----------------------------------------
+
+    DensityMatrix&lt;Torb, Tbase&gt; get_solution(size_t ihist = 0) const {
+      auto eigen_dm = impl_.get_solution(ihist);
+      return {to_arma(eigen_dm.first), to_arma(eigen_dm.second)};
+    }
+    Orbitals&lt;Torb&gt; get_orbitals(size_t ihist = 0) const {
+      return to_arma(impl_.get_orbitals(ihist));
+    }
+    OrbitalOccupations&lt;Tbase&gt; get_orbital_occupations(size_t ihist = 0) const {
+      return to_arma(impl_.get_orbital_occupations(ihist));
+    }
+    FockBuilderReturn&lt;Torb, Tbase&gt; get_fock_build(size_t ihist = 0) const {
+      auto eigen_fb = impl_.get_fock_build(ihist);
+      return {eigen_fb.first, to_arma(eigen_fb.second)};
+    }
+    FockMatrix&lt;Torb&gt; get_fock_matrix(size_t ihist = 0) const {
+      return to_arma(impl_.get_fock_matrix(ihist));
+    }
+    Tbase get_energy(size_t ihist = 0) const     { return impl_.get_energy(ihist); }
+
+    // ---- Diagnostics &amp; utilities ------------------------------------
+
+    void print_history() const                   { impl_.print_history(); }
+    void reset_history()                         { impl_.reset_history(); }
+
+    DiagonalizedFockMatrix&lt;Torb, Tbase&gt; compute_orbitals(const FockMatrix&lt;Torb&gt; &amp; fock) const {
+      auto eigen_diag = impl_.compute_orbitals(to_eigen(fock));
+      return {to_arma(eigen_diag.first), to_arma(eigen_diag.second)};
+    }
+    OrbitalOccupations&lt;Tbase&gt; update_occupations(const OrbitalEnergies&lt;Tbase&gt; &amp; orbital_energies) const {
+      return to_arma(impl_.update_occupations(to_eigen(orbital_energies)));
+    }
+  };
+
+} // namespace Armadillo
+} // namespace OpenOrbitalOptimizer
+
+#endif
+</code></pre>
 
 
 

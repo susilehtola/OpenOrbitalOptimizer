@@ -1,0 +1,529 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="namespaceOpenOrbitalOptimizer_1_1Armadillo" kind="namespace" language="C++">
+    <compoundname>OpenOrbitalOptimizer::Armadillo</compoundname>
+    <innerclass refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver" prot="public">OpenOrbitalOptimizer::Armadillo::SCFSolver</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a4462ce62f18121c9ed4f93e64c5a14be" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Mat&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::OrbitalBlock =  arma::Mat&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalBlock</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::OrbitalBlock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="114" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a41e45cc8335da2fb70ffbf117eb0d001" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; OrbitalBlock&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::Orbitals =  std::vector&lt;OrbitalBlock&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>Orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::Orbitals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="115" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1ae519c8d1efd7c882228dd1b8e2893f0c" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Mat&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::OrbitalGradientBlock =  arma::Mat&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalGradientBlock</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::OrbitalGradientBlock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="116" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="116" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a5e2a9e2248a004df2bfe95cb63e0009d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; OrbitalGradientBlock&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::OrbitalGradients =  std::vector&lt;OrbitalGradientBlock&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalGradients</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::OrbitalGradients</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="117" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a187ac00250483d63bb7bf6fab39a8c8f" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Mat&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessianBlock =  arma::Mat&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>DiagonalOrbitalHessianBlock</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessianBlock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="118" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a059398ad4256838217336c69400a4cb0" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; DiagonalOrbitalHessianBlock&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessians =  std::vector&lt;DiagonalOrbitalHessianBlock&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>DiagonalOrbitalHessians</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessians</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="119" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1ae6d6247c04aed24344d4a353f123aa81" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Col&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::OrbitalBlockOccupations =  arma::Col&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalBlockOccupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::OrbitalBlockOccupations</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="120" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a5e5798ae6366ba55ca23b327b6bdcad9" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; OrbitalBlockOccupations&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::OrbitalOccupations =  std::vector&lt;OrbitalBlockOccupations&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalOccupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::OrbitalOccupations</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="121" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1add0216ce1fd5f50b46023b9071a5405d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class Torb</type>
+          </param>
+          <param>
+            <type>class Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::pair&lt; Orbitals&lt; Torb &gt;, OrbitalOccupations&lt; Tbase &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::DensityMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalOccupations&lt;Tbase&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>DensityMatrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::DensityMatrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="123" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1aa9da0829dc0e2064c5ad9cdf71b15dce" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; arma::Col&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::OrbitalEnergies =  std::vector&lt;arma::Col&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalEnergies</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::OrbitalEnergies</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="124" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a835443a038dec80555c719aa42c54ebf" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Mat&lt; T &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::FockMatrixBlock =  arma::Mat&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>FockMatrixBlock</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::FockMatrixBlock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="125" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a25c8fad977dc1d13a8baaf7cf0a43f8a" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; FockMatrixBlock&lt; T &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::FockMatrix =  std::vector&lt;FockMatrixBlock&lt;T&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>FockMatrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::FockMatrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="126" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="126" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a31398e9e7268971d4bbe586aa8073ca4" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class Torb</type>
+          </param>
+          <param>
+            <type>class Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::pair&lt; Orbitals&lt; Torb &gt;, OrbitalEnergies&lt; Tbase &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::DiagonalizedFockMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalEnergies&lt;Tbase&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>DiagonalizedFockMatrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::DiagonalizedFockMatrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="128" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a2f9c7b6bc34e37371815669a269a4ee3" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class Torb</type>
+          </param>
+          <param>
+            <type>class Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::pair&lt; Tbase, FockMatrix&lt; Torb &gt; &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::FockBuilderReturn =  std::pair&lt;Tbase, FockMatrix&lt;Torb&gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>FockBuilderReturn</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::FockBuilderReturn</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="130" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a99dd0f0ba8fe7e6bdc814a4e4f5a01d5" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class Torb</type>
+          </param>
+          <param>
+            <type>class Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::function&lt; FockBuilderReturn&lt; Torb, Tbase &gt;(const DensityMatrix&lt; Torb, Tbase &gt; &amp;)&gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::FockBuilder =  std::function&lt;FockBuilderReturn&lt;Torb, Tbase&gt;(const DensityMatrix&lt;Torb, Tbase&gt; &amp;)&gt;</definition>
+        <argsstring></argsstring>
+        <name>FockBuilder</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::FockBuilder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="132" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="132" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="armadillo__compat_8hpp_1a2f5b686e61e7378d0bd21d23d5d0f3ff" prot="public" static="no">
+        <type>std::tuple&lt; size_t, arma::uword, arma::uword &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::OrbitalRotation =  std::tuple&lt;size_t, arma::uword, arma::uword&gt;</definition>
+        <argsstring></argsstring>
+        <name>OrbitalRotation</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::OrbitalRotation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="133" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="133" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="armadillo__compat_8hpp_1abe143c1c48bba83adee518c4a4d7d7ac" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">OpenOrbitalOptimizer::Matrix</ref>&lt; T &gt;</type>
+        <definition>OpenOrbitalOptimizer::Matrix&lt; T &gt; OpenOrbitalOptimizer::Armadillo::to_eigen</definition>
+        <argsstring>(const arma::Mat&lt; T &gt; &amp;A)</argsstring>
+        <name>to_eigen</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::to_eigen</qualifiedname>
+        <param>
+          <type>const arma::Mat&lt; T &gt; &amp;</type>
+          <declname>A</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="47" column="39" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="47" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="armadillo__compat_8hpp_1a24ce5a0dd8bc868154b364ea6376bb5d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">OpenOrbitalOptimizer::Vector</ref>&lt; T &gt;</type>
+        <definition>OpenOrbitalOptimizer::Vector&lt; T &gt; OpenOrbitalOptimizer::Armadillo::to_eigen</definition>
+        <argsstring>(const arma::Col&lt; T &gt; &amp;v)</argsstring>
+        <name>to_eigen</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::to_eigen</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; T &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="53" column="39" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="53" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="armadillo__compat_8hpp_1ae05040ad9197f6ef566a8efea33f1515" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a654aeaf2c63cbcfb783b2f3c7ea53d49" kindref="member">OpenOrbitalOptimizer::IndexVector</ref></type>
+        <definition>OpenOrbitalOptimizer::IndexVector OpenOrbitalOptimizer::Armadillo::to_eigen</definition>
+        <argsstring>(const arma::uvec &amp;v)</argsstring>
+        <name>to_eigen</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::to_eigen</qualifiedname>
+        <param>
+          <type>const arma::uvec &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="58" column="44" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="58" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="armadillo__compat_8hpp_1ad5d88de5f28cb99f57ae8624da546e1e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Mat&lt; T &gt;</type>
+        <definition>arma::Mat&lt; T &gt; OpenOrbitalOptimizer::Armadillo::to_arma</definition>
+        <argsstring>(const OpenOrbitalOptimizer::Matrix&lt; T &gt; &amp;E)</argsstring>
+        <name>to_arma</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::to_arma</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">OpenOrbitalOptimizer::Matrix</ref>&lt; T &gt; &amp;</type>
+          <declname>E</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="67" column="20" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="67" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="armadillo__compat_8hpp_1a97234182ed2c118ae815612821d84697" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>arma::Col&lt; T &gt;</type>
+        <definition>arma::Col&lt; T &gt; OpenOrbitalOptimizer::Armadillo::to_arma</definition>
+        <argsstring>(const OpenOrbitalOptimizer::Vector&lt; T &gt; &amp;v)</argsstring>
+        <name>to_arma</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::to_arma</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">OpenOrbitalOptimizer::Vector</ref>&lt; T &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="72" column="20" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="72" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="armadillo__compat_8hpp_1a748e39c6888db21dcc41c58bea8b8def" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">OpenOrbitalOptimizer::Matrix</ref>&lt; T &gt; &gt;</type>
+        <definition>std::vector&lt; OpenOrbitalOptimizer::Matrix&lt; T &gt; &gt; OpenOrbitalOptimizer::Armadillo::to_eigen</definition>
+        <argsstring>(const std::vector&lt; arma::Mat&lt; T &gt; &gt; &amp;v)</argsstring>
+        <name>to_eigen</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::to_eigen</qualifiedname>
+        <param>
+          <type>const std::vector&lt; arma::Mat&lt; T &gt; &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="78" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="78" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="armadillo__compat_8hpp_1a262a042d079662941355b6727a6661cc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">OpenOrbitalOptimizer::Vector</ref>&lt; T &gt; &gt;</type>
+        <definition>std::vector&lt; OpenOrbitalOptimizer::Vector&lt; T &gt; &gt; OpenOrbitalOptimizer::Armadillo::to_eigen</definition>
+        <argsstring>(const std::vector&lt; arma::Col&lt; T &gt; &gt; &amp;v)</argsstring>
+        <name>to_eigen</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::to_eigen</qualifiedname>
+        <param>
+          <type>const std::vector&lt; arma::Col&lt; T &gt; &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="87" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="87" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="armadillo__compat_8hpp_1ad73a5d52885b94d5827cbed15cdfd1f4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; arma::Mat&lt; T &gt; &gt;</type>
+        <definition>std::vector&lt; arma::Mat&lt; T &gt; &gt; OpenOrbitalOptimizer::Armadillo::to_arma</definition>
+        <argsstring>(const std::vector&lt; OpenOrbitalOptimizer::Matrix&lt; T &gt; &gt; &amp;v)</argsstring>
+        <name>to_arma</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::to_arma</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">OpenOrbitalOptimizer::Matrix</ref>&lt; T &gt; &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="96" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="96" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="armadillo__compat_8hpp_1ab79f09c773f080467bd965fa7deac79d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; arma::Col&lt; T &gt; &gt;</type>
+        <definition>std::vector&lt; arma::Col&lt; T &gt; &gt; OpenOrbitalOptimizer::Armadillo::to_arma</definition>
+        <argsstring>(const std::vector&lt; OpenOrbitalOptimizer::Vector&lt; T &gt; &gt; &amp;v)</argsstring>
+        <name>to_arma</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::to_arma</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">OpenOrbitalOptimizer::Vector</ref>&lt; T &gt; &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="105" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="105" bodyend="110"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/armadillo_compat.hpp" line="42" column="1"/>
+  </compounddef>
+</doxygen>

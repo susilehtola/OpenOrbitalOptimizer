@@ -10,6 +10,8 @@
 
 ## s
 
+* [**SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md)
+([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md)
 ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 

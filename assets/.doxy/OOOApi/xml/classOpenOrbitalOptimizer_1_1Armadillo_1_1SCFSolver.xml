@@ -1,0 +1,841 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver" kind="class" language="C++" prot="public">
+    <compoundname>OpenOrbitalOptimizer::Armadillo::SCFSolver</compoundname>
+    <templateparamlist>
+      <param>
+        <type>class Torb</type>
+      </param>
+      <param>
+        <type>class Tbase</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ab27faa5b9dcc9a99db2baaff6129e0fd" prot="private" static="no">
+        <type><ref refid="classOpenOrbitalOptimizer_1_1SCFSolver" kindref="compound">OpenOrbitalOptimizer::SCFSolver</ref>&lt; Torb, Tbase &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::EigenSolver =  OpenOrbitalOptimizer::SCFSolver&lt;Torb, Tbase&gt;</definition>
+        <argsstring></argsstring>
+        <name>EigenSolver</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::EigenSolver</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="139" column="5" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="139" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a0d1ce1f99ad7f2f186e8eeb236c9d9bf" prot="private" static="no">
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1af8ece4fcb196c317d23632712f94e07d" kindref="member">OpenOrbitalOptimizer::DensityMatrix</ref>&lt; Torb, Tbase &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::EigenDM =  OpenOrbitalOptimizer::DensityMatrix&lt;Torb, Tbase&gt;</definition>
+        <argsstring></argsstring>
+        <name>EigenDM</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::EigenDM</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="140" column="5" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="140" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac89b02f454f26f172dec3b256e9dc92a" prot="private" static="no">
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1aa53c0be96b15a930c3b932ff060b3b63" kindref="member">OpenOrbitalOptimizer::FockBuilderReturn</ref>&lt; Torb, Tbase &gt;</type>
+        <definition>using OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::EigenFR =  OpenOrbitalOptimizer::FockBuilderReturn&lt;Torb, Tbase&gt;</definition>
+        <argsstring></argsstring>
+        <name>EigenFR</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::EigenFR</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="141" column="5" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="141" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a9ac2f7ae0dd91f1cea72510c5309de37" prot="private" static="no" mutable="no">
+        <type>FockBuilder&lt; Torb, Tbase &gt;</type>
+        <definition>FockBuilder&lt;Torb, Tbase&gt; OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::arma_fock_builder_</definition>
+        <argsstring></argsstring>
+        <name>arma_fock_builder_</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::arma_fock_builder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>User-supplied Armadillo-typed Fock builder, kept alive so the bridging callback below can call it on every Fock evaluation. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="145" column="17" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="145" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a82a69eb1e374ab07380b5caaa4dd121b" prot="private" static="no" mutable="no">
+        <type><ref refid="classOpenOrbitalOptimizer_1_1SCFSolver" kindref="compound">EigenSolver</ref></type>
+        <definition>EigenSolver OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Underlying Eigen-based solver. Constructed second so that the bridging lambda captured below can already see arma_fock_builder_. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="148" column="17" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="148" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5f17bcdaee156d96340a4bd29a8477bc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::SCFSolver</definition>
+        <argsstring>(const arma::uvec &amp;number_of_blocks_per_particle_type, const arma::Col&lt; Tbase &gt; &amp;maximum_occupation, const arma::Col&lt; Tbase &gt; &amp;number_of_particles, const FockBuilder&lt; Torb, Tbase &gt; &amp;fock_builder, const std::vector&lt; std::string &gt; &amp;block_descriptions)</argsstring>
+        <name>SCFSolver</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::SCFSolver</qualifiedname>
+        <param>
+          <type>const arma::uvec &amp;</type>
+          <declname>number_of_blocks_per_particle_type</declname>
+        </param>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>maximum_occupation</declname>
+        </param>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>number_of_particles</declname>
+        </param>
+        <param>
+          <type>const FockBuilder&lt; Torb, Tbase &gt; &amp;</type>
+          <declname>fock_builder</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>block_descriptions</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="151" column="5" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="151" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac1c635ada5d9f953f25b24a74ab8c6ab" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::verbosity</definition>
+        <argsstring>(int v)</argsstring>
+        <name>verbosity</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::verbosity</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="171" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="171" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aefac47e222acce48d8e8107fbc5c2f75" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::verbosity</definition>
+        <argsstring>() const</argsstring>
+        <name>verbosity</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::verbosity</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="172" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="172" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa073cd14207640ab384427969c789cd1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::convergence_threshold</definition>
+        <argsstring>(Tbase t)</argsstring>
+        <name>convergence_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::convergence_threshold</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="173" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="173" bodyend="173"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1af3c1910ac773e07ef922f480c46f4390" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::convergence_threshold</definition>
+        <argsstring>() const</argsstring>
+        <name>convergence_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::convergence_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="174" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="174" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a9e6c68235a2dea636fd6e2d0bd97cd0c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::maximum_iterations</definition>
+        <argsstring>(size_t n)</argsstring>
+        <name>maximum_iterations</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::maximum_iterations</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="175" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="175" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a547c27e8a74abfd61f92542e2036a849" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::maximum_iterations</definition>
+        <argsstring>() const</argsstring>
+        <name>maximum_iterations</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::maximum_iterations</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="176" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="176" bodyend="176"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a37c0345cc9be5b8a04765fda4dd89629" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::frozen_occupations</definition>
+        <argsstring>() const</argsstring>
+        <name>frozen_occupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::frozen_occupations</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="177" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="177" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac128e721124c0ba8d8918eae25390c1e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::frozen_occupations</definition>
+        <argsstring>(bool b)</argsstring>
+        <name>frozen_occupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::frozen_occupations</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="178" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="178" bodyend="178"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa08d4798760ef43ac1d7f081f638c2ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::error_norm</definition>
+        <argsstring>(const std::string &amp;n)</argsstring>
+        <name>error_norm</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::error_norm</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="179" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="179" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5cd0a6fded1cf701c70e84ba4f114013" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::diis_epsilon</definition>
+        <argsstring>(Tbase e)</argsstring>
+        <name>diis_epsilon</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::diis_epsilon</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>e</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="181" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="181" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a2b1fb8a8a1ffbe67f0186547fe82b1c6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::diis_epsilon</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_epsilon</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::diis_epsilon</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="182" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="182" bodyend="182"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ae9348efaaec75dade19053bb8cd134b9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::diis_threshold</definition>
+        <argsstring>(Tbase e)</argsstring>
+        <name>diis_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::diis_threshold</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>e</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="183" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="183" bodyend="183"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a855a09974d63b9223a69ac9416079fa9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::diis_threshold</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::diis_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="184" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="184" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7920b5d4cd15602cd4849f5290265785" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::diis_diagonal_damping</definition>
+        <argsstring>(Tbase e)</argsstring>
+        <name>diis_diagonal_damping</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::diis_diagonal_damping</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>e</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="185" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="185" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1af134a8a63d69869be4077c6f93e8aeac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::diis_diagonal_damping</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_diagonal_damping</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::diis_diagonal_damping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="186" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="186" bodyend="186"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac4aa68feda0b14fbfd985bd2d1436ac9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::diis_restart_factor</definition>
+        <argsstring>(Tbase e)</argsstring>
+        <name>diis_restart_factor</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::diis_restart_factor</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>e</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="187" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="187" bodyend="187"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a8fa999db7c0946babda99f8f08cd6bca" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::diis_restart_factor</definition>
+        <argsstring>() const</argsstring>
+        <name>diis_restart_factor</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::diis_restart_factor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="188" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="188" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a973f09790b580bcc91b8a0581ed37848" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::optimal_damping_threshold</definition>
+        <argsstring>(Tbase e)</argsstring>
+        <name>optimal_damping_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::optimal_damping_threshold</qualifiedname>
+        <param>
+          <type>Tbase</type>
+          <declname>e</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="189" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="189" bodyend="189"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a90c0c8637642a593b11f46ed7dcc4516" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::optimal_damping_threshold</definition>
+        <argsstring>() const</argsstring>
+        <name>optimal_damping_threshold</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::optimal_damping_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="190" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="190" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a2482b94f0eccc19fedf7a89409d51f6b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::maximum_history_length</definition>
+        <argsstring>(int n)</argsstring>
+        <name>maximum_history_length</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::maximum_history_length</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="191" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="191" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a75c677a90f6afbe3961d39a4a14177c4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::maximum_history_length</definition>
+        <argsstring>() const</argsstring>
+        <name>maximum_history_length</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::maximum_history_length</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="192" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="192" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a01a99f6f2669b9b6fbee44b312eac6be" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::oda_restart_steps</definition>
+        <argsstring>(int n)</argsstring>
+        <name>oda_restart_steps</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::oda_restart_steps</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="193" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="193" bodyend="193"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a26e9b5620ddec12ba710193c65901d0e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::oda_restart_steps</definition>
+        <argsstring>() const</argsstring>
+        <name>oda_restart_steps</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::oda_restart_steps</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="194" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="194" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a45599c34395791ddf8e6bff49b7cf734" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::fixed_number_of_particles_per_block</definition>
+        <argsstring>(const arma::Col&lt; Tbase &gt; &amp;v)</argsstring>
+        <name>fixed_number_of_particles_per_block</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::fixed_number_of_particles_per_block</qualifiedname>
+        <param>
+          <type>const arma::Col&lt; Tbase &gt; &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="196" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="196" bodyend="198"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a784ef48ff4d49e8c2bb4850f7ae78a6f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::initialize_with_fock</definition>
+        <argsstring>(const FockMatrix&lt; Torb &gt; &amp;fock_guess)</argsstring>
+        <name>initialize_with_fock</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::initialize_with_fock</qualifiedname>
+        <param>
+          <type>const FockMatrix&lt; Torb &gt; &amp;</type>
+          <declname>fock_guess</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="202" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="202" bodyend="204"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1afd770d51a53ec419c5f916d752cd2cce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::initialize_with_orbitals</definition>
+        <argsstring>(const Orbitals&lt; Torb &gt; &amp;orbitals, const OrbitalOccupations&lt; Tbase &gt; &amp;occupations)</argsstring>
+        <name>initialize_with_orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::initialize_with_orbitals</qualifiedname>
+        <param>
+          <type>const Orbitals&lt; Torb &gt; &amp;</type>
+          <declname>orbitals</declname>
+        </param>
+        <param>
+          <type>const OrbitalOccupations&lt; Tbase &gt; &amp;</type>
+          <declname>occupations</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="205" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="205" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a1e56ef1b739f9f77f99f753d6646b0a2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::run</definition>
+        <argsstring>()</argsstring>
+        <name>run</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::run</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="212" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="212" bodyend="212"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7c606aaa83cd29169c534202f7d3307d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::run_optimal_damping</definition>
+        <argsstring>()</argsstring>
+        <name>run_optimal_damping</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::run_optimal_damping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="213" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="213" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aae1100f157632b829ae1220d2033ed99" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::converged</definition>
+        <argsstring>() const</argsstring>
+        <name>converged</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::converged</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="214" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="214" bodyend="214"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a08ce29adc376cb730190f5c4077dd203" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::brute_force_search_for_lowest_configuration</definition>
+        <argsstring>()</argsstring>
+        <name>brute_force_search_for_lowest_configuration</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::brute_force_search_for_lowest_configuration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="215" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="215" bodyend="217"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ab255fdf5461cf12fa234fc949e430979" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>DensityMatrix&lt; Torb, Tbase &gt;</type>
+        <definition>DensityMatrix&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::get_solution</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_solution</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::get_solution</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="221" column="19" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="221" bodyend="224"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ad2a131fe32652267c368dcbce52ea0ac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Orbitals&lt; Torb &gt;</type>
+        <definition>Orbitals&lt; Torb &gt; OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::get_orbitals</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::get_orbitals</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="225" column="14" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="225" bodyend="227"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5ee8ac13994af54423148fdc9ebd5bc8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>OrbitalOccupations&lt; Tbase &gt;</type>
+        <definition>OrbitalOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::get_orbital_occupations</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_orbital_occupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::get_orbital_occupations</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="228" column="24" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="228" bodyend="230"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a954e6e8df5e5366684dbb082f9268935" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FockBuilderReturn&lt; Torb, Tbase &gt;</type>
+        <definition>FockBuilderReturn&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::get_fock_build</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_fock_build</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::get_fock_build</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="231" column="23" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="231" bodyend="234"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1afa334f249aab45bc7d16117b618a3d3b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>FockMatrix&lt; Torb &gt;</type>
+        <definition>FockMatrix&lt; Torb &gt; OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::get_fock_matrix</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_fock_matrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::get_fock_matrix</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="235" column="16" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="235" bodyend="237"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1acf869a3020973c95d087d33c639612ca" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::get_energy</definition>
+        <argsstring>(size_t ihist=0) const</argsstring>
+        <name>get_energy</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::get_energy</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ihist</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="238" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="238" bodyend="238"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7691d78acdc0a12d7bcdf032768c4536" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::print_history</definition>
+        <argsstring>() const</argsstring>
+        <name>print_history</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::print_history</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="242" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="242" bodyend="242"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aea280384d810e1e95a655df981361436" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::reset_history</definition>
+        <argsstring>()</argsstring>
+        <name>reset_history</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::reset_history</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="243" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="243" bodyend="243"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1af32a592d4f3e63ae7176ee8a01e4e261" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>DiagonalizedFockMatrix&lt; Torb, Tbase &gt;</type>
+        <definition>DiagonalizedFockMatrix&lt; Torb, Tbase &gt; OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::compute_orbitals</definition>
+        <argsstring>(const FockMatrix&lt; Torb &gt; &amp;fock) const</argsstring>
+        <name>compute_orbitals</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::compute_orbitals</qualifiedname>
+        <param>
+          <type>const FockMatrix&lt; Torb &gt; &amp;</type>
+          <declname>fock</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="245" column="28" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="245" bodyend="248"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a35a78ffadcfeb5909261f2fa62331af4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>OrbitalOccupations&lt; Tbase &gt;</type>
+        <definition>OrbitalOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::update_occupations</definition>
+        <argsstring>(const OrbitalEnergies&lt; Tbase &gt; &amp;orbital_energies) const</argsstring>
+        <name>update_occupations</name>
+        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::update_occupations</qualifiedname>
+        <param>
+          <type>const OrbitalEnergies&lt; Tbase &gt; &amp;</type>
+          <declname>orbital_energies</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="249" column="24" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="249" bodyend="251"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/armadillo_compat.hpp" line="138" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="138" bodyend="252"/>
+    <listofallmembers>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a9ac2f7ae0dd91f1cea72510c5309de37" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>arma_fock_builder_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a08ce29adc376cb730190f5c4077dd203" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>brute_force_search_for_lowest_configuration</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1af32a592d4f3e63ae7176ee8a01e4e261" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>compute_orbitals</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aae1100f157632b829ae1220d2033ed99" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>converged</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa073cd14207640ab384427969c789cd1" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>convergence_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1af3c1910ac773e07ef922f480c46f4390" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>convergence_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7920b5d4cd15602cd4849f5290265785" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>diis_diagonal_damping</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1af134a8a63d69869be4077c6f93e8aeac" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>diis_diagonal_damping</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5cd0a6fded1cf701c70e84ba4f114013" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>diis_epsilon</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a2b1fb8a8a1ffbe67f0186547fe82b1c6" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>diis_epsilon</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac4aa68feda0b14fbfd985bd2d1436ac9" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>diis_restart_factor</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a8fa999db7c0946babda99f8f08cd6bca" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>diis_restart_factor</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ae9348efaaec75dade19053bb8cd134b9" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>diis_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a855a09974d63b9223a69ac9416079fa9" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>diis_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a0d1ce1f99ad7f2f186e8eeb236c9d9bf" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>EigenDM</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac89b02f454f26f172dec3b256e9dc92a" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>EigenFR</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ab27faa5b9dcc9a99db2baaff6129e0fd" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>EigenSolver</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa08d4798760ef43ac1d7f081f638c2ef" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>error_norm</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a45599c34395791ddf8e6bff49b7cf734" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>fixed_number_of_particles_per_block</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a37c0345cc9be5b8a04765fda4dd89629" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>frozen_occupations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac128e721124c0ba8d8918eae25390c1e" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>frozen_occupations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1acf869a3020973c95d087d33c639612ca" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>get_energy</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a954e6e8df5e5366684dbb082f9268935" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>get_fock_build</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1afa334f249aab45bc7d16117b618a3d3b" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>get_fock_matrix</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5ee8ac13994af54423148fdc9ebd5bc8" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>get_orbital_occupations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ad2a131fe32652267c368dcbce52ea0ac" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>get_orbitals</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ab255fdf5461cf12fa234fc949e430979" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>get_solution</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a82a69eb1e374ab07380b5caaa4dd121b" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>impl_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a784ef48ff4d49e8c2bb4850f7ae78a6f" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>initialize_with_fock</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1afd770d51a53ec419c5f916d752cd2cce" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>initialize_with_orbitals</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a2482b94f0eccc19fedf7a89409d51f6b" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>maximum_history_length</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a75c677a90f6afbe3961d39a4a14177c4" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>maximum_history_length</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a9e6c68235a2dea636fd6e2d0bd97cd0c" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>maximum_iterations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a547c27e8a74abfd61f92542e2036a849" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>maximum_iterations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a01a99f6f2669b9b6fbee44b312eac6be" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>oda_restart_steps</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a26e9b5620ddec12ba710193c65901d0e" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>oda_restart_steps</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a973f09790b580bcc91b8a0581ed37848" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>optimal_damping_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a90c0c8637642a593b11f46ed7dcc4516" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>optimal_damping_threshold</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7691d78acdc0a12d7bcdf032768c4536" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>print_history</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aea280384d810e1e95a655df981361436" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>reset_history</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a1e56ef1b739f9f77f99f753d6646b0a2" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>run</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7c606aaa83cd29169c534202f7d3307d" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>run_optimal_damping</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5f17bcdaee156d96340a4bd29a8477bc" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>SCFSolver</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a35a78ffadcfeb5909261f2fa62331af4" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>update_occupations</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac1c635ada5d9f953f25b24a74ab8c6ab" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>verbosity</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aefac47e222acce48d8e8107fbc5c2f75" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>verbosity</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
