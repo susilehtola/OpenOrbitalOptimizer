@@ -20,12 +20,12 @@ PYBIND11_MODULE(_ext, m) {
   m.doc() = "OpenOrbitalOptimizer Python bindings";
 
   using namespace OpenOrbitalOptimizer;
-  using Solver = SCFSolver<double, false>;
+  using Solver = SCFSolver<double, double>;
 
   py::class_<Solver>(m, "SCFSolver",
       "SCF solver supporting fractional/degenerate occupations through\n"
       "skeleton density matrices and bi-level ODA + preconditioned CG\n"
-      "minimization. Bound for SCFSolver<double, IsComplex=false>:\n"
+      "minimization. Bound for SCFSolver<double, double>:\n"
       "double-precision real orbital coefficients and energies.")
     .def(py::init<IndexVector, Vector<double>, Vector<double>,
                   FockBuilder<double, double>, std::vector<std::string>>(),

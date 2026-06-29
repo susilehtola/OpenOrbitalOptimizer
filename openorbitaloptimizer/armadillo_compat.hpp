@@ -136,13 +136,7 @@ namespace Armadillo {
 
   template <class Torb, class Tbase>
   class SCFSolver {
-    static_assert(std::is_same_v<Torb, Tbase> ||
-                  std::is_same_v<Torb, std::complex<Tbase>>,
-                  "Legacy SCFSolver<Torb, Tbase> requires Torb to be "
-                  "either Tbase or std::complex<Tbase>.");
-    static constexpr bool IsComplex_ = std::is_same_v<Torb, std::complex<Tbase>>;
-
-    using EigenSolver = OpenOrbitalOptimizer::SCFSolver<Tbase, IsComplex_>;
+    using EigenSolver = OpenOrbitalOptimizer::SCFSolver<Torb, Tbase>;
     using EigenDM = OpenOrbitalOptimizer::DensityMatrix<Torb, Tbase>;
     using EigenFR = OpenOrbitalOptimizer::FockBuilderReturn<Torb, Tbase>;
 

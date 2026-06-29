@@ -9,7 +9,7 @@
 
 namespace OpenOrbitalOptimizer {
   // Instantiate all types of SCFSolver just to check it compiles
-  template class SCFSolver<double, false>;
+  template class SCFSolver<double, double>;
 
   namespace AtomicSolver {
 
@@ -467,7 +467,7 @@ namespace OpenOrbitalOptimizer {
       return E;
     }
 
-    OpenOrbitalOptimizer::SCFSolver<double, false> restricted_scf(int Z, int Q, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
+    OpenOrbitalOptimizer::SCFSolver<double, double> restricted_scf(int Z, int Q, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
       // Form the orthogonal orbital basis
       std::vector<Eigen::MatrixXd> X = form_X(linear_dependency_threshold, radial_basis);
 
@@ -551,7 +551,7 @@ namespace OpenOrbitalOptimizer {
       };
 
       // Initialize SCF solver
-      OpenOrbitalOptimizer::SCFSolver<double, false> scfsolver(
+      OpenOrbitalOptimizer::SCFSolver<double, double> scfsolver(
           number_of_blocks_per_particle_type,
           maximum_occupation,
           number_of_particles,
@@ -580,7 +580,7 @@ namespace OpenOrbitalOptimizer {
       return scfsolver;
     }
 
-    OpenOrbitalOptimizer::SCFSolver<double, false> unrestricted_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
+    OpenOrbitalOptimizer::SCFSolver<double, double> unrestricted_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
       // Form the orthogonal orbital basis
       std::vector<Eigen::MatrixXd> X = form_X(linear_dependency_threshold, radial_basis);
 
@@ -702,7 +702,7 @@ namespace OpenOrbitalOptimizer {
       };
 
       // Initialize SCF solver
-      OpenOrbitalOptimizer::SCFSolver<double, false> scfsolver(
+      OpenOrbitalOptimizer::SCFSolver<double, double> scfsolver(
           number_of_blocks_per_particle_type,
           maximum_occupation,
           number_of_particles,
@@ -731,7 +731,7 @@ namespace OpenOrbitalOptimizer {
       return scfsolver;
     }
 
-    OpenOrbitalOptimizer::SCFSolver<double, false> unrestricted_neo_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int epc_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & protonic_basis, double proton_mass, int verbosity, bool core_excitation) {
+    OpenOrbitalOptimizer::SCFSolver<double, double> unrestricted_neo_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int epc_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & protonic_basis, double proton_mass, int verbosity, bool core_excitation) {
       // Form the orthogonal orbital basis
       std::vector<Eigen::MatrixXd> X  = form_X(linear_dependency_threshold, radial_basis);
       std::vector<Eigen::MatrixXd> Xp = form_X(linear_dependency_threshold, protonic_basis);
@@ -875,7 +875,7 @@ namespace OpenOrbitalOptimizer {
       };
 
       // Initialize SCF solver
-      OpenOrbitalOptimizer::SCFSolver<double, false> scfsolver(
+      OpenOrbitalOptimizer::SCFSolver<double, double> scfsolver(
           number_of_blocks_per_particle_type,
           maximum_occupation,
           number_of_particles,
