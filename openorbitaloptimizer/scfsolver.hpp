@@ -22,14 +22,15 @@
 
 namespace OpenOrbitalOptimizer {
 
-  /// SCF solver class. Templated on the real type Tbase (e.g. float,
-  /// double, __float128) and a boolean IsComplex selecting between real
-  /// and complex orbital coefficients. The orbital scalar type Torb is
-  /// std::conditional_t<IsComplex, std::complex<Tbase>, Tbase>.
-  template<typename Tbase, bool IsComplex> class SCFSolver {
-  public:
-    /// Orbital scalar type derived from <Tbase, IsComplex>.
-    using Torb = OrbitalScalar<Tbase, IsComplex>;
+  /// SCF solver class. Templated on the orbital scalar type Torb (real
+  /// or complex) and the real type Tbase (e.g. float, double,
+  /// __float128). Torb must be either Tbase or std::complex<Tbase>; any
+  /// other combination is rejected at compile time.
+  template<typename Torb, typename Tbase> class SCFSolver {
+    static_assert(std::is_same_v<Torb, Tbase> ||
+                  std::is_same_v<Torb, std::complex<Tbase>>,
+                  "SCFSolver<Torb, Tbase>: Torb must be either Tbase or "
+                  "std::complex<Tbase>");
   private:
     /* Input data section */
     /// The number of orbital blocks per particle type (length ntypes)
@@ -2439,3 +2440,12 @@ namespace OpenOrbitalOptimizer {
     }
   };
 }
+
+// If <armadillo> is available in the include path, automatically pull in
+// the Armadillo compatibility shim so downstream code that still uses
+// arma::-typed inputs/outputs gets OpenOrbitalOptimizer::Armadillo::SCFSolver
+// without an extra include. Consumers who do not want Armadillo simply do
+// not have it in their include path; this is a no-op then.
+#if __has_include(<armadillo>)
+#include "armadillo_compat.hpp"
+#endif
