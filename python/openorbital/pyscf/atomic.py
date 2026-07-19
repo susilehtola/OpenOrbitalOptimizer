@@ -152,6 +152,13 @@ class OpenOrbitalAtomicSCF:
                 block_descriptions=block_descriptions,
             )
 
+        if self._is_uhf:
+            self.solver.set_batched_fock_builder(
+                self._fock_builder_batched_unrestricted)
+        else:
+            self.solver.set_batched_fock_builder(
+                self._fock_builder_batched_restricted)
+
         self.e_tot = None
 
     # --- helpers --------------------------------------------------------------
@@ -222,6 +229,31 @@ class OpenOrbitalAtomicSCF:
         Fb = self._fock_per_block(h1 + veff[1])
         return (float(E_elec + self.mol.energy_nuc()), Fa + Fb)
 
+    def _fock_builder_batched_restricted(self, densities):
+        # N=1 hits a PySCF DFT broadcasting bug; delegate.
+        if len(densities) == 1:
+            return [self._fock_builder_restricted(densities[0])]
+        P_ao_stack = np.stack(
+            [self._density_from_orth(orb, occ) for orb, occ in densities],
+            axis=0,
+        )
+        h1 = self.mf.get_hcore()
+        veff_stack = self.mf.get_veff(self.mol, dm=P_ao_stack)
+        results = []
+        for P_ao, veff in zip(P_ao_stack, veff_stack):
+            E_elec, _ = self.mf.energy_elec(dm=P_ao, h1e=h1, vhf=veff)
+            results.append((
+                float(E_elec + self.mol.energy_nuc()),
+                self._fock_per_block(h1 + veff),
+            ))
+        return results
+
+    def _fock_builder_batched_unrestricted(self, densities):
+        # PySCF's UKS / UHF do not accept (N, 2, nao, nao) batched input;
+        # loop the single-density callback instead. See the molecular
+        # driver's note for details.
+        return [self._fock_builder_unrestricted(d) for d in densities]
+
     # --- public API ----------------------------------------------------------
 
     def initial_fock(self, dm_init=None):
@@ -238,11 +270,78 @@ class OpenOrbitalAtomicSCF:
         veff = self.mf.get_veff(self.mol, dm=dm_init)
         return self._fock_per_block(h1 + veff)
 
-    def kernel(self, dm_init=None):
+    def kernel(self, methods="DIIS + ODA + CG", *, dm_init=None):
+        """Run the SCF and return the total energy.
+
+        ``methods`` is forwarded verbatim to ``SCFSolver.run`` as the
+        ``+``-separated token list (case-insensitive; choices are
+        ``DIIS``, ``ODA``, ``CG``, ``LBFGS``).
+        ``dm_init`` is keyword-only so a stray positional
+        ``oo.kernel("...")`` cannot silently bind a string to it and
+        crash inside PySCF's Fock builder.
+        """
         self.solver.initialize_with_fock(self.initial_fock(dm_init))
-        self.solver.run()
+        self.solver.run(methods=methods)
         self.e_tot = float(self.solver.get_energy(0))
+        self._populate_mf_results()
         return self.e_tot
+
+    def _populate_mf_results(self):
+        """Write the converged OOO state onto ``self.mf``. Each OOO
+        radial orbital in an l-block expands into (2l+1) PySCF
+        orbitals -- one per magnetic component -- with the OOO
+        occupation distributed equally across them. Orbital energies
+        come from the diagonal of C^T F C in the orthonormal-basis
+        pseudo orbitals and are degenerate across the m components.
+        AO-basis coefficients are globally sorted by energy per spin
+        channel."""
+        orbitals = self.solver.get_orbitals(0)
+        occupations = self.solver.get_orbital_occupations(0)
+        fock = self.solver.get_fock_matrix(0)
+
+        def _flatten_spin(orb_blocks, occ_blocks, fock_blocks):
+            Cs, eps_list, ns = [], [], []
+            for l, C, n, F in zip(self._l_values,
+                                  orb_blocks, occ_blocks, fock_blocks):
+                if C.size == 0:
+                    continue
+                X = self._X[l]
+                m_aos = self._m_aos[l]
+                F_mo = C.T @ F @ C
+                eps = np.real(np.diag(F_mo))
+                n_arr = np.asarray(n, dtype=float)
+                mult = 2 * l + 1
+                # Radial AO coefficients of the OOO orbitals.
+                C_rad = X @ C  # shape (n_radial_full, n_OOO_orb)
+                for m in range(mult):
+                    C_full = np.zeros((self._nao, C_rad.shape[1]))
+                    C_full[m_aos[m, :], :] = C_rad
+                    Cs.append(C_full)
+                    eps_list.append(eps)
+                    ns.append(n_arr / mult)
+            if not Cs:
+                return (np.zeros((self._nao, 0)),
+                        np.zeros(0), np.zeros(0))
+            C_full = np.hstack(Cs)
+            e_full = np.concatenate(eps_list)
+            n_full = np.concatenate(ns)
+            order = np.argsort(e_full, kind="stable")
+            return C_full[:, order], e_full[order], n_full[order]
+
+        if self._is_uhf:
+            ni = self._n_blocks
+            Ca, ea, na = _flatten_spin(orbitals[:ni], occupations[:ni], fock[:ni])
+            Cb, eb, nb = _flatten_spin(orbitals[ni:], occupations[ni:], fock[ni:])
+            self.mf.mo_coeff = np.asarray((Ca, Cb))
+            self.mf.mo_energy = np.asarray((ea, eb))
+            self.mf.mo_occ = np.asarray((na, nb))
+        else:
+            C, e, n = _flatten_spin(orbitals, occupations, fock)
+            self.mf.mo_coeff = C
+            self.mf.mo_energy = e
+            self.mf.mo_occ = n
+        self.mf.e_tot = self.e_tot
+        self.mf.converged = bool(self.solver.converged())
 
     def make_rdm1(self):
         orbitals = self.solver.get_orbitals(0)
