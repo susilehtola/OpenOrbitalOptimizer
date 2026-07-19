@@ -467,7 +467,7 @@ namespace OpenOrbitalOptimizer {
       return E;
     }
 
-    OpenOrbitalOptimizer::SCFSolver<double, double> restricted_scf(int Z, int Q, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
+    OpenOrbitalOptimizer::SCFSolver<double, double> restricted_scf(int Z, int Q, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation, bool oda, double oda_degeneracy_threshold, int maxiter) {
       // Form the orthogonal orbital basis
       std::vector<Eigen::MatrixXd> X = form_X(linear_dependency_threshold, radial_basis);
 
@@ -558,8 +558,14 @@ namespace OpenOrbitalOptimizer {
           fock_builder, block_descriptions);
       scfsolver.verbosity(verbosity);
       scfsolver.convergence_threshold(convergence_threshold);
+      scfsolver.maximum_iterations(maxiter);
+      if(oda_degeneracy_threshold > 0)
+        scfsolver.optimal_damping_degeneracy_threshold(oda_degeneracy_threshold);
       scfsolver.initialize_with_fock(fock_guess);
-      scfsolver.run();
+      if(oda)
+        scfsolver.run("ODA + CG");
+      else
+        scfsolver.run();
 
       if(core_excitation) {
         // Form core-excited state
@@ -572,7 +578,10 @@ namespace OpenOrbitalOptimizer {
         occupations[0](0) = 0.0;
         scfsolver.frozen_occupations(true);
         scfsolver.initialize_with_orbitals(orbitals, occupations);
-        scfsolver.run();
+        if(oda)
+          scfsolver.run("ODA + CG");
+        else
+          scfsolver.run();
         auto core_hole_fock_build = scfsolver.get_fock_build();
         printf("1s double ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
       }
@@ -580,7 +589,7 @@ namespace OpenOrbitalOptimizer {
       return scfsolver;
     }
 
-    OpenOrbitalOptimizer::SCFSolver<double, double> unrestricted_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation) {
+    OpenOrbitalOptimizer::SCFSolver<double, double> unrestricted_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, int verbosity, bool core_excitation, bool oda, double oda_degeneracy_threshold, int maxiter) {
       // Form the orthogonal orbital basis
       std::vector<Eigen::MatrixXd> X = form_X(linear_dependency_threshold, radial_basis);
 
@@ -709,8 +718,14 @@ namespace OpenOrbitalOptimizer {
           fock_builder, block_descriptions);
       scfsolver.verbosity(verbosity);
       scfsolver.convergence_threshold(convergence_threshold);
+      scfsolver.maximum_iterations(maxiter);
+      if(oda_degeneracy_threshold > 0)
+        scfsolver.optimal_damping_degeneracy_threshold(oda_degeneracy_threshold);
       scfsolver.initialize_with_fock(fock_guess);
-      scfsolver.run();
+      if(oda)
+        scfsolver.run("ODA + CG");
+      else
+        scfsolver.run();
 
       if(core_excitation) {
         // Form core-excited state
@@ -723,7 +738,10 @@ namespace OpenOrbitalOptimizer {
         occupations[0](0) = 0.0;
         scfsolver.frozen_occupations(true);
         scfsolver.initialize_with_orbitals(orbitals, occupations);
-        scfsolver.run();
+        if(oda)
+          scfsolver.run("ODA + CG");
+        else
+          scfsolver.run();
         auto core_hole_fock_build = scfsolver.get_fock_build();
         printf("1s ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
       }
@@ -731,7 +749,7 @@ namespace OpenOrbitalOptimizer {
       return scfsolver;
     }
 
-    OpenOrbitalOptimizer::SCFSolver<double, double> unrestricted_neo_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int epc_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & protonic_basis, double proton_mass, int verbosity, bool core_excitation) {
+    OpenOrbitalOptimizer::SCFSolver<double, double> unrestricted_neo_scf(int Z, int Q, int M, int x_func_id, int c_func_id, int epc_func_id, int Ngrid, double linear_dependency_threshold, double convergence_threshold, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & radial_basis, const std::vector<std::shared_ptr<const OpenOrbitalOptimizer::AtomicSolver::RadialBasis>> & protonic_basis, double proton_mass, int verbosity, bool core_excitation, bool oda, double oda_degeneracy_threshold, int maxiter) {
       // Form the orthogonal orbital basis
       std::vector<Eigen::MatrixXd> X  = form_X(linear_dependency_threshold, radial_basis);
       std::vector<Eigen::MatrixXd> Xp = form_X(linear_dependency_threshold, protonic_basis);
@@ -882,10 +900,13 @@ namespace OpenOrbitalOptimizer {
           fock_builder, block_descriptions);
       scfsolver.convergence_threshold(convergence_threshold);
       scfsolver.verbosity(verbosity);
+      scfsolver.maximum_iterations(maxiter);
+      if(oda_degeneracy_threshold > 0)
+        scfsolver.optimal_damping_degeneracy_threshold(oda_degeneracy_threshold);
 
       {
         // Run a calculation with the point nucleus to initialize the electronic orbitals
-        OpenOrbitalOptimizer::SCFSolver esolver(unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, false));
+        OpenOrbitalOptimizer::SCFSolver esolver(unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, false, oda, oda_degeneracy_threshold, maxiter));
         auto electronic_dm(esolver.get_solution());
         const auto & orbitals = electronic_dm.first;
         const auto & occupations = electronic_dm.second;
@@ -917,7 +938,10 @@ namespace OpenOrbitalOptimizer {
         scfsolver.initialize_with_fock(fock_guess);
       }
 
-      scfsolver.run();
+      if(oda)
+        scfsolver.run("ODA + CG");
+      else
+        scfsolver.run();
 
       if(core_excitation) {
         // Form core-excited state
@@ -930,7 +954,10 @@ namespace OpenOrbitalOptimizer {
         occupations[0](0) = 0.0;
         scfsolver.frozen_occupations(true);
         scfsolver.initialize_with_orbitals(orbitals, occupations);
-        scfsolver.run();
+        if(oda)
+          scfsolver.run("ODA + CG");
+        else
+          scfsolver.run();
         auto core_hole_fock_build = scfsolver.get_fock_build();
         printf("1s ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
       }
@@ -1090,6 +1117,9 @@ int main(int argc, char **argv) {
   parser.add<double>("lindepthresh", 0, "Linear dependence threshold", false, 1e-6);
   parser.add<double>("convthr", 0, "Convergence threshold", false, 1e-6);
   parser.add<double>("protonmass", 0, "Mass of proton in atomic units (m_p/m_e)", false, 1836.15267389); // CODATA 2014 value
+  parser.add<int>("maxiter", 0, "maximum number of iterations to do", false, 1000);
+  parser.add<bool>("oda", 0, "Use optimal damping for SCF?", false, false);
+  parser.add<double>("odadegthresh", 0, "Energy gap below which orbitals are treated as degenerate in optimal damping (0 = use solver default)", false, 0.0);
   parser.parse_check(argc, argv);
 
   int Z = parser.get<int>("Z");
@@ -1108,6 +1138,9 @@ int main(int argc, char **argv) {
   int verbosity = parser.get<int>("verbosity");
   bool slater = parser.get<bool>("sto");
   bool core_excitation = parser.get<bool>("excitecore");
+  int maxiter = parser.get<int>("maxiter");
+  bool oda = parser.get<bool>("oda");
+  double oda_degeneracy_threshold = parser.get<double>("odadegthresh");
   std::string basisfile = parser.get<std::string>("basis");
   std::string pbasisfile = parser.get<std::string>("pbasis");
 
@@ -1154,12 +1187,12 @@ int main(int argc, char **argv) {
   }
 
   if(pbasisfile.size()) {
-    OpenOrbitalOptimizer::AtomicSolver::unrestricted_neo_scf(Z, Q, M, x_func_id, c_func_id, epc_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, protonic_basis, proton_mass, verbosity, core_excitation);
+    OpenOrbitalOptimizer::AtomicSolver::unrestricted_neo_scf(Z, Q, M, x_func_id, c_func_id, epc_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, protonic_basis, proton_mass, verbosity, core_excitation, oda, oda_degeneracy_threshold, maxiter);
   } else {
     if(M==1) {
-      OpenOrbitalOptimizer::AtomicSolver::restricted_scf(Z, Q, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, core_excitation);
+      OpenOrbitalOptimizer::AtomicSolver::restricted_scf(Z, Q, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, core_excitation, oda, oda_degeneracy_threshold, maxiter);
     } else {
-      OpenOrbitalOptimizer::AtomicSolver::unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, core_excitation);
+      OpenOrbitalOptimizer::AtomicSolver::unrestricted_scf(Z, Q, M, x_func_id, c_func_id, Ngrid, linear_dependency_threshold, convergence_threshold, radial_basis, verbosity, core_excitation, oda, oda_degeneracy_threshold, maxiter);
     }
   }
   return 0;

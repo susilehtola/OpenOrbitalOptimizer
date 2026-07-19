@@ -78,6 +78,12 @@ namespace OpenOrbitalOptimizer {
   template <class Torb, class Tbase>
   using FockBuilder = std::function<FockBuilderReturn<Torb, Tbase>(const DensityMatrix<Torb, Tbase> &)>;
 
+  /// Optional batched Fock builder: given a list of densities, return the
+  /// corresponding list of (energy, Fock) pairs. Enables per-vertex sweeps
+  /// in the ODA polytope face-minimization step.
+  template <class Torb, class Tbase>
+  using BatchedFockBuilder = std::function<std::vector<FockBuilderReturn<Torb, Tbase>>(const std::vector<DensityMatrix<Torb, Tbase>> &)>;
+
   /// Single history entry: density, Fock-builder output, generation id.
   template <class Torb, class Tbase>
   using OrbitalHistoryEntry = std::tuple<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>, size_t>;

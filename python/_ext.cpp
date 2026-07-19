@@ -46,6 +46,28 @@ PYBIND11_MODULE(_ext, m) {
     .def("maximum_iterations",
          py::overload_cast<size_t>(&Solver::maximum_iterations),
          py::arg("max_iter"))
+    .def("number_of_fock_evaluations",
+         &Solver::number_of_fock_evaluations,
+         "Number of Fock-matrix builds performed by the most recent run().")
+    .def("optimal_damping_degeneracy_threshold",
+         py::overload_cast<double>(&Solver::optimal_damping_degeneracy_threshold),
+         py::arg("threshold"))
+    .def("set_batched_fock_builder",
+         &Solver::set_batched_fock_builder,
+         py::arg("builder"),
+         "Register a batched Fock-builder callback. The callback receives a\n"
+         "list of (orbitals, occupations) tuples and must return a list of\n"
+         "(energy, fock) tuples in the same order. Used by the ODA polytope\n"
+         "step to amortise integral / grid setup across the axis-vertex\n"
+         "sweep. Pass None (or omit the call) to fall back to per-density\n"
+         "evaluation through fock_builder.")
+    .def("clear_batched_fock_builder",
+         [](Solver & self) {
+           self.set_batched_fock_builder(BatchedFockBuilder<double, double>{});
+         },
+         "Drop any registered batched Fock builder.")
+    .def("has_batched_fock_builder",
+         &Solver::has_batched_fock_builder)
     .def("initialize_with_fock",
          &Solver::initialize_with_fock,
          py::arg("fock"))
@@ -53,9 +75,11 @@ PYBIND11_MODULE(_ext, m) {
          &Solver::initialize_with_orbitals,
          py::arg("orbitals"), py::arg("occupations"))
     .def("run", &Solver::run,
-         "Run the hybrid DIIS / ODA+CG SCF loop.")
-    .def("run_optimal_damping", &Solver::run_optimal_damping,
-         "Run the standalone ODA+CG loop without DIIS.")
+         py::arg("methods") = std::string("DIIS + ODA + CG"),
+         "Run the SCF loop with the methods named in the input string.\n"
+         "Tokens (case-insensitive, '+'-separated): 'DIIS', 'ODA', 'CG', 'LBFGS'.\n"
+         "Examples: 'DIIS', 'ODA', 'DIIS + ODA + CG' (the default),\n"
+         "'ODA + CG' (former run_optimal_damping body).")
     .def("get_solution", &Solver::get_solution,
          py::arg("ihist") = 0,
          "Return (orbitals, occupations) of the ihist:th entry.")
@@ -71,5 +95,19 @@ PYBIND11_MODULE(_ext, m) {
     .def("get_energy",
          py::overload_cast<size_t>(&Solver::get_energy, py::const_),
          py::arg("ihist") = 0,
-         "Total energy of history entry ihist (0 = lowest energy).");
+         "Total energy of history entry ihist (0 = lowest energy).")
+    .def("converged", &Solver::converged,
+         "True iff the most recent run() reached the convergence\n"
+         "threshold (or the user-supplied callback returned True).")
+    .def("last_polytope_dimension", &Solver::last_polytope_dimension,
+         "Skeleton dimension (N_par) of the most recent ODA call.")
+    .def("last_active_rotation_count", &Solver::last_active_rotation_count,
+         "Count of orbital-rotation DOFs inside degenerate groups at the\n"
+         "iterate produced by the most recent ODA call. Default orbital-rotation burst\n"
+         "length when orbital_rotation_steps_after_oda is left at 0.")
+    .def("orbital_rotation_steps_after_oda",
+         py::overload_cast<size_t>(&Solver::orbital_rotation_steps_after_oda),
+         py::arg("n"),
+         "Override the post-ODA orbital-rotation burst length. 0 restores the\n"
+         "default of using last_active_rotation_count (with a floor of 1).");
 }

@@ -114,6 +114,17 @@ class OpenOrbitalSCF:
                 block_descriptions=list(self._irrep_names),
             )
 
+        # Register a batched Fock-builder callback so the ODA
+        # axis-vertex sweep can amortise integral / grid setup via
+        # PySCF's vectorised get_veff (which accepts (N, nao, nao) and
+        # (N, 2, nao, nao) density stacks).
+        if self._is_uhf:
+            self.solver.set_batched_fock_builder(
+                self._fock_builder_batched_unrestricted)
+        else:
+            self.solver.set_batched_fock_builder(
+                self._fock_builder_batched_restricted)
+
         self.e_tot = None
 
     # --- basis-change helpers ------------------------------------------------
@@ -161,6 +172,52 @@ class OpenOrbitalSCF:
         return (float(E_elec + self.mol.energy_nuc()),
                 Fa_blocks + Fb_blocks)
 
+    def _fock_builder_batched_restricted(self, densities):
+        """Batched restricted Fock builder.
+
+        Stacks the per-density AO matrices into one ``(N, nao, nao)``
+        array, calls PySCF's vectorised ``get_veff`` once, then peels
+        the results back into the per-density return tuples.
+
+        N=1 hits a PySCF DFT bug ("non-broadcastable output operand")
+        where rks.get_veff allocates Vxc unbatched and then fails to
+        add the (1, nao, nao) Coulomb back in. Skip the batched path
+        in that case -- there is nothing to amortise anyway.
+        """
+        if len(densities) == 1:
+            return [self._fock_builder_restricted(densities[0])]
+        P_ao_stack = np.stack(
+            [self._density_from_irrep_orbitals(orb, occ)
+             for orb, occ in densities],
+            axis=0,
+        )
+        h1 = self.mf.get_hcore()
+        veff_stack = self.mf.get_veff(self.mol, dm=P_ao_stack)
+        results = []
+        for P_ao, veff in zip(P_ao_stack, veff_stack):
+            E_elec, _ = self.mf.energy_elec(dm=P_ao, h1e=h1, vhf=veff)
+            results.append((
+                float(E_elec + self.mol.energy_nuc()),
+                self._fock_per_irrep(h1 + veff),
+            ))
+        return results
+
+    def _fock_builder_batched_unrestricted(self, densities):
+        """Unrestricted batched Fock builder.
+
+        PySCF's UKS / UHF do not accept the ``(N, 2, nao, nao)`` batched
+        input shape -- ``dft.uks.get_veff`` internally does
+        ``dma, dmb = dms`` and fails with "too many values to unpack
+        (expected 2)" whenever N != 2 and misinterprets the spin axis
+        when N == 2. So we cannot batch on the PySCF side; loop the
+        single-density callback instead. The C++ ODA polytope step
+        still benefits from the batched Fock-builder hook (the call
+        is made once per ODA call rather than N times), but the
+        amortisation must happen at the level of integral / grid
+        setup inside PySCF if at all.
+        """
+        return [self._fock_builder_unrestricted(d) for d in densities]
+
     # --- public API ----------------------------------------------------------
 
     def initial_fock(self, dm_init=None):
@@ -178,12 +235,69 @@ class OpenOrbitalSCF:
         veff = self.mf.get_veff(self.mol, dm=dm_init)
         return self._fock_per_irrep(h1 + veff)
 
-    def kernel(self, dm_init=None):
-        """Run the SCF and return the total energy."""
+    def kernel(self, methods="DIIS + ODA + CG", *, dm_init=None):
+        """Run the SCF and return the total energy.
+
+        ``methods`` is forwarded verbatim to ``SCFSolver.run`` as the
+        ``+``-separated token list (case-insensitive; choices are
+        ``DIIS``, ``ODA``, ``CG``, ``LBFGS``).
+        ``dm_init`` is keyword-only so a positional first argument
+        always selects the method string -- the much more common case
+        -- and a stray ``oo.kernel("...")`` cannot silently bind a
+        string to ``dm_init`` and crash inside PySCF's Fock builder.
+        """
         self.solver.initialize_with_fock(self.initial_fock(dm_init))
-        self.solver.run()
+        self.solver.run(methods=methods)
         self.e_tot = float(self.solver.get_energy(0))
+        self._populate_mf_results()
         return self.e_tot
+
+    def _populate_mf_results(self):
+        """Write the converged OOO state onto ``self.mf`` so PySCF
+        post-SCF routines (``analyze``, ``dip_moment``, density-fitting
+        post-HF, ...) see the same answer. AO-basis MO coefficients
+        are concatenated across irreps and globally sorted by orbital
+        energy; ``mo_energy`` is taken from the diagonal of C^T F C in
+        each irrep (canonical-orbital energies on the orthonormal-
+        basis pseudo orbitals). ``mo_occ`` carries the OOO
+        occupations in PySCF's convention (max 2 per orbital
+        restricted; max 1 per spin channel unrestricted)."""
+        orbitals = self.solver.get_orbitals(0)
+        occupations = self.solver.get_orbital_occupations(0)
+        fock = self.solver.get_fock_matrix(0)
+
+        def _flatten_spin(orb_blocks, occ_blocks, fock_blocks):
+            Cs, eps_list, ns = [], [], []
+            for T, C, n, F in zip(self._T, orb_blocks, occ_blocks, fock_blocks):
+                if C.size == 0:
+                    continue
+                F_mo = C.T @ F @ C
+                Cs.append(T @ C)
+                eps_list.append(np.real(np.diag(F_mo)))
+                ns.append(np.asarray(n, dtype=float))
+            if not Cs:
+                return (np.zeros((self._nao, 0)),
+                        np.zeros(0), np.zeros(0))
+            C_full = np.hstack(Cs)
+            e_full = np.concatenate(eps_list)
+            n_full = np.concatenate(ns)
+            order = np.argsort(e_full, kind="stable")
+            return C_full[:, order], e_full[order], n_full[order]
+
+        if self._is_uhf:
+            ni = self._n_irreps
+            Ca, ea, na = _flatten_spin(orbitals[:ni], occupations[:ni], fock[:ni])
+            Cb, eb, nb = _flatten_spin(orbitals[ni:], occupations[ni:], fock[ni:])
+            self.mf.mo_coeff = np.asarray((Ca, Cb))
+            self.mf.mo_energy = np.asarray((ea, eb))
+            self.mf.mo_occ = np.asarray((na, nb))
+        else:
+            C, e, n = _flatten_spin(orbitals, occupations, fock)
+            self.mf.mo_coeff = C
+            self.mf.mo_energy = e
+            self.mf.mo_occ = n
+        self.mf.e_tot = self.e_tot
+        self.mf.converged = bool(self.solver.converged())
 
     # --- post-SCF accessors --------------------------------------------------
 
