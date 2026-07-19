@@ -178,10 +178,17 @@ namespace Armadillo {
     Tbase diis_restart_factor() const            { return impl_.diis_restart_factor(); }
     void optimal_damping_threshold(Tbase e)      { impl_.optimal_damping_threshold(e); }
     Tbase optimal_damping_threshold() const      { return impl_.optimal_damping_threshold(); }
+    void optimal_damping_degeneracy_threshold(Tbase e) { impl_.optimal_damping_degeneracy_threshold(e); }
+    Tbase optimal_damping_degeneracy_threshold() const { return impl_.optimal_damping_degeneracy_threshold(); }
     void maximum_history_length(int n)           { impl_.maximum_history_length(n); }
     int  maximum_history_length() const          { return impl_.maximum_history_length(); }
     void oda_restart_steps(int n)                { impl_.oda_restart_steps(n); }
     int  oda_restart_steps() const               { return impl_.oda_restart_steps(); }
+    void orbital_rotation_steps_after_oda(size_t n) { impl_.orbital_rotation_steps_after_oda(n); }
+    size_t orbital_rotation_steps_after_oda() const { return impl_.orbital_rotation_steps_after_oda(); }
+    size_t last_polytope_dimension() const       { return impl_.last_polytope_dimension(); }
+    size_t last_active_rotation_count() const    { return impl_.last_active_rotation_count(); }
+    size_t number_of_fock_evaluations() const    { return impl_.number_of_fock_evaluations(); }
 
     void fixed_number_of_particles_per_block(const arma::Col<Tbase> & v) {
       impl_.fixed_number_of_particles_per_block(to_eigen(v));
@@ -199,8 +206,8 @@ namespace Armadillo {
 
     // ---- Driving the SCF --------------------------------------------
 
-    void run()                                   { impl_.run(); }
-    void run_optimal_damping()                   { impl_.run_optimal_damping(); }
+    void run(const std::string & methods = "DIIS + ODA + CG") { impl_.run(methods); }
+    void run_optimal_damping()                   { impl_.run("ODA + CG"); }
     bool converged() const                       { return impl_.converged(); }
     void brute_force_search_for_lowest_configuration() {
       impl_.brute_force_search_for_lowest_configuration();

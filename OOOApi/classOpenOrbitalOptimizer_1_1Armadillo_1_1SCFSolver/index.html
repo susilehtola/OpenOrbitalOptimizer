@@ -15,7 +15,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -1272,6 +1272,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-last_active_rotation_count" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function last_active_rotation_count
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-last_polytope_dimension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function last_polytope_dimension
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-maximum_history_length-12" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1316,6 +1338,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-number_of_fock_evaluations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function number_of_fock_evaluations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-oda_restart_steps-12" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1338,6 +1371,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-optimal_damping_degeneracy_threshold-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function optimal_damping_degeneracy_threshold [1/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-optimal_damping_degeneracy_threshold-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function optimal_damping_degeneracy_threshold [2/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-optimal_damping_threshold-12" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1353,6 +1408,28 @@
     <span class="md-ellipsis">
       
         function optimal_damping_threshold [2/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-orbital_rotation_steps_after_oda-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function orbital_rotation_steps_after_oda [1/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-orbital_rotation_steps_after_oda-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function orbital_rotation_steps_after_oda [2/2]
       
     </span>
   </a>
@@ -1575,6 +1652,14 @@
 <td style="text-align: left;"><a href="#function-initialize_with_orbitals"><strong>initialize_with_orbitals</strong></a> (const Orbitals&lt; Torb &gt; &amp; orbitals, const OrbitalOccupations&lt; Tbase &gt; &amp; occupations) <br></td>
 </tr>
 <tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-last_active_rotation_count"><strong>last_active_rotation_count</strong></a> () const<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-last_polytope_dimension"><strong>last_polytope_dimension</strong></a> () const<br></td>
+</tr>
+<tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-maximum_history_length-12"><strong>maximum_history_length</strong></a> (int n) <br></td>
 </tr>
@@ -1591,12 +1676,24 @@
 <td style="text-align: left;"><a href="#function-maximum_iterations-22"><strong>maximum_iterations</strong></a> () const<br></td>
 </tr>
 <tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-number_of_fock_evaluations"><strong>number_of_fock_evaluations</strong></a> () const<br></td>
+</tr>
+<tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-oda_restart_steps-12"><strong>oda_restart_steps</strong></a> (int n) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">int</td>
 <td style="text-align: left;"><a href="#function-oda_restart_steps-22"><strong>oda_restart_steps</strong></a> () const<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-optimal_damping_degeneracy_threshold-12"><strong>optimal_damping_degeneracy_threshold</strong></a> (Tbase e) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-optimal_damping_degeneracy_threshold-22"><strong>optimal_damping_degeneracy_threshold</strong></a> () const<br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
@@ -1608,6 +1705,14 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-orbital_rotation_steps_after_oda-12"><strong>orbital_rotation_steps_after_oda</strong></a> (size_t n) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-orbital_rotation_steps_after_oda-22"><strong>orbital_rotation_steps_after_oda</strong></a> () const<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-print_history"><strong>print_history</strong></a> () const<br></td>
 </tr>
 <tr>
@@ -1616,11 +1721,11 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-run"><strong>run</strong></a> () <br></td>
+<td style="text-align: left;"><a href="#function-run"><strong>run</strong></a> (const std::string &amp; methods="DIIS + ODA + CG") <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-run_optimal_damping"><strong>run_optimal_damping</strong></a> () <br></td>
+<td style="text-align: left;"><a href="#function-run_optimal_damping"><strong>run_optimal_damping</strong></a> () <br><em>Backwards-compatible alias for the pre-oda-merge behavior.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">OrbitalOccupations&lt; Tbase &gt;</td>
@@ -1808,6 +1913,16 @@
 </code></pre>
 <hr>
 
+<h3 id="function-last_active_rotation_count">function last_active_rotation_count</h3>
+<pre><code class="language-C++">inline size_t OpenOrbitalOptimizer::Armadillo::SCFSolver::last_active_rotation_count () const
+</code></pre>
+<hr>
+
+<h3 id="function-last_polytope_dimension">function last_polytope_dimension</h3>
+<pre><code class="language-C++">inline size_t OpenOrbitalOptimizer::Armadillo::SCFSolver::last_polytope_dimension () const
+</code></pre>
+<hr>
+
 <h3 id="function-maximum_history_length-12">function maximum_history_length [1/2]</h3>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::maximum_history_length (
     int n
@@ -1832,6 +1947,11 @@
 </code></pre>
 <hr>
 
+<h3 id="function-number_of_fock_evaluations">function number_of_fock_evaluations</h3>
+<pre><code class="language-C++">inline size_t OpenOrbitalOptimizer::Armadillo::SCFSolver::number_of_fock_evaluations () const
+</code></pre>
+<hr>
+
 <h3 id="function-oda_restart_steps-12">function oda_restart_steps [1/2]</h3>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::oda_restart_steps (
     int n
@@ -1841,6 +1961,18 @@
 
 <h3 id="function-oda_restart_steps-22">function oda_restart_steps [2/2]</h3>
 <pre><code class="language-C++">inline int OpenOrbitalOptimizer::Armadillo::SCFSolver::oda_restart_steps () const
+</code></pre>
+<hr>
+
+<h3 id="function-optimal_damping_degeneracy_threshold-12">function optimal_damping_degeneracy_threshold [1/2]</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::optimal_damping_degeneracy_threshold (
+    Tbase e
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-optimal_damping_degeneracy_threshold-22">function optimal_damping_degeneracy_threshold [2/2]</h3>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver::optimal_damping_degeneracy_threshold () const
 </code></pre>
 <hr>
 
@@ -1856,6 +1988,18 @@
 </code></pre>
 <hr>
 
+<h3 id="function-orbital_rotation_steps_after_oda-12">function orbital_rotation_steps_after_oda [1/2]</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::orbital_rotation_steps_after_oda (
+    size_t n
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-orbital_rotation_steps_after_oda-22">function orbital_rotation_steps_after_oda [2/2]</h3>
+<pre><code class="language-C++">inline size_t OpenOrbitalOptimizer::Armadillo::SCFSolver::orbital_rotation_steps_after_oda () const
+</code></pre>
+<hr>
+
 <h3 id="function-print_history">function print_history</h3>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::print_history () const
 </code></pre>
@@ -1867,11 +2011,14 @@
 <hr>
 
 <h3 id="function-run">function run</h3>
-<pre><code class="language-C++">inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::run () 
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::run (
+    const std::string &amp; methods=&quot;DIIS + ODA + CG&quot;
+) 
 </code></pre>
 <hr>
 
 <h3 id="function-run_optimal_damping">function run_optimal_damping</h3>
+<p><em>Backwards-compatible alias for the pre-oda-merge behavior.</em> </p>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::run_optimal_damping () 
 </code></pre>
 <hr>
@@ -1949,7 +2096,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

@@ -34,7 +34,7 @@ Inherits the following classes: GenericNumTraits< _Float128 >
 
 | Type | Name |
 | ---: | :--- |
-| enum  | [**NumTraits&lt; \_Float128 &gt;**](#enum-numtraits-_float128)  <br> |
+| enum  | [**@215310336050140100232061112275106223032043240162**](#enum-@215310336050140100232061112275106223032043240162)  <br> |
 | typedef \_Float128 | [**Literal**](#typedef-literal)  <br> |
 | typedef \_Float128 | [**Nested**](#typedef-nested)  <br> |
 | typedef \_Float128 | [**NonInteger**](#typedef-noninteger)  <br> |
@@ -101,10 +101,10 @@ Inherits the following classes: GenericNumTraits< _Float128 >
 
 
 
-### enum NumTraits&lt; \_Float128 &gt; 
+### enum @215310336050140100232061112275106223032043240162 
 
 ```C++
-enum Eigen::NumTraits< _Float128 >::NumTraits< _Float128 > {
+enum Eigen::NumTraits< _Float128 >::@215310336050140100232061112275106223032043240162 {
     IsComplex = 0,
     IsInteger = 0,
     IsSigned = 1,

@@ -15,7 +15,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -1030,6 +1030,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#typedef-batchedfockbuilder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        typedef BatchedFockBuilder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#typedef-densitymatrix" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1322,6 +1333,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-expm_antihermitian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function expm_antihermitian
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-find_indices_where" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1392,6 +1414,17 @@
     <span class="md-ellipsis">
       
         function logspace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-randperm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function randperm
       
     </span>
   </a>
@@ -1506,6 +1539,10 @@
 <td style="text-align: right;">namespace</td>
 <td style="text-align: left;"><a href="../namespaceOpenOrbitalOptimizer_1_1ConjugateGradients/"><strong>ConjugateGradients</strong></a> <br></td>
 </tr>
+<tr>
+<td style="text-align: right;">namespace</td>
+<td style="text-align: left;"><a href="../namespaceOpenOrbitalOptimizer_1_1HelperRoutines/"><strong>HelperRoutines</strong></a> <br></td>
+</tr>
 </tbody>
 </table>
 <h2 id="classes">Classes</h2>
@@ -1519,7 +1556,7 @@
 <tbody>
 <tr>
 <td style="text-align: right;">class</td>
-<td style="text-align: left;"><a href="../classOpenOrbitalOptimizer_1_1SCFSolver/"><strong>SCFSolver</strong></a> &lt;typename Torb, typename Tbase&gt;<br></td>
+<td style="text-align: left;"><a href="../classOpenOrbitalOptimizer_1_1SCFSolver/"><strong>SCFSolver</strong></a> &lt;typename Torb, typename Tbase&gt;<br><em>SCF solver class.</em></td>
 </tr>
 </tbody>
 </table>
@@ -1532,6 +1569,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align: right;">typedef std::function&lt; std::vector&lt; <a href="./#typedef-fockbuilderreturn"><strong>FockBuilderReturn</strong></a>&lt; Torb, Tbase &gt; &gt;(const std::vector&lt; <a href="./#typedef-densitymatrix"><strong>DensityMatrix</strong></a>&lt; Torb, Tbase &gt; &gt; &amp;)&gt;</td>
+<td style="text-align: left;"><a href="#typedef-batchedfockbuilder"><strong>BatchedFockBuilder</strong></a>  <br></td>
+</tr>
 <tr>
 <td style="text-align: right;">typedef std::pair&lt; <a href="./#typedef-orbitals"><strong>Orbitals</strong></a>&lt; Torb &gt;, OrbitalOccupations&lt; Tbase &gt; &gt;</td>
 <td style="text-align: left;"><a href="#typedef-densitymatrix"><strong>DensityMatrix</strong></a>  <br><em>Density matrix bundle: orbitals + occupations.</em></td>
@@ -1644,6 +1685,10 @@
 <td style="text-align: left;"><a href="#function-dot_nonconj"><strong>dot_nonconj</strong></a> (const V1 &amp; a, const V2 &amp; b) <br></td>
 </tr>
 <tr>
+<td style="text-align: right;"><a href="./#typedef-matrix"><strong>Matrix</strong></a>&lt; T &gt;</td>
+<td style="text-align: left;"><a href="#function-expm_antihermitian"><strong>expm_antihermitian</strong></a> (const <a href="./#typedef-matrix"><strong>Matrix</strong></a>&lt; T &gt; &amp; K) <br></td>
+</tr>
+<tr>
 <td style="text-align: right;"><a href="./#typedef-indexvector"><strong>IndexVector</strong></a></td>
 <td style="text-align: left;"><a href="#function-find_indices_where"><strong>find_indices_where</strong></a> (const Vec &amp; v, Pred pred) <br></td>
 </tr>
@@ -1670,6 +1715,10 @@
 <tr>
 <td style="text-align: right;"><a href="./#typedef-vector"><strong>Vector</strong></a>&lt; T &gt;</td>
 <td style="text-align: left;"><a href="#function-logspace"><strong>logspace</strong></a> (T a, T b, <a href="./#typedef-index"><strong>Index</strong></a> n) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;"><a href="./#typedef-indexvector"><strong>IndexVector</strong></a></td>
+<td style="text-align: left;"><a href="#function-randperm"><strong>randperm</strong></a> (<a href="./#typedef-index"><strong>Index</strong></a> n) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
@@ -1703,142 +1752,148 @@
 <p>with all containers Armadillo-typed (arma::Mat, arma::Col, arma::uvec, etc.). Internally wraps the new Eigen-based <a href="../classOpenOrbitalOptimizer_1_1SCFSolver/"><strong>OpenOrbitalOptimizer::SCFSolver&lt;Tbase, IsComplex&gt;</strong></a>, with Armadillo&lt;-&gt; Eigen conversion at the <a href="../classOpenOrbitalOptimizer_1_1SCFSolver/"><strong>SCFSolver</strong></a> boundary. The conversions are memcpy-cost (column-major to column-major) and the Fock-builder callback is bridged transparently.</p>
 <p>Including this header pulls in &lt;armadillo&gt;. The core library itself remains Armadillo-free; only consumers who include this header pay the Armadillo dependency. Only the four legacy scalar pairs are supported: (float,float), (double,double), (std::complex&lt;float&gt;,float), (std::complex&lt;double&gt;,double). </p>
 <h2 id="public-types-documentation">Public Types Documentation</h2>
+<h3 id="typedef-batchedfockbuilder">typedef BatchedFockBuilder</h3>
+<pre><code class="language-C++">using OpenOrbitalOptimizer::BatchedFockBuilder = std::function&lt;std::vector&lt;FockBuilderReturn&lt;Torb, Tbase&gt;&gt;(const std::vector&lt;DensityMatrix&lt;Torb, Tbase&gt;&gt; &amp;)&gt;;
+</code></pre>
+<p>Optional batched Fock builder: given a list of densities, return the corresponding list of (energy, Fock) pairs. Enables per-vertex sweeps in the ODA polytope face-minimization step. </p>
+<hr>
+
 <h3 id="typedef-densitymatrix">typedef DensityMatrix</h3>
 <p><em>Density matrix bundle: orbitals + occupations.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::DensityMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalOccupations&lt;Tbase&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::DensityMatrix = std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalOccupations&lt;Tbase&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-diagonalorbitalhessianblock">typedef DiagonalOrbitalHessianBlock</h3>
 <p><em>Diagonal orbital Hessian (one column per orbital).</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock =  Matrix&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock = Matrix&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-diagonalorbitalhessians">typedef DiagonalOrbitalHessians</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::DiagonalOrbitalHessians =  std::vector&lt;DiagonalOrbitalHessianBlock&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::DiagonalOrbitalHessians = std::vector&lt;DiagonalOrbitalHessianBlock&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-diagonalizedfockmatrix">typedef DiagonalizedFockMatrix</h3>
 <p><em>Diagonalized Fock matrix: orbitals + energies.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::DiagonalizedFockMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalEnergies&lt;Tbase&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::DiagonalizedFockMatrix = std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalEnergies&lt;Tbase&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-fockbuilder">typedef FockBuilder</h3>
 <p><em>User-supplied Fock builder callback signature.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::FockBuilder =  std::function&lt;FockBuilderReturn&lt;Torb, Tbase&gt;(const DensityMatrix&lt;Torb, Tbase&gt; &amp;)&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::FockBuilder = std::function&lt;FockBuilderReturn&lt;Torb, Tbase&gt;(const DensityMatrix&lt;Torb, Tbase&gt; &amp;)&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-fockbuilderreturn">typedef FockBuilderReturn</h3>
 <p><em>Fock builder return value: (energy, Fock).</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::FockBuilderReturn =  std::pair&lt;Tbase, FockMatrix&lt;Torb&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::FockBuilderReturn = std::pair&lt;Tbase, FockMatrix&lt;Torb&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-fockmatrix">typedef FockMatrix</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::FockMatrix =  std::vector&lt;FockMatrixBlock&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::FockMatrix = std::vector&lt;FockMatrixBlock&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-fockmatrixblock">typedef FockMatrixBlock</h3>
 <p><em>Fock matrix in one symmetry block.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::FockMatrixBlock =  Matrix&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::FockMatrixBlock = Matrix&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-index">typedef Index</h3>
 <p><a href="./#typedef-index"><em><strong>Index</strong></em></a> <em>type.</em></p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Index =  Eigen::Index;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Index = Eigen::Index;
 </code></pre>
 <hr>
 
 <h3 id="typedef-indexvector">typedef IndexVector</h3>
 <p><a href="./#typedef-index"><em><strong>Index</strong></em></a> <em>column vector (replacement for arma::uvec).</em></p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::IndexVector =  Eigen::Matrix&lt;Index, Eigen::Dynamic, 1&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::IndexVector = Eigen::Matrix&lt;Index, Eigen::Dynamic, 1&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-matrix">typedef Matrix</h3>
 <p><em>Dense matrix alias.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Matrix =  Eigen::Matrix&lt;T, Eigen::Dynamic, Eigen::Dynamic&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Matrix = Eigen::Matrix&lt;T, Eigen::Dynamic, Eigen::Dynamic&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalblock">typedef OrbitalBlock</h3>
 <p><em>Orbital coefficients in one symmetry block (rows = basis, cols = orbitals).</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalBlock =  Matrix&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalBlock = Matrix&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalblockoccupations">typedef OrbitalBlockOccupations</h3>
 <p><em>Real-valued occupations in one symmetry block.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalBlockOccupations =  Vector&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalBlockOccupations = Vector&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalenergies">typedef OrbitalEnergies</h3>
 <p><em>Real-valued orbital energies in one symmetry block.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalEnergies =  std::vector&lt;Vector&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalEnergies = std::vector&lt;Vector&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalgradientblock">typedef OrbitalGradientBlock</h3>
 <p><em>Block-diagonal orbital gradient.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalGradientBlock =  Matrix&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalGradientBlock = Matrix&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalgradients">typedef OrbitalGradients</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalGradients =  std::vector&lt;OrbitalGradientBlock&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalGradients = std::vector&lt;OrbitalGradientBlock&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalhistory">typedef OrbitalHistory</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalHistory =  std::vector&lt;OrbitalHistoryEntry&lt;Torb, Tbase&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalHistory = std::vector&lt;OrbitalHistoryEntry&lt;Torb, Tbase&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalhistoryentry">typedef OrbitalHistoryEntry</h3>
 <p><em>Single history entry: density, Fock-builder output, generation id.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalHistoryEntry =  std::tuple&lt;DensityMatrix&lt;Torb, Tbase&gt;, FockBuilderReturn&lt;Torb, Tbase&gt;, size_t&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalHistoryEntry = std::tuple&lt;DensityMatrix&lt;Torb, Tbase&gt;, FockBuilderReturn&lt;Torb, Tbase&gt;, size_t&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitaloccupations">typedef OrbitalOccupations</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalOccupations =  std::vector&lt;OrbitalBlockOccupations&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalOccupations = std::vector&lt;OrbitalBlockOccupations&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalrotation">typedef OrbitalRotation</h3>
 <p><em>(block index, orbital i, orbital j) describing a single orbital rotation.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalRotation =  std::tuple&lt;size_t, Index, Index&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalRotation = std::tuple&lt;size_t, Index, Index&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalscalar">typedef OrbitalScalar</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalScalar =  std::conditional_t&lt;IsComplex, std::complex&lt;Tbase&gt;, Tbase&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::OrbitalScalar = std::conditional_t&lt;IsComplex, std::complex&lt;Tbase&gt;, Tbase&gt;;
 </code></pre>
 <p>Resolves the orbital scalar type from (Tbase, IsComplex): Tbase for IsComplex=false, std::complex&lt;Tbase&gt; for IsComplex=true. </p>
 <hr>
 
 <h3 id="typedef-orbitals">typedef Orbitals</h3>
 <p><em>One</em> <a href="./#typedef-orbitalblock"><em><strong>OrbitalBlock</strong></em></a> <em>per symmetry block, per particle type.</em></p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Orbitals =  std::vector&lt;OrbitalBlock&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Orbitals = std::vector&lt;OrbitalBlock&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-realof">typedef RealOf</h3>
 <p><em>Real component type of a (possibly complex) scalar.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::RealOf =  typename Eigen::NumTraits&lt;T&gt;::Real;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::RealOf = typename Eigen::NumTraits&lt;T&gt;::Real;
 </code></pre>
 <hr>
 
 <h3 id="typedef-vector">typedef Vector</h3>
 <p><em>Dense column-vector alias.</em> </p>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Vector =  Eigen::Matrix&lt;T, Eigen::Dynamic, 1&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Vector = Eigen::Matrix&lt;T, Eigen::Dynamic, 1&gt;;
 </code></pre>
 <hr>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
@@ -1850,6 +1905,15 @@ auto OpenOrbitalOptimizer::dot_nonconj (
 ) 
 </code></pre>
 <p>arma::dot for complex vectors is non-conjugating; Eigen's a.dot(b) is conjugating. Provide a non-conjugating dot for parity. </p>
+<hr>
+
+<h3 id="function-expm_antihermitian">function expm_antihermitian</h3>
+<pre><code class="language-C++">template&lt;class T&gt;
+Matrix &lt; T &gt; OpenOrbitalOptimizer::expm_antihermitian (
+    const Matrix &lt; T &gt; &amp; K
+) 
+</code></pre>
+<p>exp(K) for an anti-Hermitian K = -K^\dagger. Computed via the Hermitian eigendecomposition of iK: iK = U diag(w) U^\dagger with real w, so exp(K) = exp(-i * iK) = U diag(exp(-i w)) U^\dagger. Returns a matrix of the same scalar type as K (so complex-typed K produces a complex result; for a real K the caller is expected to have used the block trick or wrap in complex first). </p>
 <hr>
 
 <h3 id="function-find_indices_where">function find_indices_where</h3>
@@ -1918,6 +1982,14 @@ Vector &lt; T &gt; OpenOrbitalOptimizer::logspace (
 ) 
 </code></pre>
 <p>Logarithmically-spaced points 10^a ... 10^b (n points). Mirrors arma::logspace. </p>
+<hr>
+
+<h3 id="function-randperm">function randperm</h3>
+<pre><code class="language-C++">inline IndexVector OpenOrbitalOptimizer::randperm (
+    Index n
+) 
+</code></pre>
+<p>Return a random permutation of {0, 1, ..., n-1}. Mirrors arma::randperm. Uses a Mersenne Twister seeded once per program. </p>
 <hr>
 
 <h3 id="function-save_raw_ascii">function save_raw_ascii</h3>
@@ -2033,7 +2105,7 @@ std::enable_if_t&lt; Eigen::NumTraits&lt; T &gt;::IsComplex, Vector &lt; RealOf 
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

@@ -3,6 +3,11 @@
 
 
 
+## b
+
+* **BatchedFockBuilder** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+
+
 ## d
 
 * **DensityMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))

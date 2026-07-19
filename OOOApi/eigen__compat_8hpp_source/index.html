@@ -15,7 +15,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -989,10 +989,13 @@
 #include &quot;types.hpp&quot;
 
 #include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;complex&gt;
 #include &lt;fstream&gt;
 #include &lt;iomanip&gt;
 #include &lt;limits&gt;
 #include &lt;numeric&gt;
+#include &lt;random&gt;
 #include &lt;stdexcept&gt;
 #include &lt;string&gt;
 #include &lt;type_traits&gt;
@@ -1138,6 +1141,49 @@ namespace OpenOrbitalOptimizer {
     return (a.array() * b.array()).sum();
   }
 
+  template &lt;class T&gt;
+  Matrix&lt;T&gt; expm_antihermitian(const Matrix&lt;T&gt; &amp; K) {
+    using R = RealOf&lt;T&gt;;
+    // Build iK. For complex T this is a rotation; for real T we need to widen.
+    if constexpr (Eigen::NumTraits&lt;T&gt;::IsComplex) {
+      Matrix&lt;T&gt; iK = T(R{0}, R{1}) * K; // multiply by i
+      Eigen::SelfAdjointEigenSolver&lt;Matrix&lt;T&gt;&gt; es(iK);
+      const auto &amp; U = es.eigenvectors();
+      const auto &amp; w = es.eigenvalues();
+      Vector&lt;T&gt; phase(w.size());
+      for (Index i = 0; i &lt; w.size(); ++i)
+        phase[i] = std::exp(T(R{0}, -w[i]));
+      return U * phase.asDiagonal() * U.adjoint();
+    } else {
+      // Real anti-symmetric K: promote to complex so that eigenvalues are real.
+      Matrix&lt;std::complex&lt;R&gt;&gt; iK(K.rows(), K.cols());
+      for (Index c = 0; c &lt; K.cols(); ++c)
+        for (Index r = 0; r &lt; K.rows(); ++r)
+          iK(r, c) = std::complex&lt;R&gt;(R{0}, R{1}) * K(r, c);
+      Eigen::SelfAdjointEigenSolver&lt;Matrix&lt;std::complex&lt;R&gt;&gt;&gt; es(iK);
+      const auto &amp; U = es.eigenvectors();
+      const auto &amp; w = es.eigenvalues();
+      Vector&lt;std::complex&lt;R&gt;&gt; phase(w.size());
+      for (Index i = 0; i &lt; w.size(); ++i)
+        phase[i] = std::exp(std::complex&lt;R&gt;(R{0}, -w[i]));
+      Matrix&lt;std::complex&lt;R&gt;&gt; C = U * phase.asDiagonal() * U.adjoint();
+      // The result is real to within round-off for real K.
+      Matrix&lt;T&gt; out(K.rows(), K.cols());
+      for (Index c = 0; c &lt; K.cols(); ++c)
+        for (Index r = 0; r &lt; K.rows(); ++r)
+          out(r, c) = static_cast&lt;T&gt;(C(r, c).real());
+      return out;
+    }
+  }
+
+  inline IndexVector randperm(Index n) {
+    IndexVector out(n);
+    std::iota(out.data(), out.data() + n, Index{0});
+    static thread_local std::mt19937_64 rng{std::random_device{}()};
+    std::shuffle(out.data(), out.data() + n, rng);
+    return out;
+  }
+
 } // namespace OpenOrbitalOptimizer
 
 #endif
@@ -1194,7 +1240,7 @@ namespace OpenOrbitalOptimizer {
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

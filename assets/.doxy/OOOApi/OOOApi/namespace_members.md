@@ -3,9 +3,15 @@
 
 
 
+## b
+
+* **BatchedFockBuilder** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+
+
 ## c
 
 * **cg\_optimize** ([**OpenOrbitalOptimizer::ConjugateGradients**](namespaceOpenOrbitalOptimizer_1_1ConjugateGradients.md))
+* **cubic\_polynomial\_zeros** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 
 
 ## d
@@ -17,12 +23,18 @@
 * **dot\_nonconj** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
+## e
+
+* **expm\_antihermitian** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+
+
 ## f
 
 * **FockBuilder** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * **FockBuilderReturn** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * **FockMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * **FockMatrixBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
+* **fit\_cubic\_polynomial\_with\_derivatives** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 * **find\_indices\_where** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
@@ -73,6 +85,7 @@
 ## r
 
 * **RealOf** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **randperm** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## s

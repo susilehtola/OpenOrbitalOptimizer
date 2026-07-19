@@ -12,15 +12,25 @@
 
 * `#include "types.hpp"`
 * `#include "eigen_compat.hpp"`
-* `#include "cg_optimizer.hpp"`
+* `#include <algorithm>`
 * `#include <any>`
+* `#include <cctype>`
 * `#include <cmath>`
 * `#include <cstdio>`
+* `#include <deque>`
+* `#include <functional>`
 * `#include <iostream>`
+* `#include <limits>`
 * `#include <map>`
+* `#include <memory>`
+* `#include <numeric>`
 * `#include <sstream>`
 * `#include <stdexcept>`
 * `#include <string>`
+* `#include <tuple>`
+* `#include <type_traits>`
+* `#include <utility>`
+* `#include <vector>`
 
 
 
@@ -39,13 +49,14 @@
 | Type | Name |
 | ---: | :--- |
 | namespace | [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md) <br> |
+| namespace | [**HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md) <br> |
 
 
 ## Classes
 
 | Type | Name |
 | ---: | :--- |
-| class | [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md) &lt;typename Torb, typename Tbase&gt;<br> |
+| class | [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md) &lt;typename Torb, typename Tbase&gt;<br>_SCF solver class._  |
 
 
 

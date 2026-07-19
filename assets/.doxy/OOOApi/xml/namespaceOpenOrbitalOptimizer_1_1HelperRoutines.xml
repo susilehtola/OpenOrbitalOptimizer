@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
+  <compounddef id="namespaceOpenOrbitalOptimizer_1_1HelperRoutines" kind="namespace" language="C++">
+    <compoundname>OpenOrbitalOptimizer::HelperRoutines</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="scfsolver_8hpp_1a704ae00a02123022e82b83c79c96bfe3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::tuple&lt; T, T, T, T &gt;</type>
+        <definition>std::tuple&lt; T, T, T, T &gt; OpenOrbitalOptimizer::HelperRoutines::fit_cubic_polynomial_with_derivatives</definition>
+        <argsstring>(T E0, T dE0, T x1, T E1, T dE1)</argsstring>
+        <name>fit_cubic_polynomial_with_derivatives</name>
+        <qualifiedname>OpenOrbitalOptimizer::HelperRoutines::fit_cubic_polynomial_with_derivatives</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>E0</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>dE0</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>x1</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>E1</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>dE1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Fit cubic polynomial f(x) = a0 + a1*x + a2*x^2 + a3*x^3 to the data {f(0)=E0, f&apos;(0)=dE0, f(x1)=E1, f&apos;(x1)=dE1}. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="39" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="39" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="scfsolver_8hpp_1a7f5e08839e75600775e7aa73ad7989e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::pair&lt; T, T &gt;</type>
+        <definition>std::pair&lt; T, T &gt; OpenOrbitalOptimizer::HelperRoutines::cubic_polynomial_zeros</definition>
+        <argsstring>(T a0, T a1, T a2, T a3)</argsstring>
+        <name>cubic_polynomial_zeros</name>
+        <qualifiedname>OpenOrbitalOptimizer::HelperRoutines::cubic_polynomial_zeros</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>a0</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>a1</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>a2</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>a3</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the (real) zeros of the derivative f&apos;(x) = a1 + 2*a2*x + 3*a3*x^2 of the cubic polynomial f(x) = a0 + a1*x + a2*x^2 + a3*x^3, i.e. the candidate extrema of f. Throws if no real roots exist. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="53" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="53" bodyend="70"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="35" column="3"/>
+  </compounddef>
+</doxygen>

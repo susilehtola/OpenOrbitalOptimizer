@@ -72,6 +72,9 @@ namespace OpenOrbitalOptimizer {
   using FockBuilder = std::function<FockBuilderReturn<Torb, Tbase>(const DensityMatrix<Torb, Tbase> &)>;
 
   template <class Torb, class Tbase>
+  using BatchedFockBuilder = std::function<std::vector<FockBuilderReturn<Torb, Tbase>>(const std::vector<DensityMatrix<Torb, Tbase>> &)>;
+
+  template <class Torb, class Tbase>
   using OrbitalHistoryEntry = std::tuple<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>, size_t>;
   template <class Torb, class Tbase>
   using OrbitalHistory = std::vector<OrbitalHistoryEntry<Torb, Tbase>>;

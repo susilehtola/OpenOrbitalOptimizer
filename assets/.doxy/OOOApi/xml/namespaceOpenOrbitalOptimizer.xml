@@ -1,10 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
   <compounddef id="namespaceOpenOrbitalOptimizer" kind="namespace" language="C++">
     <compoundname>OpenOrbitalOptimizer</compoundname>
     <innerclass refid="classOpenOrbitalOptimizer_1_1SCFSolver" prot="public">OpenOrbitalOptimizer::SCFSolver</innerclass>
     <innernamespace refid="namespaceOpenOrbitalOptimizer_1_1Armadillo">OpenOrbitalOptimizer::Armadillo</innernamespace>
     <innernamespace refid="namespaceOpenOrbitalOptimizer_1_1ConjugateGradients">OpenOrbitalOptimizer::ConjugateGradients</innernamespace>
+    <innernamespace refid="namespaceOpenOrbitalOptimizer_1_1HelperRoutines">OpenOrbitalOptimizer::HelperRoutines</innernamespace>
     <sectiondef kind="typedef">
       <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1ab6d3889d9982a2c18039ede09d74a583" prot="public" static="no">
         <templateparamlist>
@@ -13,7 +14,7 @@
           </param>
         </templateparamlist>
         <type>typename Eigen::NumTraits&lt; T &gt;::Real</type>
-        <definition>using OpenOrbitalOptimizer::RealOf =  typename Eigen::NumTraits&lt;T&gt;::Real</definition>
+        <definition>using OpenOrbitalOptimizer::RealOf = typename Eigen::NumTraits&lt;T&gt;::Real</definition>
         <argsstring></argsstring>
         <name>RealOf</name>
         <qualifiedname>OpenOrbitalOptimizer::RealOf</qualifiedname>
@@ -24,7 +25,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="28" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="28" bodyend="-1"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="31" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" prot="public" static="no">
         <templateparamlist>
@@ -33,7 +34,7 @@
           </param>
         </templateparamlist>
         <type>Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt;</type>
-        <definition>using OpenOrbitalOptimizer::Matrix =  Eigen::Matrix&lt;T, Eigen::Dynamic, Eigen::Dynamic&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::Matrix = Eigen::Matrix&lt;T, Eigen::Dynamic, Eigen::Dynamic&gt;</definition>
         <argsstring></argsstring>
         <name>Matrix</name>
         <qualifiedname>OpenOrbitalOptimizer::Matrix</qualifiedname>
@@ -53,7 +54,7 @@
           </param>
         </templateparamlist>
         <type>Eigen::Matrix&lt; T, Eigen::Dynamic, 1 &gt;</type>
-        <definition>using OpenOrbitalOptimizer::Vector =  Eigen::Matrix&lt;T, Eigen::Dynamic, 1&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::Vector = Eigen::Matrix&lt;T, Eigen::Dynamic, 1&gt;</definition>
         <argsstring></argsstring>
         <name>Vector</name>
         <qualifiedname>OpenOrbitalOptimizer::Vector</qualifiedname>
@@ -68,7 +69,7 @@
       </memberdef>
       <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" prot="public" static="no">
         <type>Eigen::Index</type>
-        <definition>using OpenOrbitalOptimizer::Index =  Eigen::Index</definition>
+        <definition>using OpenOrbitalOptimizer::Index = Eigen::Index</definition>
         <argsstring></argsstring>
         <name>Index</name>
         <qualifiedname>OpenOrbitalOptimizer::Index</qualifiedname>
@@ -83,7 +84,7 @@
       </memberdef>
       <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1a654aeaf2c63cbcfb783b2f3c7ea53d49" prot="public" static="no">
         <type>Eigen::Matrix&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref>, Eigen::Dynamic, 1 &gt;</type>
-        <definition>using OpenOrbitalOptimizer::IndexVector =  Eigen::Matrix&lt;Index, Eigen::Dynamic, 1&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::IndexVector = Eigen::Matrix&lt;Index, Eigen::Dynamic, 1&gt;</definition>
         <argsstring></argsstring>
         <name>IndexVector</name>
         <qualifiedname>OpenOrbitalOptimizer::IndexVector</qualifiedname>
@@ -108,7 +109,7 @@
           </param>
         </templateparamlist>
         <type>std::conditional_t&lt; IsComplex, std::complex&lt; Tbase &gt;, Tbase &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalScalar =  std::conditional_t&lt;IsComplex, std::complex&lt;Tbase&gt;, Tbase&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalScalar = std::conditional_t&lt;IsComplex, std::complex&lt;Tbase&gt;, Tbase&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalScalar</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalScalar</qualifiedname>
@@ -128,7 +129,7 @@
           </param>
         </templateparamlist>
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalBlock =  Matrix&lt;T&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalBlock = Matrix&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalBlock</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalBlock</qualifiedname>
@@ -148,7 +149,7 @@
           </param>
         </templateparamlist>
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1ae82d42a70db69fcd99ee90251beb472b" kindref="member">OrbitalBlock</ref>&lt; T &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::Orbitals =  std::vector&lt;OrbitalBlock&lt;T&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::Orbitals = std::vector&lt;OrbitalBlock&lt;T&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>Orbitals</name>
         <qualifiedname>OpenOrbitalOptimizer::Orbitals</qualifiedname>
@@ -168,7 +169,7 @@
           </param>
         </templateparamlist>
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalGradientBlock =  Matrix&lt;T&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalGradientBlock = Matrix&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalGradientBlock</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalGradientBlock</qualifiedname>
@@ -188,7 +189,7 @@
           </param>
         </templateparamlist>
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1ac921c8812a4b7464681f2b6ccd7e8ad2" kindref="member">OrbitalGradientBlock</ref>&lt; T &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalGradients =  std::vector&lt;OrbitalGradientBlock&lt;T&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalGradients = std::vector&lt;OrbitalGradientBlock&lt;T&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalGradients</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalGradients</qualifiedname>
@@ -207,7 +208,7 @@
           </param>
         </templateparamlist>
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock =  Matrix&lt;T&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock = Matrix&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>DiagonalOrbitalHessianBlock</name>
         <qualifiedname>OpenOrbitalOptimizer::DiagonalOrbitalHessianBlock</qualifiedname>
@@ -227,7 +228,7 @@
           </param>
         </templateparamlist>
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a96432d5f3a8ede2daba0354c83ab29b1" kindref="member">DiagonalOrbitalHessianBlock</ref>&lt; T &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::DiagonalOrbitalHessians =  std::vector&lt;DiagonalOrbitalHessianBlock&lt;T&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::DiagonalOrbitalHessians = std::vector&lt;DiagonalOrbitalHessianBlock&lt;T&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>DiagonalOrbitalHessians</name>
         <qualifiedname>OpenOrbitalOptimizer::DiagonalOrbitalHessians</qualifiedname>
@@ -246,7 +247,7 @@
           </param>
         </templateparamlist>
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalBlockOccupations =  Vector&lt;T&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalBlockOccupations = Vector&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalBlockOccupations</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalBlockOccupations</qualifiedname>
@@ -266,7 +267,7 @@
           </param>
         </templateparamlist>
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1ab1ee38c8a07681a4ccc9dcbf6685eb95" kindref="member">OrbitalBlockOccupations</ref>&lt; T &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalOccupations =  std::vector&lt;OrbitalBlockOccupations&lt;T&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalOccupations = std::vector&lt;OrbitalBlockOccupations&lt;T&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalOccupations</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalOccupations</qualifiedname>
@@ -288,7 +289,7 @@
           </param>
         </templateparamlist>
         <type>std::pair&lt; <ref refid="namespaceOpenOrbitalOptimizer_1ad8356304bd9645dc06f25e08486b3209" kindref="member">Orbitals</ref>&lt; Torb &gt;, OrbitalOccupations&lt; Tbase &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::DensityMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalOccupations&lt;Tbase&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::DensityMatrix = std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalOccupations&lt;Tbase&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>DensityMatrix</name>
         <qualifiedname>OpenOrbitalOptimizer::DensityMatrix</qualifiedname>
@@ -308,7 +309,7 @@
           </param>
         </templateparamlist>
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalEnergies =  std::vector&lt;Vector&lt;T&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalEnergies = std::vector&lt;Vector&lt;T&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalEnergies</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalEnergies</qualifiedname>
@@ -328,7 +329,7 @@
           </param>
         </templateparamlist>
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; T &gt;</type>
-        <definition>using OpenOrbitalOptimizer::FockMatrixBlock =  Matrix&lt;T&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::FockMatrixBlock = Matrix&lt;T&gt;</definition>
         <argsstring></argsstring>
         <name>FockMatrixBlock</name>
         <qualifiedname>OpenOrbitalOptimizer::FockMatrixBlock</qualifiedname>
@@ -348,7 +349,7 @@
           </param>
         </templateparamlist>
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1aff4cab780e011cda23daeba0f6947fb4" kindref="member">FockMatrixBlock</ref>&lt; T &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::FockMatrix =  std::vector&lt;FockMatrixBlock&lt;T&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::FockMatrix = std::vector&lt;FockMatrixBlock&lt;T&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>FockMatrix</name>
         <qualifiedname>OpenOrbitalOptimizer::FockMatrix</qualifiedname>
@@ -370,7 +371,7 @@
           </param>
         </templateparamlist>
         <type>std::pair&lt; <ref refid="namespaceOpenOrbitalOptimizer_1ad8356304bd9645dc06f25e08486b3209" kindref="member">Orbitals</ref>&lt; Torb &gt;, <ref refid="namespaceOpenOrbitalOptimizer_1a3be1e7605fcf4cff97e0c1e4ffe5a488" kindref="member">OrbitalEnergies</ref>&lt; Tbase &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::DiagonalizedFockMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalEnergies&lt;Tbase&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::DiagonalizedFockMatrix = std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalEnergies&lt;Tbase&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>DiagonalizedFockMatrix</name>
         <qualifiedname>OpenOrbitalOptimizer::DiagonalizedFockMatrix</qualifiedname>
@@ -393,7 +394,7 @@
           </param>
         </templateparamlist>
         <type>std::pair&lt; Tbase, FockMatrix&lt; Torb &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::FockBuilderReturn =  std::pair&lt;Tbase, FockMatrix&lt;Torb&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::FockBuilderReturn = std::pair&lt;Tbase, FockMatrix&lt;Torb&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>FockBuilderReturn</name>
         <qualifiedname>OpenOrbitalOptimizer::FockBuilderReturn</qualifiedname>
@@ -416,7 +417,7 @@
           </param>
         </templateparamlist>
         <type>std::function&lt; <ref refid="namespaceOpenOrbitalOptimizer_1aa53c0be96b15a930c3b932ff060b3b63" kindref="member">FockBuilderReturn</ref>&lt; Torb, Tbase &gt;(const <ref refid="namespaceOpenOrbitalOptimizer_1af8ece4fcb196c317d23632712f94e07d" kindref="member">DensityMatrix</ref>&lt; Torb, Tbase &gt; &amp;)&gt;</type>
-        <definition>using OpenOrbitalOptimizer::FockBuilder =  std::function&lt;FockBuilderReturn&lt;Torb, Tbase&gt;(const DensityMatrix&lt;Torb, Tbase&gt; &amp;)&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::FockBuilder = std::function&lt;FockBuilderReturn&lt;Torb, Tbase&gt;(const DensityMatrix&lt;Torb, Tbase&gt; &amp;)&gt;</definition>
         <argsstring></argsstring>
         <name>FockBuilder</name>
         <qualifiedname>OpenOrbitalOptimizer::FockBuilder</qualifiedname>
@@ -429,6 +430,29 @@
         </inbodydescription>
         <location file="openorbitaloptimizer/types.hpp" line="79" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="79" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1a30df61fd620eb5cfc310816a4f8945c0" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>class Torb</type>
+          </param>
+          <param>
+            <type>class Tbase</type>
+          </param>
+        </templateparamlist>
+        <type>std::function&lt; std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1aa53c0be96b15a930c3b932ff060b3b63" kindref="member">FockBuilderReturn</ref>&lt; Torb, Tbase &gt; &gt;(const std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1af8ece4fcb196c317d23632712f94e07d" kindref="member">DensityMatrix</ref>&lt; Torb, Tbase &gt; &gt; &amp;)&gt;</type>
+        <definition>using OpenOrbitalOptimizer::BatchedFockBuilder = std::function&lt;std::vector&lt;FockBuilderReturn&lt;Torb, Tbase&gt;&gt;(const std::vector&lt;DensityMatrix&lt;Torb, Tbase&gt;&gt; &amp;)&gt;</definition>
+        <argsstring></argsstring>
+        <name>BatchedFockBuilder</name>
+        <qualifiedname>OpenOrbitalOptimizer::BatchedFockBuilder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Optional batched Fock builder: given a list of densities, return the corresponding list of (energy, Fock) pairs. Enables per-vertex sweeps in the ODA polytope face-minimization step. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/types.hpp" line="85" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="85" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1a2c84d2590c434f7efe17cf8e9742bc4f" prot="public" static="no">
         <templateparamlist>
           <param>
@@ -439,7 +463,7 @@
           </param>
         </templateparamlist>
         <type>std::tuple&lt; <ref refid="namespaceOpenOrbitalOptimizer_1af8ece4fcb196c317d23632712f94e07d" kindref="member">DensityMatrix</ref>&lt; Torb, Tbase &gt;, <ref refid="namespaceOpenOrbitalOptimizer_1aa53c0be96b15a930c3b932ff060b3b63" kindref="member">FockBuilderReturn</ref>&lt; Torb, Tbase &gt;, size_t &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalHistoryEntry =  std::tuple&lt;DensityMatrix&lt;Torb, Tbase&gt;, FockBuilderReturn&lt;Torb, Tbase&gt;, size_t&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalHistoryEntry = std::tuple&lt;DensityMatrix&lt;Torb, Tbase&gt;, FockBuilderReturn&lt;Torb, Tbase&gt;, size_t&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalHistoryEntry</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalHistoryEntry</qualifiedname>
@@ -450,7 +474,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/types.hpp" line="83" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="83" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="89" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="89" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1aa838241af37ab93d2036264726ec3e1d" prot="public" static="no">
         <templateparamlist>
@@ -462,7 +486,7 @@
           </param>
         </templateparamlist>
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a2c84d2590c434f7efe17cf8e9742bc4f" kindref="member">OrbitalHistoryEntry</ref>&lt; Torb, Tbase &gt; &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalHistory =  std::vector&lt;OrbitalHistoryEntry&lt;Torb, Tbase&gt;&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalHistory = std::vector&lt;OrbitalHistoryEntry&lt;Torb, Tbase&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalHistory</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalHistory</qualifiedname>
@@ -472,11 +496,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/types.hpp" line="85" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="85" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="91" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="91" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1a1c526d91037dc0333914ab09df6b10f9" prot="public" static="no">
         <type>std::tuple&lt; size_t, <ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref>, <ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref> &gt;</type>
-        <definition>using OpenOrbitalOptimizer::OrbitalRotation =  std::tuple&lt;size_t, Index, Index&gt;</definition>
+        <definition>using OpenOrbitalOptimizer::OrbitalRotation = std::tuple&lt;size_t, Index, Index&gt;</definition>
         <argsstring></argsstring>
         <name>OrbitalRotation</name>
         <qualifiedname>OpenOrbitalOptimizer::OrbitalRotation</qualifiedname>
@@ -487,7 +511,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/types.hpp" line="88" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="88" bodyend="-1"/>
+        <location file="openorbitaloptimizer/types.hpp" line="94" column="3" bodyfile="openorbitaloptimizer/types.hpp" bodystart="94" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -513,7 +537,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="33" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="33" bodyend="43"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="36" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="36" bodyend="46"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ae3fcef05c7e2c36fb643d3d52513e9c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -537,7 +561,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="49" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="49" bodyend="51"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="52" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="52" bodyend="54"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ae974527b7c83771ed802e66327e65c4d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -561,7 +585,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="59" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="59" bodyend="70"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="62" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="62" bodyend="73"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ac9f5a20e1e7b35cd54b587bbc51b1912" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -593,7 +617,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="75" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="75" bodyend="77"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="78" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="78" bodyend="80"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a69e99a58739cd178442688e7840b5153" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -625,7 +649,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="82" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="82" bodyend="89"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="85" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="85" bodyend="92"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ae57d9b32d9026c96bff8b307f1a91def" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -656,7 +680,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="94" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="94" bodyend="104"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="97" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="97" bodyend="107"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a50cb07b3e01c3487de37be3d1ae91918" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -680,7 +704,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="109" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="109" bodyend="115"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="112" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="112" bodyend="118"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a51d8f949f79d19fe7b42d3c730685c2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -712,7 +736,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="120" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="120" bodyend="130"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="123" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="123" bodyend="133"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a175dbe375d14e0d5fa7af99b86bc47bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -744,7 +768,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="135" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="135" bodyend="140"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="138" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="138" bodyend="143"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a4371e67353436276aec216b65bf8f4dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -768,7 +792,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="145" column="9" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="145" bodyend="155"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="148" column="9" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="148" bodyend="158"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a0d302095fa4d81807c5979f6243d2c0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -796,7 +820,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="160" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="160" bodyend="171"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="163" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="163" bodyend="174"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ab5234ea49d41628358745d71c3482f53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -820,7 +844,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="175" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="175" bodyend="177"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="178" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="178" bodyend="180"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a96b5b2cde8ddc98f7ca1a6b0b593d2cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -844,7 +868,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="181" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="181" bodyend="183"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="184" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="184" bodyend="186"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1aecaf6e06801a764ebafe7e24fca30071" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -875,7 +899,50 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="188" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="188" bodyend="190"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="191" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="191" bodyend="193"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1aafee980572d982823a5ad35cfb3db9a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; T &gt;</type>
+        <definition>Matrix&lt; T &gt; OpenOrbitalOptimizer::expm_antihermitian</definition>
+        <argsstring>(const Matrix&lt; T &gt; &amp;K)</argsstring>
+        <name>expm_antihermitian</name>
+        <qualifiedname>OpenOrbitalOptimizer::expm_antihermitian</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; T &gt; &amp;</type>
+          <declname>K</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>exp(K) for an anti-Hermitian K = -K^\dagger. Computed via the Hermitian eigendecomposition of iK: iK = U diag(w) U^\dagger with real w, so exp(K) = exp(-i * iK) = U diag(exp(-i w)) U^\dagger. Returns a matrix of the same scalar type as K (so complex-typed K produces a complex result; for a real K the caller is expected to have used the block trick or wrap in complex first). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="202" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="202" bodyend="234"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a8b5a0f6f4efbbe441d6562aa394f8588" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a654aeaf2c63cbcfb783b2f3c7ea53d49" kindref="member">IndexVector</ref></type>
+        <definition>IndexVector OpenOrbitalOptimizer::randperm</definition>
+        <argsstring>(Index n)</argsstring>
+        <name>randperm</name>
+        <qualifiedname>OpenOrbitalOptimizer::randperm</qualifiedname>
+        <param>
+          <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return a random permutation of {0, 1, ..., n-1}. Mirrors arma::randperm. Uses a Mersenne Twister seeded once per program. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="238" column="22" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="238" bodyend="244"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

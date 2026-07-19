@@ -15,7 +15,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -974,17 +974,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#detailed-description" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Detailed Description
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#public-functions-documentation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1338,6 +1327,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-has_batched_fock_builder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function has_batched_fock_builder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-initialize_with_fock" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1353,6 +1353,28 @@
     <span class="md-ellipsis">
       
         function initialize_with_orbitals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-last_active_rotation_count" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function last_active_rotation_count
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-last_polytope_dimension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function last_polytope_dimension
       
     </span>
   </a>
@@ -1415,6 +1437,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-number_of_fock_evaluations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function number_of_fock_evaluations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-oda_restart_steps-12" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1437,6 +1470,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-optimal_damping_degeneracy_threshold-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function optimal_damping_degeneracy_threshold [1/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-optimal_damping_degeneracy_threshold-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function optimal_damping_degeneracy_threshold [2/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-optimal_damping_threshold-12" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1452,6 +1507,39 @@
     <span class="md-ellipsis">
       
         function optimal_damping_threshold [2/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-orbital_rotation_steps_after_oda-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function orbital_rotation_steps_after_oda [1/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-orbital_rotation_steps_after_oda-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function orbital_rotation_steps_after_oda [2/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-order_orbitals_by_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function order_orbitals_by_energy
       
     </span>
   </a>
@@ -1503,10 +1591,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-run_optimal_damping" class="md-nav__link">
+  <a href="#function-set_batched_fock_builder" class="md-nav__link">
     <span class="md-ellipsis">
       
-        function run_optimal_damping
+        function set_batched_fock_builder
       
     </span>
   </a>
@@ -1571,7 +1659,7 @@
 <h1 id="class-openorbitaloptimizerscfsolver">Class OpenOrbitalOptimizer::SCFSolver</h1>
 <p><strong>template &lt;typename Torb, typename Tbase&gt;</strong></p>
 <p><a href="../annotated/"><strong>ClassList</strong></a> <strong>&gt;</strong> <a href="../namespaceOpenOrbitalOptimizer/"><strong>OpenOrbitalOptimizer</strong></a> <strong>&gt;</strong> <a href="./"><strong>SCFSolver</strong></a></p>
-<p><a href="#detailed-description">More...</a></p>
+<p><em>SCF solver class.</em> </p>
 <ul>
 <li><code>#include &lt;scfsolver.hpp&gt;</code></li>
 </ul>
@@ -1622,7 +1710,7 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-convergence_threshold-22"><strong>convergence_threshold</strong></a> (Tbase convergence_threshold) <br><em>Set convergence threshold (unused if callback_convergence_function set)</em></td>
+<td style="text-align: left;"><a href="#function-convergence_threshold-22"><strong>convergence_threshold</strong></a> (Tbase convergence_threshold) <br><em>Set convergence threshold (unused if callback_convergence_function set).</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">Tbase</td>
@@ -1709,12 +1797,24 @@
 <td style="text-align: left;"><a href="#function-get_solution"><strong>get_solution</strong></a> (size_t ihist=0) const<br><em>Get the SCF solution.</em></td>
 </tr>
 <tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-has_batched_fock_builder"><strong>has_batched_fock_builder</strong></a> () const<br><em>Whether a batched Fock builder is registered.</em></td>
+</tr>
+<tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-initialize_with_fock"><strong>initialize_with_fock</strong></a> (const FockMatrix&lt; Torb &gt; &amp; fock_guess) <br><em>Initialize the solver with a guess Fock matrix.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-initialize_with_orbitals"><strong>initialize_with_orbitals</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitals"><strong>Orbitals</strong></a>&lt; Torb &gt; &amp; orbitals, const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations) <br><em>Initialize with precomputed orbitals and occupations.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-last_active_rotation_count"><strong>last_active_rotation_count</strong></a> () const<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-last_polytope_dimension"><strong>last_polytope_dimension</strong></a> () const<br><em>Polytope dimension of the most recent ODA call (N_par).</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int</td>
@@ -1734,7 +1834,11 @@
 </tr>
 <tr>
 <td style="text-align: right;">Tbase</td>
-<td style="text-align: left;"><a href="#function-norm"><strong>norm</strong></a> (const Eigen::MatrixBase&lt; Derived &gt; &amp; mat, std::string nrm="") const<br><em>Evaluate the norm. Accepts both</em> <a href="../namespaceOpenOrbitalOptimizer/#typedef-matrix"><em><strong>Matrix&lt;Tbase&gt;</strong></em></a> <em>and</em><a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><em><strong>Vector&lt;Tbase&gt;</strong></em></a> <em>.</em></td>
+<td style="text-align: left;"><a href="#function-norm"><strong>norm</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-matrix"><strong>Matrix</strong></a>&lt; Tbase &gt; &amp; mat, std::string norm="") const<br><em>Evaluate the norm.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-number_of_fock_evaluations"><strong>number_of_fock_evaluations</strong></a> () const<br></td>
 </tr>
 <tr>
 <td style="text-align: right;">int</td>
@@ -1746,11 +1850,31 @@
 </tr>
 <tr>
 <td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-optimal_damping_degeneracy_threshold-12"><strong>optimal_damping_degeneracy_threshold</strong></a> () const<br><em>Get energy gap below which orbitals are treated as degenerate in optimal damping.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-optimal_damping_degeneracy_threshold-22"><strong>optimal_damping_degeneracy_threshold</strong></a> (Tbase threshold) <br><em>Set energy gap below which orbitals are treated as degenerate in optimal damping.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
 <td style="text-align: left;"><a href="#function-optimal_damping_threshold-12"><strong>optimal_damping_threshold</strong></a> () const<br><em>Use optimal damping when max error bigger than this.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-optimal_damping_threshold-22"><strong>optimal_damping_threshold</strong></a> (Tbase eps) <br><em>Use optimal damping when max error bigger than this.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-orbital_rotation_steps_after_oda-12"><strong>orbital_rotation_steps_after_oda</strong></a> () const<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-orbital_rotation_steps_after_oda-22"><strong>orbital_rotation_steps_after_oda</strong></a> (size_t n) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">std::vector&lt; std::tuple&lt; Tbase, size_t, size_t &gt; &gt;</td>
+<td style="text-align: left;"><a href="#function-order_orbitals_by_energy"><strong>order_orbitals_by_energy</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitalenergies"><strong>OrbitalEnergies</strong></a>&lt; Tbase &gt; &amp; orbital_energies, size_t iparticle) const<br></td>
 </tr>
 <tr>
 <td style="text-align: right;"><a href="../namespaceOpenOrbitalOptimizer/#typedef-index"><strong>Index</strong></a></td>
@@ -1766,11 +1890,11 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-run"><strong>run</strong></a> () <br><em>Run the SCF.</em></td>
+<td style="text-align: left;"><a href="#function-run"><strong>run</strong></a> (const std::string &amp; methods="DIIS + ODA + CG") <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-run_optimal_damping"><strong>run_optimal_damping</strong></a> () <br><em>Run optimal damping.</em></td>
+<td style="text-align: left;"><a href="#function-set_batched_fock_builder"><strong>set_batched_fock_builder</strong></a> (<a href="../namespaceOpenOrbitalOptimizer/#typedef-batchedfockbuilder"><strong>BatchedFockBuilder</strong></a>&lt; Torb, Tbase &gt; builder) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">OrbitalOccupations&lt; Tbase &gt;</td>
@@ -1786,8 +1910,6 @@
 </tr>
 </tbody>
 </table>
-<h2 id="detailed-description">Detailed Description</h2>
-<p>SCF solver class. Templated on the orbital scalar type Torb (real or complex) and the real type Tbase (e.g. float, double, __float128). Torb must be either Tbase or std::complex&lt;Tbase&gt;; any other combination is rejected at compile time. </p>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
 <h3 id="function-scfsolver">function SCFSolver</h3>
 <p><em>Constructor.</em> </p>
@@ -1859,7 +1981,7 @@
 <hr>
 
 <h3 id="function-convergence_threshold-22">function convergence_threshold [2/2]</h3>
-<p><em>Set convergence threshold (unused if callback_convergence_function set)</em> </p>
+<p><em>Set convergence threshold (unused if callback_convergence_function set).</em> </p>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::convergence_threshold (
     Tbase convergence_threshold
 ) 
@@ -2023,6 +2145,12 @@
 </code></pre>
 <hr>
 
+<h3 id="function-has_batched_fock_builder">function has_batched_fock_builder</h3>
+<p><em>Whether a batched Fock builder is registered.</em> </p>
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::has_batched_fock_builder () const
+</code></pre>
+<hr>
+
 <h3 id="function-initialize_with_fock">function initialize_with_fock</h3>
 <p><em>Initialize the solver with a guess Fock matrix.</em> </p>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::initialize_with_fock (
@@ -2037,6 +2165,18 @@
     const Orbitals &lt; Torb &gt; &amp; orbitals,
     const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations
 ) 
+</code></pre>
+<hr>
+
+<h3 id="function-last_active_rotation_count">function last_active_rotation_count</h3>
+<pre><code class="language-C++">inline size_t OpenOrbitalOptimizer::SCFSolver::last_active_rotation_count () const
+</code></pre>
+<p>Number of orbital-rotation DOFs that lie inside a degenerate group at the iterate produced by the most recent ODA call. This is the default orbital-rotation burst length when orbital_rotation_steps_after_oda_ is left at 0; see <code>compute_active_rotation_count()</code>. </p>
+<hr>
+
+<h3 id="function-last_polytope_dimension">function last_polytope_dimension</h3>
+<p><em>Polytope dimension of the most recent ODA call (N_par).</em> </p>
+<pre><code class="language-C++">inline size_t OpenOrbitalOptimizer::SCFSolver::last_polytope_dimension () const
 </code></pre>
 <hr>
 
@@ -2069,13 +2209,18 @@
 <hr>
 
 <h3 id="function-norm">function norm</h3>
-<p><em>Evaluate the norm. Accepts both</em> <a href="../namespaceOpenOrbitalOptimizer/#typedef-matrix"><em><strong>Matrix&lt;Tbase&gt;</strong></em></a> <em>and</em><a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><em><strong>Vector&lt;Tbase&gt;</strong></em></a> <em>.</em></p>
-<pre><code class="language-C++">template&lt;typename Derived&gt;
-inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
-    const Eigen::MatrixBase&lt; Derived &gt; &amp; mat,
-    std::string nrm=&quot;&quot;
+<p><em>Evaluate the norm.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
+    const Matrix &lt; Tbase &gt; &amp; mat,
+    std::string norm=&quot;&quot;
 ) const
 </code></pre>
+<hr>
+
+<h3 id="function-number_of_fock_evaluations">function number_of_fock_evaluations</h3>
+<pre><code class="language-C++">inline size_t OpenOrbitalOptimizer::SCFSolver::number_of_fock_evaluations () const
+</code></pre>
+<p>Number of Fock-matrix builds performed by the most recent run. Reset to 0 inside <a href="./#function-run"><strong>run()</strong></a>; incremented every time a new density matrix is passed to the user-provided Fock builder. </p>
 <hr>
 
 <h3 id="function-oda_restart_steps-12">function oda_restart_steps [1/2]</h3>
@@ -2092,6 +2237,20 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
 </code></pre>
 <hr>
 
+<h3 id="function-optimal_damping_degeneracy_threshold-12">function optimal_damping_degeneracy_threshold [1/2]</h3>
+<p><em>Get energy gap below which orbitals are treated as degenerate in optimal damping.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::optimal_damping_degeneracy_threshold () const
+</code></pre>
+<hr>
+
+<h3 id="function-optimal_damping_degeneracy_threshold-22">function optimal_damping_degeneracy_threshold [2/2]</h3>
+<p><em>Set energy gap below which orbitals are treated as degenerate in optimal damping.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::optimal_damping_degeneracy_threshold (
+    Tbase threshold
+) 
+</code></pre>
+<hr>
+
 <h3 id="function-optimal_damping_threshold-12">function optimal_damping_threshold [1/2]</h3>
 <p><em>Use optimal damping when max error bigger than this.</em> </p>
 <pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::optimal_damping_threshold () const
@@ -2104,6 +2263,29 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
     Tbase eps
 ) 
 </code></pre>
+<hr>
+
+<h3 id="function-orbital_rotation_steps_after_oda-12">function orbital_rotation_steps_after_oda [1/2]</h3>
+<pre><code class="language-C++">inline size_t OpenOrbitalOptimizer::SCFSolver::orbital_rotation_steps_after_oda () const
+</code></pre>
+<p>Number of orbital-rotation steps the <a href="./#function-run"><strong>run()</strong></a> state machine takes after each ODA step that transitions to CG. Zero (the default) means "use the polytope dimension of the last ODA call automatically". </p>
+<hr>
+
+<h3 id="function-orbital_rotation_steps_after_oda-22">function orbital_rotation_steps_after_oda [2/2]</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::orbital_rotation_steps_after_oda (
+    size_t n
+) 
+</code></pre>
+<p>Set the post-ODA orbital-rotation burst length. Zero restores the auto-from-polytope-dimension default. </p>
+<hr>
+
+<h3 id="function-order_orbitals_by_energy">function order_orbitals_by_energy</h3>
+<pre><code class="language-C++">inline std::vector&lt; std::tuple&lt; Tbase, size_t, size_t &gt; &gt; OpenOrbitalOptimizer::SCFSolver::order_orbitals_by_energy (
+    const OrbitalEnergies &lt; Tbase &gt; &amp; orbital_energies,
+    size_t iparticle
+) const
+</code></pre>
+<p>Collect orbital energies for a given particle type, sorted in increasing energy. Each tuple holds (energy, iblock, iorb). </p>
 <hr>
 
 <h3 id="function-particle_block_offset">function particle_block_offset</h3>
@@ -2127,15 +2309,22 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
 <hr>
 
 <h3 id="function-run">function run</h3>
-<p><em>Run the SCF.</em> </p>
-<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::run () 
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::run (
+    const std::string &amp; methods=&quot;DIIS + ODA + CG&quot;
+) 
 </code></pre>
+<p>Run the SCF Run the SCF loop using the methods named in the input string.</p>
+<p>The string is a <code>+</code>-separated, case-insensitive list of method tokens drawn from <code>"DIIS"</code> (Pulay's A/EDIIS-bracketed direct inversion in the iterative subspace), <code>"ODA"</code> (optimal-damping polytope step on the skeleton density matrices), and <code>"CG"</code> (preconditioned PR+ scaled steepest descent on orbital rotations at fixed occupations). Examples:</p>
+<p><code>"DIIS"</code> pure A/EDIIS extrapolation <code>"ODA"</code> standalone polytope minimisation <code>"DIIS + ODA + CG"</code> full compound algorithm (default) <code>"ODA + CG"</code> DIIS-less compound <code>"DIIS + ODA + LBFGS"</code> L-BFGS in place of PR+ CG (when both <code>CG</code> and <code>LBFGS</code> are listed L-BFGS is preferred)</p>
+<p>State-transition rules: from DIIS we leave to ODA (or to CG when ODA is not allowed) on stall or large error; from ODA we hand to DIIS on integer occupations or to CG on fractional / failed occupations; from CG we burst <code>orbital_rotation_steps_after_oda_</code> (or the polytope dimension when that is left at zero) steps and then hand back to DIIS. The state-machine collapses gracefully when only a subset of the methods is allowed: <code>"DIIS"</code> alone keeps retrying DIIS until <code>maximum_iterations_</code> runs out; other subsets terminate early when every allowed method has failed in succession. </p>
 <hr>
 
-<h3 id="function-run_optimal_damping">function run_optimal_damping</h3>
-<p><em>Run optimal damping.</em> </p>
-<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::run_optimal_damping () 
+<h3 id="function-set_batched_fock_builder">function set_batched_fock_builder</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set_batched_fock_builder (
+    BatchedFockBuilder &lt; Torb, Tbase &gt; builder
+) 
 </code></pre>
+<p>Register a batched Fock builder. When set, optimal_damping_step uses it for the axis-vertex sweep, sharing integral / grid setup across the N_par builds. The single-density fock_builder remains in use for mixed-density trials (model minimum, cubic edges, backoff scales). Passing a default-constructed std::function clears the override and restores the loop-over- fock_builder default. </p>
 <hr>
 
 <h3 id="function-update_occupations">function update_occupations</h3>
@@ -2214,7 +2403,7 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

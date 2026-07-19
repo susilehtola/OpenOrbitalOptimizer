@@ -8,4 +8,5 @@ Here is a list of all namespaces with brief descriptions:
 * **namespace** [**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md)     
     * **namespace** [**Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md)     
     * **namespace** [**ConjugateGradients**](namespaceOpenOrbitalOptimizer_1_1ConjugateGradients.md)     
+    * **namespace** [**HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md)     
 

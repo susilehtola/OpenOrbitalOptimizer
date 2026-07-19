@@ -64,6 +64,7 @@
       <xsd:enumeration value="OPTIMIZE_OUTPUT_SLICE"/>
       <xsd:enumeration value="EXTENSION_MAPPING"/>
       <xsd:enumeration value="MARKDOWN_SUPPORT"/>
+      <xsd:enumeration value="MARKDOWN_STRICT"/>
       <xsd:enumeration value="TOC_INCLUDE_HEADINGS"/>
       <xsd:enumeration value="MARKDOWN_ID_STYLE"/>
       <xsd:enumeration value="AUTOLINK_SUPPORT"/>
@@ -114,6 +115,8 @@
       <xsd:enumeration value="GENERATE_TESTLIST"/>
       <xsd:enumeration value="GENERATE_BUGLIST"/>
       <xsd:enumeration value="GENERATE_DEPRECATEDLIST"/>
+      <xsd:enumeration value="GENERATE_REQUIREMENTS"/>
+      <xsd:enumeration value="REQ_TRACEABILITY_INFO"/>
       <xsd:enumeration value="ENABLED_SECTIONS"/>
       <xsd:enumeration value="MAX_INITIALIZER_LINES"/>
       <xsd:enumeration value="SHOW_USED_FILES"/>
@@ -210,6 +213,7 @@
       <xsd:enumeration value="ECLIPSE_DOC_ID"/>
       <xsd:enumeration value="DISABLE_INDEX"/>
       <xsd:enumeration value="GENERATE_TREEVIEW"/>
+      <xsd:enumeration value="PAGE_OUTLINE_PANEL"/>
       <xsd:enumeration value="FULL_SIDEBAR"/>
       <xsd:enumeration value="ENUM_VALUES_PER_LINE"/>
       <xsd:enumeration value="SHOW_ENUM_VALUES"/>
@@ -293,6 +297,7 @@
       <xsd:enumeration value="HIDE_UNDOC_RELATIONS"/>
       <xsd:enumeration value="HAVE_DOT"/>
       <xsd:enumeration value="DOT_NUM_THREADS"/>
+      <xsd:enumeration value="DOT_BATCH_SIZE"/>
       <xsd:enumeration value="DOT_COMMON_ATTR"/>
       <xsd:enumeration value="DOT_EDGE_ATTR"/>
       <xsd:enumeration value="DOT_NODE_ATTR"/>
@@ -302,6 +307,7 @@
       <xsd:enumeration value="GROUP_GRAPHS"/>
       <xsd:enumeration value="UML_LOOK"/>
       <xsd:enumeration value="UML_LIMIT_NUM_FIELDS"/>
+      <xsd:enumeration value="UML_MAX_EDGE_LABELS"/>
       <xsd:enumeration value="DOT_UML_DETAILS"/>
       <xsd:enumeration value="DOT_WRAP_THRESHOLD"/>
       <xsd:enumeration value="TEMPLATE_RELATIONS"/>
@@ -322,9 +328,13 @@
       <xsd:enumeration value="PLANTUML_CFG_FILE"/>
       <xsd:enumeration value="PLANTUML_INCLUDE_PATH"/>
       <xsd:enumeration value="PLANTUMLFILE_DIRS"/>
+      <xsd:enumeration value="MERMAID_PATH"/>
+      <xsd:enumeration value="MERMAID_CONFIG_FILE"/>
+      <xsd:enumeration value="MERMAID_RENDER_MODE"/>
+      <xsd:enumeration value="MERMAID_JS_URL"/>
+      <xsd:enumeration value="MERMAIDFILE_DIRS"/>
       <xsd:enumeration value="DOT_GRAPH_MAX_NODES"/>
       <xsd:enumeration value="MAX_DOT_GRAPH_DEPTH"/>
-      <xsd:enumeration value="DOT_MULTI_TARGETS"/>
       <xsd:enumeration value="GENERATE_LEGEND"/>
       <xsd:enumeration value="DOT_CLEANUP"/>
       <xsd:enumeration value="MSCGEN_TOOL"/>

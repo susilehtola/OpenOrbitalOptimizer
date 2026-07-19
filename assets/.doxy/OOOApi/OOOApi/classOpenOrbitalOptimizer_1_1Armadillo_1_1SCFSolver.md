@@ -79,18 +79,25 @@
 |  DensityMatrix&lt; Torb, Tbase &gt; | [**get\_solution**](#function-get_solution) (size\_t ihist=0) const<br> |
 |  void | [**initialize\_with\_fock**](#function-initialize_with_fock) (const FockMatrix&lt; Torb &gt; & fock\_guess) <br> |
 |  void | [**initialize\_with\_orbitals**](#function-initialize_with_orbitals) (const Orbitals&lt; Torb &gt; & orbitals, const OrbitalOccupations&lt; Tbase &gt; & occupations) <br> |
+|  size\_t | [**last\_active\_rotation\_count**](#function-last_active_rotation_count) () const<br> |
+|  size\_t | [**last\_polytope\_dimension**](#function-last_polytope_dimension) () const<br> |
 |  void | [**maximum\_history\_length**](#function-maximum_history_length-12) (int n) <br> |
 |  int | [**maximum\_history\_length**](#function-maximum_history_length-22) () const<br> |
 |  void | [**maximum\_iterations**](#function-maximum_iterations-12) (size\_t n) <br> |
 |  size\_t | [**maximum\_iterations**](#function-maximum_iterations-22) () const<br> |
+|  size\_t | [**number\_of\_fock\_evaluations**](#function-number_of_fock_evaluations) () const<br> |
 |  void | [**oda\_restart\_steps**](#function-oda_restart_steps-12) (int n) <br> |
 |  int | [**oda\_restart\_steps**](#function-oda_restart_steps-22) () const<br> |
+|  void | [**optimal\_damping\_degeneracy\_threshold**](#function-optimal_damping_degeneracy_threshold-12) (Tbase e) <br> |
+|  Tbase | [**optimal\_damping\_degeneracy\_threshold**](#function-optimal_damping_degeneracy_threshold-22) () const<br> |
 |  void | [**optimal\_damping\_threshold**](#function-optimal_damping_threshold-12) (Tbase e) <br> |
 |  Tbase | [**optimal\_damping\_threshold**](#function-optimal_damping_threshold-22) () const<br> |
+|  void | [**orbital\_rotation\_steps\_after\_oda**](#function-orbital_rotation_steps_after_oda-12) (size\_t n) <br> |
+|  size\_t | [**orbital\_rotation\_steps\_after\_oda**](#function-orbital_rotation_steps_after_oda-22) () const<br> |
 |  void | [**print\_history**](#function-print_history) () const<br> |
 |  void | [**reset\_history**](#function-reset_history) () <br> |
-|  void | [**run**](#function-run) () <br> |
-|  void | [**run\_optimal\_damping**](#function-run_optimal_damping) () <br> |
+|  void | [**run**](#function-run) (const std::string & methods="DIIS + ODA + CG") <br> |
+|  void | [**run\_optimal\_damping**](#function-run_optimal_damping) () <br>_Backwards-compatible alias for the pre-oda-merge behavior._  |
 |  OrbitalOccupations&lt; Tbase &gt; | [**update\_occupations**](#function-update_occupations) (const OrbitalEnergies&lt; Tbase &gt; & orbital\_energies) const<br> |
 |  void | [**verbosity**](#function-verbosity-12) (int v) <br> |
 |  int | [**verbosity**](#function-verbosity-22) () const<br> |
@@ -506,6 +513,32 @@ inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::initialize_with_orbitals
 
 
 
+### function last\_active\_rotation\_count 
+
+```C++
+inline size_t OpenOrbitalOptimizer::Armadillo::SCFSolver::last_active_rotation_count () const
+```
+
+
+
+
+<hr>
+
+
+
+### function last\_polytope\_dimension 
+
+```C++
+inline size_t OpenOrbitalOptimizer::Armadillo::SCFSolver::last_polytope_dimension () const
+```
+
+
+
+
+<hr>
+
+
+
 ### function maximum\_history\_length [1/2]
 
 ```C++
@@ -562,6 +595,19 @@ inline size_t OpenOrbitalOptimizer::Armadillo::SCFSolver::maximum_iterations () 
 
 
 
+### function number\_of\_fock\_evaluations 
+
+```C++
+inline size_t OpenOrbitalOptimizer::Armadillo::SCFSolver::number_of_fock_evaluations () const
+```
+
+
+
+
+<hr>
+
+
+
 ### function oda\_restart\_steps [1/2]
 
 ```C++
@@ -590,6 +636,34 @@ inline int OpenOrbitalOptimizer::Armadillo::SCFSolver::oda_restart_steps () cons
 
 
 
+### function optimal\_damping\_degeneracy\_threshold [1/2]
+
+```C++
+inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::optimal_damping_degeneracy_threshold (
+    Tbase e
+) 
+```
+
+
+
+
+<hr>
+
+
+
+### function optimal\_damping\_degeneracy\_threshold [2/2]
+
+```C++
+inline Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver::optimal_damping_degeneracy_threshold () const
+```
+
+
+
+
+<hr>
+
+
+
 ### function optimal\_damping\_threshold [1/2]
 
 ```C++
@@ -609,6 +683,34 @@ inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::optimal_damping_threshol
 
 ```C++
 inline Tbase OpenOrbitalOptimizer::Armadillo::SCFSolver::optimal_damping_threshold () const
+```
+
+
+
+
+<hr>
+
+
+
+### function orbital\_rotation\_steps\_after\_oda [1/2]
+
+```C++
+inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::orbital_rotation_steps_after_oda (
+    size_t n
+) 
+```
+
+
+
+
+<hr>
+
+
+
+### function orbital\_rotation\_steps\_after\_oda [2/2]
+
+```C++
+inline size_t OpenOrbitalOptimizer::Armadillo::SCFSolver::orbital_rotation_steps_after_oda () const
 ```
 
 
@@ -647,7 +749,9 @@ inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::reset_history ()
 ### function run 
 
 ```C++
-inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::run () 
+inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::run (
+    const std::string & methods="DIIS + ODA + CG"
+) 
 ```
 
 
@@ -659,6 +763,7 @@ inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::run ()
 
 ### function run\_optimal\_damping 
 
+_Backwards-compatible alias for the pre-oda-merge behavior._ 
 ```C++
 inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::run_optimal_damping () 
 ```

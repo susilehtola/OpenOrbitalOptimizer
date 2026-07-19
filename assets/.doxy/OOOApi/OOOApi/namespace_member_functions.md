@@ -6,6 +6,7 @@
 ## c
 
 * **cg\_optimize** ([**OpenOrbitalOptimizer::ConjugateGradients**](namespaceOpenOrbitalOptimizer_1_1ConjugateGradients.md))
+* **cubic\_polynomial\_zeros** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 
 
 ## d
@@ -13,8 +14,14 @@
 * **dot\_nonconj** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
+## e
+
+* **expm\_antihermitian** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+
+
 ## f
 
+* **fit\_cubic\_polynomial\_with\_derivatives** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 * **find\_indices\_where** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
@@ -38,6 +45,11 @@
 
 * **linspace** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 * **logspace** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+
+
+## r
+
+* **randperm** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## s

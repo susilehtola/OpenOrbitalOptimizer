@@ -15,7 +15,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -1144,10 +1144,17 @@ namespace Armadillo {
     Tbase diis_restart_factor() const            { return impl_.diis_restart_factor(); }
     void optimal_damping_threshold(Tbase e)      { impl_.optimal_damping_threshold(e); }
     Tbase optimal_damping_threshold() const      { return impl_.optimal_damping_threshold(); }
+    void optimal_damping_degeneracy_threshold(Tbase e) { impl_.optimal_damping_degeneracy_threshold(e); }
+    Tbase optimal_damping_degeneracy_threshold() const { return impl_.optimal_damping_degeneracy_threshold(); }
     void maximum_history_length(int n)           { impl_.maximum_history_length(n); }
     int  maximum_history_length() const          { return impl_.maximum_history_length(); }
     void oda_restart_steps(int n)                { impl_.oda_restart_steps(n); }
     int  oda_restart_steps() const               { return impl_.oda_restart_steps(); }
+    void orbital_rotation_steps_after_oda(size_t n) { impl_.orbital_rotation_steps_after_oda(n); }
+    size_t orbital_rotation_steps_after_oda() const { return impl_.orbital_rotation_steps_after_oda(); }
+    size_t last_polytope_dimension() const       { return impl_.last_polytope_dimension(); }
+    size_t last_active_rotation_count() const    { return impl_.last_active_rotation_count(); }
+    size_t number_of_fock_evaluations() const    { return impl_.number_of_fock_evaluations(); }
 
     void fixed_number_of_particles_per_block(const arma::Col&lt;Tbase&gt; &amp; v) {
       impl_.fixed_number_of_particles_per_block(to_eigen(v));
@@ -1165,8 +1172,8 @@ namespace Armadillo {
 
     // ---- Driving the SCF --------------------------------------------
 
-    void run()                                   { impl_.run(); }
-    void run_optimal_damping()                   { impl_.run_optimal_damping(); }
+    void run(const std::string &amp; methods = &quot;DIIS + ODA + CG&quot;) { impl_.run(methods); }
+    void run_optimal_damping()                   { impl_.run(&quot;ODA + CG&quot;); }
     bool converged() const                       { return impl_.converged(); }
     void brute_force_search_for_lowest_configuration() {
       impl_.brute_force_search_for_lowest_configuration();
@@ -1264,7 +1271,7 @@ namespace Armadillo {
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

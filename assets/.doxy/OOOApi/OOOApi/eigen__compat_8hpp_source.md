@@ -23,10 +23,13 @@
 #include "types.hpp"
 
 #include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <limits>
 #include <numeric>
+#include <random>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -170,6 +173,49 @@ namespace OpenOrbitalOptimizer {
   template <class V1, class V2>
   auto dot_nonconj(const V1 & a, const V2 & b) {
     return (a.array() * b.array()).sum();
+  }
+
+  template <class T>
+  Matrix<T> expm_antihermitian(const Matrix<T> & K) {
+    using R = RealOf<T>;
+    // Build iK. For complex T this is a rotation; for real T we need to widen.
+    if constexpr (Eigen::NumTraits<T>::IsComplex) {
+      Matrix<T> iK = T(R{0}, R{1}) * K; // multiply by i
+      Eigen::SelfAdjointEigenSolver<Matrix<T>> es(iK);
+      const auto & U = es.eigenvectors();
+      const auto & w = es.eigenvalues();
+      Vector<T> phase(w.size());
+      for (Index i = 0; i < w.size(); ++i)
+        phase[i] = std::exp(T(R{0}, -w[i]));
+      return U * phase.asDiagonal() * U.adjoint();
+    } else {
+      // Real anti-symmetric K: promote to complex so that eigenvalues are real.
+      Matrix<std::complex<R>> iK(K.rows(), K.cols());
+      for (Index c = 0; c < K.cols(); ++c)
+        for (Index r = 0; r < K.rows(); ++r)
+          iK(r, c) = std::complex<R>(R{0}, R{1}) * K(r, c);
+      Eigen::SelfAdjointEigenSolver<Matrix<std::complex<R>>> es(iK);
+      const auto & U = es.eigenvectors();
+      const auto & w = es.eigenvalues();
+      Vector<std::complex<R>> phase(w.size());
+      for (Index i = 0; i < w.size(); ++i)
+        phase[i] = std::exp(std::complex<R>(R{0}, -w[i]));
+      Matrix<std::complex<R>> C = U * phase.asDiagonal() * U.adjoint();
+      // The result is real to within round-off for real K.
+      Matrix<T> out(K.rows(), K.cols());
+      for (Index c = 0; c < K.cols(); ++c)
+        for (Index r = 0; r < K.rows(); ++r)
+          out(r, c) = static_cast<T>(C(r, c).real());
+      return out;
+    }
+  }
+
+  inline IndexVector randperm(Index n) {
+    IndexVector out(n);
+    std::iota(out.data(), out.data() + n, Index{0});
+    static thread_local std::mt19937_64 rng{std::random_device{}()};
+    std::shuffle(out.data(), out.data() + n, rng);
+    return out;
   }
 
 } // namespace OpenOrbitalOptimizer

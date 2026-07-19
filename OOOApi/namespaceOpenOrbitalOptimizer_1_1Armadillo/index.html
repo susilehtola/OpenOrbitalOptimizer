@@ -15,7 +15,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -1462,82 +1462,82 @@
 </table>
 <h2 id="public-types-documentation">Public Types Documentation</h2>
 <h3 id="typedef-densitymatrix">typedef DensityMatrix</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::DensityMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalOccupations&lt;Tbase&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::DensityMatrix = std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalOccupations&lt;Tbase&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-diagonalorbitalhessianblock">typedef DiagonalOrbitalHessianBlock</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessianBlock =  arma::Mat&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessianBlock = arma::Mat&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-diagonalorbitalhessians">typedef DiagonalOrbitalHessians</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessians =  std::vector&lt;DiagonalOrbitalHessianBlock&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessians = std::vector&lt;DiagonalOrbitalHessianBlock&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-diagonalizedfockmatrix">typedef DiagonalizedFockMatrix</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::DiagonalizedFockMatrix =  std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalEnergies&lt;Tbase&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::DiagonalizedFockMatrix = std::pair&lt;Orbitals&lt;Torb&gt;, OrbitalEnergies&lt;Tbase&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-fockbuilder">typedef FockBuilder</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::FockBuilder =  std::function&lt;FockBuilderReturn&lt;Torb, Tbase&gt;(const DensityMatrix&lt;Torb, Tbase&gt; &amp;)&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::FockBuilder = std::function&lt;FockBuilderReturn&lt;Torb, Tbase&gt;(const DensityMatrix&lt;Torb, Tbase&gt; &amp;)&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-fockbuilderreturn">typedef FockBuilderReturn</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::FockBuilderReturn =  std::pair&lt;Tbase, FockMatrix&lt;Torb&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::FockBuilderReturn = std::pair&lt;Tbase, FockMatrix&lt;Torb&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-fockmatrix">typedef FockMatrix</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::FockMatrix =  std::vector&lt;FockMatrixBlock&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::FockMatrix = std::vector&lt;FockMatrixBlock&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-fockmatrixblock">typedef FockMatrixBlock</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::FockMatrixBlock =  arma::Mat&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::FockMatrixBlock = arma::Mat&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalblock">typedef OrbitalBlock</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalBlock =  arma::Mat&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalBlock = arma::Mat&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalblockoccupations">typedef OrbitalBlockOccupations</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalBlockOccupations =  arma::Col&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalBlockOccupations = arma::Col&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalenergies">typedef OrbitalEnergies</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalEnergies =  std::vector&lt;arma::Col&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalEnergies = std::vector&lt;arma::Col&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalgradientblock">typedef OrbitalGradientBlock</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalGradientBlock =  arma::Mat&lt;T&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalGradientBlock = arma::Mat&lt;T&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalgradients">typedef OrbitalGradients</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalGradients =  std::vector&lt;OrbitalGradientBlock&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalGradients = std::vector&lt;OrbitalGradientBlock&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitaloccupations">typedef OrbitalOccupations</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalOccupations =  std::vector&lt;OrbitalBlockOccupations&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalOccupations = std::vector&lt;OrbitalBlockOccupations&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitalrotation">typedef OrbitalRotation</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalRotation =  std::tuple&lt;size_t, arma::uword, arma::uword&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::OrbitalRotation = std::tuple&lt;size_t, arma::uword, arma::uword&gt;;
 </code></pre>
 <hr>
 
 <h3 id="typedef-orbitals">typedef Orbitals</h3>
-<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::Orbitals =  std::vector&lt;OrbitalBlock&lt;T&gt;&gt;;
+<pre><code class="language-C++">using OpenOrbitalOptimizer::Armadillo::Orbitals = std::vector&lt;OrbitalBlock&lt;T&gt;&gt;;
 </code></pre>
 <hr>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
@@ -1666,7 +1666,7 @@ inline std::vector&lt; OpenOrbitalOptimizer::Vector &lt; T &gt; &gt; OpenOrbital
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

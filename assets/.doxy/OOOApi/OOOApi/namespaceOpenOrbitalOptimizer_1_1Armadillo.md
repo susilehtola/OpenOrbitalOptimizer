@@ -121,7 +121,7 @@
 ### typedef DensityMatrix 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::DensityMatrix =  std::pair<Orbitals<Torb>, OrbitalOccupations<Tbase>>;
+using OpenOrbitalOptimizer::Armadillo::DensityMatrix = std::pair<Orbitals<Torb>, OrbitalOccupations<Tbase>>;
 ```
 
 
@@ -134,7 +134,7 @@ using OpenOrbitalOptimizer::Armadillo::DensityMatrix =  std::pair<Orbitals<Torb>
 ### typedef DiagonalOrbitalHessianBlock 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessianBlock =  arma::Mat<T>;
+using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessianBlock = arma::Mat<T>;
 ```
 
 
@@ -147,7 +147,7 @@ using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessianBlock =  arma::Mat<
 ### typedef DiagonalOrbitalHessians 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessians =  std::vector<DiagonalOrbitalHessianBlock<T>>;
+using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessians = std::vector<DiagonalOrbitalHessianBlock<T>>;
 ```
 
 
@@ -160,7 +160,7 @@ using OpenOrbitalOptimizer::Armadillo::DiagonalOrbitalHessians =  std::vector<Di
 ### typedef DiagonalizedFockMatrix 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::DiagonalizedFockMatrix =  std::pair<Orbitals<Torb>, OrbitalEnergies<Tbase>>;
+using OpenOrbitalOptimizer::Armadillo::DiagonalizedFockMatrix = std::pair<Orbitals<Torb>, OrbitalEnergies<Tbase>>;
 ```
 
 
@@ -173,7 +173,7 @@ using OpenOrbitalOptimizer::Armadillo::DiagonalizedFockMatrix =  std::pair<Orbit
 ### typedef FockBuilder 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::FockBuilder =  std::function<FockBuilderReturn<Torb, Tbase>(const DensityMatrix<Torb, Tbase> &)>;
+using OpenOrbitalOptimizer::Armadillo::FockBuilder = std::function<FockBuilderReturn<Torb, Tbase>(const DensityMatrix<Torb, Tbase> &)>;
 ```
 
 
@@ -186,7 +186,7 @@ using OpenOrbitalOptimizer::Armadillo::FockBuilder =  std::function<FockBuilderR
 ### typedef FockBuilderReturn 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::FockBuilderReturn =  std::pair<Tbase, FockMatrix<Torb>>;
+using OpenOrbitalOptimizer::Armadillo::FockBuilderReturn = std::pair<Tbase, FockMatrix<Torb>>;
 ```
 
 
@@ -199,7 +199,7 @@ using OpenOrbitalOptimizer::Armadillo::FockBuilderReturn =  std::pair<Tbase, Foc
 ### typedef FockMatrix 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::FockMatrix =  std::vector<FockMatrixBlock<T>>;
+using OpenOrbitalOptimizer::Armadillo::FockMatrix = std::vector<FockMatrixBlock<T>>;
 ```
 
 
@@ -212,7 +212,7 @@ using OpenOrbitalOptimizer::Armadillo::FockMatrix =  std::vector<FockMatrixBlock
 ### typedef FockMatrixBlock 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::FockMatrixBlock =  arma::Mat<T>;
+using OpenOrbitalOptimizer::Armadillo::FockMatrixBlock = arma::Mat<T>;
 ```
 
 
@@ -225,7 +225,7 @@ using OpenOrbitalOptimizer::Armadillo::FockMatrixBlock =  arma::Mat<T>;
 ### typedef OrbitalBlock 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::OrbitalBlock =  arma::Mat<T>;
+using OpenOrbitalOptimizer::Armadillo::OrbitalBlock = arma::Mat<T>;
 ```
 
 
@@ -238,7 +238,7 @@ using OpenOrbitalOptimizer::Armadillo::OrbitalBlock =  arma::Mat<T>;
 ### typedef OrbitalBlockOccupations 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::OrbitalBlockOccupations =  arma::Col<T>;
+using OpenOrbitalOptimizer::Armadillo::OrbitalBlockOccupations = arma::Col<T>;
 ```
 
 
@@ -251,7 +251,7 @@ using OpenOrbitalOptimizer::Armadillo::OrbitalBlockOccupations =  arma::Col<T>;
 ### typedef OrbitalEnergies 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::OrbitalEnergies =  std::vector<arma::Col<T>>;
+using OpenOrbitalOptimizer::Armadillo::OrbitalEnergies = std::vector<arma::Col<T>>;
 ```
 
 
@@ -264,7 +264,7 @@ using OpenOrbitalOptimizer::Armadillo::OrbitalEnergies =  std::vector<arma::Col<
 ### typedef OrbitalGradientBlock 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::OrbitalGradientBlock =  arma::Mat<T>;
+using OpenOrbitalOptimizer::Armadillo::OrbitalGradientBlock = arma::Mat<T>;
 ```
 
 
@@ -277,7 +277,7 @@ using OpenOrbitalOptimizer::Armadillo::OrbitalGradientBlock =  arma::Mat<T>;
 ### typedef OrbitalGradients 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::OrbitalGradients =  std::vector<OrbitalGradientBlock<T>>;
+using OpenOrbitalOptimizer::Armadillo::OrbitalGradients = std::vector<OrbitalGradientBlock<T>>;
 ```
 
 
@@ -290,7 +290,7 @@ using OpenOrbitalOptimizer::Armadillo::OrbitalGradients =  std::vector<OrbitalGr
 ### typedef OrbitalOccupations 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::OrbitalOccupations =  std::vector<OrbitalBlockOccupations<T>>;
+using OpenOrbitalOptimizer::Armadillo::OrbitalOccupations = std::vector<OrbitalBlockOccupations<T>>;
 ```
 
 
@@ -303,7 +303,7 @@ using OpenOrbitalOptimizer::Armadillo::OrbitalOccupations =  std::vector<Orbital
 ### typedef OrbitalRotation 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::OrbitalRotation =  std::tuple<size_t, arma::uword, arma::uword>;
+using OpenOrbitalOptimizer::Armadillo::OrbitalRotation = std::tuple<size_t, arma::uword, arma::uword>;
 ```
 
 
@@ -316,7 +316,7 @@ using OpenOrbitalOptimizer::Armadillo::OrbitalRotation =  std::tuple<size_t, arm
 ### typedef Orbitals 
 
 ```C++
-using OpenOrbitalOptimizer::Armadillo::Orbitals =  std::vector<OrbitalBlock<T>>;
+using OpenOrbitalOptimizer::Armadillo::Orbitals = std::vector<OrbitalBlock<T>>;
 ```
 
 

@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
+  <compounddef id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext" kind="struct" language="C++" prot="private">
+    <compoundname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a449a6fbd8c0f7a8fac87eeb23398116d" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1ad8356304bd9645dc06f25e08486b3209" kindref="member">Orbitals</ref>&lt; Torb &gt;</type>
+        <definition>Orbitals&lt;Torb&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::C_pseudo</definition>
+        <argsstring></argsstring>
+        <name>C_pseudo</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::C_pseudo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2069" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2069" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a1e3a1758ae7f68e62f08373f0957ada2" prot="public" static="no" mutable="no">
+        <type>OrbitalOccupations&lt; Tbase &gt;</type>
+        <definition>OrbitalOccupations&lt;Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::n_ref</definition>
+        <argsstring></argsstring>
+        <name>n_ref</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::n_ref</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2070" column="26" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2070" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1acd74ed518c485a0c7d8fb39bb0e7ef21" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt; &gt;</type>
+        <definition>std::vector&lt;Vector&lt;Tbase&gt; &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::eps</definition>
+        <argsstring></argsstring>
+        <name>eps</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::eps</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2071" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2071" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a7d5341c900bf050f2d070f6a07a34570" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a1c526d91037dc0333914ab09df6b10f9" kindref="member">OrbitalRotation</ref> &gt;</type>
+        <definition>std::vector&lt;OrbitalRotation&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::dofs</definition>
+        <argsstring></argsstring>
+        <name>dofs</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::dofs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2072" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2072" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a4c4897bbad6a930fad759f63804e9274" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
+        <definition>Vector&lt;Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::g</definition>
+        <argsstring></argsstring>
+        <name>g</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::g</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2073" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2073" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a34c07345834fcf363364e22721d0cf8c" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
+        <definition>Vector&lt;Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::h</definition>
+        <argsstring></argsstring>
+        <name>h</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::h</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2074" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2074" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1aaf7eb9ae4e9a05bff3c293e16363efd1" prot="public" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::E_ref</definition>
+        <argsstring></argsstring>
+        <name>E_ref</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::E_ref</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2075" column="13" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2075" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1aab5f8b5a2915737001fa478bb2b62b4a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::n_dof</definition>
+        <argsstring></argsstring>
+        <name>n_dof</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::n_dof</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2076" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2076" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1ad3477bfba1833e3f96ddc3e92fdedb79" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::n_par</definition>
+        <argsstring></argsstring>
+        <name>n_par</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::n_par</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2077" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2077" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a18ebb879107445401fa02891f0d07475" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::RotationStepContext::is_complex</definition>
+        <argsstring></argsstring>
+        <name>is_complex</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::RotationStepContext::is_complex</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2078" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2078" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Take one preconditioned scaled-steepest-descent step on the orbital-rotation manifold. Pseudo-diagonalizes the reference Fock matrix within each equal-occupation sub-block to obtain canonical-orbital energy estimates; uses those for a Newton- like diagonal-Hessian preconditioner so that rotations whose natural energy scales span many orders of magnitude are still scaled appropriately. Line-searches along the unitary curve C(t) = C_pseudo * exp(t K) by parabolic-fit refinement. Returns true if a strictly lower-energy entry was added to the history, false on stall (no descent, no rotation degrees of freedom, or line search exhausted). </para>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="2068" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2068" bodyend="2079"/>
+    <listofallmembers>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a449a6fbd8c0f7a8fac87eeb23398116d" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>C_pseudo</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a7d5341c900bf050f2d070f6a07a34570" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>dofs</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1aaf7eb9ae4e9a05bff3c293e16363efd1" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>E_ref</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1acd74ed518c485a0c7d8fb39bb0e7ef21" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>eps</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a4c4897bbad6a930fad759f63804e9274" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>g</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a34c07345834fcf363364e22721d0cf8c" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>h</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a18ebb879107445401fa02891f0d07475" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>is_complex</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1aab5f8b5a2915737001fa478bb2b62b4a" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>n_dof</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1ad3477bfba1833e3f96ddc3e92fdedb79" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>n_par</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a1e3a1758ae7f68e62f08373f0957ada2" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>n_ref</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

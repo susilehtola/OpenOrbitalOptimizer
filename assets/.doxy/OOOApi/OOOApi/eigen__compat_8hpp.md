@@ -12,10 +12,13 @@
 
 * `#include "types.hpp"`
 * `#include <algorithm>`
+* `#include <cmath>`
+* `#include <complex>`
 * `#include <fstream>`
 * `#include <iomanip>`
 * `#include <limits>`
 * `#include <numeric>`
+* `#include <random>`
 * `#include <stdexcept>`
 * `#include <string>`
 * `#include <type_traits>`

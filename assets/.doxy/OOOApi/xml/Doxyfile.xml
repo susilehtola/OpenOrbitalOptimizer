@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxyfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="doxyfile.xsd" version="1.13.2" xml:lang="en-US">
+<doxyfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="doxyfile.xsd" version="1.17.0" xml:lang="en-US">
   <option  id='DOXYFILE_ENCODING' default='yes' type='string'><value><![CDATA[UTF-8]]></value></option>
   <option  id='PROJECT_NAME' default='yes' type='string'><value><![CDATA["My Project"]]></value></option>
   <option  id='PROJECT_NUMBER' default='yes' type='string'><value><![CDATA[]]></value></option>
@@ -52,6 +52,7 @@
   <option  id='EXTENSION_MAPPING' default='yes' type='stringlist'>
   </option>
   <option  id='MARKDOWN_SUPPORT' default='yes' type='bool'><value>YES</value></option>
+  <option  id='MARKDOWN_STRICT' default='yes' type='bool'><value>YES</value></option>
   <option  id='TOC_INCLUDE_HEADINGS' default='yes' type='int'><value>6</value></option>
   <option  id='MARKDOWN_ID_STYLE' default='yes' type='string'><value>DOXYGEN</value></option>
   <option  id='AUTOLINK_SUPPORT' default='yes' type='bool'><value>YES</value></option>
@@ -103,6 +104,8 @@
   <option  id='GENERATE_TESTLIST' default='yes' type='bool'><value>YES</value></option>
   <option  id='GENERATE_BUGLIST' default='yes' type='bool'><value>YES</value></option>
   <option  id='GENERATE_DEPRECATEDLIST' default='yes' type='bool'><value>YES</value></option>
+  <option  id='GENERATE_REQUIREMENTS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='REQ_TRACEABILITY_INFO' default='yes' type='string'><value>YES</value></option>
   <option  id='ENABLED_SECTIONS' default='yes' type='stringlist'>
   </option>
   <option  id='MAX_INITIALIZER_LINES' default='yes' type='int'><value>30</value></option>
@@ -219,8 +222,9 @@
   <option  id='QHG_LOCATION' default='yes' type='string'><value><![CDATA[]]></value></option>
   <option  id='GENERATE_ECLIPSEHELP' default='yes' type='bool'><value>NO</value></option>
   <option  id='ECLIPSE_DOC_ID' default='yes' type='string'><value><![CDATA[org.doxygen.Project]]></value></option>
-  <option  id='DISABLE_INDEX' default='yes' type='bool'><value>YES</value></option>
+  <option  id='DISABLE_INDEX' default='yes' type='bool'><value>NO</value></option>
   <option  id='GENERATE_TREEVIEW' default='yes' type='bool'><value>YES</value></option>
+  <option  id='PAGE_OUTLINE_PANEL' default='yes' type='bool'><value>YES</value></option>
   <option  id='FULL_SIDEBAR' default='yes' type='bool'><value>NO</value></option>
   <option  id='ENUM_VALUES_PER_LINE' default='yes' type='int'><value>4</value></option>
   <option  id='SHOW_ENUM_VALUES' default='yes' type='bool'><value>NO</value></option>
@@ -315,6 +319,7 @@
   <option  id='HIDE_UNDOC_RELATIONS' default='yes' type='bool'><value>YES</value></option>
   <option  id='HAVE_DOT' default='yes' type='bool'><value>NO</value></option>
   <option  id='DOT_NUM_THREADS' default='yes' type='int'><value>0</value></option>
+  <option  id='DOT_BATCH_SIZE' default='yes' type='int'><value>50</value></option>
   <option  id='DOT_COMMON_ATTR' default='yes' type='string'><value><![CDATA["fontname=Helvetica,fontsize=10"]]></value></option>
   <option  id='DOT_EDGE_ATTR' default='yes' type='string'><value><![CDATA["labelfontname=Helvetica,labelfontsize=10"]]></value></option>
   <option  id='DOT_NODE_ATTR' default='yes' type='string'><value><![CDATA["shape=box,height=0.2,width=0.4"]]></value></option>
@@ -324,6 +329,7 @@
   <option  id='GROUP_GRAPHS' default='yes' type='bool'><value>YES</value></option>
   <option  id='UML_LOOK' default='yes' type='bool'><value>NO</value></option>
   <option  id='UML_LIMIT_NUM_FIELDS' default='yes' type='int'><value>10</value></option>
+  <option  id='UML_MAX_EDGE_LABELS' default='yes' type='int'><value>10</value></option>
   <option  id='DOT_UML_DETAILS' default='yes' type='string'><value>NO</value></option>
   <option  id='DOT_WRAP_THRESHOLD' default='yes' type='int'><value>17</value></option>
   <option  id='TEMPLATE_RELATIONS' default='yes' type='bool'><value>NO</value></option>
@@ -348,9 +354,14 @@
   </option>
   <option  id='PLANTUMLFILE_DIRS' default='yes' type='stringlist'>
   </option>
+  <option  id='MERMAID_PATH' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='MERMAID_CONFIG_FILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='MERMAID_RENDER_MODE' default='yes' type='string'><value>AUTO</value></option>
+  <option  id='MERMAID_JS_URL' default='yes' type='string'><value><![CDATA[https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs]]></value></option>
+  <option  id='MERMAIDFILE_DIRS' default='yes' type='stringlist'>
+  </option>
   <option  id='DOT_GRAPH_MAX_NODES' default='yes' type='int'><value>50</value></option>
   <option  id='MAX_DOT_GRAPH_DEPTH' default='yes' type='int'><value>0</value></option>
-  <option  id='DOT_MULTI_TARGETS' default='yes' type='bool'><value>NO</value></option>
   <option  id='GENERATE_LEGEND' default='yes' type='bool'><value>YES</value></option>
   <option  id='DOT_CLEANUP' default='yes' type='bool'><value>YES</value></option>
   <option  id='MSCGEN_TOOL' default='yes' type='string'><value><![CDATA[]]></value></option>
