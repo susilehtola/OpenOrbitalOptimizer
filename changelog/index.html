@@ -963,15 +963,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v030-2026-05-21" class="md-nav__link">
+  <a href="#v040-2026-07-20" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.3.0 / 2026-05-21
+        v0.4.0 / 2026-07-20
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="v0.3.0 / 2026-05-21">
+    <nav class="md-nav" aria-label="v0.4.0 / 2026-07-20">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1008,17 +1008,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#bug-fixes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bug Fixes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#misc" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1035,15 +1024,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#v020-2025-08-12" class="md-nav__link">
+  <a href="#v030-2026-05-21" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.2.0 / 2025-08-12
+        v0.3.0 / 2026-05-21
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="v0.2.0 / 2025-08-12">
+    <nav class="md-nav" aria-label="v0.3.0 / 2026-05-21">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1080,7 +1069,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#bug-fixes_1" class="md-nav__link">
+  <a href="#bug-fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
         Bug Fixes
@@ -1092,6 +1081,78 @@
         
           <li class="md-nav__item">
   <a href="#misc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misc.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v020-2025-08-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.2.0 / 2025-08-12
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.2.0 / 2025-08-12">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enhancements_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Misc.
@@ -1119,7 +1180,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new-features_2" class="md-nav__link">
+  <a href="#new-features_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1166,9 +1227,53 @@
 #### Misc.
 -->
 
-<h2 id="v030-2026-05-21">v0.3.0 / 2026-05-21</h2>
+<h2 id="v040-2026-07-20">v0.4.0 / 2026-07-20</h2>
 <h4 id="breaking-changes">Breaking Changes</h4>
+<ul>
+<li>The linear-algebra backend switched from Armadillo to Eigen 3.4. The public
+  API keeps the <code>SCFSolver&lt;Torb, Tbase&gt;</code> template signature via a compat shim,
+  but callers that reached into Armadillo types directly must migrate to the
+  new <code>OpenOrbitalOptimizer::Matrix&lt;T&gt;</code> / <code>Vector&lt;T&gt;</code> / <code>IndexVector</code> aliases.</li>
+</ul>
 <h4 id="new-features">New Features</h4>
+<ul>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/38">#38</a> Port the
+  library and <code>atomtest</code> from Armadillo to Eigen 3, unlocking arbitrary-precision
+  scalar types. Adds a <code>_Float128</code> (libquadmath) instantiation of <code>SCFSolver</code>
+  via <code>openorbitaloptimizer/quad_support.hpp</code>.</li>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/10">#10</a> Bi-level
+  optimal-damping + preconditioned CG state machine with a skeleton-density-matrix
+  polytope for degenerate shells, orbital-rotation bursts after ODA, and an
+  L-BFGS phase. <code>SCFSolver::run("DIIS + ODA + CG")</code> is the new default; the
+  method mix is user-selectable via <code>run("DIIS")</code>, <code>run("ODA + CG")</code>, etc.</li>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/10">#10</a> Optional
+  batched Fock-builder callback (<code>set_batched_fock_builder</code>) that receives a
+  list of trial densities in one call, letting integral / grid setup amortise
+  across the ODA polytope axis-vertex sweep.</li>
+<li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/10">#10</a> New
+  <code>--oda</code> / <code>--odadegthresh</code> / <code>--maxiter</code> flags in the <code>atomtest</code> driver.</li>
+</ul>
+<h4 id="enhancements">Enhancements</h4>
+<ul>
+<li>Python bindings expose the new API surface: <code>run(methods=...)</code>,
+  <code>set_batched_fock_builder</code>, <code>has_batched_fock_builder</code>,
+  <code>clear_batched_fock_builder</code>, <code>optimal_damping_degeneracy_threshold</code>,
+  <code>orbital_rotation_steps_after_oda</code>, <code>last_polytope_dimension</code>,
+  <code>last_active_rotation_count</code>, <code>number_of_fock_evaluations</code>, <code>converged</code>.</li>
+<li>The three PySCF drivers (<code>atomic</code>, <code>molecular</code>, <code>diatomic</code>) register
+  batched Fock builders automatically and forward <code>methods</code> through
+  <code>kernel(methods=...)</code>.</li>
+</ul>
+<h4 id="misc">Misc.</h4>
+<ul>
+<li>Armadillo is no longer a dependency of the header-only library. <code>atomtest</code>
+  and the compat shim still require Eigen 3.4+; Armadillo is only pulled in
+  by the compat shim's <code>&lt;-&gt; arma::Mat</code> conversion helpers when a caller
+  explicitly opts in.</li>
+</ul>
+<h2 id="v030-2026-05-21">v0.3.0 / 2026-05-21</h2>
+<h4 id="breaking-changes_1">Breaking Changes</h4>
+<h4 id="new-features_1">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/34">#34</a> Add Python interface!
   This covers the most common <code>SCFSolver&lt;double, double&gt;</code> case; others added upon request.</li>
@@ -1178,7 +1283,7 @@
   to set the number of steps with no DIIS energy improvement after which to use ODA independently of
   DIIS history length. Previously used <code>maximum_history_length</code>/2</li>
 </ul>
-<h4 id="enhancements">Enhancements</h4>
+<h4 id="enhancements_1">Enhancements</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/35">#35</a> Explicitly symmetrize matices
   for DIIS error calculation to avoid numerical issues.</li>
@@ -1195,7 +1300,7 @@
 <li>CG Polak-Ribière: divided by dot(g_prev, g_prev) without guarding against a zero previous gradient,
     propagating NaN into the search direction. Fall back to steepest descent in that case.</li>
 </ul>
-<h4 id="misc">Misc.</h4>
+<h4 id="misc_1">Misc.</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/30">#30</a> <code>max(idx)</code> has been deprecated
   in Armadillo in favor of <code>index_max()</code> so switching to the new syntax.</li>
@@ -1203,9 +1308,9 @@
 <li>Added a <code>CLAUDE.md</code> file to aid agents.</li>
 </ul>
 <h2 id="v020-2025-08-12">v0.2.0 / 2025-08-12</h2>
-<h4 id="breaking-changes_1">Breaking Changes</h4>
-<h4 id="new-features_1">New Features</h4>
-<h4 id="enhancements_1">Enhancements</h4>
+<h4 id="breaking-changes_2">Breaking Changes</h4>
+<h4 id="new-features_2">New Features</h4>
+<h4 id="enhancements_2">Enhancements</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/26">#26</a> add callback so caller can
    apply its own convergence criteria.</li>
@@ -1221,14 +1326,14 @@
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/27">#27</a> fix UHF with frozen
    occupations by disabling ODA.</li>
 </ul>
-<h4 id="misc_1">Misc.</h4>
+<h4 id="misc_2">Misc.</h4>
 <ul>
 <li>Added user guide to readme</li>
 <li>Deploy docs site</li>
 <li>Fix GCC 15 warnings</li>
 </ul>
 <h2 id="v010-2025-03-30">v0.1.0 / 2025-03-30</h2>
-<h4 id="new-features_2">New Features</h4>
+<h4 id="new-features_3">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/20">#20</a> Intf -- allow OOO and
    IntegratorXX to work on Windows.</li>
