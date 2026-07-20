@@ -15,6 +15,48 @@
 -->
 
 
+## v0.4.0 / 2026-07-20
+
+#### Breaking Changes
+* The linear-algebra backend switched from Armadillo to Eigen 3.4. The public
+  API keeps the `SCFSolver<Torb, Tbase>` template signature via a compat shim,
+  but callers that reached into Armadillo types directly must migrate to the
+  new `OpenOrbitalOptimizer::Matrix<T>` / `Vector<T>` / `IndexVector` aliases.
+
+#### New Features
+* [\#38](https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/38) Port the
+  library and `atomtest` from Armadillo to Eigen 3, unlocking arbitrary-precision
+  scalar types. Adds a `_Float128` (libquadmath) instantiation of `SCFSolver`
+  via `openorbitaloptimizer/quad_support.hpp`.
+* [\#10](https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/10) Bi-level
+  optimal-damping + preconditioned CG state machine with a skeleton-density-matrix
+  polytope for degenerate shells, orbital-rotation bursts after ODA, and an
+  L-BFGS phase. `SCFSolver::run("DIIS + ODA + CG")` is the new default; the
+  method mix is user-selectable via `run("DIIS")`, `run("ODA + CG")`, etc.
+* [\#10](https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/10) Optional
+  batched Fock-builder callback (`set_batched_fock_builder`) that receives a
+  list of trial densities in one call, letting integral / grid setup amortise
+  across the ODA polytope axis-vertex sweep.
+* [\#10](https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/10) New
+  `--oda` / `--odadegthresh` / `--maxiter` flags in the `atomtest` driver.
+
+#### Enhancements
+* Python bindings expose the new API surface: `run(methods=...)`,
+  `set_batched_fock_builder`, `has_batched_fock_builder`,
+  `clear_batched_fock_builder`, `optimal_damping_degeneracy_threshold`,
+  `orbital_rotation_steps_after_oda`, `last_polytope_dimension`,
+  `last_active_rotation_count`, `number_of_fock_evaluations`, `converged`.
+* The three PySCF drivers (`atomic`, `molecular`, `diatomic`) register
+  batched Fock builders automatically and forward `methods` through
+  `kernel(methods=...)`.
+
+#### Misc.
+* Armadillo is no longer a dependency of the header-only library. `atomtest`
+  and the compat shim still require Eigen 3.4+; Armadillo is only pulled in
+  by the compat shim's `<-> arma::Mat` conversion helpers when a caller
+  explicitly opts in.
+
+
 ## v0.3.0 / 2026-05-21
 
 #### Breaking Changes
