@@ -21,6 +21,7 @@
 #include "eigen_compat.hpp"
 
 #include <algorithm>
+#include <array>
 #include <any>
 #include <cctype>
 #include <cmath>
@@ -74,6 +75,59 @@ namespace OpenOrbitalOptimizer {
       T x1 = (-2*a2 - sq)/(6*a3);
       T x2 = (-2*a2 + sq)/(6*a3);
       return std::make_pair(x1, x2);
+    }
+
+    template<typename T>
+    std::tuple<T,T,T,T,T> fit_quartic_polynomial_with_derivatives(
+        T E0, T dE0, T d2E0, T x1, T E1, T dE1) {
+      T a0 = E0;
+      T a1 = dE0;
+      T a2 = d2E0 / T(2);
+      T x1sq = x1 * x1;
+      T x1cu = x1sq * x1;
+      // Solve for a3, a4:
+      //   a3*x1^3 + a4*x1^4 = E1 - a0 - a1*x1 - a2*x1^2
+      //   3*a3*x1^2 + 4*a4*x1^3 = dE1 - a1 - 2*a2*x1
+      T r1 = E1 - a0 - a1 * x1 - a2 * x1sq;
+      T r2 = dE1 - a1 - T(2) * a2 * x1;
+      T a3 = (T(4) * r1 - x1 * r2) / x1cu;
+      T a4 = (x1 * r2 - T(3) * r1) / (x1cu * x1);
+      return std::make_tuple(a0, a1, a2, a3, a4);
+    }
+
+    template<typename T, size_t N>
+    T evaluate_polynomial(const std::array<T, N> & coeffs, T x) {
+      T r = coeffs[N - 1];
+      for (size_t i = N - 1; i-- > 0;)
+        r = r * x + coeffs[i];
+      return r;
+    }
+
+    template<typename T, class Fn>
+    std::vector<T> real_roots_in_interval(Fn && f, T x_lo, T x_hi,
+                                          int n_samples = 33) {
+      std::vector<T> roots;
+      T dx = (x_hi - x_lo) / T(n_samples - 1);
+      T x_prev = x_lo;
+      T y_prev = f(x_prev);
+      for (int i = 1; i < n_samples; i++) {
+        T x_cur = x_lo + T(i) * dx;
+        T y_cur = f(x_cur);
+        if ((y_prev >= T(0)) != (y_cur >= T(0))) {
+          T lo = x_prev, hi = x_cur;
+          T ylo = y_prev, yhi = y_cur;
+          for (int j = 0; j < 60; j++) {
+            T mid = T(0.5) * (lo + hi);
+            T ymid = f(mid);
+            if ((ymid >= T(0)) == (ylo >= T(0))) { lo = mid; ylo = ymid; }
+            else                                 { hi = mid; yhi = ymid; }
+          }
+          roots.push_back(T(0.5) * (lo + hi));
+        }
+        x_prev = x_cur;
+        y_prev = y_cur;
+      }
+      return roots;
     }
 
   }
@@ -1531,36 +1585,54 @@ namespace OpenOrbitalOptimizer {
         log_(5, "%s%g", i ? "," : "", lam_opt(i));
       log_(5, "), model energy change %e\n", model_min - E_orig);
 
-      // Per-axis cubic-fit secondary candidates: with E_orig, slope at
-      // lambda=0, E_axis, and slope at lambda=1 we have four data points,
-      // enough to fit a cubic along each axis. Roots of the cubic
-      // derivative inside (0,1) capture 1D minima the quadratic Taylor
-      // model misses when the energy is non-quadratic in lambda along
-      // that direction (typical of DFT near convergence).
-      std::vector<std::pair<Vector<Tbase>, std::string>> candidates;
+      // Candidate list: (lambda, tag, model-predicted energy at lambda).
+      // The QP model gives one; along each 1D axis and each pair-
+      // diagonal edge we also fit a quartic Hermite polynomial through
+      // the two endpoint values, endpoint slopes, and the second
+      // derivative at lambda=0 taken from the analytic Hessian block
+      // (H_ii on an axis, d^T H d on an edge). That's exactly the
+      // five data points a quartic needs; no additional Fock builds
+      // beyond the npars axis vertices already evaluated. Roots of
+      // each 1D quartic's derivative inside (0,1) become candidates,
+      // scored by their own polynomial value at the root (the multi-
+      // dim quadratic underestimates 1D non-linearity along that
+      // direction).
+      struct Candidate {
+        Vector<Tbase> lam;
+        std::string tag;
+        Tbase model_score;
+      };
+      std::vector<Candidate> candidates;
       if(lam_opt.template lpNorm<Eigen::Infinity>() > 100*eps)
-        candidates.emplace_back(lam_opt, "model min");
+        candidates.push_back({lam_opt, "model min", model_min});
       for(size_t i=0; i<npars; i++) {
         Tbase E_i = evaluations[i].second.first;
         Tbase g_i = grad(i);
+        Tbase H_ii = hess(i, i);
         Tbase slope_at_1 = trace_diff(evaluations[i].first, P_orig, evaluations[i].second.second);
-        try {
-          auto cubic = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_orig, g_i, Tbase(1), E_i, slope_at_1);
-          auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic);
-          for(Tbase z : {zeros.first, zeros.second}) {
-            if(z > 100*eps && z < Tbase(1) - 100*eps) {
-              Vector<Tbase> xc = Vector<Tbase>::Zero(npars);
-              xc(i) = z;
-              candidates.emplace_back(xc, std::string("cubic axis ") + std::to_string(i));
-            }
-          }
-        } catch(std::logic_error &) {}
+        auto q = HelperRoutines::fit_quartic_polynomial_with_derivatives<Tbase>(
+            E_orig, g_i, H_ii, Tbase(1), E_i, slope_at_1);
+        std::array<Tbase, 5> coeffs = {std::get<0>(q), std::get<1>(q), std::get<2>(q),
+                                       std::get<3>(q), std::get<4>(q)};
+        // Derivative is a cubic (coefficients: a1, 2a2, 3a3, 4a4).
+        auto dpoly = [&](Tbase x) {
+          return coeffs[1] + x * (Tbase(2)*coeffs[2]
+                          + x * (Tbase(3)*coeffs[3] + x * Tbase(4)*coeffs[4]));
+        };
+        auto zeros = HelperRoutines::real_roots_in_interval<Tbase>(
+            dpoly, 100*eps, Tbase(1) - 100*eps);
+        for(Tbase z : zeros) {
+          Vector<Tbase> xc = Vector<Tbase>::Zero(npars);
+          xc(i) = z;
+          Tbase E_pred = HelperRoutines::evaluate_polynomial<Tbase, 5>(coeffs, z);
+          candidates.push_back({std::move(xc),
+                                std::string("quartic axis ") + std::to_string(i),
+                                E_pred});
+        }
       }
-      // Pair-diagonal cubics: along each edge from vertex e_i to vertex
-      // e_j we have four data points (E_i, slope at lambda=e_i in
-      // direction e_j-e_i, E_j, slope at lambda=e_j in same direction),
-      // enough to fit a cubic. Roots of its derivative inside (0,1)
-      // give 1D minima on the edge.
+      // Pair-diagonal quartics along each edge from vertex e_i to
+      // vertex e_j. Direction d = e_j - e_i; the second derivative at
+      // t=0 in that direction is d^T H d = H_ii + H_jj - 2 H_ij.
       for(size_t i=0; i<npars; i++) {
         for(size_t j=i+1; j<npars; j++) {
           const auto & P_i = evaluations[i].first;
@@ -1571,56 +1643,73 @@ namespace OpenOrbitalOptimizer {
           Tbase E_j = evaluations[j].second.first;
           Tbase slope_i = trace_diff(P_j, P_i, F_i);
           Tbase slope_j = trace_diff(P_j, P_i, F_j);
-          try {
-            auto cubic = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(E_i, slope_i, Tbase(1), E_j, slope_j);
-            auto zeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, cubic);
-            for(Tbase z : {zeros.first, zeros.second}) {
-              if(z > 100*eps && z < Tbase(1) - 100*eps) {
-                Vector<Tbase> xc = Vector<Tbase>::Zero(npars);
-                xc(i) = Tbase(1) - z;
-                xc(j) = z;
-                candidates.emplace_back(xc, std::string("cubic edge ") + std::to_string(i) + "-" + std::to_string(j));
-              }
-            }
-          } catch(std::logic_error &) {}
+          Tbase d2_along_edge = hess(i, i) + hess(j, j) - Tbase(2) * hess(i, j);
+          auto q = HelperRoutines::fit_quartic_polynomial_with_derivatives<Tbase>(
+              E_i, slope_i, d2_along_edge, Tbase(1), E_j, slope_j);
+          std::array<Tbase, 5> coeffs = {std::get<0>(q), std::get<1>(q), std::get<2>(q),
+                                         std::get<3>(q), std::get<4>(q)};
+          auto dpoly = [&](Tbase x) {
+            return coeffs[1] + x * (Tbase(2)*coeffs[2]
+                            + x * (Tbase(3)*coeffs[3] + x * Tbase(4)*coeffs[4]));
+          };
+          auto zeros = HelperRoutines::real_roots_in_interval<Tbase>(
+              dpoly, 100*eps, Tbase(1) - 100*eps);
+          for(Tbase z : zeros) {
+            Vector<Tbase> xc = Vector<Tbase>::Zero(npars);
+            xc(i) = Tbase(1) - z;
+            xc(j) = z;
+            Tbase E_pred = HelperRoutines::evaluate_polynomial<Tbase, 5>(coeffs, z);
+            candidates.push_back({std::move(xc),
+                                  std::string("quartic edge ") + std::to_string(i) + "-" + std::to_string(j),
+                                  E_pred});
+          }
         }
       }
+
+      // Rank candidates by their model-predicted energy so the trial
+      // loop tries the most-promising step first. For HF the model
+      // is exact along any linear ray, so the top candidate is the
+      // true minimum and a single Fock build lands the ODA step; for
+      // DFT the ordering is still an accurate heuristic near
+      // convergence, cutting the trial loop from O(N) Fock builds to
+      // one whenever the model doesn't lie.
+      std::sort(candidates.begin(), candidates.end(),
+                [](const Candidate & a, const Candidate & b) {
+                  return a.model_score < b.model_score;
+                });
 
       if(verbosity_ >= 5) {
         size_t n_model = 0, n_axis = 0, n_edge = 0;
         for(const auto & cand : candidates) {
-          if(cand.second == "model min") n_model++;
-          else if(cand.second.rfind("cubic axis", 0) == 0) n_axis++;
-          else if(cand.second.rfind("cubic edge", 0) == 0) n_edge++;
+          if(cand.tag == "model min") n_model++;
+          else if(cand.tag.rfind("quartic axis", 0) == 0) n_axis++;
+          else if(cand.tag.rfind("quartic edge", 0) == 0) n_edge++;
         }
         log_(5, "Trial loop: %zu candidates (%zu quadratic-model + "
-               "%zu cubic-axis + %zu cubic-edge); each evaluates one "
-               "Fock build per scale until a descent step is found.\n",
+               "%zu quartic-axis + %zu quartic-edge); ordered by "
+               "predicted energy so the first Fock build usually "
+               "lands the ODA step.\n",
                candidates.size(), n_model, n_axis, n_edge);
       }
 
-      // Trial loop: at each backoff scale, evaluate candidates in order
-      // and stop at the first one that strictly decreases the energy.
-      // The quadratic-model / cubic-axis / cubic-edge candidates often
-      // overlap (especially for npars == 1, where the quadratic and
-      // cubic-axis candidates are competing 1D fits on the same axis),
-      // so evaluating every candidate at every scale pays for
-      // redundant Fock builds without changing the accepted descent
-      // step. Densities from the rejected candidates evaluated before
-      // the first success still enter the orbital history (via
-      // add_entry) and seed DIIS in subsequent iterations; we just
-      // stop adding more once we have a descent.
+      // Trial loop: at each backoff scale, evaluate candidates in
+      // ranked order and stop at the first descent step. When the
+      // model is accurate (always for HF along a linear ray, and
+      // typically for DFT near convergence) the first candidate wins
+      // and only a single Fock build runs per ODA step. Rejected
+      // candidates still feed the orbital history via add_entry, so
+      // subsequent DIIS iterations see the trial densities.
       bool succ = false;
       for(int scalefac=0; scalefac<=5; scalefac++) {
         Tbase scale = std::pow(Tbase(2), -scalefac);
         for(const auto & cand : candidates) {
-          Vector<Tbase> x_scaled = scale * cand.first;
+          Vector<Tbase> x_scaled = scale * cand.lam;
           auto eval = evaluate(x_scaled);
           number_of_fock_evaluations_++;
           bool ok = add_entry(eval.first, eval.second);
           if(ok) succ = true;
           log_(10, "ODA %s at scale %g gives E = % .10f, change %e%s\n",
-                 cand.second.c_str(), scale, eval.second.first, eval.second.first - E_orig,
+                 cand.tag.c_str(), scale, eval.second.first, eval.second.first - E_orig,
                  ok ? " (accepted)" : "");
           if(ok) break;
         }

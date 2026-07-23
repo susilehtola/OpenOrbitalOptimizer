@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2233" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2233" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2336" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2336" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a1e3a1758ae7f68e62f08373f0957ada2" prot="public" static="no" mutable="no">
         <type>OrbitalOccupations&lt; Tbase &gt;</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2234" column="26" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2234" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2337" column="26" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2337" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1acd74ed518c485a0c7d8fb39bb0e7ef21" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt; &gt;</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2235" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2235" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2338" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2338" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a7d5341c900bf050f2d070f6a07a34570" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a1c526d91037dc0333914ab09df6b10f9" kindref="member">OrbitalRotation</ref> &gt;</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2236" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2236" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2339" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2339" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a4c4897bbad6a930fad759f63804e9274" prot="public" static="no" mutable="no">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2237" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2237" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2340" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2340" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a34c07345834fcf363364e22721d0cf8c" prot="public" static="no" mutable="no">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2238" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2238" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2341" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2341" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1aaf7eb9ae4e9a05bff3c293e16363efd1" prot="public" static="no" mutable="no">
         <type>Tbase</type>
@@ -100,7 +100,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2239" column="13" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2239" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2342" column="13" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2342" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1aab5f8b5a2915737001fa478bb2b62b4a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -115,7 +115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2240" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2240" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2343" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2343" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1ad3477bfba1833e3f96ddc3e92fdedb79" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -130,7 +130,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2241" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2241" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2344" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2344" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a18ebb879107445401fa02891f0d07475" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -145,7 +145,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2242" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2242" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2345" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2345" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -153,7 +153,7 @@
     <detaileddescription>
 <para>Take one preconditioned scaled-steepest-descent step on the orbital-rotation manifold. Pseudo-diagonalizes the reference Fock matrix within each equal-occupation sub-block to obtain canonical-orbital energy estimates; uses those for a Newton- like diagonal-Hessian preconditioner so that rotations whose natural energy scales span many orders of magnitude are still scaled appropriately. Line-searches along the unitary curve C(t) = C_pseudo * exp(t K) by parabolic-fit refinement. Returns true if a strictly lower-energy entry was added to the history, false on stall (no descent, no rotation degrees of freedom, or line search exhausted). </para>
     </detaileddescription>
-    <location file="openorbitaloptimizer/scfsolver.hpp" line="2232" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2232" bodyend="2243"/>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="2335" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2335" bodyend="2346"/>
     <listofallmembers>
       <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a449a6fbd8c0f7a8fac87eeb23398116d" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>C_pseudo</name></member>
       <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a7d5341c900bf050f2d070f6a07a34570" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</scope><name>dofs</name></member>

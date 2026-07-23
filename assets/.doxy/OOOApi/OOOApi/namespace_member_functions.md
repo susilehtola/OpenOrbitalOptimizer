@@ -16,12 +16,14 @@
 
 ## e
 
+* **evaluate\_polynomial** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 * **expm\_antihermitian** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## f
 
 * **fit\_cubic\_polynomial\_with\_derivatives** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
+* **fit\_quartic\_polynomial\_with\_derivatives** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 * **find\_indices\_where** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
@@ -49,6 +51,7 @@
 
 ## r
 
+* **real\_roots\_in\_interval** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 * **randperm** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 

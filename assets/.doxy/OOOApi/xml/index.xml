@@ -360,6 +360,9 @@
   <compound refid="namespaceOpenOrbitalOptimizer_1_1HelperRoutines" kind="namespace"><name>OpenOrbitalOptimizer::HelperRoutines</name>
     <member refid="scfsolver_8hpp_1a704ae00a02123022e82b83c79c96bfe3" kind="function"><name>fit_cubic_polynomial_with_derivatives</name></member>
     <member refid="scfsolver_8hpp_1a7f5e08839e75600775e7aa73ad7989e2" kind="function"><name>cubic_polynomial_zeros</name></member>
+    <member refid="scfsolver_8hpp_1a39ee6aaeb5f5f35f659e15a0bb459b1b" kind="function"><name>fit_quartic_polynomial_with_derivatives</name></member>
+    <member refid="scfsolver_8hpp_1a3a581e51e81ad5eb935f477ac4f14e4e" kind="function"><name>evaluate_polynomial</name></member>
+    <member refid="scfsolver_8hpp_1acb2405b7e698051217b292f0c315af6e" kind="function"><name>real_roots_in_interval</name></member>
   </compound>
   <compound refid="armadillo__compat_8hpp" kind="file"><name>armadillo_compat.hpp</name>
   </compound>

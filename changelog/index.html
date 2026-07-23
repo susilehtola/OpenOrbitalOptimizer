@@ -975,6 +975,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#new-features-continued" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1008,7 +1019,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#enhancements" class="md-nav__link">
+  <a href="#enhancements_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Enhancements
@@ -1058,7 +1069,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#enhancements_1" class="md-nav__link">
+  <a href="#enhancements_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Enhancements
@@ -1119,7 +1130,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#enhancements_2" class="md-nav__link">
+  <a href="#enhancements_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         Enhancements
@@ -1191,7 +1202,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#enhancements_3" class="md-nav__link">
+  <a href="#enhancements_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         Enhancements
@@ -1289,6 +1300,25 @@
 -->
 
 <h2 id="v050-unreleased">v0.5.0 / (Unreleased)</h2>
+<h4 id="enhancements">Enhancements</h4>
+<ul>
+<li>ODA candidate selection is now model-first. The polytope
+  quadratic-model minimum and the 1D probes (quartic per axis,
+  quartic per pair-diagonal edge) are ranked by their
+  polynomial-predicted energy, and the trial loop evaluates them in
+  that order. Along a linear ray in density space the Hartree-Fock
+  energy is exactly quadratic and the polynomial fits are exact for
+  HF and closely accurate for DFT near convergence, so the sorted
+  first candidate is normally the accepted step -- one Fock build
+  per ODA call in place of the worst-case
+  O(candidates × backoff scales) sweep.</li>
+<li>Promoted the axis and edge 1D probes from cubic to quartic
+  Hermite. The diagonal Hessian block <code>H_ii</code> (on an axis) and the
+  edge-projected Hessian <code>H_ii + H_jj - 2 H_ij</code> (on a pair-diagonal
+  edge) supply the fifth Hermite data point at zero additional Fock
+  cost, so the quartic captures DFT non-quadraticity that the
+  earlier cubic missed.</li>
+</ul>
 <h4 id="new-features-continued">New Features (continued)</h4>
 <ul>
 <li>Route all library log output through a caller-installable
@@ -1368,7 +1398,7 @@
   <code>kernel()</code>; entries are forwarded via <code>solver.set(key, value)</code>
   before the run.</li>
 </ul>
-<h4 id="enhancements">Enhancements</h4>
+<h4 id="enhancements_1">Enhancements</h4>
 <ul>
 <li><code>L-BFGS</code> history depth is now controlled by the shared
   <code>maximum_history_length</code> setting; the private
@@ -1405,7 +1435,7 @@
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/10">#10</a> New
   <code>--oda</code> / <code>--odadegthresh</code> / <code>--maxiter</code> flags in the <code>atomtest</code> driver.</li>
 </ul>
-<h4 id="enhancements_1">Enhancements</h4>
+<h4 id="enhancements_2">Enhancements</h4>
 <ul>
 <li>Python bindings expose the new API surface: <code>run(methods=...)</code>,
   <code>set_batched_fock_builder</code>, <code>has_batched_fock_builder</code>,
@@ -1435,7 +1465,7 @@
   to set the number of steps with no DIIS energy improvement after which to use ODA independently of
   DIIS history length. Previously used <code>maximum_history_length</code>/2</li>
 </ul>
-<h4 id="enhancements_2">Enhancements</h4>
+<h4 id="enhancements_3">Enhancements</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/35">#35</a> Explicitly symmetrize matices
   for DIIS error calculation to avoid numerical issues.</li>
@@ -1462,7 +1492,7 @@
 <h2 id="v020-2025-08-12">v0.2.0 / 2025-08-12</h2>
 <h4 id="breaking-changes_3">Breaking Changes</h4>
 <h4 id="new-features_3">New Features</h4>
-<h4 id="enhancements_3">Enhancements</h4>
+<h4 id="enhancements_4">Enhancements</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/26">#26</a> add callback so caller can
    apply its own convergence criteria.</li>

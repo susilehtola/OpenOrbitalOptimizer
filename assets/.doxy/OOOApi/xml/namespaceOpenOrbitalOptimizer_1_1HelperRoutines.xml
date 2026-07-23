@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="41" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="41" bodyend="49"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="42" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="42" bodyend="50"/>
       </memberdef>
       <memberdef kind="function" id="scfsolver_8hpp_1a7f5e08839e75600775e7aa73ad7989e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -77,13 +77,130 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="55" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="55" bodyend="72"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="56" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="56" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="scfsolver_8hpp_1a39ee6aaeb5f5f35f659e15a0bb459b1b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::tuple&lt; T, T, T, T, T &gt;</type>
+        <definition>std::tuple&lt; T, T, T, T, T &gt; OpenOrbitalOptimizer::HelperRoutines::fit_quartic_polynomial_with_derivatives</definition>
+        <argsstring>(T E0, T dE0, T d2E0, T x1, T E1, T dE1)</argsstring>
+        <name>fit_quartic_polynomial_with_derivatives</name>
+        <qualifiedname>OpenOrbitalOptimizer::HelperRoutines::fit_quartic_polynomial_with_derivatives</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>E0</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>dE0</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>d2E0</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>x1</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>E1</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>dE1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Fit the quartic polynomial f(x) = a0 + a1*x + a2*x^2 + a3*x^3 + a4*x^4 to the Hermite data {f(0)=E0, f&apos;(0)=dE0, f&apos;&apos;(0)=d2E0, f(x1)=E1, f&apos;(x1)=dE1} <ndash/> five constraints for five coefficients. Used along ODA polytope axes and pair-diagonal edges where the diagonal (or projected) Hessian element gives a free quartic data point without an additional Fock build. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="83" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="83" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="scfsolver_8hpp_1a3a581e51e81ad5eb935f477ac4f14e4e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>size_t</type>
+            <declname>N</declname>
+            <defname>N</defname>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T OpenOrbitalOptimizer::HelperRoutines::evaluate_polynomial</definition>
+        <argsstring>(const std::array&lt; T, N &gt; &amp;coeffs, T x)</argsstring>
+        <name>evaluate_polynomial</name>
+        <qualifiedname>OpenOrbitalOptimizer::HelperRoutines::evaluate_polynomial</qualifiedname>
+        <param>
+          <type>const std::array&lt; T, N &gt; &amp;</type>
+          <declname>coeffs</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Evaluate a polynomial with the given coefficients (index i = coefficient of x^i) at <computeroutput>x</computeroutput> via Horner&apos;s scheme. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="103" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="103" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="function" id="scfsolver_8hpp_1acb2405b7e698051217b292f0c315af6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>class Fn</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; T &gt;</type>
+        <definition>std::vector&lt; T &gt; OpenOrbitalOptimizer::HelperRoutines::real_roots_in_interval</definition>
+        <argsstring>(Fn &amp;&amp;f, T x_lo, T x_hi, int n_samples=33)</argsstring>
+        <name>real_roots_in_interval</name>
+        <qualifiedname>OpenOrbitalOptimizer::HelperRoutines::real_roots_in_interval</qualifiedname>
+        <param>
+          <type>Fn &amp;&amp;</type>
+          <declname>f</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>x_lo</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>x_hi</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n_samples</declname>
+          <defval>33</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Bisect for real roots of <computeroutput>f</computeroutput> in <computeroutput>[x_lo, x_hi]</computeroutput> by sampling on a coarse grid and refining sign changes. Robust and free of external polynomial-root dependencies. Used to locate the stationary points of the quartic axis / edge fits, where the derivative is a cubic. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="116" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="116" bodyend="140"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="openorbitaloptimizer/scfsolver.hpp" line="37" column="3"/>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="38" column="3"/>
   </compounddef>
 </doxygen>

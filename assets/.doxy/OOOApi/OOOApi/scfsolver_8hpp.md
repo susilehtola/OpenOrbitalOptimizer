@@ -13,6 +13,7 @@
 * `#include "types.hpp"`
 * `#include "eigen_compat.hpp"`
 * `#include <algorithm>`
+* `#include <array>`
 * `#include <any>`
 * `#include <cctype>`
 * `#include <cmath>`
