@@ -15,6 +15,21 @@
 -->
 
 
+## v0.5.0 / (Unreleased)
+
+#### New Features
+* SCF convergence threshold is now clamped to an arithmetic-precision
+  floor: the effective threshold is
+  `max(convergence_threshold, K * noise_floor)`, where `noise_floor`
+  is a per-run estimate of the roundoff floor of the DIIS residual
+  `C^dagger [F, P] C` frozen from the initial Fock. `K` defaults to
+  10 and is tunable via `noise_safety_factor`. `__float128` runs are
+  unaffected because their epsilon is tiny; the clamp mainly rescues
+  low-precision runs from spinning below what the arithmetic can
+  resolve. Callback-driven convergence
+  (`callback_convergence_function`) is untouched.
+
+
 ## v0.4.0 / 2026-07-20
 
 #### Breaking Changes
