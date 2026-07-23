@@ -22,11 +22,23 @@ PYBIND11_MODULE(_ext, m) {
   using namespace OpenOrbitalOptimizer;
   using Solver = SCFSolver<double, double>;
 
+  py::class_<Solver::OptionInfo>(m, "OptionInfo",
+      "Descriptor for one solver option: key, type, writability, doc.")
+    .def_readonly("key",      &Solver::OptionInfo::key)
+    .def_readonly("type",     &Solver::OptionInfo::type)
+    .def_readonly("writable", &Solver::OptionInfo::writable)
+    .def_readonly("doc",      &Solver::OptionInfo::doc)
+    .def("__repr__", [](const Solver::OptionInfo & o) {
+      return std::string("<OptionInfo ") + o.key + " (" + o.type + ")>";
+    });
+
   py::class_<Solver>(m, "SCFSolver",
       "SCF solver supporting fractional/degenerate occupations through\n"
       "skeleton density matrices and bi-level ODA + preconditioned CG\n"
       "minimization. Bound for SCFSolver<double, double>:\n"
-      "double-precision real orbital coefficients and energies.")
+      "double-precision real orbital coefficients and energies.\n\n"
+      "Configure via set(key, value) / get_real / get_int / get_string.\n"
+      "Enumerate every knob with SCFSolver.options().")
     .def(py::init<IndexVector, Vector<double>, Vector<double>,
                   FockBuilder<double, double>, std::vector<std::string>>(),
          py::arg("number_of_blocks_per_particle_type"),
@@ -37,21 +49,32 @@ PYBIND11_MODULE(_ext, m) {
          "Construct an SCF solver. The Fock builder is a Python callable\n"
          "taking (orbitals: list[ndarray], occupations: list[ndarray])\n"
          "and returning (energy: float, fock: list[ndarray]).")
-    .def("verbosity",
-         py::overload_cast<int>(&Solver::verbosity),
-         py::arg("verbosity"))
-    .def("convergence_threshold",
-         py::overload_cast<double>(&Solver::convergence_threshold),
-         py::arg("threshold"))
-    .def("maximum_iterations",
-         py::overload_cast<size_t>(&Solver::maximum_iterations),
-         py::arg("max_iter"))
-    .def("number_of_fock_evaluations",
-         &Solver::number_of_fock_evaluations,
-         "Number of Fock-matrix builds performed by the most recent run().")
-    .def("optimal_damping_degeneracy_threshold",
-         py::overload_cast<double>(&Solver::optimal_damping_degeneracy_threshold),
-         py::arg("threshold"))
+
+    // --- Settings façade -----------------------------------------------
+    .def_static("options", &Solver::options,
+         "Return the catalog of every solver option: name, type,\n"
+         "writability, one-line description.",
+         py::return_value_policy::reference)
+    .def("set",
+         py::overload_cast<const std::string&, double>(&Solver::set),
+         py::arg("key"), py::arg("value"),
+         "Set a real-valued option by name.")
+    .def("set",
+         py::overload_cast<const std::string&, int>(&Solver::set),
+         py::arg("key"), py::arg("value"),
+         "Set an integer-valued option by name.")
+    .def("set",
+         py::overload_cast<const std::string&, const std::string&>(&Solver::set),
+         py::arg("key"), py::arg("value"),
+         "Set a string-valued option by name.")
+    .def("get_real", &Solver::get_real, py::arg("key"),
+         "Get a real-valued option or diagnostic by name.")
+    .def("get_int",  &Solver::get_int,  py::arg("key"),
+         "Get an integer-valued option or diagnostic by name.")
+    .def("get_string", &Solver::get_string, py::arg("key"),
+         "Get a string-valued option by name.")
+
+    // --- Callback registration ----------------------------------------
     .def("set_batched_fock_builder",
          &Solver::set_batched_fock_builder,
          py::arg("builder"),
@@ -68,18 +91,27 @@ PYBIND11_MODULE(_ext, m) {
          "Drop any registered batched Fock builder.")
     .def("has_batched_fock_builder",
          &Solver::has_batched_fock_builder)
+
+    // --- Initialization + drive ---------------------------------------
     .def("initialize_with_fock",
          &Solver::initialize_with_fock,
          py::arg("fock"))
     .def("initialize_with_orbitals",
          &Solver::initialize_with_orbitals,
          py::arg("orbitals"), py::arg("occupations"))
-    .def("run", &Solver::run,
-         py::arg("methods") = std::string("DIIS + ODA + CG"),
-         "Run the SCF loop with the methods named in the input string.\n"
-         "Tokens (case-insensitive, '+'-separated): 'DIIS', 'ODA', 'CG', 'LBFGS'.\n"
-         "Examples: 'DIIS', 'ODA', 'DIIS + ODA + CG' (the default),\n"
-         "'ODA + CG' (former run_optimal_damping body).")
+    .def("run",
+         [](Solver& s, const std::string& methods) {
+             if (!methods.empty()) s.set(std::string("methods"), methods);
+             s.run();
+         },
+         py::arg("methods") = std::string(""),
+         "Run the SCF loop. If ``methods`` is given, it is stored as the\n"
+         "``methods`` setting before running; otherwise the current value\n"
+         "is used. Tokens (case-insensitive, '+'-separated): 'DIIS',\n"
+         "'ODA', 'CG', 'LBFGS'. Examples: 'DIIS', 'ODA + CG',\n"
+         "'DIIS + ODA + CG' (the default).")
+
+    // --- State queries ------------------------------------------------
     .def("get_solution", &Solver::get_solution,
          py::arg("ihist") = 0,
          "Return (orbitals, occupations) of the ihist:th entry.")
@@ -97,17 +129,7 @@ PYBIND11_MODULE(_ext, m) {
          py::arg("ihist") = 0,
          "Total energy of history entry ihist (0 = lowest energy).")
     .def("converged", &Solver::converged,
-         "True iff the most recent run() reached the convergence\n"
-         "threshold (or the user-supplied callback returned True).")
-    .def("last_polytope_dimension", &Solver::last_polytope_dimension,
-         "Skeleton dimension (N_par) of the most recent ODA call.")
-    .def("last_active_rotation_count", &Solver::last_active_rotation_count,
-         "Count of orbital-rotation DOFs inside degenerate groups at the\n"
-         "iterate produced by the most recent ODA call. Default orbital-rotation burst\n"
-         "length when orbital_rotation_steps_after_oda is left at 0.")
-    .def("orbital_rotation_steps_after_oda",
-         py::overload_cast<size_t>(&Solver::orbital_rotation_steps_after_oda),
-         py::arg("n"),
-         "Override the post-ODA orbital-rotation burst length. 0 restores the\n"
-         "default of using last_active_rotation_count (with a floor of 1).");
+         "True iff the DIIS error is at or below the effective threshold\n"
+         "(or the user-supplied callback returned True). Equivalent to\n"
+         "get_int(\"converged\") but returns bool.");
 }

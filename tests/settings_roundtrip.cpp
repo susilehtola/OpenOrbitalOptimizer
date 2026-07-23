@@ -86,11 +86,15 @@ int main() {
         solver.set(key, v);
         REQUIRE(solver.get_int(key) == v);
       } else if (type == "string") {
-        // Every catalog string is validated on set(); pick an
-        // input we know each accepts.
-        std::string v = (key == "error_norm") ? "rms" : "";
-        solver.set(key, v);
-        REQUIRE(solver.get_string(key) == v);
+        // Every catalog string is validated on set(); pick an input
+        // we know each accepts. `methods` is stored in canonical
+        // uppercase, so the round-trip echoes back "ODA".
+        std::string v_in, v_expect;
+        if (key == "error_norm")   { v_in = "rms";  v_expect = "rms"; }
+        else if (key == "methods") { v_in = "oda";  v_expect = "ODA"; }
+        else                       { v_in = "";     v_expect = ""; }
+        solver.set(key, v_in);
+        REQUIRE(solver.get_string(key) == v_expect);
       } else {
         std::printf("FAIL: unknown type '%s' in catalog for '%s'\n",
                     type.c_str(), key.c_str());

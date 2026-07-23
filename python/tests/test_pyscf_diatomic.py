@@ -23,9 +23,9 @@ def _run_pair(mol, mf_cls, **solver_kwargs):
     e_ref = mf_ref.kernel()
     mf_oo_base = mf_cls(mol)
     oo = OpenOrbitalDiatomicSCF(mf_oo_base)
-    oo.solver.verbosity(0)
+    oo.solver.set("verbosity", 0)
     for k, v in solver_kwargs.items():
-        getattr(oo.solver, k)(v)
+        oo.solver.set(k, v)
     e_oo = oo.kernel()
     return e_ref, e_oo, oo
 

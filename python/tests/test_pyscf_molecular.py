@@ -36,8 +36,8 @@ def test_rhf_water_no_symmetry():
     )
     mf = scf.RHF(mol)
     oo = OpenOrbitalSCF(mf)
-    oo.solver.verbosity(0)
-    oo.solver.convergence_threshold(1e-8)
+    oo.solver.set("verbosity", 0)
+    oo.solver.set("convergence_threshold", 1e-8)
     ok, e_ref, e_oo = _agrees_with_pyscf(mf, oo)
     assert ok, f"PySCF = {e_ref:.10f}, OO = {e_oo:.10f}"
     # Single block (no symmetry).
@@ -53,8 +53,8 @@ def test_rhf_water_c2v():
     )
     mf = scf.RHF(mol)
     oo = OpenOrbitalSCF(mf)
-    oo.solver.verbosity(0)
-    oo.solver.convergence_threshold(1e-8)
+    oo.solver.set("verbosity", 0)
+    oo.solver.set("convergence_threshold", 1e-8)
     ok, e_ref, e_oo = _agrees_with_pyscf(mf, oo)
     assert ok, f"PySCF = {e_ref:.10f}, OO = {e_oo:.10f}"
     # C2v has four irreps; non-empty ones become OO blocks.
@@ -72,8 +72,8 @@ def test_uhf_triplet_methylene():
     )
     mf = scf.UHF(mol)
     oo = OpenOrbitalSCF(mf)
-    oo.solver.verbosity(0)
-    oo.solver.convergence_threshold(1e-8)
+    oo.solver.set("verbosity", 0)
+    oo.solver.set("convergence_threshold", 1e-8)
     ok, e_ref, e_oo = _agrees_with_pyscf(mf, oo)
     assert ok, f"PySCF = {e_ref:.10f}, OO = {e_oo:.10f}"
 
