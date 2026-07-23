@@ -137,7 +137,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="171" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="171" bodyend="171"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="176" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="176" bodyend="176"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aefac47e222acce48d8e8107fbc5c2f75" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -151,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="172" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="172" bodyend="172"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="177" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="177" bodyend="177"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa073cd14207640ab384427969c789cd1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -169,7 +169,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="173" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="173" bodyend="173"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="178" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="178" bodyend="178"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1af3c1910ac773e07ef922f480c46f4390" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -183,7 +183,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="174" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="174" bodyend="174"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="179" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="179" bodyend="179"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a9e6c68235a2dea636fd6e2d0bd97cd0c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -201,7 +201,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="175" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="175" bodyend="175"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="180" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="180" bodyend="180"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a547c27e8a74abfd61f92542e2036a849" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -215,7 +215,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="176" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="176" bodyend="176"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="181" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="181" bodyend="181"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a37c0345cc9be5b8a04765fda4dd89629" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -229,7 +229,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="177" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="177" bodyend="177"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="182" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="182" bodyend="182"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac128e721124c0ba8d8918eae25390c1e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -247,7 +247,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="178" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="178" bodyend="178"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="183" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="183" bodyend="183"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa08d4798760ef43ac1d7f081f638c2ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -265,7 +265,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="179" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="179" bodyend="179"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="184" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="184" bodyend="184"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5cd0a6fded1cf701c70e84ba4f114013" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -283,7 +283,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="181" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="181" bodyend="181"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="186" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="186" bodyend="186"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a2b1fb8a8a1ffbe67f0186547fe82b1c6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -297,7 +297,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="182" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="182" bodyend="182"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="187" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="187" bodyend="187"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ae9348efaaec75dade19053bb8cd134b9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -315,7 +315,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="183" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="183" bodyend="183"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="188" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="188" bodyend="188"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a855a09974d63b9223a69ac9416079fa9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -329,7 +329,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="184" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="184" bodyend="184"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="189" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="189" bodyend="189"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7920b5d4cd15602cd4849f5290265785" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -347,7 +347,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="185" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="185" bodyend="185"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="190" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="190" bodyend="190"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1af134a8a63d69869be4077c6f93e8aeac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -361,7 +361,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="186" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="186" bodyend="186"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="191" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="191" bodyend="191"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac4aa68feda0b14fbfd985bd2d1436ac9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -379,7 +379,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="187" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="187" bodyend="187"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="192" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="192" bodyend="192"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a8fa999db7c0946babda99f8f08cd6bca" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -393,7 +393,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="188" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="188" bodyend="188"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="193" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="193" bodyend="193"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a973f09790b580bcc91b8a0581ed37848" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -411,7 +411,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="189" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="189" bodyend="189"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="194" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="194" bodyend="194"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a90c0c8637642a593b11f46ed7dcc4516" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -425,7 +425,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="190" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="190" bodyend="190"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="195" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="195" bodyend="195"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a62781b19ebdce1a3f73e37bdc711017c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -443,7 +443,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="191" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="191" bodyend="191"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="196" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="196" bodyend="196"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ae10b3fd7dc3b27157740425971fe9e00" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -457,7 +457,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="192" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="192" bodyend="192"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="197" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="197" bodyend="197"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a2482b94f0eccc19fedf7a89409d51f6b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -475,7 +475,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="193" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="193" bodyend="193"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="198" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="198" bodyend="198"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a75c677a90f6afbe3961d39a4a14177c4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -489,7 +489,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="194" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="194" bodyend="194"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="199" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="199" bodyend="199"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a01a99f6f2669b9b6fbee44b312eac6be" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -507,7 +507,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="195" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="195" bodyend="195"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="200" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="200" bodyend="200"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a26e9b5620ddec12ba710193c65901d0e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -521,7 +521,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="196" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="196" bodyend="196"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="201" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="201" bodyend="201"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a331221d8765ad3e0e9f99f90545be9bd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -539,7 +539,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="197" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="197" bodyend="197"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="202" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="202" bodyend="202"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a81e5aae9de58550200be1eb13240ee93" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -553,7 +553,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="198" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="198" bodyend="198"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="203" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="203" bodyend="203"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a3c4f403de923a9e2da7c4cd023e9f9dc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -567,7 +567,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="199" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="199" bodyend="199"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="204" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="204" bodyend="204"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a03decc3f3eda98f726f2e489d933ba44" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -581,7 +581,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="200" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="200" bodyend="200"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="205" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="205" bodyend="205"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a1959454d9ed6bd4217707503ef0ffb26" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -595,7 +595,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="201" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="201" bodyend="201"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="206" column="12" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="206" bodyend="206"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a45599c34395791ddf8e6bff49b7cf734" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -613,7 +613,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="203" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="203" bodyend="205"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="208" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="208" bodyend="210"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a784ef48ff4d49e8c2bb4850f7ae78a6f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -631,7 +631,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="209" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="209" bodyend="211"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="214" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="214" bodyend="216"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1afd770d51a53ec419c5f916d752cd2cce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -653,7 +653,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="212" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="212" bodyend="215"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="217" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="217" bodyend="220"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa0152022ba70cd93bc5b1c02fc69559e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -672,22 +672,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="219" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="219" bodyend="219"/>
-      </memberdef>
-      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7c606aaa83cd29169c534202f7d3307d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
-        <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::run_optimal_damping</definition>
-        <argsstring>()</argsstring>
-        <name>run_optimal_damping</name>
-        <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::run_optimal_damping</qualifiedname>
-        <briefdescription>
-<para>Backwards-compatible alias for the pre-oda-merge behavior. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="221" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="221" bodyend="221"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="224" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="224" bodyend="230"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aae1100f157632b829ae1220d2033ed99" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -701,7 +686,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="222" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="222" bodyend="222"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="231" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="231" bodyend="231"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a08ce29adc376cb730190f5c4077dd203" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -715,7 +700,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="223" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="223" bodyend="225"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="232" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="232" bodyend="234"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ab255fdf5461cf12fa234fc949e430979" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>DensityMatrix&lt; Torb, Tbase &gt;</type>
@@ -734,7 +719,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="229" column="19" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="229" bodyend="232"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="238" column="19" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="238" bodyend="241"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ad2a131fe32652267c368dcbce52ea0ac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Orbitals&lt; Torb &gt;</type>
@@ -753,7 +738,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="233" column="14" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="233" bodyend="235"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="242" column="14" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="242" bodyend="244"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5ee8ac13994af54423148fdc9ebd5bc8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalOccupations&lt; Tbase &gt;</type>
@@ -772,7 +757,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="236" column="24" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="236" bodyend="238"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="245" column="24" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="245" bodyend="247"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a954e6e8df5e5366684dbb082f9268935" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FockBuilderReturn&lt; Torb, Tbase &gt;</type>
@@ -791,7 +776,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="239" column="23" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="239" bodyend="242"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="248" column="23" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="248" bodyend="251"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1afa334f249aab45bc7d16117b618a3d3b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FockMatrix&lt; Torb &gt;</type>
@@ -810,7 +795,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="243" column="16" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="243" bodyend="245"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="252" column="16" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="252" bodyend="254"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1acf869a3020973c95d087d33c639612ca" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -829,7 +814,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="246" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="246" bodyend="246"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="255" column="11" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="255" bodyend="255"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7691d78acdc0a12d7bcdf032768c4536" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -843,7 +828,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="250" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="250" bodyend="250"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="259" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="259" bodyend="259"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aea280384d810e1e95a655df981361436" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -857,7 +842,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="251" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="251" bodyend="251"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="260" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="260" bodyend="260"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1af32a592d4f3e63ae7176ee8a01e4e261" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>DiagonalizedFockMatrix&lt; Torb, Tbase &gt;</type>
@@ -875,7 +860,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="253" column="28" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="253" bodyend="256"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="262" column="28" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="262" bodyend="265"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a35a78ffadcfeb5909261f2fa62331af4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalOccupations&lt; Tbase &gt;</type>
@@ -893,14 +878,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="257" column="24" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="257" bodyend="259"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="266" column="24" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="266" bodyend="268"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="openorbitaloptimizer/armadillo_compat.hpp" line="138" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="138" bodyend="260"/>
+    <location file="openorbitaloptimizer/armadillo_compat.hpp" line="138" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="138" bodyend="269"/>
     <listofallmembers>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a9ac2f7ae0dd91f1cea72510c5309de37" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>arma_fock_builder_</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a08ce29adc376cb730190f5c4077dd203" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>brute_force_search_for_lowest_configuration</name></member>
@@ -950,7 +935,6 @@
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7691d78acdc0a12d7bcdf032768c4536" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>print_history</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aea280384d810e1e95a655df981361436" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>reset_history</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa0152022ba70cd93bc5b1c02fc69559e" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>run</name></member>
-      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7c606aaa83cd29169c534202f7d3307d" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>run_optimal_damping</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5f17bcdaee156d96340a4bd29a8477bc" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>SCFSolver</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a35a78ffadcfeb5909261f2fa62331af4" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>update_occupations</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac1c635ada5d9f953f25b24a74ab8c6ab" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>verbosity</name></member>

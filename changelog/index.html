@@ -975,6 +975,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#new-features" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1014,7 +1025,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#breaking-changes" class="md-nav__link">
+  <a href="#breaking-changes_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Breaking Changes
@@ -1075,7 +1086,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#breaking-changes_1" class="md-nav__link">
+  <a href="#breaking-changes_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Breaking Changes
@@ -1147,7 +1158,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#breaking-changes_2" class="md-nav__link">
+  <a href="#breaking-changes_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         Breaking Changes
@@ -1267,6 +1278,24 @@
 -->
 
 <h2 id="v050-unreleased">v0.5.0 / (Unreleased)</h2>
+<h4 id="breaking-changes">Breaking Changes</h4>
+<ul>
+<li>The per-option typed getters and setters on <code>SCFSolver</code> have been
+  removed. Use the string-keyed façade instead:
+  <code>solver.set(key, value)</code>, <code>solver.get_real / get_int /
+  get_string(key)</code>, <code>SCFSolver::options()</code>. The Armadillo compatibility
+  shim keeps its typed forwarders and now routes them through the
+  façade.</li>
+<li><code>SCFSolver::run()</code> no longer takes a method-mix argument; it
+  consumes the <code>methods</code> setting, which is normalised to canonical
+  uppercase on <code>set()</code>. Migrate <code>solver.run("ODA + CG")</code> to
+  <code>solver.set("methods", "ODA + CG"); solver.run()</code>.</li>
+<li>Python bindings dropped the per-option typed methods (<code>verbosity</code>,
+  <code>convergence_threshold</code>, <code>maximum_iterations</code>, ...). Use
+  <code>solver.set(key, value)</code> or the attribute-style
+  <code>solver.settings.&lt;key&gt; = value</code>. <code>SCFSolver</code> and <code>OptionInfo</code> are
+  now importable from the <code>openorbital</code> package top level.</li>
+</ul>
 <h4 id="new-features">New Features</h4>
 <ul>
 <li>SCF convergence threshold is now clamped to an arithmetic-precision
@@ -1285,6 +1314,27 @@
   diagnostic with its type and one-line description. Downstream
   callers now only need to know this triple to reach any setting,
   making JSON/dict-shaped configuration pipe-throughs trivial.</li>
+<li>Add <code>openorbital.Settings</code>: an attribute-style proxy that dispatches
+  through the C++ catalog, so
+  <code>solver.settings.convergence_threshold = 1e-9</code> is equivalent to
+  <code>solver.set("convergence_threshold", 1e-9)</code> with the same catalog
+  validation, <code>dir()</code> completion, and read-only diagnostic guards.</li>
+<li>Add <code>SCFSolver::print_settings()</code> which dumps every catalog entry
+  with its current value. Read-only diagnostics that aren't yet
+  computable (e.g. <code>converged</code> before the first <code>initialize_with_*</code>)
+  print as <code>n/a</code> instead of throwing. Python bindings expose it as
+  <code>solver.print_settings()</code> and the same output backs
+  <code>str(solver.settings)</code>.</li>
+<li>Add <code>SCFSolver::citation()</code> and <code>SCFSolver::print_citation()</code> so
+  downstream drivers can echo the canonical reference (Lehtola &amp;
+  Burns, J. Phys. Chem. A <strong>129</strong>, 5651 (2025);
+  doi:10.1021/acs.jpca.5c02110) without hardcoding it, and add a
+  <code>CITATION.cff</code> at the repository root so GitHub's "Cite this
+  repository" button and citation-tracking tools resolve it
+  automatically.</li>
+<li>The three PySCF drivers grew an <code>options=None</code> dict argument on
+  <code>kernel()</code>; entries are forwarded via <code>solver.set(key, value)</code>
+  before the run.</li>
 </ul>
 <h4 id="enhancements">Enhancements</h4>
 <ul>
@@ -1294,9 +1344,11 @@
 <li><code>brute_force_search_for_lowest_configuration</code> now saves and
   restores <code>verbosity</code> and <code>frozen_occupations</code>, so calling it no
   longer permanently silences and thaws the parent solver.</li>
+<li>Removed the deprecated <code>run_optimal_damping()</code> alias on the
+  Armadillo compatibility shim.</li>
 </ul>
 <h2 id="v040-2026-07-20">v0.4.0 / 2026-07-20</h2>
-<h4 id="breaking-changes">Breaking Changes</h4>
+<h4 id="breaking-changes_1">Breaking Changes</h4>
 <ul>
 <li>The linear-algebra backend switched from Armadillo to Eigen 3.4. The public
   API keeps the <code>SCFSolver&lt;Torb, Tbase&gt;</code> template signature via a compat shim,
@@ -1340,7 +1392,7 @@
   explicitly opts in.</li>
 </ul>
 <h2 id="v030-2026-05-21">v0.3.0 / 2026-05-21</h2>
-<h4 id="breaking-changes_1">Breaking Changes</h4>
+<h4 id="breaking-changes_2">Breaking Changes</h4>
 <h4 id="new-features_2">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/34">#34</a> Add Python interface!
@@ -1376,7 +1428,7 @@
 <li>Added a <code>CLAUDE.md</code> file to aid agents.</li>
 </ul>
 <h2 id="v020-2025-08-12">v0.2.0 / 2025-08-12</h2>
-<h4 id="breaking-changes_2">Breaking Changes</h4>
+<h4 id="breaking-changes_3">Breaking Changes</h4>
 <h4 id="new-features_3">New Features</h4>
 <h4 id="enhancements_3">Enhancements</h4>
 <ul>

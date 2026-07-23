@@ -27,6 +27,7 @@
 #include <cstdio>
 #include <deque>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -119,6 +120,8 @@ namespace OpenOrbitalOptimizer {
     Tbase noise_floor_ = 0;
     std::string error_norm_ = "rms";
 
+    std::string methods_ = "DIIS + ODA + CG";
+
     Tbase minimal_gradient_projection_ = 1e-4;
     Tbase occupied_threshold_ = 1e-6;
     Tbase initial_level_shift_ = 1e-3;
@@ -145,6 +148,45 @@ namespace OpenOrbitalOptimizer {
       std::vector<OrbitalRotation> history_dofs;
     };
     std::unique_ptr<LBFGSState> lbfgs_;
+
+    struct AllowedMethods {
+      bool diis = false, oda = false, cg = false, lbfgs = false;
+      bool orbital_rotation() const { return cg || lbfgs; }
+      bool any() const { return diis || oda || orbital_rotation(); }
+    };
+
+    static AllowedMethods parse_method_string(const std::string & methods) {
+      AllowedMethods allowed;
+      std::string s = methods;
+      std::transform(s.begin(), s.end(), s.begin(),
+                     [](unsigned char c){ return std::tolower(c); });
+      std::istringstream iss(s);
+      std::string token;
+      while(std::getline(iss, token, '+')) {
+        while(!token.empty() && std::isspace((unsigned char)token.front()))
+          token.erase(token.begin());
+        while(!token.empty() && std::isspace((unsigned char)token.back()))
+          token.pop_back();
+        if(token.empty()) continue;
+        if(token == "diis") allowed.diis = true;
+        else if(token == "oda") allowed.oda = true;
+        else if(token == "cg") allowed.cg = true;
+        else if(token == "lbfgs") allowed.lbfgs = true;
+        else throw std::logic_error("Unknown method '" + token
+            + "' in methods string '" + methods
+            + "' (allowed: DIIS, ODA, CG, LBFGS)");
+      }
+      if(!allowed.any())
+        throw std::logic_error("No methods enabled in '" + methods + "'");
+      return allowed;
+    }
+
+    static std::string to_upper_copy(const std::string & s) {
+      std::string out = s;
+      std::transform(out.begin(), out.end(), out.begin(),
+                     [](unsigned char c){ return std::toupper(c); });
+      return out;
+    }
 
     /* Internal functions */
     bool empty_block(size_t iblock) const {
@@ -2624,22 +2666,6 @@ namespace OpenOrbitalOptimizer {
       fixed_number_of_particles_per_block_ = number_of_particles_per_block;
     }
 
-    bool frozen_occupations() const {
-      return frozen_occupations_;
-    }
-
-    void frozen_occupations(bool frozen) {
-      frozen_occupations_ = frozen;
-    }
-
-    int verbosity() const {
-      return verbosity_;
-    }
-
-    void verbosity(int verbosity) {
-      verbosity_ = verbosity;
-    }
-
     // === Settings façade ==================================================
     //
     // Type-tagged set / get / options catalog. Every knob the solver
@@ -2665,6 +2691,8 @@ namespace OpenOrbitalOptimizer {
          "K in effective threshold max(convergence_threshold, K * noise_floor)"},
         {"error_norm",            "string", true,
          "DIIS error norm; one of rms, fro, inf, 1, 2"},
+        {"methods",               "string", true,
+         "SCF method mix consumed by run(); e.g. \"DIIS + ODA + CG\", \"DIIS\", \"ODA + CG\", \"DIIS + ODA + LBFGS\""},
         // -- DIIS ------------------------------------------------------------
         {"diis_epsilon",          "real", true,
          "pure-DIIS blend cutoff"},
@@ -2762,6 +2790,10 @@ namespace OpenOrbitalOptimizer {
           error_norm_ = prev;
           throw;
         }
+      } else if (key == "methods") {
+        // Validate by parsing; store canonical uppercase.
+        (void) parse_method_string(v);
+        methods_ = to_upper_copy(v);
       } else {
         throw std::invalid_argument(
           "SCFSolver::set(string): unknown or non-string key '" + key + "'");
@@ -2804,32 +2836,59 @@ namespace OpenOrbitalOptimizer {
     }
 
     std::string get_string(const std::string & key) const {
-      if (key == "error_norm") return error_norm_;
+      if      (key == "error_norm") return error_norm_;
+      else if (key == "methods")    return methods_;
       else throw std::invalid_argument(
         "SCFSolver::get_string: unknown or non-string key '" + key + "'");
     }
 
+    void print_settings(std::ostream & os = std::cout) const {
+      const auto & catalog = options();
+      size_t maxlen = 0;
+      for (const auto & o : catalog)
+        maxlen = std::max(maxlen, std::string(o.key).size());
+      os << "OpenOrbitalOptimizer settings:\n";
+      for (const auto & o : catalog) {
+        os << "  " << std::left << std::setw((int)maxlen) << o.key << " = ";
+        try {
+          std::string t = o.type;
+          if (t == "real") {
+            os << std::scientific << std::setprecision(6) << get_real(o.key);
+          } else if (t == "int") {
+            os << get_int(o.key);
+          } else if (t == "string") {
+            os << "\"" << get_string(o.key) << "\"";
+          } else {
+            os << "?";
+          }
+        } catch (const std::exception &) {
+          // Read-only diagnostic not yet available (e.g. converged
+          // before initialize_with_*). Report as unavailable rather
+          // than propagating -- print_settings shouldn't throw just
+          // because history is empty.
+          os << "n/a";
+        }
+        if (!o.writable) os << "  (read-only)";
+        os << "\n";
+      }
+      os.flush();
+    }
+
+    static std::string citation() {
+      return "Susi Lehtola and Lori A. Burns, "
+             "\"OpenOrbitalOptimizer -- a reusable open source library "
+             "for self-consistent field calculations\", "
+             "J. Phys. Chem. A 129, 5651 (2025). "
+             "doi:10.1021/acs.jpca.5c02110";
+    }
+
+    static void print_citation(std::ostream & os = std::cout) {
+      os << "If you use OpenOrbitalOptimizer, please cite:\n"
+         << "  " << citation() << "\n";
+      os.flush();
+    }
+
     // === End settings façade ==============================================
-
-    Tbase convergence_threshold() const {
-      return convergence_threshold_;
-    }
-
-    void convergence_threshold(Tbase convergence_threshold) {
-      convergence_threshold_ = convergence_threshold;
-    }
-
-    Tbase noise_safety_factor() const {
-      return noise_safety_factor_;
-    }
-
-    void noise_safety_factor(Tbase k) {
-      noise_safety_factor_ = k;
-    }
-
-    Tbase noise_floor() const {
-      return noise_floor_;
-    }
 
     void set_batched_fock_builder(BatchedFockBuilder<Torb, Tbase> builder) {
       batched_fock_builder_ = std::move(builder);
@@ -2837,14 +2896,6 @@ namespace OpenOrbitalOptimizer {
 
     bool has_batched_fock_builder() const {
       return batched_fock_builder_ != nullptr;
-    }
-
-    Tbase optimal_damping_degeneracy_threshold() const {
-      return optimal_damping_degeneracy_threshold_;
-    }
-
-    void optimal_damping_degeneracy_threshold(Tbase threshold) {
-      optimal_damping_degeneracy_threshold_ = threshold;
     }
 
     Tbase get_energy(size_t ihist=0) const {
@@ -2862,10 +2913,6 @@ namespace OpenOrbitalOptimizer {
         diff_norm += norm(vectorise(Matrix<Torb>(get_density_matrix_block(ihist, iblock)-get_density_matrix_block(jhist, iblock))));
       }
       return diff_norm;
-    }
-
-    std::string error_norm() const {
-      return error_norm_;
     }
 
     Tbase norm(const Matrix<Tbase> & mat, std::string norm="") const {
@@ -2887,98 +2934,6 @@ namespace OpenOrbitalOptimizer {
       } else {
         throw std::logic_error("Unknown norm: " + norm);
       }
-    }
-
-    void error_norm(const std::string & error_norm) {
-      // Set the norm
-      error_norm_ = error_norm;
-      // and check that it is a valid option
-      Vector<Tbase> test = Vector<Tbase>::Ones(1);
-      (void) norm(test);
-    }
-
-    size_t maximum_iterations() const {
-      return maximum_iterations_;
-    }
-
-    void maximum_iterations(size_t maxit) {
-      maximum_iterations_ = maxit;
-    }
-
-    size_t number_of_fock_evaluations() const {
-      return number_of_fock_evaluations_;
-    }
-
-    Tbase diis_epsilon() const {
-      return diis_epsilon_;
-    }
-
-    void diis_epsilon(Tbase eps) {
-      diis_epsilon_ = eps;
-    }
-
-    Tbase diis_threshold() const {
-      return diis_threshold_;
-    }
-
-    void diis_threshold(Tbase eps) {
-      diis_threshold_ = eps;
-    }
-
-    Tbase diis_diagonal_damping() const {
-      return diis_diagonal_damping_;
-    }
-
-    void diis_diagonal_damping(Tbase eps) {
-      diis_diagonal_damping_ = eps;
-    }
-
-    Tbase diis_restart_factor() const {
-      return diis_restart_factor_;
-    }
-
-    void diis_restart_factor(Tbase eps) {
-      diis_restart_factor_ = eps;
-    }
-
-    Tbase optimal_damping_threshold() const {
-      return optimal_damping_threshold_;
-    }
-
-    void optimal_damping_threshold(Tbase eps) {
-      optimal_damping_threshold_ = eps;
-    }
-
-    size_t orbital_rotation_steps_after_oda() const {
-      return orbital_rotation_steps_after_oda_;
-    }
-
-    void orbital_rotation_steps_after_oda(size_t n) {
-      orbital_rotation_steps_after_oda_ = n;
-    }
-
-    size_t last_polytope_dimension() const {
-      return last_polytope_dimension_;
-    }
-
-    size_t last_active_rotation_count() const {
-      return last_active_rotation_count_;
-    }
-
-    int maximum_history_length() const {
-      return maximum_history_length_;
-    }
-
-    void maximum_history_length(int maximum_history_length) {
-      maximum_history_length_ = maximum_history_length;
-    }
-
-    int oda_restart_steps() const {
-      return oda_restart_steps_;
-    }
-
-    void oda_restart_steps(int oda_restart_steps) {
-      oda_restart_steps_ = oda_restart_steps;
     }
 
     bool add_entry(const DensityMatrix<Torb, Tbase> & density) {
@@ -3149,6 +3104,12 @@ namespace OpenOrbitalOptimizer {
     }
 
     bool converged() const {
+        // Nothing has been iterated yet, so trivially not converged.
+        // Guarding here rather than at every call site (including
+        // print_settings) keeps the diagnostic safe to query at any
+        // point in the solver's lifetime.
+        if(orbital_history_.empty())
+            return false;
         if(callback_convergence_function_) {
 
             // Data to pass to callback function
@@ -3164,37 +3125,10 @@ namespace OpenOrbitalOptimizer {
         }
     }
 
-    void run(const std::string & methods = "DIIS + ODA + CG") {
-      struct AllowedMethods {
-        bool diis = false, oda = false, cg = false, lbfgs = false;
-        bool orbital_rotation() const { return cg || lbfgs; }
-      };
-      AllowedMethods allowed;
-      {
-        std::string s = methods;
-        std::transform(s.begin(), s.end(), s.begin(),
-                       [](unsigned char c){ return std::tolower(c); });
-        std::istringstream iss(s);
-        std::string token;
-        while(std::getline(iss, token, '+')) {
-          while(!token.empty() && std::isspace((unsigned char)token.front()))
-            token.erase(token.begin());
-          while(!token.empty() && std::isspace((unsigned char)token.back()))
-            token.pop_back();
-          if(token.empty()) continue;
-          if(token == "diis") allowed.diis = true;
-          else if(token == "oda") allowed.oda = true;
-          else if(token == "cg") allowed.cg = true;
-          else if(token == "lbfgs") allowed.lbfgs = true;
-          else throw std::logic_error("run(): unknown method '" + token
-              + "' in methods string '" + methods
-              + "' (allowed: DIIS, ODA, CG, LBFGS)");
-        }
-        if(!(allowed.diis || allowed.oda || allowed.orbital_rotation()))
-          throw std::logic_error("run(): no methods enabled in '" + methods + "'");
-        if(frozen_occupations_)
-          allowed.oda = false;  // occupations are pinned; ODA cannot move them
-      }
+    void run() {
+      AllowedMethods allowed = parse_method_string(methods_);
+      if(frozen_occupations_)
+        allowed.oda = false;  // occupations are pinned; ODA cannot move them
 
       // Freeze the roundoff noise floor of the DIIS residual from the
       // initial Fock. The basis conditioning is dominated by the

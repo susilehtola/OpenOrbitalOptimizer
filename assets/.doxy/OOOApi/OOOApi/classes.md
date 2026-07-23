@@ -2,6 +2,11 @@
 # Class Index
 
 
+## a
+
+* [**AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md)
+
+
 ## l
 
 * [**LBFGSState**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState.md)

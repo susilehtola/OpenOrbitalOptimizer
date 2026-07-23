@@ -157,38 +157,43 @@ namespace Armadillo {
               block_descriptions) {}
 
     // ---- Pass-through configuration ---------------------------------
+    //
+    // Typed accessors previously exposed here have been consolidated
+    // into the string-keyed façade on the underlying SCFSolver; the
+    // shim forwards them one for one so downstream Armadillo callers
+    // keep using the same names.
 
-    void verbosity(int v)                        { impl_.verbosity(v); }
-    int  verbosity() const                       { return impl_.verbosity(); }
-    void convergence_threshold(Tbase t)          { impl_.convergence_threshold(t); }
-    Tbase convergence_threshold() const          { return impl_.convergence_threshold(); }
-    void maximum_iterations(size_t n)            { impl_.maximum_iterations(n); }
-    size_t maximum_iterations() const            { return impl_.maximum_iterations(); }
-    bool frozen_occupations() const              { return impl_.frozen_occupations(); }
-    void frozen_occupations(bool b)              { impl_.frozen_occupations(b); }
-    void error_norm(const std::string & n)       { impl_.error_norm(n); }
+    void verbosity(int v)                        { impl_.set(std::string("verbosity"), v); }
+    int  verbosity() const                       { return impl_.get_int("verbosity"); }
+    void convergence_threshold(Tbase t)          { impl_.set(std::string("convergence_threshold"), t); }
+    Tbase convergence_threshold() const          { return impl_.get_real("convergence_threshold"); }
+    void maximum_iterations(size_t n)            { impl_.set(std::string("maximum_iterations"), (int) n); }
+    size_t maximum_iterations() const            { return (size_t) impl_.get_int("maximum_iterations"); }
+    bool frozen_occupations() const              { return impl_.get_int("frozen_occupations") != 0; }
+    void frozen_occupations(bool b)              { impl_.set(std::string("frozen_occupations"), b ? 1 : 0); }
+    void error_norm(const std::string & n)       { impl_.set(std::string("error_norm"), n); }
 
-    void diis_epsilon(Tbase e)                   { impl_.diis_epsilon(e); }
-    Tbase diis_epsilon() const                   { return impl_.diis_epsilon(); }
-    void diis_threshold(Tbase e)                 { impl_.diis_threshold(e); }
-    Tbase diis_threshold() const                 { return impl_.diis_threshold(); }
-    void diis_diagonal_damping(Tbase e)          { impl_.diis_diagonal_damping(e); }
-    Tbase diis_diagonal_damping() const          { return impl_.diis_diagonal_damping(); }
-    void diis_restart_factor(Tbase e)            { impl_.diis_restart_factor(e); }
-    Tbase diis_restart_factor() const            { return impl_.diis_restart_factor(); }
-    void optimal_damping_threshold(Tbase e)      { impl_.optimal_damping_threshold(e); }
-    Tbase optimal_damping_threshold() const      { return impl_.optimal_damping_threshold(); }
-    void optimal_damping_degeneracy_threshold(Tbase e) { impl_.optimal_damping_degeneracy_threshold(e); }
-    Tbase optimal_damping_degeneracy_threshold() const { return impl_.optimal_damping_degeneracy_threshold(); }
-    void maximum_history_length(int n)           { impl_.maximum_history_length(n); }
-    int  maximum_history_length() const          { return impl_.maximum_history_length(); }
-    void oda_restart_steps(int n)                { impl_.oda_restart_steps(n); }
-    int  oda_restart_steps() const               { return impl_.oda_restart_steps(); }
-    void orbital_rotation_steps_after_oda(size_t n) { impl_.orbital_rotation_steps_after_oda(n); }
-    size_t orbital_rotation_steps_after_oda() const { return impl_.orbital_rotation_steps_after_oda(); }
-    size_t last_polytope_dimension() const       { return impl_.last_polytope_dimension(); }
-    size_t last_active_rotation_count() const    { return impl_.last_active_rotation_count(); }
-    size_t number_of_fock_evaluations() const    { return impl_.number_of_fock_evaluations(); }
+    void diis_epsilon(Tbase e)                   { impl_.set(std::string("diis_epsilon"), e); }
+    Tbase diis_epsilon() const                   { return impl_.get_real("diis_epsilon"); }
+    void diis_threshold(Tbase e)                 { impl_.set(std::string("diis_threshold"), e); }
+    Tbase diis_threshold() const                 { return impl_.get_real("diis_threshold"); }
+    void diis_diagonal_damping(Tbase e)          { impl_.set(std::string("diis_diagonal_damping"), e); }
+    Tbase diis_diagonal_damping() const          { return impl_.get_real("diis_diagonal_damping"); }
+    void diis_restart_factor(Tbase e)            { impl_.set(std::string("diis_restart_factor"), e); }
+    Tbase diis_restart_factor() const            { return impl_.get_real("diis_restart_factor"); }
+    void optimal_damping_threshold(Tbase e)      { impl_.set(std::string("optimal_damping_threshold"), e); }
+    Tbase optimal_damping_threshold() const      { return impl_.get_real("optimal_damping_threshold"); }
+    void optimal_damping_degeneracy_threshold(Tbase e) { impl_.set(std::string("optimal_damping_degeneracy_threshold"), e); }
+    Tbase optimal_damping_degeneracy_threshold() const { return impl_.get_real("optimal_damping_degeneracy_threshold"); }
+    void maximum_history_length(int n)           { impl_.set(std::string("maximum_history_length"), n); }
+    int  maximum_history_length() const          { return impl_.get_int("maximum_history_length"); }
+    void oda_restart_steps(int n)                { impl_.set(std::string("oda_restart_steps"), n); }
+    int  oda_restart_steps() const               { return impl_.get_int("oda_restart_steps"); }
+    void orbital_rotation_steps_after_oda(size_t n) { impl_.set(std::string("orbital_rotation_steps_after_oda"), (int) n); }
+    size_t orbital_rotation_steps_after_oda() const { return (size_t) impl_.get_int("orbital_rotation_steps_after_oda"); }
+    size_t last_polytope_dimension() const       { return (size_t) impl_.get_int("last_polytope_dimension"); }
+    size_t last_active_rotation_count() const    { return (size_t) impl_.get_int("last_active_rotation_count"); }
+    size_t number_of_fock_evaluations() const    { return (size_t) impl_.get_int("number_of_fock_evaluations"); }
 
     void fixed_number_of_particles_per_block(const arma::Col<Tbase> & v) {
       impl_.fixed_number_of_particles_per_block(to_eigen(v));
@@ -206,8 +211,13 @@ namespace Armadillo {
 
     // ---- Driving the SCF --------------------------------------------
 
-    void run(const std::string & methods = "DIIS + ODA + CG") { impl_.run(methods); }
-    void run_optimal_damping()                   { impl_.run("ODA + CG"); }
+    void run(const std::string & methods = "DIIS + ODA + CG") {
+      std::string saved = impl_.get_string("methods");
+      impl_.set("methods", methods);
+      try { impl_.run(); }
+      catch (...) { impl_.set("methods", saved); throw; }
+      impl_.set("methods", saved);
+    }
     bool converged() const                       { return impl_.converged(); }
     void brute_force_search_for_lowest_configuration() {
       impl_.brute_force_search_for_lowest_configuration();

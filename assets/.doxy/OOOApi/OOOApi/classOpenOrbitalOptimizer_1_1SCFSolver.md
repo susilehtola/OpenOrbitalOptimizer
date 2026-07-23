@@ -67,23 +67,9 @@ _SCF solver class._
 |  void | [**callback\_function**](#function-callback_function) (std::function&lt; void(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_function=nullptr) <br> |
 |  [**DiagonalizedFockMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-diagonalizedfockmatrix)&lt; Torb, Tbase &gt; | [**compute\_orbitals**](#function-compute_orbitals) (const FockMatrix&lt; Torb &gt; & fock) const<br>_Computes orbitals and orbital energies by diagonalizing the Fock matrix._  |
 |  bool | [**converged**](#function-converged) () const<br>_Check if we are converged._  |
-|  Tbase | [**convergence\_threshold**](#function-convergence_threshold-12) () const<br>_Get convergence threshold._  |
-|  void | [**convergence\_threshold**](#function-convergence_threshold-22) (Tbase convergence\_threshold) <br>_Set convergence threshold (unused if callback\_convergence\_function set)._  |
 |  Tbase | [**density\_matrix\_difference**](#function-density_matrix_difference) (size\_t ihist, size\_t jhist) <br>_Density matrix difference norm._  |
 |  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; | [**determine\_number\_of\_particles\_by\_aufbau**](#function-determine_number_of_particles_by_aufbau) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determine number of particles in each block._  |
-|  Tbase | [**diis\_diagonal\_damping**](#function-diis_diagonal_damping-12) () const<br>_Damping factor for DIIS diagonal._  |
-|  void | [**diis\_diagonal\_damping**](#function-diis_diagonal_damping-22) (Tbase eps) <br>_Damping factor for DIIS diagonal._  |
-|  Tbase | [**diis\_epsilon**](#function-diis_epsilon-12) () const<br>_When to start mixing in DIIS._  |
-|  void | [**diis\_epsilon**](#function-diis_epsilon-22) (Tbase eps) <br>_When to start mixing in DIIS._  |
-|  Tbase | [**diis\_restart\_factor**](#function-diis_restart_factor-12) () const<br>_DIIS restart criterion._  |
-|  void | [**diis\_restart\_factor**](#function-diis_restart_factor-22) (Tbase eps) <br>_DIIS restart criterion._  |
-|  Tbase | [**diis\_threshold**](#function-diis_threshold-12) () const<br>_When to switch over to DIIS._  |
-|  void | [**diis\_threshold**](#function-diis_threshold-22) (Tbase eps) <br>_When to switch over to DIIS._  |
-|  std::string | [**error\_norm**](#function-error_norm-12) () const<br>_Get the used error norm._  |
-|  void | [**error\_norm**](#function-error_norm-22) (const std::string & error\_norm) <br>_Set the used error norm._  |
 |  void | [**fixed\_number\_of\_particles\_per\_block**](#function-fixed_number_of_particles_per_block) (const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles\_per\_block) <br>_Fix the number of occupied orbitals per block._  |
-|  bool | [**frozen\_occupations**](#function-frozen_occupations-12) () const<br>_Get frozen occupations._  |
-|  void | [**frozen\_occupations**](#function-frozen_occupations-22) (bool frozen) <br>_Set frozen occupations._  |
 |  Tbase | [**get\_energy**](#function-get_energy) (size\_t ihist=0) const<br>_Get the energy for the n:th entry._  |
 |  [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; | [**get\_fock\_build**](#function-get_fock_build) (size\_t ihist=0) const<br>_Get the Fock matrix builder return._  |
 |  FockMatrix&lt; Torb &gt; | [**get\_fock\_matrix**](#function-get_fock_matrix) (size\_t ihist=0) const<br>_Get the Fock matrix for the ihist:th entry._  |
@@ -96,44 +82,27 @@ _SCF solver class._
 |  bool | [**has\_batched\_fock\_builder**](#function-has_batched_fock_builder) () const<br>_Whether a batched Fock builder is registered._  |
 |  void | [**initialize\_with\_fock**](#function-initialize_with_fock) (const FockMatrix&lt; Torb &gt; & fock\_guess) <br>_Initialize the solver with a guess Fock matrix._  |
 |  void | [**initialize\_with\_orbitals**](#function-initialize_with_orbitals) (const [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; & orbitals, const OrbitalOccupations&lt; Tbase &gt; & orbital\_occupations) <br>_Initialize with precomputed orbitals and occupations._  |
-|  size\_t | [**last\_active\_rotation\_count**](#function-last_active_rotation_count) () const<br> |
-|  size\_t | [**last\_polytope\_dimension**](#function-last_polytope_dimension) () const<br>_Polytope dimension of the most recent ODA call (N\_par)._  |
-|  int | [**maximum\_history\_length**](#function-maximum_history_length-12) () const<br>_Get maximum\_history\_length._  |
-|  void | [**maximum\_history\_length**](#function-maximum_history_length-22) (int maximum\_history\_length) <br>_Set maximum\_history\_length._  |
-|  size\_t | [**maximum\_iterations**](#function-maximum_iterations-12) () const<br>_Get the maximum number of iterations._  |
-|  void | [**maximum\_iterations**](#function-maximum_iterations-22) (size\_t maxit) <br>_Set the maximum number of iterations._  |
-|  Tbase | [**noise\_floor**](#function-noise_floor) () const<br>_Get the frozen arithmetic noise floor (populated by_ [_**run()**_](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-run) _)._ |
-|  Tbase | [**noise\_safety\_factor**](#function-noise_safety_factor-12) () const<br>_Get safety factor K for the arithmetic-precision clamp._  |
-|  void | [**noise\_safety\_factor**](#function-noise_safety_factor-22) (Tbase k) <br> |
 |  Tbase | [**norm**](#function-norm) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; Tbase &gt; & mat, std::string norm="") const<br>_Evaluate the norm._  |
-|  size\_t | [**number\_of\_fock\_evaluations**](#function-number_of_fock_evaluations) () const<br> |
-|  int | [**oda\_restart\_steps**](#function-oda_restart_steps-12) () const<br>_Get oda\_restart\_steps._  |
-|  void | [**oda\_restart\_steps**](#function-oda_restart_steps-22) (int oda\_restart\_steps) <br>_Set oda\_restart\_steps._  |
-|  Tbase | [**optimal\_damping\_degeneracy\_threshold**](#function-optimal_damping_degeneracy_threshold-12) () const<br>_Get energy gap below which orbitals are treated as degenerate in optimal damping._  |
-|  void | [**optimal\_damping\_degeneracy\_threshold**](#function-optimal_damping_degeneracy_threshold-22) (Tbase threshold) <br>_Set energy gap below which orbitals are treated as degenerate in optimal damping._  |
-|  Tbase | [**optimal\_damping\_threshold**](#function-optimal_damping_threshold-12) () const<br>_Use optimal damping when max error bigger than this._  |
-|  void | [**optimal\_damping\_threshold**](#function-optimal_damping_threshold-22) (Tbase eps) <br>_Use optimal damping when max error bigger than this._  |
-|  size\_t | [**orbital\_rotation\_steps\_after\_oda**](#function-orbital_rotation_steps_after_oda-12) () const<br> |
-|  void | [**orbital\_rotation\_steps\_after\_oda**](#function-orbital_rotation_steps_after_oda-22) (size\_t n) <br> |
 |  std::vector&lt; std::tuple&lt; Tbase, size\_t, size\_t &gt; &gt; | [**order\_orbitals\_by\_energy**](#function-order_orbitals_by_energy) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies, size\_t iparticle) const<br> |
 |  [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) | [**particle\_block\_offset**](#function-particle_block_offset) (size\_t iparticle) const<br>_Determines the offset for the blocks of the iparticle:th particle._  |
 |  void | [**print\_history**](#function-print_history) () const<br>_Print the DIIS history._  |
+|  void | [**print\_settings**](#function-print_settings) (std::ostream & os=std::cout) const<br> |
 |  void | [**reset\_history**](#function-reset_history) () <br>_Reset the DIIS history._  |
-|  void | [**run**](#function-run) (const std::string & methods="DIIS + ODA + CG") <br> |
+|  void | [**run**](#function-run) () <br> |
 |  void | [**set**](#function-set-13) (const std::string & key, Tbase v) <br>_Set a real-valued option._  |
 |  void | [**set**](#function-set-23) (const std::string & key, int v) <br>_Set an integer-valued option. Bool settings ride here as 0/1._  |
 |  void | [**set**](#function-set-33) (const std::string & key, const std::string & v) <br>_Set a string-valued option._  |
 |  void | [**set\_batched\_fock\_builder**](#function-set_batched_fock_builder) ([**BatchedFockBuilder**](namespaceOpenOrbitalOptimizer.md#typedef-batchedfockbuilder)&lt; Torb, Tbase &gt; builder) <br> |
 |  OrbitalOccupations&lt; Tbase &gt; | [**update\_occupations**](#function-update_occupations) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determines occupations based on the current orbital energies._  |
-|  int | [**verbosity**](#function-verbosity-12) () const<br>_Get verbosity._  |
-|  void | [**verbosity**](#function-verbosity-22) (int verbosity) <br>_Set verbosity._  |
 
 
 ## Public Static Functions
 
 | Type | Name |
 | ---: | :--- |
+|  std::string | [**citation**](#function-citation) () <br> |
 |  const std::vector&lt; [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) &gt; & | [**options**](#function-options) () <br>_Enumerate every option the solver understands._  |
+|  void | [**print\_citation**](#function-print_citation) (std::ostream & os=std::cout) <br>_Print a two-line "please cite" block to_ `os` _._ |
 
 
 
@@ -292,36 +261,6 @@ inline bool OpenOrbitalOptimizer::SCFSolver::converged () const
 
 
 
-### function convergence\_threshold [1/2]
-
-_Get convergence threshold._ 
-```C++
-inline Tbase OpenOrbitalOptimizer::SCFSolver::convergence_threshold () const
-```
-
-
-
-
-<hr>
-
-
-
-### function convergence\_threshold [2/2]
-
-_Set convergence threshold (unused if callback\_convergence\_function set)._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::convergence_threshold (
-    Tbase convergence_threshold
-) 
-```
-
-
-
-
-<hr>
-
-
-
 ### function density\_matrix\_difference 
 
 _Density matrix difference norm._ 
@@ -355,192 +294,12 @@ inline Vector < Tbase > OpenOrbitalOptimizer::SCFSolver::determine_number_of_par
 
 
 
-### function diis\_diagonal\_damping [1/2]
-
-_Damping factor for DIIS diagonal._ 
-```C++
-inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_diagonal_damping () const
-```
-
-
-
-
-<hr>
-
-
-
-### function diis\_diagonal\_damping [2/2]
-
-_Damping factor for DIIS diagonal._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::diis_diagonal_damping (
-    Tbase eps
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function diis\_epsilon [1/2]
-
-_When to start mixing in DIIS._ 
-```C++
-inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_epsilon () const
-```
-
-
-
-
-<hr>
-
-
-
-### function diis\_epsilon [2/2]
-
-_When to start mixing in DIIS._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::diis_epsilon (
-    Tbase eps
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function diis\_restart\_factor [1/2]
-
-_DIIS restart criterion._ 
-```C++
-inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_restart_factor () const
-```
-
-
-
-
-<hr>
-
-
-
-### function diis\_restart\_factor [2/2]
-
-_DIIS restart criterion._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::diis_restart_factor (
-    Tbase eps
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function diis\_threshold [1/2]
-
-_When to switch over to DIIS._ 
-```C++
-inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_threshold () const
-```
-
-
-
-
-<hr>
-
-
-
-### function diis\_threshold [2/2]
-
-_When to switch over to DIIS._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::diis_threshold (
-    Tbase eps
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function error\_norm [1/2]
-
-_Get the used error norm._ 
-```C++
-inline std::string OpenOrbitalOptimizer::SCFSolver::error_norm () const
-```
-
-
-
-
-<hr>
-
-
-
-### function error\_norm [2/2]
-
-_Set the used error norm._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::error_norm (
-    const std::string & error_norm
-) 
-```
-
-
-
-
-<hr>
-
-
-
 ### function fixed\_number\_of\_particles\_per\_block 
 
 _Fix the number of occupied orbitals per block._ 
 ```C++
 inline void OpenOrbitalOptimizer::SCFSolver::fixed_number_of_particles_per_block (
     const Vector < Tbase > & number_of_particles_per_block
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function frozen\_occupations [1/2]
-
-_Get frozen occupations._ 
-```C++
-inline bool OpenOrbitalOptimizer::SCFSolver::frozen_occupations () const
-```
-
-
-
-
-<hr>
-
-
-
-### function frozen\_occupations [2/2]
-
-_Set frozen occupations._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::frozen_occupations (
-    bool frozen
 ) 
 ```
 
@@ -742,144 +501,6 @@ inline void OpenOrbitalOptimizer::SCFSolver::initialize_with_orbitals (
 
 
 
-### function last\_active\_rotation\_count 
-
-```C++
-inline size_t OpenOrbitalOptimizer::SCFSolver::last_active_rotation_count () const
-```
-
-
-
-Number of orbital-rotation DOFs that lie inside a degenerate group at the iterate produced by the most recent ODA call. This is the default orbital-rotation burst length when orbital\_rotation\_steps\_after\_oda\_ is left at 0; see `compute_active_rotation_count()`. 
-
-
-        
-
-<hr>
-
-
-
-### function last\_polytope\_dimension 
-
-_Polytope dimension of the most recent ODA call (N\_par)._ 
-```C++
-inline size_t OpenOrbitalOptimizer::SCFSolver::last_polytope_dimension () const
-```
-
-
-
-
-<hr>
-
-
-
-### function maximum\_history\_length [1/2]
-
-_Get maximum\_history\_length._ 
-```C++
-inline int OpenOrbitalOptimizer::SCFSolver::maximum_history_length () const
-```
-
-
-
-
-<hr>
-
-
-
-### function maximum\_history\_length [2/2]
-
-_Set maximum\_history\_length._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::maximum_history_length (
-    int maximum_history_length
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function maximum\_iterations [1/2]
-
-_Get the maximum number of iterations._ 
-```C++
-inline size_t OpenOrbitalOptimizer::SCFSolver::maximum_iterations () const
-```
-
-
-
-
-<hr>
-
-
-
-### function maximum\_iterations [2/2]
-
-_Set the maximum number of iterations._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::maximum_iterations (
-    size_t maxit
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function noise\_floor 
-
-_Get the frozen arithmetic noise floor (populated by_ [_**run()**_](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-run) _)._
-```C++
-inline Tbase OpenOrbitalOptimizer::SCFSolver::noise_floor () const
-```
-
-
-
-
-<hr>
-
-
-
-### function noise\_safety\_factor [1/2]
-
-_Get safety factor K for the arithmetic-precision clamp._ 
-```C++
-inline Tbase OpenOrbitalOptimizer::SCFSolver::noise_safety_factor () const
-```
-
-
-
-
-<hr>
-
-
-
-### function noise\_safety\_factor [2/2]
-
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::noise_safety_factor (
-    Tbase k
-) 
-```
-
-
-
-Set safety factor K for the arithmetic-precision clamp (K = 0 disables the clamp) 
-
-
-        
-
-<hr>
-
-
-
 ### function norm 
 
 _Evaluate the norm._ 
@@ -892,149 +513,6 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
 
 
 
-
-<hr>
-
-
-
-### function number\_of\_fock\_evaluations 
-
-```C++
-inline size_t OpenOrbitalOptimizer::SCFSolver::number_of_fock_evaluations () const
-```
-
-
-
-Number of Fock-matrix builds performed by the most recent run. Reset to 0 inside [**run()**](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-run); incremented every time a new density matrix is passed to the user-provided Fock builder. 
-
-
-        
-
-<hr>
-
-
-
-### function oda\_restart\_steps [1/2]
-
-_Get oda\_restart\_steps._ 
-```C++
-inline int OpenOrbitalOptimizer::SCFSolver::oda_restart_steps () const
-```
-
-
-
-
-<hr>
-
-
-
-### function oda\_restart\_steps [2/2]
-
-_Set oda\_restart\_steps._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::oda_restart_steps (
-    int oda_restart_steps
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function optimal\_damping\_degeneracy\_threshold [1/2]
-
-_Get energy gap below which orbitals are treated as degenerate in optimal damping._ 
-```C++
-inline Tbase OpenOrbitalOptimizer::SCFSolver::optimal_damping_degeneracy_threshold () const
-```
-
-
-
-
-<hr>
-
-
-
-### function optimal\_damping\_degeneracy\_threshold [2/2]
-
-_Set energy gap below which orbitals are treated as degenerate in optimal damping._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::optimal_damping_degeneracy_threshold (
-    Tbase threshold
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function optimal\_damping\_threshold [1/2]
-
-_Use optimal damping when max error bigger than this._ 
-```C++
-inline Tbase OpenOrbitalOptimizer::SCFSolver::optimal_damping_threshold () const
-```
-
-
-
-
-<hr>
-
-
-
-### function optimal\_damping\_threshold [2/2]
-
-_Use optimal damping when max error bigger than this._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::optimal_damping_threshold (
-    Tbase eps
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function orbital\_rotation\_steps\_after\_oda [1/2]
-
-```C++
-inline size_t OpenOrbitalOptimizer::SCFSolver::orbital_rotation_steps_after_oda () const
-```
-
-
-
-Number of orbital-rotation steps the [**run()**](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-run) state machine takes after each ODA step that transitions to CG. Zero (the default) means "use the polytope dimension of the last ODA call automatically". 
-
-
-        
-
-<hr>
-
-
-
-### function orbital\_rotation\_steps\_after\_oda [2/2]
-
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::orbital_rotation_steps_after_oda (
-    size_t n
-) 
-```
-
-
-
-Set the post-ODA orbital-rotation burst length. Zero restores the auto-from-polytope-dimension default. 
-
-
-        
 
 <hr>
 
@@ -1090,6 +568,25 @@ inline void OpenOrbitalOptimizer::SCFSolver::print_history () const
 
 
 
+### function print\_settings 
+
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::print_settings (
+    std::ostream & os=std::cout
+) const
+```
+
+
+
+Print every catalog entry with its current value to `os`. Read-only diagnostics that require a populated orbital history (converged; anything derived from the current Fock) print as "n/a" before the first `initialize_with_*`. 
+
+
+        
+
+<hr>
+
+
+
 ### function reset\_history 
 
 _Reset the DIIS history._ 
@@ -1107,17 +604,15 @@ inline void OpenOrbitalOptimizer::SCFSolver::reset_history ()
 ### function run 
 
 ```C++
-inline void OpenOrbitalOptimizer::SCFSolver::run (
-    const std::string & methods="DIIS + ODA + CG"
-) 
+inline void OpenOrbitalOptimizer::SCFSolver::run () 
 ```
 
 
 
-Run the SCF Run the SCF loop using the methods named in the input string.
+Run the SCF
 
 
-The string is a `+`-separated, case-insensitive list of method tokens drawn from `"DIIS"` (Pulay's A/EDIIS-bracketed direct inversion in the iterative subspace), `"ODA"` (optimal-damping polytope step on the skeleton density matrices), and `"CG"` (preconditioned PR+ scaled steepest descent on orbital rotations at fixed occupations). Examples:
+Consumes the `methods` string setting, a `+`-separated case-insensitive list drawn from `"DIIS"` (Pulay's A/EDIIS-bracketed direct inversion in the iterative subspace), `"ODA"` (optimal-damping polytope step on the skeleton density matrices), and `"CG"` (preconditioned PR+ scaled steepest descent on orbital rotations at fixed occupations). Configure via `set ("methods", ...)`; default is `"DIIS + ODA + CG"`. Examples:
 
 
 `"DIIS"` pure A/EDIIS extrapolation `"ODA"` standalone polytope minimisation `"DIIS + ODA + CG"` full compound algorithm (default) `"ODA + CG"` DIIS-less compound `"DIIS + ODA + LBFGS"` L-BFGS in place of PR+ CG (when both `CG` and `LBFGS` are listed L-BFGS is preferred)
@@ -1215,38 +710,25 @@ inline OrbitalOccupations< Tbase > OpenOrbitalOptimizer::SCFSolver::update_occup
 
 
 <hr>
-
-
-
-### function verbosity [1/2]
-
-_Get verbosity._ 
-```C++
-inline int OpenOrbitalOptimizer::SCFSolver::verbosity () const
-```
-
-
-
-
-<hr>
-
-
-
-### function verbosity [2/2]
-
-_Set verbosity._ 
-```C++
-inline void OpenOrbitalOptimizer::SCFSolver::verbosity (
-    int verbosity
-) 
-```
-
-
-
-
-<hr>
 ## Public Static Functions Documentation
 
+
+
+
+### function citation 
+
+```C++
+static inline std::string OpenOrbitalOptimizer::SCFSolver::citation () 
+```
+
+
+
+Canonical citation for the library. Downstream drivers should forward this to their users; the string is deliberately kept as a single line so it wraps cleanly in log output. 
+
+
+        
+
+<hr>
 
 
 
@@ -1255,6 +737,22 @@ inline void OpenOrbitalOptimizer::SCFSolver::verbosity (
 _Enumerate every option the solver understands._ 
 ```C++
 static inline const std::vector< OptionInfo > & OpenOrbitalOptimizer::SCFSolver::options () 
+```
+
+
+
+
+<hr>
+
+
+
+### function print\_citation 
+
+_Print a two-line "please cite" block to_ `os` _._
+```C++
+static inline void OpenOrbitalOptimizer::SCFSolver::print_citation (
+    std::ostream & os=std::cout
+) 
 ```
 
 

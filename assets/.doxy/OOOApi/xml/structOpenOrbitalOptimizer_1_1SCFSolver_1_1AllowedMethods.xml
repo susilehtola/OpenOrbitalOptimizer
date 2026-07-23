@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
+  <compounddef id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods" kind="struct" language="C++" prot="private">
+    <compoundname>OpenOrbitalOptimizer::SCFSolver::AllowedMethods</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1a38f8a6239f1c0f72e1f7253e741d67af" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::AllowedMethods::diis</definition>
+        <argsstring></argsstring>
+        <name>diis</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::AllowedMethods::diis</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="267" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="267" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1a37badbd6536a67dd8e0c078ddd4744a9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::AllowedMethods::oda</definition>
+        <argsstring></argsstring>
+        <name>oda</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::AllowedMethods::oda</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="267" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="267" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1a09f00d1fd51d24f541b55427eb05a3d2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::AllowedMethods::cg</definition>
+        <argsstring></argsstring>
+        <name>cg</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::AllowedMethods::cg</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="267" column="23" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="267" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1aa4a53901a9394e848641aa0ef428a49d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::AllowedMethods::lbfgs</definition>
+        <argsstring></argsstring>
+        <name>lbfgs</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::AllowedMethods::lbfgs</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="267" column="27" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="267" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1aea2dfbfedc4555b5e78134f58fbda052" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::AllowedMethods::orbital_rotation</definition>
+        <argsstring>() const</argsstring>
+        <name>orbital_rotation</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::AllowedMethods::orbital_rotation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="268" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="268" bodyend="268"/>
+      </memberdef>
+      <memberdef kind="function" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1ad120b3b87986d0dd1133d5f4a7b80215" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::AllowedMethods::any</definition>
+        <argsstring>() const</argsstring>
+        <name>any</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::AllowedMethods::any</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="269" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="269" bodyend="269"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Method-mix flags parsed from methods_. Shared by <ref refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0e46cd54304afa2a530f4ef787fb2335" kindref="member">run()</ref> and the validator in set(&quot;methods&quot;, ...). </para>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="266" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="266" bodyend="270"/>
+    <listofallmembers>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1ad120b3b87986d0dd1133d5f4a7b80215" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::AllowedMethods</scope><name>any</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1a09f00d1fd51d24f541b55427eb05a3d2" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::AllowedMethods</scope><name>cg</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1a38f8a6239f1c0f72e1f7253e741d67af" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::AllowedMethods</scope><name>diis</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1aa4a53901a9394e848641aa0ef428a49d" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::AllowedMethods</scope><name>lbfgs</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1a37badbd6536a67dd8e0c078ddd4744a9" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::AllowedMethods</scope><name>oda</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods_1aea2dfbfedc4555b5e78134f58fbda052" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::AllowedMethods</scope><name>orbital_rotation</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
