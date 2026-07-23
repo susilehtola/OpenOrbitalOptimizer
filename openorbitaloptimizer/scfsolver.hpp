@@ -282,6 +282,15 @@ namespace OpenOrbitalOptimizer {
     /// part of the active space; 1 orbital-rotation step is taken as a floor.
     /// Set to an explicit positive value to override.
     size_t orbital_rotation_steps_after_oda_ = 0;
+    /// Maximum number of trust-region refit iterations run inside
+    /// each optimal_damping_step after the initial descent step is
+    /// accepted. Each refit re-anchors the polytope quadratic model
+    /// at the current accepted iterate using the observed gradient
+    /// there and re-solves the QP. Exact for Hartree-Fock along
+    /// any linear ray; each refit costs one Fock build. Default 3;
+    /// 0 disables refinement (falls back to the accepted step from
+    /// the ranked trial loop).
+    int max_oda_refits_ = 3;
     /// Number of skeleton dimensions of the most recent ODA call (the
     /// N_par variable inside optimal_damping_step). Read by the run()
     /// state machine to size the orbital-rotation burst when orbital_rotation_steps_after_oda_ is
@@ -1929,6 +1938,8 @@ namespace OpenOrbitalOptimizer {
       // candidates still feed the orbital history via add_entry, so
       // subsequent DIIS iterations see the trial densities.
       bool succ = false;
+      Vector<Tbase> x_accepted;
+      std::pair<DensityMatrix<Torb,Tbase>,FockBuilderReturn<Torb,Tbase>> eval_accepted;
       for(int scalefac=0; scalefac<=5; scalefac++) {
         Tbase scale = std::pow(Tbase(2), -scalefac);
         for(const auto & cand : candidates) {
@@ -1936,14 +1947,112 @@ namespace OpenOrbitalOptimizer {
           auto eval = evaluate(x_scaled);
           number_of_fock_evaluations_++;
           bool ok = add_entry(eval.first, eval.second);
-          if(ok) succ = true;
+          if(ok) {
+            succ = true;
+            x_accepted = x_scaled;
+            eval_accepted = std::move(eval);
+          }
           log_(10, "ODA %s at scale %g gives E = % .10f, change %e%s\n",
-                 cand.tag.c_str(), scale, eval.second.first, eval.second.first - E_orig,
+                 cand.tag.c_str(), scale, ok ? eval_accepted.second.first : eval.second.first,
+                 (ok ? eval_accepted.second.first : eval.second.first) - E_orig,
                  ok ? " (accepted)" : "");
           if(ok) break;
         }
         if(succ) break;
       }
+
+      // Trust-region refinement: after the initial descent, re-anchor
+      // the polytope quadratic model at the accepted iterate using
+      // the gradient observed there (free -- F_accepted has just been
+      // computed) and re-solve the QP. Along a linear ray in density
+      // space the Hartree-Fock energy is exactly quadratic, so this
+      // converges in one refit; for DFT a few iterations catch the
+      // residual non-quadraticity that the initial axis-vertex data
+      // missed. Each refit costs one Fock build. The refined
+      // densities also flow through add_entry so DIIS sees them.
+      //
+      // Refinement stops when any of:
+      //   (a) the QP anchor barely moves (|dlambda|_inf < 100 eps);
+      //   (b) the actual energy drop this refit is below one tenth
+      //       of the SCF convergence threshold (further Fock builds
+      //       cannot influence the outer SCF stopping decision);
+      //   (c) the refit fails to descend;
+      //   (d) max_oda_refits_ iterations have been taken.
+      if(succ && max_oda_refits_ > 0) {
+        // Anchor for the "worth refining" test: use the improvement
+        // achieved by the accepted initial trial-loop step. Refits
+        // that squeeze at most one-tenth of the convergence threshold
+        // out of it cannot change the outer SCF's stopping decision.
+        const Tbase refit_progress_tol =
+            Tbase(0.1) * std::max(convergence_threshold_,
+                                  noise_safety_factor_ * noise_floor_);
+        for(int refit=0; refit < max_oda_refits_; refit++) {
+          const auto & F_at_x = eval_accepted.second.second;
+          Tbase E_at_x = eval_accepted.second.first;
+          Vector<Tbase> g_at_x(npars);
+          for(size_t i=0; i<npars; i++)
+            g_at_x(i) = trace_diff(evaluations[i].first, P_orig, F_at_x);
+          // Re-express the model anchored at x_accepted in the QP's
+          // canonical (E_const + g*lambda + 0.5 lambda^T H lambda)
+          // form. Expanding the Taylor around x_accepted:
+          //   E(lambda) = E_at_x + g_at_x . (lambda - x_accepted)
+          //             + 0.5 (lambda - x_accepted)^T H (lambda - x_accepted).
+          Vector<Tbase> g_eff = g_at_x - hess * x_accepted;
+          Tbase E_eff = E_at_x - g_at_x.dot(x_accepted)
+                      + Tbase(0.5) * (x_accepted.transpose() * hess * x_accepted).value();
+          Vector<Tbase> lam_new;
+          Tbase model_min_new;
+          std::tie(lam_new, model_min_new) = solve_polytope_qp_(
+              hess, g_eff, E_eff, particle_off, particle_len);
+          Vector<Tbase> delta = lam_new - x_accepted;
+          Tbase delta_inf = delta.template lpNorm<Eigen::Infinity>();
+          if(delta_inf < Tbase(100) * eps) {
+            log_(10, "ODA refit %i: |dlambda|_inf = %e below noise, model has "
+                     "converged at the accepted iterate.\n", refit + 1, delta_inf);
+            break;
+          }
+          // Predicted improvement pre-check: if the QP's own model
+          // says the new anchor barely lowers the energy, we can bail
+          // without building the Fock. The model is exact for HF
+          // along a linear ray and typically accurate for DFT near
+          // convergence, so trusting its prediction here saves a Fock
+          // per idle refit call.
+          Tbase model_delta = model_min_new - E_at_x;
+          if(-model_delta < refit_progress_tol) {
+            log_(10, "ODA refit %i: model predicts progress %e below %e; "
+                     "skipping Fock build and exiting refinement.\n",
+                     refit + 1, -model_delta, refit_progress_tol);
+            break;
+          }
+          auto eval_new = evaluate(lam_new);
+          number_of_fock_evaluations_++;
+          bool ok = add_entry(eval_new.first, eval_new.second);
+          Tbase E_new = eval_new.second.first;
+          Tbase delta_E = E_new - E_at_x;
+          log_(10, "ODA refit %i: |dlambda|_inf = %e, model E = % .10f, "
+                   "actual E = % .10f, change %e%s\n",
+                   refit + 1, delta_inf, model_min_new, E_new, delta_E,
+                   ok ? " (accepted)" : "");
+          if(!ok) {
+            // Refined step didn't improve on the previously accepted
+            // one. Keep the previous accept and stop refining.
+            break;
+          }
+          x_accepted = lam_new;
+          eval_accepted = std::move(eval_new);
+          if(-delta_E < refit_progress_tol) {
+            // Improvement is smaller than a fraction of the SCF
+            // convergence threshold; further refits cannot influence
+            // the outer stopping decision. Take the last accepted
+            // iterate and let DIIS spend its Fock builds instead.
+            log_(10, "ODA refit %i: further refit progress %e below "
+                     "%e; exiting refinement loop.\n",
+                     refit + 1, -delta_E, refit_progress_tol);
+            break;
+          }
+        }
+      }
+
       if(succ) {
         // ODA has globally rearranged the orbital basis (and possibly
         // the occupation pattern); the recorded PR+ CG state is no
@@ -3214,6 +3323,8 @@ namespace OpenOrbitalOptimizer {
          "steps of no DIIS progress before switching to ODA"},
         {"orbital_rotation_steps_after_oda", "int", true,
          "orbital-rotation steps after each ODA (0 = use last_active_rotation_count)"},
+        {"max_oda_refits", "int", true,
+         "max trust-region refits inside optimal_damping_step after acceptance (0 disables)"},
         // -- Orbital-rotation preconditioner ---------------------------------
         {"minimal_gradient_projection", "real", true,
          "minimum preconditioned-CG projection on gradient"},
@@ -3274,6 +3385,7 @@ namespace OpenOrbitalOptimizer {
       else if (key == "maximum_history_length")           maximum_history_length_ = v;
       else if (key == "oda_restart_steps")                oda_restart_steps_ = v;
       else if (key == "orbital_rotation_steps_after_oda") orbital_rotation_steps_after_oda_ = (size_t) v;
+      else if (key == "max_oda_refits")                   max_oda_refits_ = v;
       else if (key == "frozen_occupations")               frozen_occupations_ = (v != 0);
       else throw std::invalid_argument(
         "SCFSolver::set(int): unknown or non-int key '" + key + "'");
@@ -3329,6 +3441,7 @@ namespace OpenOrbitalOptimizer {
       else if (key == "maximum_history_length")           return maximum_history_length_;
       else if (key == "oda_restart_steps")                return oda_restart_steps_;
       else if (key == "orbital_rotation_steps_after_oda") return (int) orbital_rotation_steps_after_oda_;
+      else if (key == "max_oda_refits")                   return max_oda_refits_;
       else if (key == "frozen_occupations")               return frozen_occupations_ ? 1 : 0;
       else if (key == "number_of_fock_evaluations")       return (int) number_of_fock_evaluations_;
       else if (key == "last_polytope_dimension")          return (int) last_polytope_dimension_;
