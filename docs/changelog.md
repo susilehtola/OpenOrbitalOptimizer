@@ -15,6 +15,35 @@
 -->
 
 
+## v0.5.0 / (Unreleased)
+
+#### New Features
+* SCF convergence threshold is now clamped to an arithmetic-precision
+  floor: the effective threshold is
+  `max(convergence_threshold, K * noise_floor)`, where `noise_floor`
+  is a per-run estimate of the roundoff floor of the DIIS residual
+  `C^dagger [F, P] C` frozen from the initial Fock. `K` defaults to
+  10 and is tunable via `noise_safety_factor`. `__float128` runs are
+  unaffected because their epsilon is tiny; the clamp mainly rescues
+  low-precision runs from spinning below what the arithmetic can
+  resolve. Callback-driven convergence
+  (`callback_convergence_function`) is untouched.
+* Introduce a string-keyed settings façade on `SCFSolver`:
+  `set(key, value)`, `get_real/get_int/get_string(key)`, and a
+  static `options()` catalog listing every knob and read-only
+  diagnostic with its type and one-line description. Downstream
+  callers now only need to know this triple to reach any setting,
+  making JSON/dict-shaped configuration pipe-throughs trivial.
+
+#### Enhancements
+* `L-BFGS` history depth is now controlled by the shared
+  `maximum_history_length` setting; the private
+  `lbfgs_history_size_` knob has been folded away.
+* `brute_force_search_for_lowest_configuration` now saves and
+  restores `verbosity` and `frozen_occupations`, so calling it no
+  longer permanently silences and thaws the parent solver.
+
+
 ## v0.4.0 / 2026-07-20
 
 #### Breaking Changes
