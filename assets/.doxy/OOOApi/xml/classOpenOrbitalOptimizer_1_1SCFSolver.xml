@@ -595,6 +595,22 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </inbodydescription>
         <location file="openorbitaloptimizer/scfsolver.hpp" line="284" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="284" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0363ab9b307f7f5cbc458f9da3eb945d" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::max_oda_refits_</definition>
+        <argsstring></argsstring>
+        <name>max_oda_refits_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::max_oda_refits_</qualifiedname>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Maximum number of trust-region refit iterations run inside each optimal_damping_step after the initial descent step is accepted. Each refit re-anchors the polytope quadratic model at the current accepted iterate using the observed gradient there and re-solves the QP. Exact for Hartree-Fock along any linear ray; each refit costs one Fock build. Default 3; 0 disables refinement (falls back to the accepted step from the ranked trial loop). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="293" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="293" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a79e1f0fbf167bed930bf2628fa75a79d" prot="private" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::last_polytope_dimension_</definition>
@@ -609,7 +625,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="289" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="289" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="298" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="298" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1acc8a657549b461d43f484cca4e11649c" prot="private" static="no" mutable="no">
         <type>size_t</type>
@@ -627,7 +643,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="304" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="304" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="313" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="313" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a14aab923ec277fcbf781ffd1a04fe3b9" prot="private" static="no" mutable="no">
         <type>Tbase</type>
@@ -643,7 +659,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="307" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="307" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="316" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="316" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a117d7d824290e37542ce55fe59e0a139" prot="private" static="no" mutable="no">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -658,7 +674,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="314" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="314" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="323" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="323" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af045441add22255ac884008a50332781" prot="private" static="no" mutable="no">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -672,7 +688,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="315" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="315" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="324" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="324" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2f4333e1fff7ba8ff1abb78a99b329ea" prot="private" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a1c526d91037dc0333914ab09df6b10f9" kindref="member">OrbitalRotation</ref> &gt;</type>
@@ -686,7 +702,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="316" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="316" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="325" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="325" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a63a71506e43ac2703ae452436149e047" prot="private" static="no" mutable="no">
         <type>std::unique_ptr&lt; LBFGSState &gt;</type>
@@ -700,7 +716,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="337" column="21" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="337" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="346" column="21" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="346" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-static-func">
@@ -721,7 +737,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="350" column="27" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="350" bodyend="374"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="359" column="27" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="359" bodyend="383"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4f823c519535f05664fcdb0a5007ab8b" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -740,7 +756,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="378" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="378" bodyend="383"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="387" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="387" bodyend="392"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -768,7 +784,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="396" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="396" bodyend="411"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="405" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="405" bodyend="420"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae075d852573e58c5688f07769a29d7c3" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -783,7 +799,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="418" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="418" bodyend="420"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="427" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="427" bodyend="429"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1eb6e425f08babe3cb94e1218913c702" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>LogStream</type>
@@ -802,7 +818,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="465" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="465" bodyend="467"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="474" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="474" bodyend="476"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a57b7f1d5a457f1f365aad8bbff84e877" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -821,7 +837,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="470" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="470" bodyend="475"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="479" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="479" bodyend="484"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae5ab3b4e7f5093a98930cb6ca3668aba" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Torb &gt;</type>
@@ -844,7 +860,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="478" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="478" bodyend="482"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="487" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="487" bodyend="491"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aff327fdda23834c22fa61048dc12d1f5" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1ae82d42a70db69fcd99ee90251beb472b" kindref="member">OrbitalBlock</ref>&lt; Torb &gt;</type>
@@ -867,7 +883,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="485" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="485" bodyend="491"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="494" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="494" bodyend="500"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2ab9acb5bc76179c1bd63bd8a95a98a4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1ab1ee38c8a07681a4ccc9dcbf6685eb95" kindref="member">OrbitalBlockOccupations</ref>&lt; Tbase &gt;</type>
@@ -890,7 +906,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="494" column="29" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="494" bodyend="500"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="503" column="29" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="503" bodyend="509"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a537ae55f63c1a96a15025c47a59d821b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -910,7 +926,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="503" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="503" bodyend="525"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="512" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="512" bodyend="534"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4ffb5cd61bce928fd5a3d46657381df2" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -930,7 +946,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="528" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="528" bodyend="532"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="537" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="537" bodyend="541"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5d11cda99d54a87a939d3ed5c229ac55" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -945,7 +961,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="535" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="535" bodyend="541"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="544" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="544" bodyend="550"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a854e63c7f633dc278d28a1244536860d" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a654aeaf2c63cbcfb783b2f3c7ea53d49" kindref="member">IndexVector</ref></type>
@@ -960,7 +976,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="544" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="544" bodyend="550"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="553" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="553" bodyend="559"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ad439a5152b51d3355f784eb41f5d1f2c" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Torb &gt;</type>
@@ -983,7 +999,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="553" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="553" bodyend="555"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="562" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="562" bodyend="564"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af9990198a5f9ec88c64886135b4708fa" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1002,7 +1018,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="558" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="558" bodyend="560"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="567" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="567" bodyend="569"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a296e22d5e981e9fc6dd426a99b875512" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1021,7 +1037,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="563" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="563" bodyend="585"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="572" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="572" bodyend="594"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a70a59d94d512947ce11e63d3d5b3b4cd" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Torb &gt;</type>
@@ -1047,7 +1063,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="587" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="587" bodyend="608"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="596" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="596" bodyend="617"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4fa89d8c1c293b3965f4a306986296b3" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Torb &gt; &gt;</type>
@@ -1069,7 +1085,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="610" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="610" bodyend="624"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="619" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="619" bodyend="633"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5dd1f4b3861767e55542d14cc4afa6f2" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Torb &gt;</type>
@@ -1092,7 +1108,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="627" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="627" bodyend="645"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="636" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="636" bodyend="654"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af90efd12764b66464a252ac4faf76cef" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Torb &gt; &gt;</type>
@@ -1111,7 +1127,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="648" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="648" bodyend="656"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="657" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="657" bodyend="665"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa5026b63d96fd799e395bd41e7849527" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1134,7 +1150,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="659" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="659" bodyend="661"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="668" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="668" bodyend="670"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8d70c6f14814f04fa47ac358c2ce7c16" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1153,7 +1169,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="664" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="664" bodyend="690"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="673" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="673" bodyend="699"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1acb1c694b52ecaccf0109fa957b380412" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1168,7 +1184,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="699" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="699" bodyend="718"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="708" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="708" bodyend="727"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1afb8fc1f218fc83c9e5b693f2e32767f3" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1191,7 +1207,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="721" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="721" bodyend="731"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="730" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="730" bodyend="740"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aee13e65399467027cd8912b801e98596" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Tbase &gt;</type>
@@ -1210,7 +1226,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="734" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="734" bodyend="745"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="743" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="743" bodyend="754"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a796e3eff8fa579de98702a751f915749" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1224,7 +1240,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="747" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="747" bodyend="753"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="756" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="756" bodyend="762"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4d09ff5309335e24385aecb74220b1b9" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Tbase &gt;</type>
@@ -1238,7 +1254,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="755" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="755" bodyend="760"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="764" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="764" bodyend="769"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aabc991e4a0fd59d05e5031138fddd1ea" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1253,7 +1269,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="763" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="763" bodyend="811"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="772" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="772" bodyend="820"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8f83cc725b770c9f4c2c03c7b570539f" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1279,7 +1295,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
 <para><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref> of search directions</para>
 <para>Evaluate initial point</para>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="813" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="813" bodyend="965"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="822" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="822" bodyend="974"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1bf604e1ab97c9bcaf77ba51606a5cf0" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1294,7 +1310,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="968" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="968" bodyend="982"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="977" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="977" bodyend="991"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6f7a3f9ba4142c2b88d1bb47f18cfb3b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1309,7 +1325,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="985" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="985" bodyend="991"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="994" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="994" bodyend="1000"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aabf8e4d11c46e25b88fc2fb6b4cb4a28" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Tbase &gt;</type>
@@ -1324,7 +1340,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="994" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="994" bodyend="1014"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1003" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1003" bodyend="1023"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a44d008460a14b3a25c68891e13603b61" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Tbase &gt;</type>
@@ -1339,7 +1355,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1017" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1017" bodyend="1035"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1026" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1026" bodyend="1044"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8528a8ada83e6db3713309b67a05279b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1354,7 +1370,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1038" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1038" bodyend="1040"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1047" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1047" bodyend="1049"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a65269e6b7149f0e7fedd7677793412b0" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1369,7 +1385,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1043" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1043" bodyend="1045"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1052" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1052" bodyend="1054"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4c70df224daa8a93ea30c84d3236236f" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::tuple&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;, std::string &gt;</type>
@@ -1388,7 +1404,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1048" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1048" bodyend="1091"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1057" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1057" bodyend="1100"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6408d81be7fd7010b740179b673cd213" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1407,7 +1423,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1094" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1094" bodyend="1111"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1103" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1103" bodyend="1120"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8ee859e6748aecd2d56e67c3c6f64c6b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1430,7 +1446,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1114" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1114" bodyend="1128"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1123" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1123" bodyend="1137"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a81d901152bd83e694040fab0f310f7d9" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FockMatrix&lt; Torb &gt;</type>
@@ -1449,7 +1465,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1131" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1131" bodyend="1155"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1140" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1140" bodyend="1164"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a31f82dbb4c7dd4aa78a60431a9c41a92" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1af8ece4fcb196c317d23632712f94e07d" kindref="member">DensityMatrix</ref>&lt; Torb, Tbase &gt;</type>
@@ -1468,7 +1484,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1158" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1158" bodyend="1197"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1167" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1167" bodyend="1206"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2c1a8fd383a2654e8827aeab6a4d2e41" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalOccupations&lt; Tbase &gt;</type>
@@ -1495,7 +1511,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1200" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1200" bodyend="1229"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1209" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1209" bodyend="1238"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa04b785045a04e49bdf6e45d04fb4624" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1526,7 +1542,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1232" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1232" bodyend="1251"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1241" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1241" bodyend="1260"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a68b3c4709abee1184112996f43f098f2" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -1550,7 +1566,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1254" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1254" bodyend="1263"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1263" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1263" bodyend="1272"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6535a0dc7766bcbfac83ede96582d43e" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -1569,7 +1585,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1266" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1266" bodyend="1277"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1275" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1275" bodyend="1286"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab3423b195fefca0386d767f8e3e2d467" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::pair&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;, Tbase &gt;</type>
@@ -1604,7 +1620,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1296" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1296" bodyend="1465"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1305" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1305" bodyend="1474"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa8f17504ffd6e60ce91eb024b9aec425" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -1619,7 +1635,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1476" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1476" bodyend="1965"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="1485" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1485" bodyend="2074"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa3f4c8f4a100e667f5639372749c4c86" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1634,7 +1650,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="1968" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="1968" bodyend="1999"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2077" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2077" bodyend="2108"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ad68ab86dfd297a6d07e11af5cf14bc48" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a1c526d91037dc0333914ab09df6b10f9" kindref="member">OrbitalRotation</ref> &gt;</type>
@@ -1649,7 +1665,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2002" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2002" bodyend="2034"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2111" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2111" bodyend="2143"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac7bef9fa35e2f53dc0de26f50a4eb196" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1664,7 +1680,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2037" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2037" bodyend="2069"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2146" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2146" bodyend="2178"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a344a599168e35a6a566abf19fcdd6c4a" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1679,7 +1695,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2072" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2072" bodyend="2100"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2181" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2181" bodyend="2209"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1acf7aaf052770d1371f340f95f08809c0" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1707,7 +1723,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2103" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2103" bodyend="2134"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2212" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2212" bodyend="2243"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1abb38e8775e620711a63ca4ef89dfee3e" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1ad8356304bd9645dc06f25e08486b3209" kindref="member">Orbitals</ref>&lt; Torb &gt;</type>
@@ -1726,7 +1742,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2137" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2137" bodyend="2180"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2246" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2246" bodyend="2289"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac5d579ed434959561b731dbe9b593f79" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1745,7 +1761,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2183" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2183" bodyend="2204"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2292" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2292" bodyend="2313"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a210e0d912f9b4b9c5292654df542ab8b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1ad8356304bd9645dc06f25e08486b3209" kindref="member">Orbitals</ref>&lt; Torb &gt;</type>
@@ -1764,7 +1780,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2207" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2207" bodyend="2246"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2316" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2316" bodyend="2355"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a268ea9ddb743a9ba6fdb46d71812c498" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a2c84d2590c434f7efe17cf8e9742bc4f" kindref="member">OrbitalHistoryEntry</ref>&lt; Torb, Tbase &gt;</type>
@@ -1787,7 +1803,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2248" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2248" bodyend="2251"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2357" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2357" bodyend="2360"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a6fdedabadb8ed5ce3fe96819592a53bc" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a2c84d2590c434f7efe17cf8e9742bc4f" kindref="member">OrbitalHistoryEntry</ref>&lt; Torb, Tbase &gt;</type>
@@ -1806,7 +1822,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2253" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2253" bodyend="2263"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2362" column="25" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2362" bodyend="2372"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a338090149468d43e06cb5576415f3d88" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1821,7 +1837,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2265" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2265" bodyend="2305"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2374" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2374" bodyend="2414"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a881f1a75d6711847f1b8e14a73ed7099" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -1840,7 +1856,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2350" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2350" bodyend="2409"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2459" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2459" bodyend="2518"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4b36fff6c5d885dafe1ad714cc6b7dc5" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1863,7 +1879,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2418" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2418" bodyend="2424"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2527" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2527" bodyend="2533"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a49e6799ce5b2694f2f38d1aa4371846b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1ad8356304bd9645dc06f25e08486b3209" kindref="member">Orbitals</ref>&lt; Torb &gt;</type>
@@ -1886,7 +1902,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2428" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2428" bodyend="2449"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2537" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2537" bodyend="2558"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a9a9bdea77dcfa1fd5726e43ba44bb5ab" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -1905,7 +1921,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2454" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2454" bodyend="2470"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2563" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2563" bodyend="2579"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a68f7d4e58d003cb9c965f103b938f077" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::pair&lt; <ref refid="namespaceOpenOrbitalOptimizer_1af8ece4fcb196c317d23632712f94e07d" kindref="member">DensityMatrix</ref>&lt; Torb, Tbase &gt;, <ref refid="namespaceOpenOrbitalOptimizer_1aa53c0be96b15a930c3b932ff060b3b63" kindref="member">FockBuilderReturn</ref>&lt; Torb, Tbase &gt; &gt;</type>
@@ -1932,7 +1948,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2476" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2476" bodyend="2492"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2585" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2585" bodyend="2601"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8a344d948872b2b54e82752781423411" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -1959,7 +1975,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2497" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2497" bodyend="2519"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2606" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2606" bodyend="2628"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aecc0c7544bba138e138bce2063ce3156" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -2000,7 +2016,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2545" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2545" bodyend="2691"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2654" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2654" bodyend="2800"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a44bb2721e3680938bd36cded238bc061" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2023,7 +2039,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2697" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2697" bodyend="2714"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2806" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2806" bodyend="2823"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8fe8fbc285ab6767a66571fbc15eccb3" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2038,7 +2054,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2718" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2718" bodyend="2743"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2827" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2827" bodyend="2852"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0c0b67b52288de80f0213b9dc2cd32c4" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2053,7 +2069,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2748" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2748" bodyend="2750"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2857" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2857" bodyend="2859"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8ee17f172bb7ff7d8fea0d81e631b745" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -2076,7 +2092,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2757" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2757" bodyend="2777"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2866" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2866" bodyend="2886"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2840c06ace7f5342639c143a825bbc95" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2099,7 +2115,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2784" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2784" bodyend="2796"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2893" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2893" bodyend="2905"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1adf4c885e375ef526190841047211a61b" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2114,7 +2130,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2804" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2804" bodyend="2861"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2913" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2913" bodyend="2970"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a37154d63bf4fa846a9772b3954b17488" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1aa53c0be96b15a930c3b932ff060b3b63" kindref="member">FockBuilderReturn</ref>&lt; Torb, Tbase &gt; &gt;</type>
@@ -2133,7 +2149,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2868" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2868" bodyend="2887"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2977" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2977" bodyend="2996"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1afd971a5d244fd2f948153a521456775b" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a654aeaf2c63cbcfb783b2f3c7ea53d49" kindref="member">IndexVector</ref> &gt;</type>
@@ -2152,7 +2168,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2890" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2890" bodyend="2896"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2999" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2999" bodyend="3005"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4bd3a92278f4a726520d3cbd58b86e8f" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a654aeaf2c63cbcfb783b2f3c7ea53d49" kindref="member">IndexVector</ref> &gt;</type>
@@ -2171,7 +2187,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2899" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2899" bodyend="2905"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3008" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3008" bodyend="3014"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ada91878a926e8c5a555e3dc0bb280f84" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2208,7 +2224,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="2950" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2950" bodyend="3000"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3059" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3059" bodyend="3109"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2277e220e3709afcd43779fa30afa258" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -2222,7 +2238,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3002" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3002" bodyend="3063"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3111" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3111" bodyend="3172"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a9c6de2b0aab449a329d816120948ecad" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2236,7 +2252,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3065" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3065" bodyend="3076"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3174" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3174" bodyend="3185"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -2273,7 +2289,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3080" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3080" bodyend="3098"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3189" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3189" bodyend="3207"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a38bdbc6d77676038e447b7493835e918" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2292,7 +2308,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3101" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3101" bodyend="3114"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3210" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3210" bodyend="3223"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a582f71dacbb5aaf5e3ee62b35ab58e30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2315,7 +2331,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3117" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3117" bodyend="3158"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3226" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3226" bodyend="3267"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a36031fe09b3d0985bddf5fe60faa7ee2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2334,7 +2350,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3161" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3161" bodyend="3163"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3270" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3270" bodyend="3272"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a643afd5c0502e185bc0e9821b9413daf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2357,7 +2373,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3251" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3251" bodyend="3268"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3362" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3362" bodyend="3379"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a697a38128d70e8904f7dcfe8bcb5478e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2380,7 +2396,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3271" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3271" bodyend="3280"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3382" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3382" bodyend="3392"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a00915b61df2b855602ac460993a4c4cd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2403,7 +2419,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3283" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3283" bodyend="3302"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3395" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3395" bodyend="3414"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a5ac6d48e7f2115e7987ea38597309b46" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -2422,7 +2438,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3305" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3305" bodyend="3323"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3417" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3417" bodyend="3435"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a997b9caf9f83d4cc12a9a58be6cc852a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -2441,7 +2457,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3326" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3326" bodyend="3339"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3438" column="9" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3438" bodyend="3452"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a8d4a98b383fb427ea5d1e146c39a1bfb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -2460,7 +2476,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3342" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3342" bodyend="3347"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3455" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3455" bodyend="3460"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a4ff536b269e17cecdf6435b24411a127" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2480,7 +2496,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3353" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3353" bodyend="3383"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3466" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3466" bodyend="3496"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aec54d5f47ed34b6436e19c41f085c0d4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2499,7 +2515,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3412" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3412" bodyend="3414"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3525" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3525" bodyend="3527"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aa5a8f07e0b6cf24ec9b6be6e5b9cf4ee" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2514,7 +2530,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3417" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3417" bodyend="3419"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3530" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3530" bodyend="3532"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab21294662e1f2558b29e6cedc6300718" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -2534,7 +2550,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3422" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3422" bodyend="3426"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3535" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3535" bodyend="3539"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a2fb5211e7daf74bd4539d34df25124b6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -2557,7 +2573,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3430" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3430" bodyend="3438"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3543" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3543" bodyend="3551"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ab2d40aa25410bd74891f5707fb1fd502" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>Tbase</type>
@@ -2581,7 +2597,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3441" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3441" bodyend="3460"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3554" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3554" bodyend="3573"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a947e5a5cc12070b4f441424c85d574c5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2600,7 +2616,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3463" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3463" bodyend="3473"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3576" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3576" bodyend="3586"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a73a5a99a48840b0e19ae2ef4a8f04de8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2623,7 +2639,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3476" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3476" bodyend="3525"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3589" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3589" bodyend="3638"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a83718b48c4f1180324b256f013e11ce9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2638,7 +2654,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3528" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3528" bodyend="3533"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3641" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3641" bodyend="3646"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1cd4b2212f3985975fd5c4898be2211f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2653,7 +2669,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3536" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3536" bodyend="3539"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3649" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3649" bodyend="3652"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a05154d8013f3c8c326ded36a2bfd0f6a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a94441b13ffeb32bc80f40744d0e47dd5" kindref="member">DiagonalizedFockMatrix</ref>&lt; Torb, Tbase &gt;</type>
@@ -2672,7 +2688,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3542" column="28" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3542" bodyend="3563"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3655" column="28" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3655" bodyend="3676"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a7c64b8e93ae142c7585b99ff44d2565a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
@@ -2691,7 +2707,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3566" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3566" bodyend="3568"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3679" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3679" bodyend="3681"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1af42651c092ba5d6b20e3687ab917a8b2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; std::tuple&lt; Tbase, size_t, size_t &gt; &gt;</type>
@@ -2714,7 +2730,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3572" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3572" bodyend="3580"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3685" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3685" bodyend="3693"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ad361054089302a8160954d44c3eacbb7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -2733,7 +2749,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3583" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3583" bodyend="3607"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3696" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3696" bodyend="3720"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a924d6a3808cc3254bd2395bdc719f27a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalOccupations&lt; Tbase &gt;</type>
@@ -2752,7 +2768,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3610" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3610" bodyend="3636"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3723" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3723" bodyend="3749"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a05e8fd7e915665580418ab47e44629e5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2767,7 +2783,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3639" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3639" bodyend="3659"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3752" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3752" bodyend="3772"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a0e46cd54304afa2a530f4ef787fb2335" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2785,7 +2801,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3690" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3690" bodyend="4066"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3803" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3803" bodyend="4179"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ac6c5ba9873cbd926433d1d7827eaedd4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1af8ece4fcb196c317d23632712f94e07d" kindref="member">DensityMatrix</ref>&lt; Torb, Tbase &gt;</type>
@@ -2805,7 +2821,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4069" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4069" bodyend="4071"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4182" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4182" bodyend="4184"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a31954e994daecb7c8ac07ef063a3508a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1ad8356304bd9645dc06f25e08486b3209" kindref="member">Orbitals</ref>&lt; Torb &gt;</type>
@@ -2825,7 +2841,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4074" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4074" bodyend="4076"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4187" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4187" bodyend="4189"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a419a31b06513b66c3d9836c24d9c561f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>OrbitalOccupations&lt; Tbase &gt;</type>
@@ -2845,7 +2861,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4079" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4079" bodyend="4081"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4192" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4192" bodyend="4194"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a43bdad00e9e22b7b40a377480857f8d4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1aa53c0be96b15a930c3b932ff060b3b63" kindref="member">FockBuilderReturn</ref>&lt; Torb, Tbase &gt;</type>
@@ -2865,7 +2881,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4084" column="23" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4084" bodyend="4086"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4197" column="23" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4197" bodyend="4199"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a325f1538e5fc350c13e66838cef13b64" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FockMatrix&lt; Torb &gt;</type>
@@ -2885,7 +2901,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4089" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4089" bodyend="4091"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4202" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4202" bodyend="4204"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a1c8c9606adb3ddef58c791a6ccf028a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2900,7 +2916,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4095" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4095" bodyend="4315"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4208" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4208" bodyend="4428"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a7f4222276dfeecdd45be72ef733df016" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2919,7 +2935,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4317" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4317" bodyend="4319"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4430" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4430" bodyend="4432"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1ae140f5487bbff0063dadaa15739c1c77" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2938,7 +2954,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4321" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4321" bodyend="4323"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4434" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4434" bodyend="4436"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a701beeb8dc0a2626462e26a6fb44f350" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -2958,7 +2974,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4330" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4330" bodyend="4332"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4443" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4443" bodyend="4445"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1adc9044ebe68a1635474376262983c313" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -2973,7 +2989,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="4335" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4335" bodyend="4337"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="4448" column="10" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="4448" bodyend="4450"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -2990,7 +3006,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3183" column="31" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3183" bodyend="3248"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3292" column="31" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3292" bodyend="3359"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1a388c7da7112b9de5c86cbdc6bbb0f373" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -3005,7 +3021,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3388" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3388" bodyend="3394"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3501" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3501" bodyend="3507"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1aabb583dd96a1ec4a342b25fd12644f77" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -3025,7 +3041,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="3397" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3397" bodyend="3401"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="3510" column="17" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="3510" bodyend="3514"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -3033,7 +3049,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="openorbitaloptimizer/scfsolver.hpp" line="145" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="145" bodyend="4338"/>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="145" column="15" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="145" bodyend="4451"/>
     <listofallmembers>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a947e5a5cc12070b4f441424c85d574c5" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>add_entry</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a73a5a99a48840b0e19ae2ef4a8f04de8" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>add_entry</name></member>
@@ -3137,6 +3153,7 @@ count from the most recent ODA call&quot; <ndash/> the number of orbital- rotati
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a70a59d94d512947ce11e63d3d5b3b4cd" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>matricise</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4fa89d8c1c293b3965f4a306986296b3" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>matricise</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a854e63c7f633dc278d28a1244536860d" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>matrix_dimension</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0363ab9b307f7f5cbc458f9da3eb945d" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>max_oda_refits_</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8d62f812e103bcfef7a02c3d4590273c" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_history_length_</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4be19cea6627ee3e603759aeceeadb4d" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_iterations_</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aed233a6dccdfe6284e0b4501a89b61d6" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver</scope><name>maximum_occupation_</name></member>

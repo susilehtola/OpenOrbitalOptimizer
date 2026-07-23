@@ -158,6 +158,7 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a14508cfa6ab649d26abe9dcbf44d2efb" kind="variable"><name>optimal_damping_degeneracy_threshold_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6a8931452bef6b983e08eda5402b8f84" kind="variable"><name>occupation_change_threshold_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a5b873704c19967433b3d2a49f574dda4" kind="variable"><name>orbital_rotation_steps_after_oda_</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0363ab9b307f7f5cbc458f9da3eb945d" kind="variable"><name>max_oda_refits_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a79e1f0fbf167bed930bf2628fa75a79d" kind="variable"><name>last_polytope_dimension_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1acc8a657549b461d43f484cca4e11649c" kind="variable"><name>last_active_rotation_count_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a14aab923ec277fcbf781ffd1a04fe3b9" kind="variable"><name>old_energy_</name></member>
