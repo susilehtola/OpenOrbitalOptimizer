@@ -18,6 +18,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 using OpenOrbitalOptimizer::SCFSolver;
 using OpenOrbitalOptimizer::Matrix;
@@ -152,6 +153,66 @@ int main() {
     REQUIRE(cite.find("Lehtola") != std::string::npos);
     REQUIRE(cite.find("10.1021/acs.jpca.5c02110") != std::string::npos);
     REQUIRE(cite.find("J. Phys. Chem. A") != std::string::npos);
+  }
+
+  // Logger callback catches messages instead of stdout, and honours
+  // the verbosity gate.
+  {
+    auto logger_solver = make_solver();
+    FockMatrix<double> guess(1);
+    guess[0] = Matrix<double>::Identity(2, 2) * -1.0;
+    logger_solver.initialize_with_fock(guess);
+
+    struct Record {
+      int level;
+      std::string msg;
+    };
+    std::vector<Record> captured;
+    logger_solver.logger(
+        [&](int level, const std::string & msg) {
+          captured.push_back({level, msg});
+        });
+    REQUIRE(logger_solver.has_logger());
+
+    // A run() at the default verbosity emits at least the "Iteration"
+    // line and the "Converged to energy" line at level 1. Everything
+    // above verbosity_ (default 5) should be filtered out.
+    logger_solver.set(std::string("verbosity"), 5);
+    logger_solver.set(std::string("maximum_iterations"), 3);
+    logger_solver.run();
+
+    bool saw_iteration = false, saw_converged = false;
+    for (const auto & r : captured) {
+      if (r.msg.find("Iteration") != std::string::npos) saw_iteration = true;
+      if (r.msg.find("Converged") != std::string::npos) saw_converged = true;
+      // Level-gate invariant: no message can come through above the
+      // current verbosity_ threshold.
+      if (r.level > 5) {
+        std::printf("FAIL: logger got level %d message at verbosity 5: %s\n",
+                    r.level, r.msg.c_str());
+        ++failures;
+      }
+    }
+    REQUIRE(saw_iteration);
+    REQUIRE(saw_converged);
+
+    // Silence the solver and confirm nothing further arrives.
+    captured.clear();
+    logger_solver.set(std::string("verbosity"), 0);
+    logger_solver.run();
+    for (const auto & r : captured) {
+      // Level 0 messages are still legitimate at verbosity 0
+      // (unconditional), but level >= 1 must not slip through.
+      if (r.level >= 1) {
+        std::printf("FAIL: logger got level %d message at verbosity 0: %s\n",
+                    r.level, r.msg.c_str());
+        ++failures;
+      }
+    }
+
+    // Clearing the logger restores the stdout default.
+    logger_solver.logger(nullptr);
+    REQUIRE(!logger_solver.has_logger());
   }
 
   std::printf("%s: %d failure(s)\n", __FILE__, failures);
