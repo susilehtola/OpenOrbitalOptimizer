@@ -17,6 +17,24 @@
 
 ## v0.5.0 / (Unreleased)
 
+#### Enhancements
+* ODA candidate selection is now model-first. The polytope
+  quadratic-model minimum and the 1D probes (quartic per axis,
+  quartic per pair-diagonal edge) are ranked by their
+  polynomial-predicted energy, and the trial loop evaluates them in
+  that order. Along a linear ray in density space the Hartree-Fock
+  energy is exactly quadratic and the polynomial fits are exact for
+  HF and closely accurate for DFT near convergence, so the sorted
+  first candidate is normally the accepted step -- one Fock build
+  per ODA call in place of the worst-case
+  O(candidates × backoff scales) sweep.
+* Promoted the axis and edge 1D probes from cubic to quartic
+  Hermite. The diagonal Hessian block `H_ii` (on an axis) and the
+  edge-projected Hessian `H_ii + H_jj - 2 H_ij` (on a pair-diagonal
+  edge) supply the fifth Hermite data point at zero additional Fock
+  cost, so the quartic captures DFT non-quadraticity that the
+  earlier cubic missed.
+
 #### New Features (continued)
 * Route all library log output through a caller-installable
   callback. `SCFSolver::logger(std::function<void(int level, const
