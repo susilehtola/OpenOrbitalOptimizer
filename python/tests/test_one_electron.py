@@ -31,9 +31,9 @@ def test_one_electron_diag():
         fock_builder=fock_builder,
         block_descriptions=["s"],
     )
-    solver.verbosity(0)
-    solver.convergence_threshold(1e-10)
-    solver.maximum_iterations(50)
+    solver.set("verbosity", 0)
+    solver.set("convergence_threshold", 1e-10)
+    solver.set("maximum_iterations", 50)
     solver.initialize_with_fock([h.copy(order="F")])
     solver.run()
 

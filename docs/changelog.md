@@ -17,6 +17,23 @@
 
 ## v0.5.0 / (Unreleased)
 
+#### Breaking Changes
+* The per-option typed getters and setters on `SCFSolver` have been
+  removed. Use the string-keyed façade instead:
+  `solver.set(key, value)`, `solver.get_real / get_int /
+  get_string(key)`, `SCFSolver::options()`. The Armadillo compatibility
+  shim keeps its typed forwarders and now routes them through the
+  façade.
+* `SCFSolver::run()` no longer takes a method-mix argument; it
+  consumes the `methods` setting, which is normalised to canonical
+  uppercase on `set()`. Migrate `solver.run("ODA + CG")` to
+  `solver.set("methods", "ODA + CG"); solver.run()`.
+* Python bindings dropped the per-option typed methods (`verbosity`,
+  `convergence_threshold`, `maximum_iterations`, ...). Use
+  `solver.set(key, value)` or the attribute-style
+  `solver.settings.<key> = value`. `SCFSolver` and `OptionInfo` are
+  now importable from the `openorbital` package top level.
+
 #### New Features
 * SCF convergence threshold is now clamped to an arithmetic-precision
   floor: the effective threshold is
@@ -34,6 +51,27 @@
   diagnostic with its type and one-line description. Downstream
   callers now only need to know this triple to reach any setting,
   making JSON/dict-shaped configuration pipe-throughs trivial.
+* Add `openorbital.Settings`: an attribute-style proxy that dispatches
+  through the C++ catalog, so
+  `solver.settings.convergence_threshold = 1e-9` is equivalent to
+  `solver.set("convergence_threshold", 1e-9)` with the same catalog
+  validation, `dir()` completion, and read-only diagnostic guards.
+* Add `SCFSolver::print_settings()` which dumps every catalog entry
+  with its current value. Read-only diagnostics that aren't yet
+  computable (e.g. `converged` before the first `initialize_with_*`)
+  print as `n/a` instead of throwing. Python bindings expose it as
+  `solver.print_settings()` and the same output backs
+  `str(solver.settings)`.
+* Add `SCFSolver::citation()` and `SCFSolver::print_citation()` so
+  downstream drivers can echo the canonical reference (Lehtola &
+  Burns, J. Phys. Chem. A **129**, 5651 (2025);
+  doi:10.1021/acs.jpca.5c02110) without hardcoding it, and add a
+  `CITATION.cff` at the repository root so GitHub's "Cite this
+  repository" button and citation-tracking tools resolve it
+  automatically.
+* The three PySCF drivers grew an `options=None` dict argument on
+  `kernel()`; entries are forwarded via `solver.set(key, value)`
+  before the run.
 
 #### Enhancements
 * `L-BFGS` history depth is now controlled by the shared
@@ -42,6 +80,8 @@
 * `brute_force_search_for_lowest_configuration` now saves and
   restores `verbosity` and `frozen_occupations`, so calling it no
   longer permanently silences and thaws the parent solver.
+* Removed the deprecated `run_optimal_damping()` alias on the
+  Armadillo compatibility shim.
 
 
 ## v0.4.0 / 2026-07-20

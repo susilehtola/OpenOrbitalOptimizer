@@ -556,16 +556,15 @@ namespace OpenOrbitalOptimizer {
           maximum_occupation,
           number_of_particles,
           fock_builder, block_descriptions);
-      scfsolver.verbosity(verbosity);
-      scfsolver.convergence_threshold(convergence_threshold);
-      scfsolver.maximum_iterations(maxiter);
+      scfsolver.set("verbosity", verbosity);
+      scfsolver.set("convergence_threshold", convergence_threshold);
+      scfsolver.set("maximum_iterations", maxiter);
       if(oda_degeneracy_threshold > 0)
-        scfsolver.optimal_damping_degeneracy_threshold(oda_degeneracy_threshold);
+        scfsolver.set("optimal_damping_degeneracy_threshold", oda_degeneracy_threshold);
       scfsolver.initialize_with_fock(fock_guess);
       if(oda)
-        scfsolver.run("ODA + CG");
-      else
-        scfsolver.run();
+        scfsolver.set("methods", std::string("ODA + CG"));
+      scfsolver.run();
 
       if(core_excitation) {
         // Form core-excited state
@@ -576,12 +575,11 @@ namespace OpenOrbitalOptimizer {
 
         // Decrease occupation of 1s orbital
         occupations[0](0) = 0.0;
-        scfsolver.frozen_occupations(true);
+        scfsolver.set("frozen_occupations", 1);
         scfsolver.initialize_with_orbitals(orbitals, occupations);
         if(oda)
-          scfsolver.run("ODA + CG");
-        else
-          scfsolver.run();
+          scfsolver.set("methods", std::string("ODA + CG"));
+        scfsolver.run();
         auto core_hole_fock_build = scfsolver.get_fock_build();
         printf("1s double ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
       }
@@ -716,16 +714,15 @@ namespace OpenOrbitalOptimizer {
           maximum_occupation,
           number_of_particles,
           fock_builder, block_descriptions);
-      scfsolver.verbosity(verbosity);
-      scfsolver.convergence_threshold(convergence_threshold);
-      scfsolver.maximum_iterations(maxiter);
+      scfsolver.set("verbosity", verbosity);
+      scfsolver.set("convergence_threshold", convergence_threshold);
+      scfsolver.set("maximum_iterations", maxiter);
       if(oda_degeneracy_threshold > 0)
-        scfsolver.optimal_damping_degeneracy_threshold(oda_degeneracy_threshold);
+        scfsolver.set("optimal_damping_degeneracy_threshold", oda_degeneracy_threshold);
       scfsolver.initialize_with_fock(fock_guess);
       if(oda)
-        scfsolver.run("ODA + CG");
-      else
-        scfsolver.run();
+        scfsolver.set("methods", std::string("ODA + CG"));
+      scfsolver.run();
 
       if(core_excitation) {
         // Form core-excited state
@@ -736,12 +733,11 @@ namespace OpenOrbitalOptimizer {
 
         // Decrease occupation of 1s orbital
         occupations[0](0) = 0.0;
-        scfsolver.frozen_occupations(true);
+        scfsolver.set("frozen_occupations", 1);
         scfsolver.initialize_with_orbitals(orbitals, occupations);
         if(oda)
-          scfsolver.run("ODA + CG");
-        else
-          scfsolver.run();
+          scfsolver.set("methods", std::string("ODA + CG"));
+        scfsolver.run();
         auto core_hole_fock_build = scfsolver.get_fock_build();
         printf("1s ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
       }
@@ -898,11 +894,11 @@ namespace OpenOrbitalOptimizer {
           maximum_occupation,
           number_of_particles,
           fock_builder, block_descriptions);
-      scfsolver.convergence_threshold(convergence_threshold);
-      scfsolver.verbosity(verbosity);
-      scfsolver.maximum_iterations(maxiter);
+      scfsolver.set("convergence_threshold", convergence_threshold);
+      scfsolver.set("verbosity", verbosity);
+      scfsolver.set("maximum_iterations", maxiter);
       if(oda_degeneracy_threshold > 0)
-        scfsolver.optimal_damping_degeneracy_threshold(oda_degeneracy_threshold);
+        scfsolver.set("optimal_damping_degeneracy_threshold", oda_degeneracy_threshold);
 
       {
         // Run a calculation with the point nucleus to initialize the electronic orbitals
@@ -939,9 +935,8 @@ namespace OpenOrbitalOptimizer {
       }
 
       if(oda)
-        scfsolver.run("ODA + CG");
-      else
-        scfsolver.run();
+        scfsolver.set("methods", std::string("ODA + CG"));
+      scfsolver.run();
 
       if(core_excitation) {
         // Form core-excited state
@@ -952,12 +947,11 @@ namespace OpenOrbitalOptimizer {
 
         // Decrease occupation of 1s orbital
         occupations[0](0) = 0.0;
-        scfsolver.frozen_occupations(true);
+        scfsolver.set("frozen_occupations", 1);
         scfsolver.initialize_with_orbitals(orbitals, occupations);
         if(oda)
-          scfsolver.run("ODA + CG");
-        else
-          scfsolver.run();
+          scfsolver.set("methods", std::string("ODA + CG"));
+        scfsolver.run();
         auto core_hole_fock_build = scfsolver.get_fock_build();
         printf("1s ionization energy % .3f eV\n",(core_hole_fock_build.first-fock_build.first)*27.2114);
       }

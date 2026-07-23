@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use OpenOrbitalOptimizer, please cite the following article."
+title: OpenOrbitalOptimizer
+type: software
+license: MPL-2.0
+repository-code: "https://github.com/susilehtola/OpenOrbitalOptimizer"
+authors:
+  - family-names: Lehtola
+    given-names: Susi
+  - family-names: Burns
+    given-names: Lori A.
+preferred-citation:
+  type: article
+  title: "OpenOrbitalOptimizer -- a reusable open source library for self-consistent field calculations"
+  authors:
+    - family-names: Lehtola
+      given-names: Susi
+    - family-names: Burns
+      given-names: Lori A.
+  journal: "The Journal of Physical Chemistry A"
+  volume: 129
+  start: 5651
+  year: 2025
+  doi: "10.1021/acs.jpca.5c02110"

@@ -235,19 +235,33 @@ class OpenOrbitalSCF:
         veff = self.mf.get_veff(self.mol, dm=dm_init)
         return self._fock_per_irrep(h1 + veff)
 
-    def kernel(self, methods="DIIS + ODA + CG", *, dm_init=None):
+    def kernel(self, methods=None, *, dm_init=None, options=None):
         """Run the SCF and return the total energy.
 
-        ``methods`` is forwarded verbatim to ``SCFSolver.run`` as the
-        ``+``-separated token list (case-insensitive; choices are
-        ``DIIS``, ``ODA``, ``CG``, ``LBFGS``).
+        ``methods`` is stored as the solver's ``methods`` setting
+        before running: a ``+``-separated token list
+        (case-insensitive; choices are ``DIIS``, ``ODA``, ``CG``,
+        ``LBFGS``). If ``None`` (default), whatever was previously
+        set stays in force.
+
+        ``options`` is a dict of solver settings applied via
+        ``SCFSolver.set(key, value)`` before the run. Keys must be
+        names listed by ``SCFSolver.options()``. If both ``options``
+        and ``methods`` mention ``methods``, the ``methods`` kwarg
+        wins.
+
         ``dm_init`` is keyword-only so a positional first argument
         always selects the method string -- the much more common case
         -- and a stray ``oo.kernel("...")`` cannot silently bind a
         string to ``dm_init`` and crash inside PySCF's Fock builder.
         """
+        if options:
+            for key, value in options.items():
+                self.solver.set(key, value)
+        if methods is not None:
+            self.solver.set("methods", methods)
         self.solver.initialize_with_fock(self.initial_fock(dm_init))
-        self.solver.run(methods=methods)
+        self.solver.run()
         self.e_tot = float(self.solver.get_energy(0))
         self._populate_mf_results()
         return self.e_tot
