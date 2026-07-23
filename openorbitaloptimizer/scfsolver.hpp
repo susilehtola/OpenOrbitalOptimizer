@@ -342,6 +342,15 @@ namespace OpenOrbitalOptimizer {
       else       std::fputs(msg.c_str(), stdout);
     }
 
+    /// Force any pending log output to become visible. When no logger
+    /// is installed this flushes stdout (matching the historical
+    /// ``fflush(stdout)`` calls scattered through the file); when a
+    /// caller-supplied sink is installed, buffering is that sink's
+    /// concern so the call is a no-op.
+    void log_flush_() const {
+      if(!logger_) std::fflush(stdout);
+    }
+
     /// Ostream-style companion to log_(). Constructed via
     /// ``log_stream_(level)``; accumulates output through
     /// ``operator<<`` and flushes to the logger / stdout on
@@ -440,7 +449,7 @@ namespace OpenOrbitalOptimizer {
         return lowest_energy;
       else {
         print_history();
-        fflush(stdout);
+        log_flush_();
         std::ostringstream oss;
         oss << "Did not find any entries with index greater than " << index << "!\n";
         throw std::logic_error(oss.str());
@@ -1568,10 +1577,8 @@ namespace OpenOrbitalOptimizer {
       // can size its post-ODA orbital-rotation burst when the user has not overridden
       // orbital_rotation_steps_after_oda_.
       last_polytope_dimension_ = npars;
-      if(verbosity_>=5) {
-        log_(5, "%i parameters in optimal damping\n", (int) npars);
-        fflush(stdout);
-      }
+      log_(5, "%i parameters in optimal damping\n", (int) npars);
+      log_flush_();
       if(npars==0)
         return false;
 
@@ -3446,7 +3453,7 @@ namespace OpenOrbitalOptimizer {
         diagonalized_fock.first[iblock] = es.eigenvectors();
 
         log_stream_(10) << block_descriptions_[iblock] + " orbital energies: " << diagonalized_fock.second[iblock].transpose() << std::endl;
-        fflush(stdout);
+        log_flush_();
       }
 
       return diagonalized_fock;
@@ -4061,7 +4068,7 @@ namespace OpenOrbitalOptimizer {
 
                 log_(0, "isource = %i itarget = %i imoved = %f\n", (int)iblock_source, (int)iblock_target, i_moved);
                 log_stream_(0) << "trial number of particles: " << trial_number.transpose() << std::endl;
-                fflush(stdout);
+                log_flush_();
 
                 // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
                 auto trial_occupations = update_occupations(orbital_energies);
@@ -4116,7 +4123,7 @@ namespace OpenOrbitalOptimizer {
 
                     log_(0, "i: source %f capacity left %f num max %i\n",num_i_source,i_target_capacity_left,num_i_max);
                     log_(0, "j: source %f capacity left %f num max %i\n",num_j_source,j_target_capacity_left,num_j_max);
-                    fflush(stdout);
+                    log_flush_();
 
                     // Generate trials by moving particles
                     for(int imove=1; imove<=num_i_max; imove++)
@@ -4152,7 +4159,7 @@ namespace OpenOrbitalOptimizer {
                         log_(0, "isource = %i itarget = %i imoved = %f\n", (int)iblock_source, (int)iblock_target, i_moved);
                         log_(0, "jsource = %i jtarget = %i jmoved = %f\n", (int)jblock_source, (int)jblock_target, j_moved);
                         log_stream_(0) << "trial number of particles: " << trial_number.transpose() << std::endl;
-                        fflush(stdout);
+                        log_flush_();
 
                         // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
                         auto trial_occupations = update_occupations(orbital_energies);
