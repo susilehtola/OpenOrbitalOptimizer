@@ -27,6 +27,12 @@
     <member refid="structEigen_1_1NumTraits_3_01__Float128_01_4_1ab02cd2a060de5691c278f3412879f585" kind="function"><name>lowest</name></member>
     <member refid="structEigen_1_1NumTraits_3_01__Float128_01_4_1a37cb7f6d83268de4a60ba4902051a3b6" kind="function"><name>digits10</name></member>
   </compound>
+  <compound refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo" kind="struct"><name>OpenOrbitalOptimizer::SCFSolver::OptionInfo</name>
+    <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1a6881d6ac33d8ea74e8ac776875767ca2" kind="variable"><name>key</name></member>
+    <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1a98fafe042b8a86a66a0ba6cd7a4572b2" kind="variable"><name>type</name></member>
+    <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1aa4f2593bfa706274bf368f68388d08b8" kind="variable"><name>writable</name></member>
+    <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1a4be5178cbfc3696ae7e288a366f7194a" kind="variable"><name>doc</name></member>
+  </compound>
   <compound refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext" kind="struct"><name>OpenOrbitalOptimizer::SCFSolver::RotationStepContext</name>
     <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a449a6fbd8c0f7a8fac87eeb23398116d" kind="variable"><name>C_pseudo</name></member>
     <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext_1a1e3a1758ae7f68e62f08373f0957ada2" kind="variable"><name>n_ref</name></member>
@@ -137,7 +143,6 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af045441add22255ac884008a50332781" kind="variable"><name>previous_orbital_direction_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a2f4333e1fff7ba8ff1abb78a99b329ea" kind="variable"><name>previous_orbital_dofs_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a63a71506e43ac2703ae452436149e047" kind="variable"><name>lbfgs_</name></member>
-    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae7b4403dc8c07dbdef03c3d981e65f7f" kind="variable"><name>lbfgs_history_size_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a57b7f1d5a457f1f365aad8bbff84e877" kind="function"><name>empty_block</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae5ab3b4e7f5093a98930cb6ca3668aba" kind="function"><name>get_density_matrix_block</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aff327fdda23834c22fa61048dc12d1f5" kind="function"><name>get_orbital_block</name></member>
@@ -217,6 +222,12 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab46784ee78994ad43742969d75f6574a" kind="function"><name>frozen_occupations</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aef36f1506aef3398f939985c0fc47c91" kind="function"><name>verbosity</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a921d51f72394adda3b735d1715f78548" kind="function"><name>verbosity</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a643afd5c0502e185bc0e9821b9413daf" kind="function"><name>set</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a697a38128d70e8904f7dcfe8bcb5478e" kind="function"><name>set</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a00915b61df2b855602ac460993a4c4cd" kind="function"><name>set</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a5ac6d48e7f2115e7987ea38597309b46" kind="function"><name>get_real</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a997b9caf9f83d4cc12a9a58be6cc852a" kind="function"><name>get_int</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8d4a98b383fb427ea5d1e146c39a1bfb" kind="function"><name>get_string</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1a1933d8e73fe81a5dec2e2f75cba6ed" kind="function"><name>convergence_threshold</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1afee8343f85cff1b49507d214ddcb8092" kind="function"><name>convergence_threshold</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab544dfd9739197e8b93ed12323d9ecd6" kind="function"><name>noise_safety_factor</name></member>
@@ -271,6 +282,7 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1c8c9606adb3ddef58c791a6ccf028a0" kind="function"><name>brute_force_search_for_lowest_configuration</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a7f4222276dfeecdd45be72ef733df016" kind="function"><name>callback_function</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae140f5487bbff0063dadaa15739c1c77" kind="function"><name>callback_convergence_function</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a31dce54b94fa7fec55ca1059be162058" kind="function"><name>options</name></member>
   </compound>
   <compound refid="namespaceEigen" kind="namespace"><name>Eigen</name>
   </compound>

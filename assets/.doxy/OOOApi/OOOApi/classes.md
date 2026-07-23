@@ -13,6 +13,12 @@
 ([**Eigen**](namespaceEigen.md))
 
 
+## o
+
+* [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md)
+([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+
+
 ## r
 
 * [**RotationStepContext**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext.md)

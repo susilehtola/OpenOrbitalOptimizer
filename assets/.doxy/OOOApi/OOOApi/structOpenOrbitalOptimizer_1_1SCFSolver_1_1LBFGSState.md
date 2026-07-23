@@ -88,7 +88,7 @@
 ## Detailed Description
 
 
-Limited-memory BFGS state retained between lbfgs\_step calls. `s`, `y`, `rho` store the last lbfgs\_history\_size\_ triples that drive the two-loop recursion. `pending_s`, `pending_g` hold the (s, g) recorded at the previous accepted step so the y = g\_new - g\_old pair can be formed on entry to the next call. All members are cleared whenever the orbital basis changes globally (ODA accept), the line search fails, or the DOF set changes. The owning solver only allocates the struct on the first lbfgs\_step() call, so when the user has not enabled L-BFGS the deque headers are not present at all. 
+Limited-memory BFGS state retained between lbfgs\_step calls. `s`, `y`, `rho` store the last maximum\_history\_length\_ triples that drive the two-loop recursion (same cap as DIIS  the two share one history-depth knob). `pending_s`, `pending_g` hold the (s, g) recorded at the previous accepted step so the y = g\_new - g\_old pair can be formed on entry to the next call. All members are cleared whenever the orbital basis changes globally (ODA accept), the line search fails, or the DOF set changes. The owning solver only allocates the struct on the first lbfgs\_step() call, so when the user has not enabled L-BFGS the deque headers are not present at all. 
 
 
     

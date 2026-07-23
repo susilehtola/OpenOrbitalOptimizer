@@ -963,6 +963,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#v050-unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.5.0 / (Unreleased)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.5.0 / (Unreleased)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v040-2026-07-20" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -986,7 +1025,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#new-features" class="md-nav__link">
+  <a href="#new-features_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -997,7 +1036,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#enhancements" class="md-nav__link">
+  <a href="#enhancements_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Enhancements
@@ -1047,7 +1086,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#new-features_1" class="md-nav__link">
+  <a href="#new-features_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1058,7 +1097,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#enhancements_1" class="md-nav__link">
+  <a href="#enhancements_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Enhancements
@@ -1119,7 +1158,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#new-features_2" class="md-nav__link">
+  <a href="#new-features_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1130,7 +1169,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#enhancements_2" class="md-nav__link">
+  <a href="#enhancements_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         Enhancements
@@ -1180,7 +1219,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new-features_3" class="md-nav__link">
+  <a href="#new-features_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1227,6 +1266,35 @@
 #### Misc.
 -->
 
+<h2 id="v050-unreleased">v0.5.0 / (Unreleased)</h2>
+<h4 id="new-features">New Features</h4>
+<ul>
+<li>SCF convergence threshold is now clamped to an arithmetic-precision
+  floor: the effective threshold is
+  <code>max(convergence_threshold, K * noise_floor)</code>, where <code>noise_floor</code>
+  is a per-run estimate of the roundoff floor of the DIIS residual
+  <code>C^dagger [F, P] C</code> frozen from the initial Fock. <code>K</code> defaults to
+  10 and is tunable via <code>noise_safety_factor</code>. <code>__float128</code> runs are
+  unaffected because their epsilon is tiny; the clamp mainly rescues
+  low-precision runs from spinning below what the arithmetic can
+  resolve. Callback-driven convergence
+  (<code>callback_convergence_function</code>) is untouched.</li>
+<li>Introduce a string-keyed settings façade on <code>SCFSolver</code>:
+  <code>set(key, value)</code>, <code>get_real/get_int/get_string(key)</code>, and a
+  static <code>options()</code> catalog listing every knob and read-only
+  diagnostic with its type and one-line description. Downstream
+  callers now only need to know this triple to reach any setting,
+  making JSON/dict-shaped configuration pipe-throughs trivial.</li>
+</ul>
+<h4 id="enhancements">Enhancements</h4>
+<ul>
+<li><code>L-BFGS</code> history depth is now controlled by the shared
+  <code>maximum_history_length</code> setting; the private
+  <code>lbfgs_history_size_</code> knob has been folded away.</li>
+<li><code>brute_force_search_for_lowest_configuration</code> now saves and
+  restores <code>verbosity</code> and <code>frozen_occupations</code>, so calling it no
+  longer permanently silences and thaws the parent solver.</li>
+</ul>
 <h2 id="v040-2026-07-20">v0.4.0 / 2026-07-20</h2>
 <h4 id="breaking-changes">Breaking Changes</h4>
 <ul>
@@ -1235,7 +1303,7 @@
   but callers that reached into Armadillo types directly must migrate to the
   new <code>OpenOrbitalOptimizer::Matrix&lt;T&gt;</code> / <code>Vector&lt;T&gt;</code> / <code>IndexVector</code> aliases.</li>
 </ul>
-<h4 id="new-features">New Features</h4>
+<h4 id="new-features_1">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/38">#38</a> Port the
   library and <code>atomtest</code> from Armadillo to Eigen 3, unlocking arbitrary-precision
@@ -1253,7 +1321,7 @@
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/10">#10</a> New
   <code>--oda</code> / <code>--odadegthresh</code> / <code>--maxiter</code> flags in the <code>atomtest</code> driver.</li>
 </ul>
-<h4 id="enhancements">Enhancements</h4>
+<h4 id="enhancements_1">Enhancements</h4>
 <ul>
 <li>Python bindings expose the new API surface: <code>run(methods=...)</code>,
   <code>set_batched_fock_builder</code>, <code>has_batched_fock_builder</code>,
@@ -1273,7 +1341,7 @@
 </ul>
 <h2 id="v030-2026-05-21">v0.3.0 / 2026-05-21</h2>
 <h4 id="breaking-changes_1">Breaking Changes</h4>
-<h4 id="new-features_1">New Features</h4>
+<h4 id="new-features_2">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/34">#34</a> Add Python interface!
   This covers the most common <code>SCFSolver&lt;double, double&gt;</code> case; others added upon request.</li>
@@ -1283,7 +1351,7 @@
   to set the number of steps with no DIIS energy improvement after which to use ODA independently of
   DIIS history length. Previously used <code>maximum_history_length</code>/2</li>
 </ul>
-<h4 id="enhancements_1">Enhancements</h4>
+<h4 id="enhancements_2">Enhancements</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/35">#35</a> Explicitly symmetrize matices
   for DIIS error calculation to avoid numerical issues.</li>
@@ -1309,8 +1377,8 @@
 </ul>
 <h2 id="v020-2025-08-12">v0.2.0 / 2025-08-12</h2>
 <h4 id="breaking-changes_2">Breaking Changes</h4>
-<h4 id="new-features_2">New Features</h4>
-<h4 id="enhancements_2">Enhancements</h4>
+<h4 id="new-features_3">New Features</h4>
+<h4 id="enhancements_3">Enhancements</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/26">#26</a> add callback so caller can
    apply its own convergence criteria.</li>
@@ -1333,7 +1401,7 @@
 <li>Fix GCC 15 warnings</li>
 </ul>
 <h2 id="v010-2025-03-30">v0.1.0 / 2025-03-30</h2>
-<h4 id="new-features_3">New Features</h4>
+<h4 id="new-features_4">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/20">#20</a> Intf -- allow OOO and
    IntegratorXX to work on Windows.</li>

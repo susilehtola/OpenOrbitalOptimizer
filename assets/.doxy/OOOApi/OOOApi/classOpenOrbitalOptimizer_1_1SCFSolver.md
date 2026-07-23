@@ -28,6 +28,11 @@ _SCF solver class._
 
 
 
+## Classes
+
+| Type | Name |
+| ---: | :--- |
+| struct | [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) <br>_Descriptor for a single option in the catalog._  |
 
 
 
@@ -82,9 +87,12 @@ _SCF solver class._
 |  Tbase | [**get\_energy**](#function-get_energy) (size\_t ihist=0) const<br>_Get the energy for the n:th entry._  |
 |  [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; | [**get\_fock\_build**](#function-get_fock_build) (size\_t ihist=0) const<br>_Get the Fock matrix builder return._  |
 |  FockMatrix&lt; Torb &gt; | [**get\_fock\_matrix**](#function-get_fock_matrix) (size\_t ihist=0) const<br>_Get the Fock matrix for the ihist:th entry._  |
+|  int | [**get\_int**](#function-get_int) (const std::string & key) const<br>_Get an integer-valued option or diagnostic._  |
 |  OrbitalOccupations&lt; Tbase &gt; | [**get\_orbital\_occupations**](#function-get_orbital_occupations) (size\_t ihist=0) const<br>_Get the orbital occupations._  |
 |  [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; | [**get\_orbitals**](#function-get_orbitals) (size\_t ihist=0) const<br>_Get the orbitals._  |
+|  Tbase | [**get\_real**](#function-get_real) (const std::string & key) const<br>_Get a real-valued option or diagnostic._  |
 |  [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; | [**get\_solution**](#function-get_solution) (size\_t ihist=0) const<br>_Get the SCF solution._  |
+|  std::string | [**get\_string**](#function-get_string) (const std::string & key) const<br>_Get a string-valued option._  |
 |  bool | [**has\_batched\_fock\_builder**](#function-has_batched_fock_builder) () const<br>_Whether a batched Fock builder is registered._  |
 |  void | [**initialize\_with\_fock**](#function-initialize_with_fock) (const FockMatrix&lt; Torb &gt; & fock\_guess) <br>_Initialize the solver with a guess Fock matrix._  |
 |  void | [**initialize\_with\_orbitals**](#function-initialize_with_orbitals) (const [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; & orbitals, const OrbitalOccupations&lt; Tbase &gt; & orbital\_occupations) <br>_Initialize with precomputed orbitals and occupations._  |
@@ -112,12 +120,20 @@ _SCF solver class._
 |  void | [**print\_history**](#function-print_history) () const<br>_Print the DIIS history._  |
 |  void | [**reset\_history**](#function-reset_history) () <br>_Reset the DIIS history._  |
 |  void | [**run**](#function-run) (const std::string & methods="DIIS + ODA + CG") <br> |
+|  void | [**set**](#function-set-13) (const std::string & key, Tbase v) <br>_Set a real-valued option._  |
+|  void | [**set**](#function-set-23) (const std::string & key, int v) <br>_Set an integer-valued option. Bool settings ride here as 0/1._  |
+|  void | [**set**](#function-set-33) (const std::string & key, const std::string & v) <br>_Set a string-valued option._  |
 |  void | [**set\_batched\_fock\_builder**](#function-set_batched_fock_builder) ([**BatchedFockBuilder**](namespaceOpenOrbitalOptimizer.md#typedef-batchedfockbuilder)&lt; Torb, Tbase &gt; builder) <br> |
 |  OrbitalOccupations&lt; Tbase &gt; | [**update\_occupations**](#function-update_occupations) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determines occupations based on the current orbital energies._  |
 |  int | [**verbosity**](#function-verbosity-12) () const<br>_Get verbosity._  |
 |  void | [**verbosity**](#function-verbosity-22) (int verbosity) <br>_Set verbosity._  |
 
 
+## Public Static Functions
+
+| Type | Name |
+| ---: | :--- |
+|  const std::vector&lt; [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) &gt; & | [**options**](#function-options) () <br>_Enumerate every option the solver understands._  |
 
 
 
@@ -583,6 +599,22 @@ inline FockMatrix< Torb > OpenOrbitalOptimizer::SCFSolver::get_fock_matrix (
 
 
 
+### function get\_int 
+
+_Get an integer-valued option or diagnostic._ 
+```C++
+inline int OpenOrbitalOptimizer::SCFSolver::get_int (
+    const std::string & key
+) const
+```
+
+
+
+
+<hr>
+
+
+
 ### function get\_orbital\_occupations 
 
 _Get the orbital occupations._ 
@@ -615,12 +647,44 @@ inline Orbitals < Torb > OpenOrbitalOptimizer::SCFSolver::get_orbitals (
 
 
 
+### function get\_real 
+
+_Get a real-valued option or diagnostic._ 
+```C++
+inline Tbase OpenOrbitalOptimizer::SCFSolver::get_real (
+    const std::string & key
+) const
+```
+
+
+
+
+<hr>
+
+
+
 ### function get\_solution 
 
 _Get the SCF solution._ 
 ```C++
 inline DensityMatrix < Torb, Tbase > OpenOrbitalOptimizer::SCFSolver::get_solution (
     size_t ihist=0
+) const
+```
+
+
+
+
+<hr>
+
+
+
+### function get\_string 
+
+_Get a string-valued option._ 
+```C++
+inline std::string OpenOrbitalOptimizer::SCFSolver::get_string (
+    const std::string & key
 ) const
 ```
 
@@ -1068,6 +1132,57 @@ State-transition rules: from DIIS we leave to ODA (or to CG when ODA is not allo
 
 
 
+### function set [1/3]
+
+_Set a real-valued option._ 
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::set (
+    const std::string & key,
+    Tbase v
+) 
+```
+
+
+
+
+<hr>
+
+
+
+### function set [2/3]
+
+_Set an integer-valued option. Bool settings ride here as 0/1._ 
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::set (
+    const std::string & key,
+    int v
+) 
+```
+
+
+
+
+<hr>
+
+
+
+### function set [3/3]
+
+_Set a string-valued option._ 
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::set (
+    const std::string & key,
+    const std::string & v
+) 
+```
+
+
+
+
+<hr>
+
+
+
 ### function set\_batched\_fock\_builder 
 
 ```C++
@@ -1124,6 +1239,22 @@ _Set verbosity._
 inline void OpenOrbitalOptimizer::SCFSolver::verbosity (
     int verbosity
 ) 
+```
+
+
+
+
+<hr>
+## Public Static Functions Documentation
+
+
+
+
+### function options 
+
+_Enumerate every option the solver understands._ 
+```C++
+static inline const std::vector< OptionInfo > & OpenOrbitalOptimizer::SCFSolver::options () 
 ```
 
 

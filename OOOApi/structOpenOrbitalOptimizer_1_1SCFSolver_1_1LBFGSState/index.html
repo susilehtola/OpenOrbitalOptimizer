@@ -1123,7 +1123,7 @@
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>Limited-memory BFGS state retained between lbfgs_step calls. <code>s</code>, <code>y</code>, <code>rho</code> store the last lbfgs_history_size_ triples that drive the two-loop recursion. <code>pending_s</code>, <code>pending_g</code> hold the (s, g) recorded at the previous accepted step so the y = g_new - g_old pair can be formed on entry to the next call. All members are cleared whenever the orbital basis changes globally (ODA accept), the line search fails, or the DOF set changes. The owning solver only allocates the struct on the first lbfgs_step() call, so when the user has not enabled L-BFGS the deque headers are not present at all. </p>
+<p>Limited-memory BFGS state retained between lbfgs_step calls. <code>s</code>, <code>y</code>, <code>rho</code> store the last maximum_history_length_ triples that drive the two-loop recursion (same cap as DIIS  the two share one history-depth knob). <code>pending_s</code>, <code>pending_g</code> hold the (s, g) recorded at the previous accepted step so the y = g_new - g_old pair can be formed on entry to the next call. All members are cleared whenever the orbital basis changes globally (ODA accept), the line search fails, or the DOF set changes. The owning solver only allocates the struct on the first lbfgs_step() call, so when the user has not enabled L-BFGS the deque headers are not present at all. </p>
 <h2 id="public-attributes-documentation">Public Attributes Documentation</h2>
 <h3 id="variable-history_dofs">variable history_dofs</h3>
 <pre><code class="language-C++">std::vector&lt;OrbitalRotation&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::LBFGSState::history_dofs;

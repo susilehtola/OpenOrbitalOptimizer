@@ -963,10 +963,32 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#public-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
         Public Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-static-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Static Functions
       
     </span>
   </a>
@@ -1294,6 +1316,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-get_int" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function get_int
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-get_orbital_occupations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1316,10 +1349,32 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-get_real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function get_real
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-get_solution" class="md-nav__link">
     <span class="md-ellipsis">
       
         function get_solution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-get_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function get_string
       
     </span>
   </a>
@@ -1624,6 +1679,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-set-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function set [1/3]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-set-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function set [2/3]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-set-33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function set [3/3]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-set_batched_fock_builder" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1672,6 +1760,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#public-static-functions-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Static Functions Documentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Public Static Functions Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1696,6 +1812,21 @@
 <ul>
 <li><code>#include &lt;scfsolver.hpp&gt;</code></li>
 </ul>
+<h2 id="classes">Classes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">struct</td>
+<td style="text-align: left;"><a href="../structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo/"><strong>OptionInfo</strong></a> <br><em>Descriptor for a single option in the catalog.</em></td>
+</tr>
+</tbody>
+</table>
 <h2 id="public-functions">Public Functions</h2>
 <table>
 <thead>
@@ -1818,6 +1949,10 @@
 <td style="text-align: left;"><a href="#function-get_fock_matrix"><strong>get_fock_matrix</strong></a> (size_t ihist=0) const<br><em>Get the Fock matrix for the ihist:th entry.</em></td>
 </tr>
 <tr>
+<td style="text-align: right;">int</td>
+<td style="text-align: left;"><a href="#function-get_int"><strong>get_int</strong></a> (const std::string &amp; key) const<br><em>Get an integer-valued option or diagnostic.</em></td>
+</tr>
+<tr>
 <td style="text-align: right;">OrbitalOccupations&lt; Tbase &gt;</td>
 <td style="text-align: left;"><a href="#function-get_orbital_occupations"><strong>get_orbital_occupations</strong></a> (size_t ihist=0) const<br><em>Get the orbital occupations.</em></td>
 </tr>
@@ -1826,8 +1961,16 @@
 <td style="text-align: left;"><a href="#function-get_orbitals"><strong>get_orbitals</strong></a> (size_t ihist=0) const<br><em>Get the orbitals.</em></td>
 </tr>
 <tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-get_real"><strong>get_real</strong></a> (const std::string &amp; key) const<br><em>Get a real-valued option or diagnostic.</em></td>
+</tr>
+<tr>
 <td style="text-align: right;"><a href="../namespaceOpenOrbitalOptimizer/#typedef-densitymatrix"><strong>DensityMatrix</strong></a>&lt; Torb, Tbase &gt;</td>
 <td style="text-align: left;"><a href="#function-get_solution"><strong>get_solution</strong></a> (size_t ihist=0) const<br><em>Get the SCF solution.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">std::string</td>
+<td style="text-align: left;"><a href="#function-get_string"><strong>get_string</strong></a> (const std::string &amp; key) const<br><em>Get a string-valued option.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">bool</td>
@@ -1939,6 +2082,18 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-set-13"><strong>set</strong></a> (const std::string &amp; key, Tbase v) <br><em>Set a real-valued option.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-set-23"><strong>set</strong></a> (const std::string &amp; key, int v) <br><em>Set an integer-valued option. Bool settings ride here as 0/1.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-set-33"><strong>set</strong></a> (const std::string &amp; key, const std::string &amp; v) <br><em>Set a string-valued option.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-set_batched_fock_builder"><strong>set_batched_fock_builder</strong></a> (<a href="../namespaceOpenOrbitalOptimizer/#typedef-batchedfockbuilder"><strong>BatchedFockBuilder</strong></a>&lt; Torb, Tbase &gt; builder) <br></td>
 </tr>
 <tr>
@@ -1952,6 +2107,21 @@
 <tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-verbosity-22"><strong>verbosity</strong></a> (int verbosity) <br><em>Set verbosity.</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="public-static-functions">Public Static Functions</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">const std::vector&lt; <a href="../structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo/"><strong>OptionInfo</strong></a> &gt; &amp;</td>
+<td style="text-align: left;"><a href="#function-options"><strong>options</strong></a> () <br><em>Enumerate every option the solver understands.</em></td>
 </tr>
 </tbody>
 </table>
@@ -2166,6 +2336,14 @@
 </code></pre>
 <hr>
 
+<h3 id="function-get_int">function get_int</h3>
+<p><em>Get an integer-valued option or diagnostic.</em> </p>
+<pre><code class="language-C++">inline int OpenOrbitalOptimizer::SCFSolver::get_int (
+    const std::string &amp; key
+) const
+</code></pre>
+<hr>
+
 <h3 id="function-get_orbital_occupations">function get_orbital_occupations</h3>
 <p><em>Get the orbital occupations.</em> </p>
 <pre><code class="language-C++">inline OrbitalOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver::get_orbital_occupations (
@@ -2182,10 +2360,26 @@
 </code></pre>
 <hr>
 
+<h3 id="function-get_real">function get_real</h3>
+<p><em>Get a real-valued option or diagnostic.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::get_real (
+    const std::string &amp; key
+) const
+</code></pre>
+<hr>
+
 <h3 id="function-get_solution">function get_solution</h3>
 <p><em>Get the SCF solution.</em> </p>
 <pre><code class="language-C++">inline DensityMatrix &lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver::get_solution (
     size_t ihist=0
+) const
+</code></pre>
+<hr>
+
+<h3 id="function-get_string">function get_string</h3>
+<p><em>Get a string-valued option.</em> </p>
+<pre><code class="language-C++">inline std::string OpenOrbitalOptimizer::SCFSolver::get_string (
+    const std::string &amp; key
 ) const
 </code></pre>
 <hr>
@@ -2384,6 +2578,33 @@
 <p>State-transition rules: from DIIS we leave to ODA (or to CG when ODA is not allowed) on stall or large error; from ODA we hand to DIIS on integer occupations or to CG on fractional / failed occupations; from CG we burst <code>orbital_rotation_steps_after_oda_</code> (or the polytope dimension when that is left at zero) steps and then hand back to DIIS. The state-machine collapses gracefully when only a subset of the methods is allowed: <code>"DIIS"</code> alone keeps retrying DIIS until <code>maximum_iterations_</code> runs out; other subsets terminate early when every allowed method has failed in succession. </p>
 <hr>
 
+<h3 id="function-set-13">function set [1/3]</h3>
+<p><em>Set a real-valued option.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set (
+    const std::string &amp; key,
+    Tbase v
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-set-23">function set [2/3]</h3>
+<p><em>Set an integer-valued option. Bool settings ride here as 0/1.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set (
+    const std::string &amp; key,
+    int v
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-set-33">function set [3/3]</h3>
+<p><em>Set a string-valued option.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set (
+    const std::string &amp; key,
+    const std::string &amp; v
+) 
+</code></pre>
+<hr>
+
 <h3 id="function-set_batched_fock_builder">function set_batched_fock_builder</h3>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set_batched_fock_builder (
     BatchedFockBuilder &lt; Torb, Tbase &gt; builder
@@ -2411,6 +2632,12 @@
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::verbosity (
     int verbosity
 ) 
+</code></pre>
+<hr>
+<h2 id="public-static-functions-documentation">Public Static Functions Documentation</h2>
+<h3 id="function-options">function options</h3>
+<p><em>Enumerate every option the solver understands.</em> </p>
+<pre><code class="language-C++">static inline const std::vector&lt; OptionInfo &gt; &amp; OpenOrbitalOptimizer::SCFSolver::options () 
 </code></pre>
 <hr>
 

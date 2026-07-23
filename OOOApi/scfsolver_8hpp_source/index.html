@@ -1111,7 +1111,6 @@ namespace OpenOrbitalOptimizer {
       std::vector&lt;OrbitalRotation&gt; history_dofs;
     };
     std::unique_ptr&lt;LBFGSState&gt; lbfgs_;
-    size_t lbfgs_history_size_ = 10;
 
     /* Internal functions */
     bool empty_block(size_t iblock) const {
@@ -3301,7 +3300,7 @@ namespace OpenOrbitalOptimizer {
           st.s.push_back(st.pending_s);
           st.y.push_back(y);
           st.rho.push_back(Tbase(1) / ys);
-          while(st.s.size() &gt; lbfgs_history_size_) {
+          while(st.s.size() &gt; (size_t) maximum_history_length_) {
             st.s.pop_front();
             st.y.pop_front();
             st.rho.pop_front();
@@ -3606,6 +3605,177 @@ namespace OpenOrbitalOptimizer {
     void verbosity(int verbosity) {
       verbosity_ = verbosity;
     }
+
+    // === Settings façade ==================================================
+    //
+    // Type-tagged set / get / options catalog. Every knob the solver
+    // exposes is enumerated in options(); every writable knob is
+    // reachable via set(key, value); every knob and read-only
+    // diagnostic is reachable via get_real / get_int / get_string
+    // according to its declared type. Unknown or wrong-type keys
+    // throw std::invalid_argument.
+
+    struct OptionInfo {
+      const char * key;
+      const char * type;      
+      bool         writable;  
+      const char * doc;       
+    };
+
+    static const std::vector&lt;OptionInfo&gt; &amp; options() {
+      static const std::vector&lt;OptionInfo&gt; catalog = {
+        // -- Convergence -----------------------------------------------------
+        {&quot;convergence_threshold&quot;, &quot;real&quot;, true,
+         &quot;DIIS-error convergence threshold&quot;},
+        {&quot;noise_safety_factor&quot;,   &quot;real&quot;, true,
+         &quot;K in effective threshold max(convergence_threshold, K * noise_floor)&quot;},
+        {&quot;error_norm&quot;,            &quot;string&quot;, true,
+         &quot;DIIS error norm; one of rms, fro, inf, 1, 2&quot;},
+        // -- DIIS ------------------------------------------------------------
+        {&quot;diis_epsilon&quot;,          &quot;real&quot;, true,
+         &quot;pure-DIIS blend cutoff&quot;},
+        {&quot;diis_threshold&quot;,        &quot;real&quot;, true,
+         &quot;A/EDIIS blend cutoff (Garza-Scuseria)&quot;},
+        {&quot;diis_diagonal_damping&quot;, &quot;real&quot;, true,
+         &quot;DIIS matrix diagonal damping&quot;},
+        {&quot;diis_restart_factor&quot;,   &quot;real&quot;, true,
+         &quot;DIIS history restart factor&quot;},
+        // -- Optimal damping (ODA) -------------------------------------------
+        {&quot;optimal_damping_threshold&quot;, &quot;real&quot;, true,
+         &quot;DIIS error above which ODA takes over&quot;},
+        {&quot;optimal_damping_degeneracy_threshold&quot;, &quot;real&quot;, true,
+         &quot;ODA orbital-degeneracy window (Eh)&quot;},
+        // -- History / iteration ---------------------------------------------
+        {&quot;maximum_iterations&quot;,     &quot;int&quot;, true,
+         &quot;outer SCF iteration cap&quot;},
+        {&quot;maximum_history_length&quot;, &quot;int&quot;, true,
+         &quot;DIIS and L-BFGS history depth&quot;},
+        {&quot;oda_restart_steps&quot;,      &quot;int&quot;, true,
+         &quot;steps of no DIIS progress before switching to ODA&quot;},
+        {&quot;orbital_rotation_steps_after_oda&quot;, &quot;int&quot;, true,
+         &quot;orbital-rotation steps after each ODA (0 = use last_active_rotation_count)&quot;},
+        // -- Orbital-rotation preconditioner ---------------------------------
+        {&quot;minimal_gradient_projection&quot;, &quot;real&quot;, true,
+         &quot;minimum preconditioned-CG projection on gradient&quot;},
+        {&quot;initial_level_shift&quot;,         &quot;real&quot;, true,
+         &quot;orbital-rotation preconditioner floor&quot;},
+        {&quot;level_shift_factor&quot;,          &quot;real&quot;, true,
+         &quot;level-shift diminution factor&quot;},
+        // -- Occupations -----------------------------------------------------
+        {&quot;occupied_threshold&quot;,          &quot;real&quot;, true,
+         &quot;occupied-orbital detection cutoff&quot;},
+        {&quot;occupation_change_threshold&quot;, &quot;real&quot;, true,
+         &quot;occupation-equality tolerance&quot;},
+        {&quot;density_restart_factor&quot;,      &quot;real&quot;, true,
+         &quot;history density-diff restart factor&quot;},
+        {&quot;frozen_occupations&quot;,          &quot;int&quot;,  true,
+         &quot;pin occupations across SCF (0 or 1)&quot;},
+        // -- Verbosity -------------------------------------------------------
+        {&quot;verbosity&quot;, &quot;int&quot;, true, &quot;0..30&quot;},
+        // -- Read-only diagnostics -------------------------------------------
+        {&quot;noise_floor&quot;,                &quot;real&quot;, false,
+         &quot;frozen roundoff floor of DIIS error, populated by run()&quot;},
+        {&quot;number_of_fock_evaluations&quot;, &quot;int&quot;,  false,
+         &quot;Fock-evaluation counter (reset on initialize_with_*)&quot;},
+        {&quot;last_polytope_dimension&quot;,    &quot;int&quot;,  false,
+         &quot;ODA polytope dimension of the most recent optimal_damping_step&quot;},
+        {&quot;last_active_rotation_count&quot;, &quot;int&quot;,  false,
+         &quot;active rotations counted by the most recent ODA step&quot;},
+        {&quot;converged&quot;,                  &quot;int&quot;,  false,
+         &quot;0 or 1 -- re-evaluates the convergence rule now&quot;},
+      };
+      return catalog;
+    }
+
+    void set(const std::string &amp; key, Tbase v) {
+      if      (key == &quot;convergence_threshold&quot;)                 convergence_threshold_ = v;
+      else if (key == &quot;noise_safety_factor&quot;)                   noise_safety_factor_ = v;
+      else if (key == &quot;diis_epsilon&quot;)                          diis_epsilon_ = v;
+      else if (key == &quot;diis_threshold&quot;)                        diis_threshold_ = v;
+      else if (key == &quot;diis_diagonal_damping&quot;)                 diis_diagonal_damping_ = v;
+      else if (key == &quot;diis_restart_factor&quot;)                   diis_restart_factor_ = v;
+      else if (key == &quot;optimal_damping_threshold&quot;)             optimal_damping_threshold_ = v;
+      else if (key == &quot;optimal_damping_degeneracy_threshold&quot;)  optimal_damping_degeneracy_threshold_ = v;
+      else if (key == &quot;minimal_gradient_projection&quot;)           minimal_gradient_projection_ = v;
+      else if (key == &quot;initial_level_shift&quot;)                   initial_level_shift_ = v;
+      else if (key == &quot;level_shift_factor&quot;)                    level_shift_factor_ = v;
+      else if (key == &quot;occupied_threshold&quot;)                    occupied_threshold_ = v;
+      else if (key == &quot;occupation_change_threshold&quot;)           occupation_change_threshold_ = v;
+      else if (key == &quot;density_restart_factor&quot;)                density_restart_factor_ = v;
+      else throw std::invalid_argument(
+        &quot;SCFSolver::set(real): unknown or non-real key '&quot; + key + &quot;'&quot;);
+    }
+
+    void set(const std::string &amp; key, int v) {
+      if      (key == &quot;verbosity&quot;)                        verbosity_ = v;
+      else if (key == &quot;maximum_iterations&quot;)               maximum_iterations_ = (size_t) v;
+      else if (key == &quot;maximum_history_length&quot;)           maximum_history_length_ = v;
+      else if (key == &quot;oda_restart_steps&quot;)                oda_restart_steps_ = v;
+      else if (key == &quot;orbital_rotation_steps_after_oda&quot;) orbital_rotation_steps_after_oda_ = (size_t) v;
+      else if (key == &quot;frozen_occupations&quot;)               frozen_occupations_ = (v != 0);
+      else throw std::invalid_argument(
+        &quot;SCFSolver::set(int): unknown or non-int key '&quot; + key + &quot;'&quot;);
+    }
+
+    void set(const std::string &amp; key, const std::string &amp; v) {
+      if (key == &quot;error_norm&quot;) {
+        std::string prev = error_norm_;
+        error_norm_ = v;
+        try {
+          Vector&lt;Tbase&gt; test = Vector&lt;Tbase&gt;::Ones(1);
+          (void) norm(test);
+        } catch (...) {
+          error_norm_ = prev;
+          throw;
+        }
+      } else {
+        throw std::invalid_argument(
+          &quot;SCFSolver::set(string): unknown or non-string key '&quot; + key + &quot;'&quot;);
+      }
+    }
+
+    Tbase get_real(const std::string &amp; key) const {
+      if      (key == &quot;convergence_threshold&quot;)                 return convergence_threshold_;
+      else if (key == &quot;noise_safety_factor&quot;)                   return noise_safety_factor_;
+      else if (key == &quot;noise_floor&quot;)                           return noise_floor_;
+      else if (key == &quot;diis_epsilon&quot;)                          return diis_epsilon_;
+      else if (key == &quot;diis_threshold&quot;)                        return diis_threshold_;
+      else if (key == &quot;diis_diagonal_damping&quot;)                 return diis_diagonal_damping_;
+      else if (key == &quot;diis_restart_factor&quot;)                   return diis_restart_factor_;
+      else if (key == &quot;optimal_damping_threshold&quot;)             return optimal_damping_threshold_;
+      else if (key == &quot;optimal_damping_degeneracy_threshold&quot;)  return optimal_damping_degeneracy_threshold_;
+      else if (key == &quot;minimal_gradient_projection&quot;)           return minimal_gradient_projection_;
+      else if (key == &quot;initial_level_shift&quot;)                   return initial_level_shift_;
+      else if (key == &quot;level_shift_factor&quot;)                    return level_shift_factor_;
+      else if (key == &quot;occupied_threshold&quot;)                    return occupied_threshold_;
+      else if (key == &quot;occupation_change_threshold&quot;)           return occupation_change_threshold_;
+      else if (key == &quot;density_restart_factor&quot;)                return density_restart_factor_;
+      else throw std::invalid_argument(
+        &quot;SCFSolver::get_real: unknown or non-real key '&quot; + key + &quot;'&quot;);
+    }
+
+    int get_int(const std::string &amp; key) const {
+      if      (key == &quot;verbosity&quot;)                        return verbosity_;
+      else if (key == &quot;maximum_iterations&quot;)               return (int) maximum_iterations_;
+      else if (key == &quot;maximum_history_length&quot;)           return maximum_history_length_;
+      else if (key == &quot;oda_restart_steps&quot;)                return oda_restart_steps_;
+      else if (key == &quot;orbital_rotation_steps_after_oda&quot;) return (int) orbital_rotation_steps_after_oda_;
+      else if (key == &quot;frozen_occupations&quot;)               return frozen_occupations_ ? 1 : 0;
+      else if (key == &quot;number_of_fock_evaluations&quot;)       return (int) number_of_fock_evaluations_;
+      else if (key == &quot;last_polytope_dimension&quot;)          return (int) last_polytope_dimension_;
+      else if (key == &quot;last_active_rotation_count&quot;)       return (int) last_active_rotation_count_;
+      else if (key == &quot;converged&quot;)                        return converged() ? 1 : 0;
+      else throw std::invalid_argument(
+        &quot;SCFSolver::get_int: unknown or non-int key '&quot; + key + &quot;'&quot;);
+    }
+
+    std::string get_string(const std::string &amp; key) const {
+      if (key == &quot;error_norm&quot;) return error_norm_;
+      else throw std::invalid_argument(
+        &quot;SCFSolver::get_string: unknown or non-string key '&quot; + key + &quot;'&quot;);
+    }
+
+    // === End settings façade ==============================================
 
     Tbase convergence_threshold() const {
       return convergence_threshold_;
@@ -4420,6 +4590,16 @@ namespace OpenOrbitalOptimizer {
       auto diagonalized_fock = compute_orbitals(reference_fock);
       const auto &amp; orbital_energies = diagonalized_fock.second;
 
+      // The brute-force search sweeps occupations, so it must thaw
+      // and silence for the duration -- save the caller's settings and
+      // restore them on return through the RAII guard.
+      struct SettingsGuard {
+        int * verb; int old_verb;
+        bool * frozen; bool old_frozen;
+        ~SettingsGuard() { *verb = old_verb; *frozen = old_frozen; }
+      };
+      SettingsGuard guard{&amp;verbosity_, verbosity_,
+                          &amp;frozen_occupations_, frozen_occupations_};
       verbosity_ = 0;
       frozen_occupations_ = false;
       while(true) {

@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
+  <compounddef id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo" kind="struct" language="C++" prot="public">
+    <compoundname>OpenOrbitalOptimizer::SCFSolver::OptionInfo</compoundname>
+    <includes refid="scfsolver_8hpp" local="no">scfsolver.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1a6881d6ac33d8ea74e8ac776875767ca2" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::OptionInfo::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::OptionInfo::key</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2980" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2980" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1a98fafe042b8a86a66a0ba6cd7a4572b2" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::OptionInfo::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::OptionInfo::type</qualifiedname>
+        <briefdescription>
+<para>&quot;real&quot;, &quot;int&quot;, &quot;string&quot; </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2981" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2981" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1aa4f2593bfa706274bf368f68388d08b8" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::OptionInfo::writable</definition>
+        <argsstring></argsstring>
+        <name>writable</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::OptionInfo::writable</qualifiedname>
+        <briefdescription>
+<para>false for read-only diagnostics </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2982" column="20" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2982" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1a4be5178cbfc3696ae7e288a366f7194a" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::OptionInfo::doc</definition>
+        <argsstring></argsstring>
+        <name>doc</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::OptionInfo::doc</qualifiedname>
+        <briefdescription>
+<para>one-line description </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="2983" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2983" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Descriptor for a single option in the catalog. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="2979" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="2979" bodyend="2984"/>
+    <listofallmembers>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1a4be5178cbfc3696ae7e288a366f7194a" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::OptionInfo</scope><name>doc</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1a6881d6ac33d8ea74e8ac776875767ca2" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::OptionInfo</scope><name>key</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1a98fafe042b8a86a66a0ba6cd7a4572b2" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::OptionInfo</scope><name>type</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo_1aa4f2593bfa706274bf368f68388d08b8" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::OptionInfo</scope><name>writable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
