@@ -18,6 +18,19 @@
 ## v0.5.0 / (Unreleased)
 
 #### Enhancements
+* ODA trust-region refinement: after each ``optimal_damping_step``
+  accepts a trial candidate, re-anchor the polytope quadratic
+  model at the accepted iterate using the gradient observed there
+  (free from the already-computed Fock matrix), re-solve the QP,
+  and accept the refined point if it lowers the energy. Exact for
+  Hartree-Fock along any linear ray; for DFT, catches the
+  residual non-quadraticity the initial axis-vertex data missed.
+  Number of refits is capped by the new ``max_oda_refits``
+  setting (default 3, 0 disables). Refits pre-check the model's
+  predicted improvement against a fraction of the SCF convergence
+  threshold and skip the Fock build entirely when the prediction
+  is below noise, so idle refits cost nothing on well-conditioned
+  problems.
 * ODA candidate selection is now model-first. The polytope
   quadratic-model minimum and the 1D probes (quartic per axis,
   quartic per pair-diagonal edge) are ranked by their
