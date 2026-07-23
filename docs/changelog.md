@@ -56,6 +56,19 @@
   `solver.settings.convergence_threshold = 1e-9` is equivalent to
   `solver.set("convergence_threshold", 1e-9)` with the same catalog
   validation, `dir()` completion, and read-only diagnostic guards.
+* Add `SCFSolver::print_settings()` which dumps every catalog entry
+  with its current value. Read-only diagnostics that aren't yet
+  computable (e.g. `converged` before the first `initialize_with_*`)
+  print as `n/a` instead of throwing. Python bindings expose it as
+  `solver.print_settings()` and the same output backs
+  `str(solver.settings)`.
+* Add `SCFSolver::citation()` and `SCFSolver::print_citation()` so
+  downstream drivers can echo the canonical reference (Lehtola &
+  Burns, J. Phys. Chem. A **129**, 5651 (2025);
+  doi:10.1021/acs.jpca.5c02110) without hardcoding it, and add a
+  `CITATION.cff` at the repository root so GitHub's "Cite this
+  repository" button and citation-tracking tools resolve it
+  automatically.
 * The three PySCF drivers grew an `options=None` dict argument on
   `kernel()`; entries are forwarded via `solver.set(key, value)`
   before the run.

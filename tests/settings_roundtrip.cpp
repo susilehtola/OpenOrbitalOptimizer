@@ -15,6 +15,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -130,6 +131,28 @@ int main() {
   try { (void) solver.get_int("convergence_threshold"); }
   catch (const std::invalid_argument &) { threw = true; }
   REQUIRE(threw);
+
+  // print_settings covers every catalog entry; every key appears in the
+  // output, and print_citation names the paper.
+  {
+    std::ostringstream oss;
+    solver.print_settings(oss);
+    std::string dump = oss.str();
+    for (const auto & o : catalog) {
+      if (dump.find(o.key) == std::string::npos) {
+        std::printf("FAIL: print_settings missed key '%s'\n", o.key);
+        ++failures;
+      }
+    }
+  }
+  {
+    std::ostringstream oss;
+    SCFSolver<double, double>::print_citation(oss);
+    std::string cite = oss.str();
+    REQUIRE(cite.find("Lehtola") != std::string::npos);
+    REQUIRE(cite.find("10.1021/acs.jpca.5c02110") != std::string::npos);
+    REQUIRE(cite.find("J. Phys. Chem. A") != std::string::npos);
+  }
 
   std::printf("%s: %d failure(s)\n", __FILE__, failures);
   return failures ? EXIT_FAILURE : EXIT_SUCCESS;

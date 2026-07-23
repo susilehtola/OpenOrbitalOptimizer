@@ -14,6 +14,9 @@
 
 #include <openorbitaloptimizer/scfsolver.hpp>
 
+#include <iostream>
+#include <sstream>
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(_ext, m) {
@@ -73,6 +76,24 @@ PYBIND11_MODULE(_ext, m) {
          "Get an integer-valued option or diagnostic by name.")
     .def("get_string", &Solver::get_string, py::arg("key"),
          "Get a string-valued option by name.")
+    .def("print_settings",
+         [](const Solver & self) {
+           self.print_settings(std::cout);
+         },
+         "Print every catalog entry with its current value to stdout.\n"
+         "For a formatted string, prefer str(solver.settings).")
+    .def("settings_as_string",
+         [](const Solver & self) {
+           std::ostringstream oss;
+           self.print_settings(oss);
+           return oss.str();
+         },
+         "Return the print_settings() output as a string.")
+    .def_static("citation", &Solver::citation,
+         "Canonical citation for the library (single line).")
+    .def_static("print_citation",
+         []() { Solver::print_citation(std::cout); },
+         "Print the two-line 'please cite' block to stdout.")
 
     // --- Callback registration ----------------------------------------
     .def("set_batched_fock_builder",

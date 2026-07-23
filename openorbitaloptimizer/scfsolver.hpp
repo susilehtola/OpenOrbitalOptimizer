@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <deque>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -3181,6 +3182,60 @@ namespace OpenOrbitalOptimizer {
         "SCFSolver::get_string: unknown or non-string key '" + key + "'");
     }
 
+    /// Print every catalog entry with its current value to ``os``.
+    /// Read-only diagnostics that require a populated orbital history
+    /// (converged; anything derived from the current Fock) print as
+    /// "n/a" before the first ``initialize_with_*``.
+    void print_settings(std::ostream & os = std::cout) const {
+      const auto & catalog = options();
+      size_t maxlen = 0;
+      for (const auto & o : catalog)
+        maxlen = std::max(maxlen, std::string(o.key).size());
+      os << "OpenOrbitalOptimizer settings:\n";
+      for (const auto & o : catalog) {
+        os << "  " << std::left << std::setw((int)maxlen) << o.key << " = ";
+        try {
+          std::string t = o.type;
+          if (t == "real") {
+            os << std::scientific << std::setprecision(6) << get_real(o.key);
+          } else if (t == "int") {
+            os << get_int(o.key);
+          } else if (t == "string") {
+            os << "\"" << get_string(o.key) << "\"";
+          } else {
+            os << "?";
+          }
+        } catch (const std::exception &) {
+          // Read-only diagnostic not yet available (e.g. converged
+          // before initialize_with_*). Report as unavailable rather
+          // than propagating -- print_settings shouldn't throw just
+          // because history is empty.
+          os << "n/a";
+        }
+        if (!o.writable) os << "  (read-only)";
+        os << "\n";
+      }
+      os.flush();
+    }
+
+    /// Canonical citation for the library. Downstream drivers should
+    /// forward this to their users; the string is deliberately kept as
+    /// a single line so it wraps cleanly in log output.
+    static std::string citation() {
+      return "Susi Lehtola and Lori A. Burns, "
+             "\"OpenOrbitalOptimizer -- a reusable open source library "
+             "for self-consistent field calculations\", "
+             "J. Phys. Chem. A 129, 5651 (2025). "
+             "doi:10.1021/acs.jpca.5c02110";
+    }
+
+    /// Print a two-line "please cite" block to ``os``.
+    static void print_citation(std::ostream & os = std::cout) {
+      os << "If you use OpenOrbitalOptimizer, please cite:\n"
+         << "  " << citation() << "\n";
+      os.flush();
+    }
+
     // === End settings façade ==============================================
 
     /// Register a batched Fock builder. When set, optimal_damping_step
@@ -3419,6 +3474,12 @@ namespace OpenOrbitalOptimizer {
 
     /// Check if we are converged
     bool converged() const {
+        // Nothing has been iterated yet, so trivially not converged.
+        // Guarding here rather than at every call site (including
+        // print_settings) keeps the diagnostic safe to query at any
+        // point in the solver's lifetime.
+        if(orbital_history_.empty())
+            return false;
         if(callback_convergence_function_) {
 
             // Data to pass to callback function

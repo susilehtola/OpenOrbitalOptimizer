@@ -86,6 +86,11 @@ class Settings:
     def __repr__(self):
         return "<Settings on %r>" % (self._solver,)
 
+    def __str__(self):
+        # Delegate to the C++-side formatter so the Python view matches
+        # solver.print_settings() byte for byte.
+        return self._solver.settings_as_string()
+
 
 # Expose settings on every SCFSolver instance via a property. The
 # proxy is cheap to build (its catalog dict is small and rebuilt lazily

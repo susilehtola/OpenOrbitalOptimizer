@@ -84,3 +84,20 @@ def test_settings_class_direct_use(solver):
     s = Settings(solver)
     s.convergence_threshold = 5e-8
     assert s.convergence_threshold == pytest.approx(5e-8)
+
+
+def test_settings_str_covers_catalog(solver):
+    text = str(solver.settings)
+    for entry in SCFSolver.options():
+        assert entry.key in text, "%r missing from settings dump" % entry.key
+
+
+def test_settings_as_string_matches_str(solver):
+    assert solver.settings_as_string() == str(solver.settings)
+
+
+def test_citation_names_paper():
+    text = SCFSolver.citation()
+    assert "Lehtola" in text
+    assert "10.1021/acs.jpca.5c02110" in text
+    assert "J. Phys. Chem. A" in text
