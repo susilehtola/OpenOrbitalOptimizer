@@ -140,6 +140,21 @@ namespace OpenOrbitalOptimizer {
     int oda_restart_steps_ = 5;
     /// Convergence threshold for orbital gradient
     Tbase convergence_threshold_ = 1e-7;
+    /// Safety factor K for the arithmetic-precision clamp on the
+    /// effective convergence threshold: the SCF is considered
+    /// converged when the DIIS error drops below
+    /// max(convergence_threshold_, K * noise_floor_). K = 0 disables
+    /// the clamp. K > 0 keeps low-precision runs (float, and
+    /// eventually MPFR at reduced precision) from spinning below
+    /// what the arithmetic can resolve, while __float128 users see
+    /// no change because their epsilon is tiny.
+    Tbase noise_safety_factor_ = 10;
+    /// Noise floor of the DIIS error, frozen at the start of run()
+    /// from the initial Fock. The one-electron part dominates basis
+    /// conditioning, so refreshing this per iteration would be
+    /// noise itself; freezing keeps the effective threshold stable
+    /// across the run.
+    Tbase noise_floor_ = 0;
     /// Norm to use by default: root-mean-square error
     std::string error_norm_ = "rms";
 
@@ -464,6 +479,34 @@ namespace OpenOrbitalOptimizer {
         throw std::logic_error("Indexing error!\n");
 
       return return_vector;
+    }
+
+    /// Estimate the roundoff noise floor of the DIIS error vector
+    /// from the current Fock. Each entry of the projected commutator
+    /// C^dagger [F_sym, P_sym] C carries a per-element roundoff bound
+    /// of order eps * ||F||_F (C is unitary, ||P|| <= 1). Assemble a
+    /// mock error vector at that bound and reduce with the active
+    /// error norm so the returned value is directly comparable to
+    /// norm(diis_error_vector(0)).
+    Tbase compute_noise_floor() const {
+      const Tbase eps = std::numeric_limits<Tbase>::epsilon();
+      std::vector<Matrix<Torb>> mock(number_of_blocks_);
+      for(size_t iblock=0; iblock<number_of_blocks_; iblock++) {
+        if(empty_block(iblock))
+          continue;
+        auto F = get_fock_matrix_block(0, iblock);
+        Index n = F.rows();
+        Tbase per_elem = eps * F.norm();
+        Torb seed;
+        if constexpr (Eigen::NumTraits<Torb>::IsComplex)
+          // Load both real and imag halves of vectorise_real_imag so
+          // the clamp is not looser for complex than for real.
+          seed = Torb(per_elem, per_elem);
+        else
+          seed = Torb(per_elem);
+        mock[iblock] = Matrix<Torb>::Constant(n, n, seed);
+      }
+      return norm(vectorise(mock));
     }
 
     /// Compute element of DIIS error matrix
@@ -2933,6 +2976,22 @@ namespace OpenOrbitalOptimizer {
       convergence_threshold_ = convergence_threshold;
     }
 
+    /// Get safety factor K for the arithmetic-precision clamp
+    Tbase noise_safety_factor() const {
+      return noise_safety_factor_;
+    }
+
+    /// Set safety factor K for the arithmetic-precision clamp
+    /// (K = 0 disables the clamp)
+    void noise_safety_factor(Tbase k) {
+      noise_safety_factor_ = k;
+    }
+
+    /// Get the frozen arithmetic noise floor (populated by run())
+    Tbase noise_floor() const {
+      return noise_floor_;
+    }
+
     /// Register a batched Fock builder. When set, optimal_damping_step
     /// uses it for the axis-vertex sweep, sharing integral / grid
     /// setup across the N_par builds. The single-density fock_builder
@@ -3315,7 +3374,9 @@ namespace OpenOrbitalOptimizer {
 
             return callback_convergence_function_(callback_data);
         } else {
-            return norm(diis_error_vector(0)) <= convergence_threshold_;
+            Tbase effective = std::max(convergence_threshold_,
+                                       noise_safety_factor_ * noise_floor_);
+            return norm(diis_error_vector(0)) <= effective;
         }
     }
 
@@ -3377,6 +3438,22 @@ namespace OpenOrbitalOptimizer {
           throw std::logic_error("run(): no methods enabled in '" + methods + "'");
         if(frozen_occupations_)
           allowed.oda = false;  // occupations are pinned; ODA cannot move them
+      }
+
+      // Freeze the roundoff noise floor of the DIIS residual from the
+      // initial Fock. The basis conditioning is dominated by the
+      // one-electron part so this barely moves during the run.
+      noise_floor_ = compute_noise_floor();
+      if(verbosity_ > 0 && noise_safety_factor_ > 0 &&
+         convergence_threshold_ < noise_safety_factor_ * noise_floor_) {
+        printf("Warning: convergence threshold %e is below %g x arithmetic "
+               "noise floor %e Eh (epsilon=%e); clamping effective "
+               "threshold to %e.\n",
+               (double) convergence_threshold_,
+               (double) noise_safety_factor_,
+               (double) noise_floor_,
+               (double) std::numeric_limits<Tbase>::epsilon(),
+               (double) (noise_safety_factor_ * noise_floor_));
       }
 
       enum class StepKind { DIIS, ODA, OrbitalRotation };
