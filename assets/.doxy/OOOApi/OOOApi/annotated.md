@@ -15,5 +15,6 @@ Here are the classes, structs, unions and interfaces with brief descriptions:
         * **struct** [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) _Descriptor for a single option in the catalog._     
 * **struct** [**AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md)     
 * **struct** [**LBFGSState**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState.md)     
+* **class** [**LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md)     
 * **struct** [**RotationStepContext**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext.md)     
 

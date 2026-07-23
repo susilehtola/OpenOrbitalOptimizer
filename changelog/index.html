@@ -975,6 +975,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#new-features-continued" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features (continued)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#breaking-changes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1278,6 +1289,27 @@
 -->
 
 <h2 id="v050-unreleased">v0.5.0 / (Unreleased)</h2>
+<h4 id="new-features-continued">New Features (continued)</h4>
+<ul>
+<li>Route all library log output through a caller-installable
+  callback. <code>SCFSolver::logger(std::function&lt;void(int level, const
+  std::string &amp; msg)&gt;)</code> registers a sink; the library builds each
+  formatted message via <code>vsnprintf</code> and either hands it to the sink
+  (when set) or writes it to stdout (the pre-callback default). The
+  <code>level</code> argument is the minimum <code>verbosity</code> at which the
+  message would print, so callers can route different severities to
+  different destinations. Python bindings expose it as
+  <code>solver.logger(callback)</code> / <code>solver.logger(None)</code> /
+  <code>solver.has_logger()</code>.</li>
+<li>Every <code>printf</code> call in <code>openorbitaloptimizer/scfsolver.hpp</code>
+  (60 sites, excluding commented-out debug prints) migrated to
+  <code>log_(level, fmt, ...)</code>. Every <code>std::cout &lt;&lt; ...</code> matrix / vector
+  dump (12 live sites) migrated to <code>log_stream_(level) &lt;&lt; ...</code>,
+  an ostream-style companion proxy that RAII-flushes into the same
+  sink. The internal levels reflect the pre-existing
+  <code>if(verbosity_ &gt;= N)</code> gates; unconditional diagnostic warnings
+  and the print_history dump use level 0.</li>
+</ul>
 <h4 id="breaking-changes">Breaking Changes</h4>
 <ul>
 <li>The per-option typed getters and setters on <code>SCFSolver</code> have been

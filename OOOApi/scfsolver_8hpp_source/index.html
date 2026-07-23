@@ -990,6 +990,7 @@
 #include &lt;any&gt;
 #include &lt;cctype&gt;
 #include &lt;cmath&gt;
+#include &lt;cstdarg&gt;
 #include &lt;cstdio&gt;
 #include &lt;deque&gt;
 #include &lt;functional&gt;
@@ -1057,6 +1058,7 @@ namespace OpenOrbitalOptimizer {
     std::vector&lt;std::string&gt; block_descriptions_;
     std::function&lt;void(const std::map&lt;std::string,std::any&gt; &amp; data)&gt; callback_function_;
     std::function&lt;bool(const std::map&lt;std::string,std::any&gt; &amp; data)&gt; callback_convergence_function_;
+    std::function&lt;void(int level, const std::string &amp; msg)&gt; logger_;
 
     Vector&lt;Tbase&gt; fixed_number_of_particles_per_block_;
     bool frozen_occupations_;
@@ -1155,6 +1157,68 @@ namespace OpenOrbitalOptimizer {
     }
 
     /* Internal functions */
+#if defined(__GNUC__) || defined(__clang__)
+    __attribute__((format(printf, 3, 4)))
+#endif
+    void log_(int level, const char * fmt, ...) const {
+      if(verbosity_ &lt; level) return;
+      va_list args1;
+      va_start(args1, fmt);
+      va_list args2;
+      va_copy(args2, args1);
+      int n = std::vsnprintf(nullptr, 0, fmt, args1);
+      va_end(args1);
+      if(n &lt; 0) { va_end(args2); return; }
+      std::string msg((size_t) n + 1, '\0');
+      std::vsnprintf(msg.data(), (size_t) n + 1, fmt, args2);
+      va_end(args2);
+      msg.resize((size_t) n);  // trim trailing NUL
+      if(logger_) logger_(level, msg);
+      else       std::fputs(msg.c_str(), stdout);
+    }
+
+    void log_flush_() const {
+      if(!logger_) std::fflush(stdout);
+    }
+
+    class LogStream {
+    public:
+      LogStream(const SCFSolver * s, int level)
+        : solver_(s), level_(level), enabled_(s &amp;&amp; s-&gt;verbosity_ &gt;= level) {}
+      LogStream(const LogStream &amp;) = delete;
+      LogStream &amp; operator=(const LogStream &amp;) = delete;
+      LogStream(LogStream &amp;&amp; o) noexcept
+        : solver_(o.solver_), level_(o.level_),
+          enabled_(o.enabled_), oss_(std::move(o.oss_)) {
+        o.enabled_ = false;  // moved-from doesn't flush
+      }
+      ~LogStream() {
+        if(!enabled_) return;
+        std::string s = oss_.str();
+        if(solver_-&gt;logger_) solver_-&gt;logger_(level_, s);
+        else                 std::fputs(s.c_str(), stdout);
+      }
+      template &lt;class T&gt;
+      LogStream &amp; operator&lt;&lt;(const T &amp; v) {
+        if(enabled_) oss_ &lt;&lt; v;
+        return *this;
+      }
+      // Handle io manipulators such as std::endl / std::flush.
+      LogStream &amp; operator&lt;&lt;(std::ostream &amp; (*manip)(std::ostream &amp;)) {
+        if(enabled_) oss_ &lt;&lt; manip;
+        return *this;
+      }
+    private:
+      const SCFSolver * solver_;
+      int level_;
+      bool enabled_;
+      std::ostringstream oss_;
+    };
+
+    LogStream log_stream_(int level) const {
+      return LogStream(this, level);
+    }
+
     bool empty_block(size_t iblock) const {
       // Check if Fock matrix has zero dimension
       if(iblock&gt;=std::get&lt;0&gt;(orbital_history_[0]).first.size())
@@ -1201,7 +1265,7 @@ namespace OpenOrbitalOptimizer {
         return lowest_energy;
       else {
         print_history();
-        fflush(stdout);
+        log_flush_();
         std::ostringstream oss;
         oss &lt;&lt; &quot;Did not find any entries with index greater than &quot; &lt;&lt; index &lt;&lt; &quot;!\n&quot;;
         throw std::logic_error(oss.str());
@@ -1340,10 +1404,8 @@ namespace OpenOrbitalOptimizer {
       std::vector&lt;Vector&lt;Tbase&gt;&gt; error_vectors(number_of_blocks_);
       for(size_t iblock = 0; iblock&lt;number_of_blocks_;iblock++) {
         error_vectors[iblock] = diis_error_vector(ihist, iblock);
-        if(verbosity_&gt;=20)
-          printf(&quot;ihist %i block %i error vector norm %e\n&quot;, (int) ihist, (int) iblock, norm(error_vectors[iblock]));
-        if(verbosity_&gt;=30)
-          std::cout &lt;&lt; error_vectors[iblock] &lt;&lt; std::endl;
+        log_(20, &quot;ihist %i block %i error vector norm %e\n&quot;, (int) ihist, (int) iblock, norm(error_vectors[iblock]));
+        log_stream_(30) &lt;&lt; error_vectors[iblock] &lt;&lt; std::endl;
       }
 
       // Compound error vector
@@ -1440,8 +1502,8 @@ namespace OpenOrbitalOptimizer {
         if(residuals(i)*diis_restart_factor_ &gt; min_residual)
           history_mask.erase(history_mask.begin()+i);
       size_t nrestart = orbital_history_.size()-history_mask.size();
-      if(verbosity_&gt;=10 and nrestart&gt;0)
-        printf(&quot;Removed %i entries corresponding to large DIIS errors\n&quot;, (int) nrestart);
+      if(nrestart&gt;0)
+        log_(10, &quot;Removed %i entries corresponding to large DIIS errors\n&quot;, (int) nrestart);
 
       // Set up the DIIS error matrix
       const size_t N=history_mask.size();
@@ -1568,16 +1630,12 @@ namespace OpenOrbitalOptimizer {
 
         //std::cout &lt;&lt; &quot;x: &quot; &lt;&lt; x.transpose() &lt;&lt; std::endl;
         if(dE &gt; -df_tol) {
-          if(verbosity_ &gt;= 10) {
-            printf(&quot;A/EDIIS weights converged in %i macroiterations\n&quot;,(int) imacro);
-            //std::cout &lt;&lt; &quot;xconv: &quot; &lt;&lt; x.transpose() &lt;&lt; std::endl;
-          }
+          log_(10, &quot;A/EDIIS weights converged in %i macroiterations\n&quot;,(int) imacro);
+          //std::cout &lt;&lt; &quot;xconv: &quot; &lt;&lt; x.transpose() &lt;&lt; std::endl;
           break;
         } else if(imacro==max_iter-1) {
-          if(verbosity_ &gt;= 10) {
-            printf(&quot;A/EDIIS weights did not converge in %i macroiterations, dE=%e\n&quot;, (int) imacro, dE);
-            //std::cout &lt;&lt; &quot;xfinal: &quot; &lt;&lt; x.transpose() &lt;&lt; std::endl;
-          }
+          log_(10, &quot;A/EDIIS weights did not converge in %i macroiterations, dE=%e\n&quot;, (int) imacro, dE);
+          //std::cout &lt;&lt; &quot;xfinal: &quot; &lt;&lt; x.transpose() &lt;&lt; std::endl;
         }
 
         /*
@@ -1707,7 +1765,7 @@ namespace OpenOrbitalOptimizer {
     std::tuple&lt;Vector&lt;Tbase&gt;,std::string&gt; minimal_error_sampling_algorithm_weights(Tbase aediis_coeff) const {
       // Form DIIS and ADIIS weights
       Vector&lt;Tbase&gt; diis_w(diis_weights());
-      if(verbosity_&gt;=10) std::cout &lt;&lt; &quot;DIIS weights: &quot; &lt;&lt; diis_w.transpose() &lt;&lt; std::endl;
+      log_stream_(10) &lt;&lt; &quot;DIIS weights: &quot; &lt;&lt; diis_w.transpose() &lt;&lt; std::endl;
       if(aediis_coeff == 0.0) {
         std::string step = &quot;DIIS&quot;;
         return std::make_tuple(diis_w,step);
@@ -1716,9 +1774,9 @@ namespace OpenOrbitalOptimizer {
       // Get various extrapolation weights
       const size_t N = orbital_history_.size();
       Vector&lt;Tbase&gt; adiis_w(adiis_weights());
-      if(verbosity_&gt;=10) std::cout &lt;&lt; &quot;ADIIS weights: &quot; &lt;&lt; adiis_w.transpose() &lt;&lt; std::endl;
+      log_stream_(10) &lt;&lt; &quot;ADIIS weights: &quot; &lt;&lt; adiis_w.transpose() &lt;&lt; std::endl;
       Vector&lt;Tbase&gt; ediis_w(ediis_weights());
-      if(verbosity_&gt;=10) std::cout &lt;&lt; &quot;EDIIS weights: &quot; &lt;&lt; ediis_w.transpose() &lt;&lt; std::endl;
+      log_stream_(10) &lt;&lt; &quot;EDIIS weights: &quot; &lt;&lt; ediis_w.transpose() &lt;&lt; std::endl;
 
       // Candidates
       Matrix&lt;Tbase&gt; candidate_w = Matrix&lt;Tbase&gt;::Zero(N, 2);
@@ -1732,13 +1790,11 @@ namespace OpenOrbitalOptimizer {
       for(Index iw=0;iw&lt;candidate_w.cols();iw++) {
         density_projections(iw) = density_projection(Vector&lt;Tbase&gt;(candidate_w.col(iw)));
       }
-      if(verbosity_&gt;=10)
-        std::cout &lt;&lt; &quot;Density projections: &quot; &lt;&lt; density_projections.transpose() &lt;&lt; std::endl;
+      log_stream_(10) &lt;&lt; &quot;Density projections: &quot; &lt;&lt; density_projections.transpose() &lt;&lt; std::endl;
 
       Index idx;
       density_projections.maxCoeff(&amp;idx);
-      if(verbosity_&gt;=10)
-        printf(&quot;Max density projection %e with %s weights\n&quot;,density_projections(idx),weight_legend[idx].c_str());
+      log_(10, &quot;Max density projection %e with %s weights\n&quot;,density_projections(idx),weight_legend[idx].c_str());
 
       Vector&lt;Tbase&gt; aediis_w = candidate_w.col(idx);
       Vector&lt;Tbase&gt; weights(aediis_coeff * aediis_w + (1.0 - aediis_coeff) * diis_w);
@@ -2162,9 +2218,9 @@ namespace OpenOrbitalOptimizer {
               trial_occupations_per_particle[iparticle].push_back(particle_occupations);
           } else {
             if(verbosity_&gt;=5) {
-              printf(&quot;Degenerate orbitals: iblock iorb E\n&quot;);
+              log_(5, &quot;Degenerate orbitals: iblock iorb E\n&quot;);
               for(size_t iorb=ifill; iorb&lt;jfill; iorb++)
-                printf(&quot;%s %3i % .9f\n&quot;,
+                log_(5, &quot;%s %3i % .9f\n&quot;,
                        block_descriptions_[std::get&lt;1&gt;(all_energies[iorb])].c_str(),
                        (int) std::get&lt;2&gt;(all_energies[iorb]),
                        std::get&lt;0&gt;(all_energies[iorb]));
@@ -2272,10 +2328,8 @@ namespace OpenOrbitalOptimizer {
       // can size its post-ODA orbital-rotation burst when the user has not overridden
       // orbital_rotation_steps_after_oda_.
       last_polytope_dimension_ = npars;
-      if(verbosity_&gt;=5) {
-        printf(&quot;%i parameters in optimal damping\n&quot;, (int) npars);
-        fflush(stdout);
-      }
+      log_(5, &quot;%i parameters in optimal damping\n&quot;, (int) npars);
+      log_flush_();
       if(npars==0)
         return false;
 
@@ -2379,10 +2433,8 @@ namespace OpenOrbitalOptimizer {
       for(size_t idim=0; idim&lt;npars; idim++) {
         evaluations[idim] = std::make_pair(std::move(axis_densities[idim]),
                                            std::move(axis_fock[idim]));
-        if(verbosity_&gt;=5) {
-          printf(&quot;Roothaan step in dimension %i yields energy % .10f change %e\n&quot;,
-                 (int) idim, evaluations[idim].second.first, evaluations[idim].second.first - E_orig);
-        }
+        log_(5, &quot;Roothaan step in dimension %i yields energy % .10f change %e\n&quot;,
+               (int) idim, evaluations[idim].second.first, evaluations[idim].second.first - E_orig);
       }
 
       // Build a second-order Taylor model of the energy on the product
@@ -2440,12 +2492,10 @@ namespace OpenOrbitalOptimizer {
       Tbase model_min;
       std::tie(lam_opt, model_min) = solve_polytope_qp_(
           hess, grad, E_orig, particle_off, particle_len);
-      if(verbosity_&gt;=5) {
-        printf(&quot;Quadratic model minimum at lambda = (&quot;);
-        for(Index i=0; i&lt;lam_opt.size(); i++)
-          printf(&quot;%s%g&quot;, i ? &quot;,&quot; : &quot;&quot;, lam_opt(i));
-        printf(&quot;), model energy change %e\n&quot;, model_min - E_orig);
-      }
+      log_(5, &quot;Quadratic model minimum at lambda = (&quot;);
+      for(Index i=0; i&lt;lam_opt.size(); i++)
+        log_(5, &quot;%s%g&quot;, i ? &quot;,&quot; : &quot;&quot;, lam_opt(i));
+      log_(5, &quot;), model energy change %e\n&quot;, model_min - E_orig);
 
       // Per-axis cubic-fit secondary candidates: with E_orig, slope at
       // lambda=0, E_axis, and slope at lambda=1 we have four data points,
@@ -2509,7 +2559,7 @@ namespace OpenOrbitalOptimizer {
           else if(cand.second.rfind(&quot;cubic axis&quot;, 0) == 0) n_axis++;
           else if(cand.second.rfind(&quot;cubic edge&quot;, 0) == 0) n_edge++;
         }
-        printf(&quot;Trial loop: %zu candidates (%zu quadratic-model + &quot;
+        log_(5, &quot;Trial loop: %zu candidates (%zu quadratic-model + &quot;
                &quot;%zu cubic-axis + %zu cubic-edge); each evaluates one &quot;
                &quot;Fock build per scale until a descent step is found.\n&quot;,
                candidates.size(), n_model, n_axis, n_edge);
@@ -2535,11 +2585,9 @@ namespace OpenOrbitalOptimizer {
           number_of_fock_evaluations_++;
           bool ok = add_entry(eval.first, eval.second);
           if(ok) succ = true;
-          if(verbosity_&gt;=10) {
-            printf(&quot;ODA %s at scale %g gives E = % .10f, change %e%s\n&quot;,
-                   cand.second.c_str(), scale, eval.second.first, eval.second.first - E_orig,
-                   ok ? &quot; (accepted)&quot; : &quot;&quot;);
-          }
+          log_(10, &quot;ODA %s at scale %g gives E = % .10f, change %e%s\n&quot;,
+                 cand.second.c_str(), scale, eval.second.first, eval.second.first - E_orig,
+                 ok ? &quot; (accepted)&quot; : &quot;&quot;);
           if(ok) break;
         }
         if(succ) break;
@@ -2570,9 +2618,9 @@ namespace OpenOrbitalOptimizer {
         density_differences(ihist-1)=density_matrix_difference(ihist, 0);
       }
       if(verbosity_ &gt;= 10) {
-        std::cout &lt;&lt; &quot;Density differences: &quot; &lt;&lt; density_differences.transpose() &lt;&lt; std::endl;
+        log_stream_(10) &lt;&lt; &quot;Density differences: &quot; &lt;&lt; density_differences.transpose() &lt;&lt; std::endl;
       } else if(verbosity_&gt;=5) {
-        printf(&quot;Density matrix difference %e between lowest-energy and newest entry\n&quot;,density_differences(0));
+        log_(5, &quot;Density matrix difference %e between lowest-energy and newest entry\n&quot;,density_differences(0));
       }
 
       // Sort the differences
@@ -2588,8 +2636,7 @@ namespace OpenOrbitalOptimizer {
           filtered_idx(k) = idx(sub_idx(k));
         // Sort descending
         std::sort(filtered_idx.data(), filtered_idx.data()+filtered_idx.size(), std::greater&lt;Index&gt;());
-        if(verbosity_&gt;=10)
-          printf(&quot;Removing %i entries corresponding to large change in density matrix\n&quot;,(int) filtered_idx.size());
+        log_(10, &quot;Removing %i entries corresponding to large change in density matrix\n&quot;,(int) filtered_idx.size());
         for(Index k=0;k&lt;filtered_idx.size();k++) {
           Index ihistm1 = filtered_idx(k);
           // Remember the off-by-one in the indices
@@ -2723,9 +2770,7 @@ namespace OpenOrbitalOptimizer {
         if(normalized_projection &gt;= minimal_gradient_projection_) {
           return preconditioned_direction;
         } else {
-          if(verbosity_&gt;=5) {
-            printf(&quot;Warning - projection of preconditioned search direction on negative gradient %e is too small, decreasing spread of Hessian values from %e by factor 10\n&quot;,normalized_projection,maximum_spread);
-          }
+          log_(5, &quot;Warning - projection of preconditioned search direction on negative gradient %e is too small, decreasing spread of Hessian values from %e by factor 10\n&quot;,normalized_projection,maximum_spread);
           maximum_spread /= 10;
         }
       }
@@ -2859,8 +2904,7 @@ namespace OpenOrbitalOptimizer {
       Tbase reference_energy = get_energy();
       size_t start_index = largest_index();
 
-      if(verbosity_ &gt;= 5)
-        printf(&quot;Entering level shifting code, reference energy %e\n&quot;,reference_energy);
+      log_(5, &quot;Entering level shifting code, reference energy %e\n&quot;,reference_energy);
 
       // Get Fock matrix
       FockMatrix&lt;Torb&gt; fock = get_fock_matrix();
@@ -2885,8 +2929,7 @@ namespace OpenOrbitalOptimizer {
         // Add new Fock matrix
         attempt_fock(shifted_fock);
         Tbase best_energy = get_lowest_energy_after_index(start_index);
-        if(verbosity_ &gt;= 5)
-          printf(&quot;Level shift iteration %i: shift %e energy change % e\n&quot;, ishift, level_shift, best_energy-reference_energy);
+        log_(5, &quot;Level shift iteration %i: shift %e energy change % e\n&quot;, ishift, level_shift, best_energy-reference_energy);
 
         if(best_energy &gt; reference_energy) {
           // Energy did not decrease; increase level shift
@@ -2959,8 +3002,7 @@ namespace OpenOrbitalOptimizer {
               ctx.dofs.emplace_back(b, i, j);
       }
       if(ctx.dofs.empty()) {
-        if(verbosity_ &gt;= 5)
-          printf(&quot;Rotation step: no orbital rotation degrees of freedom.\n&quot;);
+        log_(5, &quot;Rotation step: no orbital rotation degrees of freedom.\n&quot;);
         return false;
       }
 
@@ -3108,9 +3150,8 @@ namespace OpenOrbitalOptimizer {
 
         Tbase slope_0 = d.dot(ctx.g);  // dE/dt at t = 0
         if(!std::isfinite(slope_0) || slope_0 &gt;= 0) {
-          if(verbosity_ &gt;= 5)
-            printf(&quot;%s: direction at sigma = %e is not descent (g.d = %e).\n&quot;,
-                   tag, sigma, slope_0);
+          log_(5, &quot;%s: direction at sigma = %e is not descent (g.d = %e).\n&quot;,
+                 tag, sigma, slope_0);
           sigma *= 2;
           first_sigma = false;
           continue;
@@ -3119,8 +3160,7 @@ namespace OpenOrbitalOptimizer {
         Orbitals&lt;Torb&gt; K = build_K_(d, ctx);
         Tbase t_max = t_max_for_K_(K);
         if(!std::isfinite(t_max) || t_max &lt;= 0) {
-          if(verbosity_ &gt;= 5)
-            printf(&quot;%s: t_max not well-defined at sigma = %e.\n&quot;, tag, sigma);
+          log_(5, &quot;%s: t_max not well-defined at sigma = %e.\n&quot;, tag, sigma);
           sigma *= 2;
           first_sigma = false;
           continue;
@@ -3133,9 +3173,8 @@ namespace OpenOrbitalOptimizer {
         for(int t_trial = 0; t_trial &lt; max_t_trials &amp;&amp; !success; t_trial++) {
           auto trial_result = evaluate_rotation_at_(K, t, ctx);
           Tbase E_t = trial_result.second.first;
-          if(verbosity_ &gt;= 5)
-            printf(&quot;%s: trial sigma %e t %e, energy % .10f, change %e\n&quot;,
-                   tag, sigma, t, E_t, E_t - ctx.E_ref);
+          log_(5, &quot;%s: trial sigma %e t %e, energy % .10f, change %e\n&quot;,
+                 tag, sigma, t, E_t, E_t - ctx.E_ref);
 
           if(E_t &lt; ctx.E_ref) {
             add_entry(trial_result.first, trial_result.second);
@@ -3184,9 +3223,8 @@ namespace OpenOrbitalOptimizer {
             }
             if(std::isfinite(t_star) &amp;&amp; t_star &gt; 0 &amp;&amp; t_star &lt; t) {
               t_next = t_star;
-              if(verbosity_ &gt;= 5)
-                printf(&quot;%s: cubic Hermite predicts t = %e (in [0, %e]).\n&quot;,
-                       tag, t_next, t);
+              log_(5, &quot;%s: cubic Hermite predicts t = %e (in [0, %e]).\n&quot;,
+                     tag, t_next, t);
             }
           } catch(const std::logic_error &amp;) {
             // Cubic derivative has no real roots; fall through to halving.
@@ -3222,9 +3260,8 @@ namespace OpenOrbitalOptimizer {
               if(std::isfinite(predicted) &amp;&amp; predicted &gt; sigma
                  &amp;&amp; predicted &lt; sigma * 100) {
                 sigma_next = predicted;
-                if(verbosity_ &gt;= 5)
-                  printf(&quot;%s: cubic Hermite predicts sigma = %e (u* = %e).\n&quot;,
-                         tag, sigma_next, u_star);
+                log_(5, &quot;%s: cubic Hermite predicts sigma = %e (u* = %e).\n&quot;,
+                       tag, sigma_next, u_star);
               }
             }
           } catch(const std::logic_error &amp;) {
@@ -3248,11 +3285,10 @@ namespace OpenOrbitalOptimizer {
       Tbase beta = std::max(beta_PR, Tbase(0));
       Vector&lt;Tbase&gt; d_cg = d + beta * previous_orbital_direction_;
       if(d_cg.dot(ctx.g) &lt; 0) {
-        if(verbosity_ &gt;= 5)
-          printf(&quot;Scaled SD: CG update with beta = %e (PR = %e).\n&quot;, beta, beta_PR);
+        log_(5, &quot;Scaled SD: CG update with beta = %e (PR = %e).\n&quot;, beta, beta_PR);
         d = d_cg;
       } else if(verbosity_ &gt;= 5) {
-        printf(&quot;Scaled SD: CG direction not descent, resetting to preconditioned SD.\n&quot;);
+        log_(5, &quot;Scaled SD: CG direction not descent, resetting to preconditioned SD.\n&quot;);
       }
     }
 
@@ -3315,12 +3351,11 @@ namespace OpenOrbitalOptimizer {
       if(lbfgs_-&gt;history_dofs != ctx.dofs) return;
       Vector&lt;Tbase&gt; d_lbfgs = lbfgs_direction_(ctx, initial_level_shift_);
       if(d_lbfgs.dot(ctx.g) &lt; 0) {
-        if(verbosity_ &gt;= 5)
-          printf(&quot;L-BFGS: applying two-loop direction (history size %zu).\n&quot;,
-                 lbfgs_-&gt;s.size());
+        log_(5, &quot;L-BFGS: applying two-loop direction (history size %zu).\n&quot;,
+               lbfgs_-&gt;s.size());
         d = d_lbfgs;
       } else if(verbosity_ &gt;= 5) {
-        printf(&quot;L-BFGS: two-loop direction not descent, resetting to preconditioned SD.\n&quot;);
+        log_(5, &quot;L-BFGS: two-loop direction not descent, resetting to preconditioned SD.\n&quot;);
       }
     }
 
@@ -3348,7 +3383,7 @@ namespace OpenOrbitalOptimizer {
             st.rho.pop_front();
           }
         } else if(verbosity_ &gt;= 5) {
-          printf(&quot;L-BFGS: curvature condition violated (y.s = %e), pair dropped.\n&quot;, ys);
+          log_(5, &quot;L-BFGS: curvature condition violated (y.s = %e), pair dropped.\n&quot;, ys);
         }
       } else if(!st.history_dofs.empty() &amp;&amp; st.history_dofs != ctx.dofs) {
         clear_lbfgs_state_();
@@ -3602,19 +3637,19 @@ namespace OpenOrbitalOptimizer {
         if(empty_block(iblock))
           continue;
         if(get_orbital_block(0,iblock).cols() != get_fock_matrix_block(0,iblock).cols()) {
-          printf(&quot;get_orbital_block(0,iblock).cols()=%i != get_fock_matrix_block(0,iblock).cols())=%i\n&quot;,(int) get_orbital_block(0,iblock).cols(),(int) get_fock_matrix_block(0,iblock).cols());
+          // Unconditional -- this always indicated a consistency
+          // problem the caller needed to see.
+          log_(0, &quot;get_orbital_block(0,iblock).cols()=%i != get_fock_matrix_block(0,iblock).cols())=%i\n&quot;,(int) get_orbital_block(0,iblock).cols(),(int) get_fock_matrix_block(0,iblock).cols());
           consistent=false;
         }
         if(get_orbital_occupation_block(0,iblock).size() != get_fock_matrix_block(0,iblock).cols()) {
-          if(verbosity_&gt;=10)
-            printf(&quot;get_orbital_occupation_block(0,iblock).size()=%i != get_fock_matrix_block(0,iblock).cols()=%i\n&quot;,(int) get_orbital_occupation_block(0,iblock).size(),(int) get_fock_matrix_block(0,iblock).cols());
+          log_(10, &quot;get_orbital_occupation_block(0,iblock).size()=%i != get_fock_matrix_block(0,iblock).cols()=%i\n&quot;,(int) get_orbital_occupation_block(0,iblock).size(),(int) get_fock_matrix_block(0,iblock).cols());
           consistent=false;
         }
       }
       // If they are not consistent (e.g. when a read-in guess has been used)
       if(not consistent) {
-        if(verbosity_&gt;=5)
-          printf(&quot;Fed-in orbitals are not consistent with Fock matrix, recomputing orbitals\n&quot;);
+        log_(5, &quot;Fed-in orbitals are not consistent with Fock matrix, recomputing orbitals\n&quot;);
 
         // Diagonalize the Fock matrix we just computed
         auto new_orbitals = compute_orbitals(get_fock_matrix());
@@ -3909,7 +3944,7 @@ namespace OpenOrbitalOptimizer {
 
       if(verbosity_&gt;=5) {
         auto reference_energy = orbital_history_.size()&gt;0 ? get_energy() : 0.0;
-        printf(&quot;Evaluated energy % .10f (change from lowest %e)\n&quot;, fock.first, fock.first-reference_energy);
+        log_(5, &quot;Evaluated energy % .10f (change from lowest %e)\n&quot;, fock.first, fock.first-reference_energy);
       }
       return add_entry(density, fock);
     }
@@ -3966,9 +4001,10 @@ namespace OpenOrbitalOptimizer {
     }
 
     void print_history() const {
-      printf(&quot;Orbital history\n&quot;);
+      // Unconditional (caller invokes this explicitly for diagnostics).
+      log_(0, &quot;Orbital history\n&quot;);
       for(size_t ihist=0;ihist&lt;orbital_history_.size();ihist++)
-        printf(&quot;%2i % .9f % e % i\n&quot;,(int) ihist, get_energy(ihist), get_energy(ihist)-get_energy(), (int) get_index(ihist));
+        log_(0, &quot;%2i % .9f % e % i\n&quot;,(int) ihist, get_energy(ihist), get_energy(ihist)-get_energy(), (int) get_index(ihist));
     }
 
     void reset_history() {
@@ -3992,10 +4028,8 @@ namespace OpenOrbitalOptimizer {
         diagonalized_fock.second[iblock] = es.eigenvalues();
         diagonalized_fock.first[iblock] = es.eigenvectors();
 
-        if(verbosity_&gt;=10) {
-          std::cout &lt;&lt; block_descriptions_[iblock] + &quot; orbital energies: &quot; &lt;&lt; diagonalized_fock.second[iblock].transpose() &lt;&lt; std::endl;
-        }
-        fflush(stdout);
+        log_stream_(10) &lt;&lt; block_descriptions_[iblock] + &quot; orbital energies: &quot; &lt;&lt; diagonalized_fock.second[iblock].transpose() &lt;&lt; std::endl;
+        log_flush_();
       }
 
       return diagonalized_fock;
@@ -4102,7 +4136,7 @@ namespace OpenOrbitalOptimizer {
       noise_floor_ = compute_noise_floor();
       if(verbosity_ &gt; 0 &amp;&amp; noise_safety_factor_ &gt; 0 &amp;&amp;
          convergence_threshold_ &lt; noise_safety_factor_ * noise_floor_) {
-        printf(&quot;Warning: convergence threshold %e is below %g x arithmetic &quot;
+        log_(1, &quot;Warning: convergence threshold %e is below %g x arithmetic &quot;
                &quot;noise floor %e Eh (epsilon=%e); clamping effective &quot;
                &quot;threshold to %e.\n&quot;,
                (double) convergence_threshold_,
@@ -4223,11 +4257,10 @@ namespace OpenOrbitalOptimizer {
             Tbase delta0 = std::get&lt;2&gt;(p);
             Tbase deltat = eps_now[b](i) - eps_now[b](j);
             if(std::abs(deltat - delta0) &gt; optimal_damping_degeneracy_threshold_) {
-              if(verbosity_ &gt;= 5)
-                printf(&quot;Burst exit: block %zu orbitals %u, %u have a &quot;
-                       &quot;canonical-energy gap shift %+e Eh (&gt; threshold %e Eh).\n&quot;,
-                       b, (unsigned) i, (unsigned) j,
-                       deltat - delta0, optimal_damping_degeneracy_threshold_);
+              log_(5, &quot;Burst exit: block %zu orbitals %u, %u have a &quot;
+                     &quot;canonical-energy gap shift %+e Eh (&gt; threshold %e Eh).\n&quot;,
+                     b, (unsigned) i, (unsigned) j,
+                     deltat - delta0, optimal_damping_degeneracy_threshold_);
               return true;
             }
           }
@@ -4246,10 +4279,9 @@ namespace OpenOrbitalOptimizer {
               if(burst_subblock_id[b](j) == sid)
                 span_w += std::norm(ovl(i, j));
             if(span_w &lt; burst_subblock_overlap_floor) {
-              if(verbosity_ &gt;= 5)
-                printf(&quot;Burst exit: block %zu orbital %u has sub-block &quot;
-                       &quot;overlap %.3f &lt; %.3f.\n&quot;,
-                       b, (unsigned) i, span_w, burst_subblock_overlap_floor);
+              log_(5, &quot;Burst exit: block %zu orbital %u has sub-block &quot;
+                     &quot;overlap %.3f &lt; %.3f.\n&quot;,
+                     b, (unsigned) i, span_w, burst_subblock_overlap_floor);
               return true;
             }
           }
@@ -4284,18 +4316,11 @@ namespace OpenOrbitalOptimizer {
         callback_data[&quot;diis_error&quot;] = diis_error;
         callback_data[&quot;diis_max_error&quot;] = diis_max_error;
 
-        if(verbosity_&gt;=5) {
-          printf(&quot;\n\n&quot;);
-        }
-        if(verbosity_&gt;0) {
-          printf(&quot;Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n&quot;, (int) iteration, (int) number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
-        }
-        if(verbosity_&gt;=5) {
-          printf(&quot;History size %i\n&quot;,(int) orbital_history_.size());
-        }
+        log_(5, &quot;\n\n&quot;);
+        log_(1, &quot;Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n&quot;, (int) iteration, (int) number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
+        log_(5, &quot;History size %i\n&quot;,(int) orbital_history_.size());
         if(converged()) {
-          if(verbosity_)
-            printf(&quot;Converged to energy % .10f!\n&quot;, get_energy());
+          log_(1, &quot;Converged to energy % .10f!\n&quot;, get_energy());
 
           // Print out info
           callback_data[&quot;step&quot;] = std::string(&quot;Converged&quot;);
@@ -4309,7 +4334,7 @@ namespace OpenOrbitalOptimizer {
           auto occ_idx(occupied_orbitals(occupations));
           for(size_t l=0;l&lt;occ_idx.size();l++) {
             if(occ_idx[l].size())
-              std::cout &lt;&lt; block_descriptions_[l] + &quot; occupations: &quot; &lt;&lt; occupations[l].head(occ_idx[l].maxCoeff()+1).transpose() &lt;&lt; std::endl;
+              log_stream_(5) &lt;&lt; block_descriptions_[l] + &quot; occupations: &quot; &lt;&lt; occupations[l].head(occ_idx[l].maxCoeff()+1).transpose() &lt;&lt; std::endl;
           }
         }
 
@@ -4327,10 +4352,10 @@ namespace OpenOrbitalOptimizer {
                 const char * nname = next == StepKind::ODA ? &quot;ODA&quot;
                                    : (allowed.lbfgs ? &quot;L-BFGS&quot; : &quot;CG&quot;);
                 if(diis_max_error &gt;= optimal_damping_threshold_)
-                  printf(&quot;Switching DIIS -&gt; %s: DIIS max error %e exceeds threshold %e\n&quot;,
+                  log_(5, &quot;Switching DIIS -&gt; %s: DIIS max error %e exceeds threshold %e\n&quot;,
                          nname, diis_max_error, optimal_damping_threshold_);
                 else
-                  printf(&quot;Switching DIIS -&gt; %s: %i consecutive failed DIIS iterations\n&quot;,
+                  log_(5, &quot;Switching DIIS -&gt; %s: %i consecutive failed DIIS iterations\n&quot;,
                          nname, failed_iterations);
               }
               state = next;
@@ -4341,7 +4366,7 @@ namespace OpenOrbitalOptimizer {
         old_energy_ = get_energy();
 
         if(state == StepKind::ODA) {
-          if(verbosity_&gt;=5) printf(&quot;Optimal damping step\n&quot;);
+          log_(5, &quot;Optimal damping step\n&quot;);
           callback_data[&quot;step&quot;] = std::string(&quot;ODA&quot;);
           if(callback_function_)
             callback_function_(callback_data);
@@ -4387,9 +4412,9 @@ namespace OpenOrbitalOptimizer {
           // memory quasi-Newton captures off-diagonal Hessian
           // information the diagonal preconditioner alone misses).
           bool use_lbfgs = allowed.lbfgs;
-          if(verbosity_&gt;=5) printf(&quot;%s step (%i remaining in burst)\n&quot;,
-                                   use_lbfgs ? &quot;L-BFGS&quot; : &quot;Scaled steepest descent&quot;,
-                                   (int) orbital_rotation_steps_remaining);
+          log_(5, &quot;%s step (%i remaining in burst)\n&quot;,
+               use_lbfgs ? &quot;L-BFGS&quot; : &quot;Scaled steepest descent&quot;,
+               (int) orbital_rotation_steps_remaining);
           callback_data[&quot;step&quot;] = std::string(use_lbfgs ? &quot;LBFGS&quot; : &quot;CG&quot;);
           if(callback_function_)
             callback_function_(callback_data);
@@ -4436,17 +4461,15 @@ namespace OpenOrbitalOptimizer {
           Vector&lt;Tbase&gt; weights;
           std::string step;
           std::tie(weights, step) = minimal_error_sampling_algorithm_weights(aediis_coeff);
-          if(verbosity_&gt;=5)
-            printf(&quot;%s step\n&quot;,step.c_str());
-          if(verbosity_&gt;=10)
-            std::cout &lt;&lt; &quot;Extrapolation weights: &quot; &lt;&lt; weights.transpose() &lt;&lt; std::endl;
+          log_(5, &quot;%s step\n&quot;,step.c_str());
+          log_stream_(10) &lt;&lt; &quot;Extrapolation weights: &quot; &lt;&lt; weights.transpose() &lt;&lt; std::endl;
 
           callback_data[&quot;step&quot;] = step;
           if(callback_function_)
             callback_function_(callback_data);
 
           if(!attempt_extrapolation(weights)) {
-            if(verbosity_&gt;=10) printf(&quot;Warning: did not go down in energy!\n&quot;);
+            log_(10, &quot;Warning: did not go down in energy!\n&quot;);
             failed_iterations++;
           } else {
             failed_iterations=0;
@@ -4467,10 +4490,8 @@ namespace OpenOrbitalOptimizer {
             (!allowed.oda || oda_failed) &amp;&amp;
             (!allowed.orbital_rotation() || rotation_failed);
           if(all_failed) {
-            if(verbosity_&gt;0) {
-              printf(&quot;All allowed SCF methods failed at iteration %i; stopping with DIIS error vector %s norm %e.\n&quot;,
-                     (int) iteration, error_norm_.c_str(), diis_error);
-            }
+            log_(1, &quot;All allowed SCF methods failed at iteration %i; stopping with DIIS error vector %s norm %e.\n&quot;,
+                   (int) iteration, error_norm_.c_str(), diis_error);
             callback_data[&quot;step&quot;] = std::string(&quot;Stalled&quot;);
             if(callback_function_)
               callback_function_(callback_data);
@@ -4544,7 +4565,7 @@ namespace OpenOrbitalOptimizer {
             continue;
           number_of_particles_per_block[iblock] = reference_occupations[iblock].sum();
         }
-        std::cout &lt;&lt; &quot;Number of particles per block: &quot; &lt;&lt; number_of_particles_per_block.transpose() &lt;&lt; std::endl;
+        log_stream_(0) &lt;&lt; &quot;Number of particles per block: &quot; &lt;&lt; number_of_particles_per_block.transpose() &lt;&lt; std::endl;
 
         // List of occupations and resulting energies
         std::vector&lt;std::pair&lt;Vector&lt;Tbase&gt;,Tbase&gt;&gt; list_of_energies;
@@ -4580,9 +4601,9 @@ namespace OpenOrbitalOptimizer {
 
                 fixed_number_of_particles_per_block_ = trial_number;
 
-                printf(&quot;isource = %i itarget = %i imoved = %f\n&quot;, (int)iblock_source, (int)iblock_target, i_moved);
-                std::cout &lt;&lt; &quot;trial number of particles: &quot; &lt;&lt; trial_number.transpose() &lt;&lt; std::endl;
-                fflush(stdout);
+                log_(0, &quot;isource = %i itarget = %i imoved = %f\n&quot;, (int)iblock_source, (int)iblock_target, i_moved);
+                log_stream_(0) &lt;&lt; &quot;trial number of particles: &quot; &lt;&lt; trial_number.transpose() &lt;&lt; std::endl;
+                log_flush_();
 
                 // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
                 auto trial_occupations = update_occupations(orbital_energies);
@@ -4609,7 +4630,7 @@ namespace OpenOrbitalOptimizer {
                 bool same_particle = (iparticle == jparticle);
                 size_t jblock_source_end = same_particle ? iblock_source+1 : jblock_end;
                 size_t jblock_target_end = same_particle ? iblock_target+1 : jblock_end;
-                printf(&quot;iparticle= %i jparticle= %i isource=%i itarget=%i\n&quot;,(int)iparticle,(int)jparticle,(int)iblock_source,(int)iblock_target);
+                log_(0, &quot;iparticle= %i jparticle= %i isource=%i itarget=%i\n&quot;,(int)iparticle,(int)jparticle,(int)iblock_source,(int)iblock_target);
 
                 for(size_t jblock_source = jblock_start; jblock_source &lt; jblock_source_end; jblock_source++)
                   for(size_t jblock_target = jblock_start; jblock_target &lt; jblock_target_end; jblock_target++) {
@@ -4635,9 +4656,9 @@ namespace OpenOrbitalOptimizer {
                     int num_j_max = std::ceil(std::min(num_j_source, j_target_capacity_left));
                     num_j_max = std::min(num_j_max, (int) std::round(std::min(maximum_occupation_[jblock_source], maximum_occupation_[jblock_target])));
 
-                    printf(&quot;i: source %f capacity left %f num max %i\n&quot;,num_i_source,i_target_capacity_left,num_i_max);
-                    printf(&quot;j: source %f capacity left %f num max %i\n&quot;,num_j_source,j_target_capacity_left,num_j_max);
-                    fflush(stdout);
+                    log_(0, &quot;i: source %f capacity left %f num max %i\n&quot;,num_i_source,i_target_capacity_left,num_i_max);
+                    log_(0, &quot;j: source %f capacity left %f num max %i\n&quot;,num_j_source,j_target_capacity_left,num_j_max);
+                    log_flush_();
 
                     // Generate trials by moving particles
                     for(int imove=1; imove&lt;=num_i_max; imove++)
@@ -4670,10 +4691,10 @@ namespace OpenOrbitalOptimizer {
 
                         fixed_number_of_particles_per_block_ = trial_number;
 
-                        printf(&quot;isource = %i itarget = %i imoved = %f\n&quot;, (int)iblock_source, (int)iblock_target, i_moved);
-                        printf(&quot;jsource = %i jtarget = %i jmoved = %f\n&quot;, (int)jblock_source, (int)jblock_target, j_moved);
-                        std::cout &lt;&lt; &quot;trial number of particles: &quot; &lt;&lt; trial_number.transpose() &lt;&lt; std::endl;
-                        fflush(stdout);
+                        log_(0, &quot;isource = %i itarget = %i imoved = %f\n&quot;, (int)iblock_source, (int)iblock_target, i_moved);
+                        log_(0, &quot;jsource = %i jtarget = %i jmoved = %f\n&quot;, (int)jblock_source, (int)jblock_target, j_moved);
+                        log_stream_(0) &lt;&lt; &quot;trial number of particles: &quot; &lt;&lt; trial_number.transpose() &lt;&lt; std::endl;
+                        log_flush_();
 
                         // Determine full orbital occupations from the specified data. Because we've fixed the number of particles in each block, it doesn't matter that the orbital energies aren't correct
                         auto trial_occupations = update_occupations(orbital_energies);
@@ -4695,14 +4716,14 @@ namespace OpenOrbitalOptimizer {
         // Sort the list in ascending order
         std::sort(list_of_energies.begin(), list_of_energies.end(), [](const std::pair&lt;Vector&lt;Tbase&gt;,Tbase&gt; &amp; a, const std::pair&lt;Vector&lt;Tbase&gt;,Tbase&gt; &amp; b) {return a.second &lt; b.second;});
 
-        printf(&quot;Configurations\n&quot;);
+        log_(0, &quot;Configurations\n&quot;);
         for(size_t iconf=0;iconf&lt;list_of_energies.size();iconf++) {
-          printf(&quot;%4i E= % .10f with occupations\n&quot;,(int) iconf, list_of_energies[iconf].second);
-          std::cout &lt;&lt; list_of_energies[iconf].first.transpose() &lt;&lt; std::endl;
+          log_(0, &quot;%4i E= % .10f with occupations\n&quot;,(int) iconf, list_of_energies[iconf].second);
+          log_stream_(0) &lt;&lt; list_of_energies[iconf].first.transpose() &lt;&lt; std::endl;
         }
 
         if(list_of_energies[0].second &lt; reference_energy) {
-          printf(&quot;Energy changed by %e by improved reference\n&quot;, list_of_energies[0].second - reference_energy);
+          log_(0, &quot;Energy changed by %e by improved reference\n&quot;, list_of_energies[0].second - reference_energy);
 
           // Update the reference
           fixed_number_of_particles_per_block_ = list_of_energies[0].first;
@@ -4719,7 +4740,7 @@ namespace OpenOrbitalOptimizer {
           // Restore the reference calculation
           initialize_with_orbitals(reference_orbitals, reference_occupations);
           run();
-          printf(&quot;Search converged!\n&quot;);
+          log_(0, &quot;Search converged!\n&quot;);
           break;
         }
       }
@@ -4731,6 +4752,14 @@ namespace OpenOrbitalOptimizer {
 
     void callback_convergence_function(std::function&lt;bool(const std::map&lt;std::string,std::any&gt; &amp;)&gt; callback_convergence_function = nullptr) {
       callback_convergence_function_ = callback_convergence_function;
+    }
+
+    void logger(std::function&lt;void(int, const std::string &amp;)&gt; sink = nullptr) {
+      logger_ = std::move(sink);
+    }
+
+    bool has_logger() const {
+      return static_cast&lt;bool&gt;(logger_);
     }
   };
 }

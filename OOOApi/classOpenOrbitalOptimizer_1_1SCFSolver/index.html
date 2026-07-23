@@ -1239,6 +1239,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-has_logger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function has_logger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-initialize_with_fock" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1254,6 +1265,17 @@
     <span class="md-ellipsis">
       
         function initialize_with_orbitals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-logger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function logger
       
     </span>
   </a>
@@ -1580,12 +1602,20 @@
 <td style="text-align: left;"><a href="#function-has_batched_fock_builder"><strong>has_batched_fock_builder</strong></a> () const<br><em>Whether a batched Fock builder is registered.</em></td>
 </tr>
 <tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-has_logger"><strong>has_logger</strong></a> () const<br><em>True iff a caller-supplied log sink is currently installed.</em></td>
+</tr>
+<tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-initialize_with_fock"><strong>initialize_with_fock</strong></a> (const FockMatrix&lt; Torb &gt; &amp; fock_guess) <br><em>Initialize the solver with a guess Fock matrix.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-initialize_with_orbitals"><strong>initialize_with_orbitals</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitals"><strong>Orbitals</strong></a>&lt; Torb &gt; &amp; orbitals, const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations) <br><em>Initialize with precomputed orbitals and occupations.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-logger"><strong>logger</strong></a> (std::function&lt; void(int, const std::string &amp;)&gt; sink=nullptr) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">Tbase</td>
@@ -1827,6 +1857,12 @@
 </code></pre>
 <hr>
 
+<h3 id="function-has_logger">function has_logger</h3>
+<p><em>True iff a caller-supplied log sink is currently installed.</em> </p>
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::has_logger () const
+</code></pre>
+<hr>
+
 <h3 id="function-initialize_with_fock">function initialize_with_fock</h3>
 <p><em>Initialize the solver with a guess Fock matrix.</em> </p>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::initialize_with_fock (
@@ -1842,6 +1878,14 @@
     const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations
 ) 
 </code></pre>
+<hr>
+
+<h3 id="function-logger">function logger</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::logger (
+    std::function&lt; void(int, const std::string &amp;)&gt; sink=nullptr
+) 
+</code></pre>
+<p>Register a log sink. The callback receives <code>(level, message)</code> where <code>level</code> is the minimum verbosity_ at which the message would normally print and <code>message</code> is the finished, formatted text (newlines included). Pass a default-constructed std::function (or nullptr) to restore the stdout default. </p>
 <hr>
 
 <h3 id="function-norm">function norm</h3>

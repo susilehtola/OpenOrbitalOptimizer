@@ -80,8 +80,10 @@ _SCF solver class._
 |  [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; | [**get\_solution**](#function-get_solution) (size\_t ihist=0) const<br>_Get the SCF solution._  |
 |  std::string | [**get\_string**](#function-get_string) (const std::string & key) const<br>_Get a string-valued option._  |
 |  bool | [**has\_batched\_fock\_builder**](#function-has_batched_fock_builder) () const<br>_Whether a batched Fock builder is registered._  |
+|  bool | [**has\_logger**](#function-has_logger) () const<br>_True iff a caller-supplied log sink is currently installed._  |
 |  void | [**initialize\_with\_fock**](#function-initialize_with_fock) (const FockMatrix&lt; Torb &gt; & fock\_guess) <br>_Initialize the solver with a guess Fock matrix._  |
 |  void | [**initialize\_with\_orbitals**](#function-initialize_with_orbitals) (const [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; & orbitals, const OrbitalOccupations&lt; Tbase &gt; & orbital\_occupations) <br>_Initialize with precomputed orbitals and occupations._  |
+|  void | [**logger**](#function-logger) (std::function&lt; void(int, const std::string &)&gt; sink=nullptr) <br> |
 |  Tbase | [**norm**](#function-norm) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; Tbase &gt; & mat, std::string norm="") const<br>_Evaluate the norm._  |
 |  std::vector&lt; std::tuple&lt; Tbase, size\_t, size\_t &gt; &gt; | [**order\_orbitals\_by\_energy**](#function-order_orbitals_by_energy) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies, size\_t iparticle) const<br> |
 |  [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) | [**particle\_block\_offset**](#function-particle_block_offset) (size\_t iparticle) const<br>_Determines the offset for the blocks of the iparticle:th particle._  |
@@ -468,6 +470,20 @@ inline bool OpenOrbitalOptimizer::SCFSolver::has_batched_fock_builder () const
 
 
 
+### function has\_logger 
+
+_True iff a caller-supplied log sink is currently installed._ 
+```C++
+inline bool OpenOrbitalOptimizer::SCFSolver::has_logger () const
+```
+
+
+
+
+<hr>
+
+
+
 ### function initialize\_with\_fock 
 
 _Initialize the solver with a guess Fock matrix._ 
@@ -496,6 +512,25 @@ inline void OpenOrbitalOptimizer::SCFSolver::initialize_with_orbitals (
 
 
 
+
+<hr>
+
+
+
+### function logger 
+
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::logger (
+    std::function< void(int, const std::string &)> sink=nullptr
+) 
+```
+
+
+
+Register a log sink. The callback receives `(level, message)` where `level` is the minimum verbosity\_ at which the message would normally print and `message` is the finished, formatted text (newlines included). Pass a default-constructed std::function (or nullptr) to restore the stdout default. 
+
+
+        
 
 <hr>
 

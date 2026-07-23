@@ -10,6 +10,7 @@
 ## l
 
 * [**LBFGSState**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState.md)
+* [**LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md)
 
 
 ## n
