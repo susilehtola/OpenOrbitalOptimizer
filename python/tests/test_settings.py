@@ -101,3 +101,46 @@ def test_citation_names_paper():
     assert "Lehtola" in text
     assert "10.1021/acs.jpca.5c02110" in text
     assert "J. Phys. Chem. A" in text
+
+
+def test_logger_receives_run_messages():
+    # A trivial fixed-point problem: the Fock is always -I, so the
+    # first orbital diagonalisation already gives the fixed point.
+    # One Fock evaluation is enough to trip the iteration + converged
+    # banners.
+    fock = np.eye(2) * -1.0
+
+    def fock_builder(orbitals_occs):
+        return (0.0, [fock])
+
+    solver = SCFSolver(
+        number_of_blocks_per_particle_type=np.array([1], dtype=np.uintp),
+        maximum_occupation=np.array([2.0]),
+        number_of_particles=np.array([2.0]),
+        fock_builder=fock_builder,
+        block_descriptions=["s"],
+    )
+    solver.initialize_with_fock([fock])
+
+    captured = []
+
+    def sink(level, msg):
+        captured.append((level, msg))
+
+    solver.logger(sink)
+    assert solver.has_logger()
+    solver.settings.verbosity = 5
+    solver.settings.maximum_iterations = 3
+    solver.run()
+
+    assert any("Iteration" in m for _, m in captured), (
+        "no iteration banner captured; got: %r" % captured
+    )
+    assert any("Converged" in m for _, m in captured), (
+        "no converged banner captured; got: %r" % captured
+    )
+    for level, _ in captured:
+        assert level <= 5, "level %d slipped through verbosity 5" % level
+
+    solver.logger(None)
+    assert not solver.has_logger()

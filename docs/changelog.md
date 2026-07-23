@@ -17,6 +17,27 @@
 
 ## v0.5.0 / (Unreleased)
 
+#### New Features (continued)
+* Route all library log output through a caller-installable
+  callback. `SCFSolver::logger(std::function<void(int level, const
+  std::string & msg)>)` registers a sink; the library builds each
+  formatted message via `vsnprintf` and either hands it to the sink
+  (when set) or writes it to stdout (the pre-callback default). The
+  `level` argument is the minimum ``verbosity`` at which the
+  message would print, so callers can route different severities to
+  different destinations. Python bindings expose it as
+  `solver.logger(callback)` / `solver.logger(None)` /
+  `solver.has_logger()`.
+* Every `printf` call in `openorbitaloptimizer/scfsolver.hpp`
+  (60 sites, excluding commented-out debug prints) migrated to
+  `log_(level, fmt, ...)`. Every `std::cout << ...` matrix / vector
+  dump (12 live sites) migrated to `log_stream_(level) << ...`,
+  an ostream-style companion proxy that RAII-flushes into the same
+  sink. The internal levels reflect the pre-existing
+  `if(verbosity_ >= N)` gates; unconditional diagnostic warnings
+  and the print_history dump use level 0.
+
+
 #### Breaking Changes
 * The per-option typed getters and setters on `SCFSolver` have been
   removed. Use the string-keyed façade instead:

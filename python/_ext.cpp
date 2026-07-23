@@ -113,6 +113,16 @@ PYBIND11_MODULE(_ext, m) {
     .def("has_batched_fock_builder",
          &Solver::has_batched_fock_builder)
 
+    // --- Log sink -----------------------------------------------------
+    .def("logger",
+         py::overload_cast<std::function<void(int, const std::string &)>>(&Solver::logger),
+         py::arg("sink") = std::function<void(int, const std::string &)>(),
+         "Register a log sink. The callback receives ``(level, message)``\n"
+         "where ``level`` is the minimum verbosity at which the message\n"
+         "would print and ``message`` is the finished, formatted text\n"
+         "(newlines included). Pass None to restore the stdout default.")
+    .def("has_logger", &Solver::has_logger)
+
     // --- Initialization + drive ---------------------------------------
     .def("initialize_with_fock",
          &Solver::initialize_with_fock,
