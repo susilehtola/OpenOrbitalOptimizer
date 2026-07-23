@@ -1426,6 +1426,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-noise_floor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function noise_floor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-noise_safety_factor-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function noise_safety_factor [1/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-noise_safety_factor-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function noise_safety_factor [2/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-norm" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1834,6 +1867,18 @@
 </tr>
 <tr>
 <td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-noise_floor"><strong>noise_floor</strong></a> () const<br><em>Get the frozen arithmetic noise floor (populated by</em> <a href="./#function-run"><em><strong>run()</strong></em></a> <em>).</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-noise_safety_factor-12"><strong>noise_safety_factor</strong></a> () const<br><em>Get safety factor K for the arithmetic-precision clamp.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-noise_safety_factor-22"><strong>noise_safety_factor</strong></a> (Tbase k) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
 <td style="text-align: left;"><a href="#function-norm"><strong>norm</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-matrix"><strong>Matrix</strong></a>&lt; Tbase &gt; &amp; mat, std::string norm="") const<br><em>Evaluate the norm.</em></td>
 </tr>
 <tr>
@@ -2206,6 +2251,26 @@
     size_t maxit
 ) 
 </code></pre>
+<hr>
+
+<h3 id="function-noise_floor">function noise_floor</h3>
+<p><em>Get the frozen arithmetic noise floor (populated by</em> <a href="./#function-run"><em><strong>run()</strong></em></a> <em>).</em></p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::noise_floor () const
+</code></pre>
+<hr>
+
+<h3 id="function-noise_safety_factor-12">function noise_safety_factor [1/2]</h3>
+<p><em>Get safety factor K for the arithmetic-precision clamp.</em> </p>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::noise_safety_factor () const
+</code></pre>
+<hr>
+
+<h3 id="function-noise_safety_factor-22">function noise_safety_factor [2/2]</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::noise_safety_factor (
+    Tbase k
+) 
+</code></pre>
+<p>Set safety factor K for the arithmetic-precision clamp (K = 0 disables the clamp) </p>
 <hr>
 
 <h3 id="function-norm">function norm</h3>

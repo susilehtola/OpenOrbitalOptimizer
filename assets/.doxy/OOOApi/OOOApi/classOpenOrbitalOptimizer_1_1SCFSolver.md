@@ -94,6 +94,9 @@ _SCF solver class._
 |  void | [**maximum\_history\_length**](#function-maximum_history_length-22) (int maximum\_history\_length) <br>_Set maximum\_history\_length._  |
 |  size\_t | [**maximum\_iterations**](#function-maximum_iterations-12) () const<br>_Get the maximum number of iterations._  |
 |  void | [**maximum\_iterations**](#function-maximum_iterations-22) (size\_t maxit) <br>_Set the maximum number of iterations._  |
+|  Tbase | [**noise\_floor**](#function-noise_floor) () const<br>_Get the frozen arithmetic noise floor (populated by_ [_**run()**_](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-run) _)._ |
+|  Tbase | [**noise\_safety\_factor**](#function-noise_safety_factor-12) () const<br>_Get safety factor K for the arithmetic-precision clamp._  |
+|  void | [**noise\_safety\_factor**](#function-noise_safety_factor-22) (Tbase k) <br> |
 |  Tbase | [**norm**](#function-norm) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; Tbase &gt; & mat, std::string norm="") const<br>_Evaluate the norm._  |
 |  size\_t | [**number\_of\_fock\_evaluations**](#function-number_of_fock_evaluations) () const<br> |
 |  int | [**oda\_restart\_steps**](#function-oda_restart_steps-12) () const<br>_Get oda\_restart\_steps._  |
@@ -761,6 +764,53 @@ inline void OpenOrbitalOptimizer::SCFSolver::maximum_iterations (
 
 
 
+
+<hr>
+
+
+
+### function noise\_floor 
+
+_Get the frozen arithmetic noise floor (populated by_ [_**run()**_](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-run) _)._
+```C++
+inline Tbase OpenOrbitalOptimizer::SCFSolver::noise_floor () const
+```
+
+
+
+
+<hr>
+
+
+
+### function noise\_safety\_factor [1/2]
+
+_Get safety factor K for the arithmetic-precision clamp._ 
+```C++
+inline Tbase OpenOrbitalOptimizer::SCFSolver::noise_safety_factor () const
+```
+
+
+
+
+<hr>
+
+
+
+### function noise\_safety\_factor [2/2]
+
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::noise_safety_factor (
+    Tbase k
+) 
+```
+
+
+
+Set safety factor K for the arithmetic-precision clamp (K = 0 disables the clamp) 
+
+
+        
 
 <hr>
 

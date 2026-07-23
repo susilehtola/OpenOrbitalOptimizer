@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="233" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="233" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="248" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="248" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState_1a65ebd443ab97eee2bde5ef17f447f922" prot="public" static="no" mutable="no">
         <type>std::deque&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt; &gt;</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="234" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="234" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="249" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="249" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState_1a5f44744c1c34dee388b30713585ef486" prot="public" static="no" mutable="no">
         <type>std::deque&lt; Tbase &gt;</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="235" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="235" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="250" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="250" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState_1a106801b8ce5297aa5e9f7df027f12fd6" prot="public" static="no" mutable="no">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="236" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="236" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="251" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="251" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState_1a0e50b53458e7851dde7f834cecd1047f" prot="public" static="no" mutable="no">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="237" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="237" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="252" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="252" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState_1a5ca5adaa1792ca2f16b1da3b4f78fbd5" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a1c526d91037dc0333914ab09df6b10f9" kindref="member">OrbitalRotation</ref> &gt;</type>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="238" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="238" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="253" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="253" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -93,7 +93,7 @@
     <detaileddescription>
 <para>Limited-memory BFGS state retained between lbfgs_step calls. <computeroutput>s</computeroutput>, <computeroutput>y</computeroutput>, <computeroutput>rho</computeroutput> store the last lbfgs_history_size_ triples that drive the two-loop recursion. <computeroutput>pending_s</computeroutput>, <computeroutput>pending_g</computeroutput> hold the (s, g) recorded at the previous accepted step so the y = g_new - g_old pair can be formed on entry to the next call. All members are cleared whenever the orbital basis changes globally (ODA accept), the line search fails, or the DOF set changes. The owning solver only allocates the struct on the first lbfgs_step() call, so when the user has not enabled L-BFGS the deque headers are not present at all. </para>
     </detaileddescription>
-    <location file="openorbitaloptimizer/scfsolver.hpp" line="232" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="232" bodyend="239"/>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="247" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="247" bodyend="254"/>
     <listofallmembers>
       <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState_1a5ca5adaa1792ca2f16b1da3b4f78fbd5" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::LBFGSState</scope><name>history_dofs</name></member>
       <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState_1a0e50b53458e7851dde7f834cecd1047f" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::LBFGSState</scope><name>pending_g</name></member>

@@ -1081,6 +1081,8 @@ namespace OpenOrbitalOptimizer {
     int maximum_history_length_ = 10;
     int oda_restart_steps_ = 5;
     Tbase convergence_threshold_ = 1e-7;
+    Tbase noise_safety_factor_ = 10;
+    Tbase noise_floor_ = 0;
     std::string error_norm_ = &quot;rms&quot;;
 
     Tbase minimal_gradient_projection_ = 1e-4;
@@ -1320,6 +1322,27 @@ namespace OpenOrbitalOptimizer {
         throw std::logic_error(&quot;Indexing error!\n&quot;);
 
       return return_vector;
+    }
+
+    Tbase compute_noise_floor() const {
+      const Tbase eps = std::numeric_limits&lt;Tbase&gt;::epsilon();
+      std::vector&lt;Matrix&lt;Torb&gt;&gt; mock(number_of_blocks_);
+      for(size_t iblock=0; iblock&lt;number_of_blocks_; iblock++) {
+        if(empty_block(iblock))
+          continue;
+        auto F = get_fock_matrix_block(0, iblock);
+        Index n = F.rows();
+        Tbase per_elem = eps * F.norm();
+        Torb seed;
+        if constexpr (Eigen::NumTraits&lt;Torb&gt;::IsComplex)
+          // Load both real and imag halves of vectorise_real_imag so
+          // the clamp is not looser for complex than for real.
+          seed = Torb(per_elem, per_elem);
+        else
+          seed = Torb(per_elem);
+        mock[iblock] = Matrix&lt;Torb&gt;::Constant(n, n, seed);
+      }
+      return norm(vectorise(mock));
     }
 
     Tbase diis_error_matrix_element(size_t ihist, size_t jhist) const {
@@ -3592,6 +3615,18 @@ namespace OpenOrbitalOptimizer {
       convergence_threshold_ = convergence_threshold;
     }
 
+    Tbase noise_safety_factor() const {
+      return noise_safety_factor_;
+    }
+
+    void noise_safety_factor(Tbase k) {
+      noise_safety_factor_ = k;
+    }
+
+    Tbase noise_floor() const {
+      return noise_floor_;
+    }
+
     void set_batched_fock_builder(BatchedFockBuilder&lt;Torb, Tbase&gt; builder) {
       batched_fock_builder_ = std::move(builder);
     }
@@ -3919,7 +3954,9 @@ namespace OpenOrbitalOptimizer {
 
             return callback_convergence_function_(callback_data);
         } else {
-            return norm(diis_error_vector(0)) &lt;= convergence_threshold_;
+            Tbase effective = std::max(convergence_threshold_,
+                                       noise_safety_factor_ * noise_floor_);
+            return norm(diis_error_vector(0)) &lt;= effective;
         }
     }
 
@@ -3953,6 +3990,22 @@ namespace OpenOrbitalOptimizer {
           throw std::logic_error(&quot;run(): no methods enabled in '&quot; + methods + &quot;'&quot;);
         if(frozen_occupations_)
           allowed.oda = false;  // occupations are pinned; ODA cannot move them
+      }
+
+      // Freeze the roundoff noise floor of the DIIS residual from the
+      // initial Fock. The basis conditioning is dominated by the
+      // one-electron part so this barely moves during the run.
+      noise_floor_ = compute_noise_floor();
+      if(verbosity_ &gt; 0 &amp;&amp; noise_safety_factor_ &gt; 0 &amp;&amp;
+         convergence_threshold_ &lt; noise_safety_factor_ * noise_floor_) {
+        printf(&quot;Warning: convergence threshold %e is below %g x arithmetic &quot;
+               &quot;noise floor %e Eh (epsilon=%e); clamping effective &quot;
+               &quot;threshold to %e.\n&quot;,
+               (double) convergence_threshold_,
+               (double) noise_safety_factor_,
+               (double) noise_floor_,
+               (double) std::numeric_limits&lt;Tbase&gt;::epsilon(),
+               (double) (noise_safety_factor_ * noise_floor_));
       }
 
       enum class StepKind { DIIS, ODA, OrbitalRotation };
