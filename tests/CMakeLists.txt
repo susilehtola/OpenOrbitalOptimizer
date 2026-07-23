@@ -40,6 +40,22 @@ set_tests_properties(
     FIXTURES_REQUIRED OPENORBOPT_ATOMTEST_EXEC
   )
 
+  # Runtime coverage of the SCFSolver settings façade: catalog
+  # round-trip and unknown-key rejection.
+  add_executable(
+    openorbopt-settings-roundtrip
+    settings_roundtrip.cpp
+  )
+  target_link_libraries(
+    openorbopt-settings-roundtrip
+    PRIVATE
+    ${ooo}::OpenOrbitalOptimizer
+  )
+  add_test(
+    NAME openorbopt/settings/roundtrip
+    COMMAND $<TARGET_FILE:openorbopt-settings-roundtrip>
+  )
+
   # Instantiations of SCFSolver<Tbase, IsComplex> for
   # <float, false>, <float, true>, and <double, true>.
   # The <double, false> path is exercised by the atomtest target above.
