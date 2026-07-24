@@ -1029,6 +1029,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misc.
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1080,7 +1102,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc" class="md-nav__link">
+  <a href="#misc_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Misc.
@@ -1141,7 +1163,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#bug-fixes" class="md-nav__link">
+  <a href="#bug-fixes_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Bug Fixes
@@ -1152,7 +1174,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_1" class="md-nav__link">
+  <a href="#misc_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Misc.
@@ -1213,7 +1235,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#bug-fixes_1" class="md-nav__link">
+  <a href="#bug-fixes_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Bug Fixes
@@ -1224,7 +1246,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_2" class="md-nav__link">
+  <a href="#misc_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         Misc.
@@ -1302,6 +1324,75 @@
 <h2 id="v050-unreleased">v0.5.0 / (Unreleased)</h2>
 <h4 id="enhancements">Enhancements</h4>
 <ul>
+<li>Speed up the ODA quadratic-model construction and the whole
+  DIIS / ADIIS / EDIIS extrapolation stack via a coordinated
+  refactor of the <code>C * diag(n) * C^dagger</code> and
+  <code>(A * B).trace()</code> idioms scattered through <code>scfsolver.hpp</code>.<ul>
+<li>New <code>build_density_block_</code> is the single density-matrix
+  construction path. Extracts the occupied natural orbitals
+  first, so the outer product is O(k * n_basis^2) instead of
+  the naive O(n_basis^3). Now used by <code>get_density_matrix_block</code>
+  (so every DIIS-side caller benefits), the ODA polytope-vertex
+  cache, <code>density_overlap</code>, the level-shift block, and
+  <code>interpolate_density</code>.</li>
+<li>New <code>tr_of_product_</code> computes <code>tr(A * B)</code> in O(n_basis^2)
+  via <code>(A * B.transpose()).sum()</code> instead of the O(n_basis^3)
+  matmul-then-trace form. Replaces every <code>(A * B).trace()</code>
+  call in the file: ADIIS linear + quadratic, EDIIS quadratic,
+  <code>density_overlap</code>, and the ODA gradient / Hessian
+  <code>trace_diff</code>.</li>
+<li><code>adiis_quadratic_term</code> and <code>ediis_quadratic_term</code> now
+  pre-cache the block densities so the doubly-nested history
+  loop no longer re-materialises the same density
+  <code>nhist</code> times.</li>
+<li><code>optimal_damping_step</code> pre-caches each axis-vertex density
+  once via <code>materialise_density</code>; the trace-diff loop then
+  does one O(n_basis^2) elementwise trace per call rather than
+  an O(n_basis^3) matmul that started from raw <code>(C, n)</code>.
+  Total polytope-setup cost drops from <code>O(npars^2 * n_basis^3)</code>
+  to <code>O(npars * k * n_basis^2 + npars^2 * n_basis^2)</code> -- a
+  ~20x-30x speed-up already at <code>npars = 28</code> and increasing
+  with basis size, which unlocks useful ODA behaviour on
+  heavy-atom / large-basis systems where the older
+  implementation appeared to hang after "Roothaan step in
+  dimension N".</li>
+</ul>
+</li>
+<li>Cache DIIS / ADIIS / EDIIS primitives across SCF iterations. Two
+  mutable caches keyed on each history entry's stable iteration
+  index:<ul>
+<li><code>diis_commutator_cache_</code> holds the AO-basis commutator
+  <code>FP - PF</code> per entry per block. Built via the rank-k route
+  <code>FP = F * (C_occ * diag(n_occ) * C_occ^dagger)</code> in
+  O(k * n_basis^2), with <code>PF = (FP)^dagger</code> skipping the
+  second full matmul entirely. Dot products of AO-basis
+  commutators are unitary-invariant, so the same cache backs
+  both <code>diis_error_matrix_element</code> (no projection) and the
+  per-iteration <code>diis_residual</code> used by <code>converged()</code>.</li>
+<li><code>trace_DF_cache_</code> holds sum-over-blocks <code>tr(D_a * F_b)</code>
+  for every entry pair. Every ADIIS / EDIIS linear or
+  quadratic entry is one of at most four such primitives, so
+  the whole extrapolation-matrix build reduces to map lookups
+  once the primitives are populated.</li>
+<li><code>diis_matrix_cache_</code> holds the final DIIS error-matrix
+  element <code>B(i, j) = -Re(tr(X_i * X_j))</code> summed over blocks,
+  keyed by the sorted pair of iteration indices. Once cached,
+  each subsequent <code>B(i, j)</code> access is one map lookup with no
+  per-block work at all -- the doubly-nested DIIS matrix loop
+  only ever visits the row / column of the newest entry.</li>
+<li><code>density_diff_cache_</code> holds the sum-over-blocks Frobenius
+  distance <code>||D_i - D_j||</code> from <code>density_matrix_difference</code>,
+  keyed the same way so the <code>cleanup()</code> sweep runs at
+  steady-state cost.</li>
+<li>Caches are cleared by <code>initialize_with_*</code> and
+  <code>reset_history()</code>. Stale entries otherwise linger, which
+  is cheap: one <code>Tbase</code> per scalar cache and O(n_basis^2)
+  per commutator block.
+Per-iteration cost of the DIIS matrix build drops from
+O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
+(only the new entry's row / column populates).</li>
+</ul>
+</li>
 <li>ODA trust-region refinement: after each <code>optimal_damping_step</code>
   accepts a trial candidate, re-anchor the polytope quadratic
   model at the accepted iterate using the gradient observed there
@@ -1422,6 +1513,24 @@
 <li>Removed the deprecated <code>run_optimal_damping()</code> alias on the
   Armadillo compatibility shim.</li>
 </ul>
+<h4 id="bug-fixes">Bug Fixes</h4>
+<ul>
+<li>Corrected the ADIIS linear-term docstring: the loop actually
+  computes <code>2 * &lt;D_i - D_0 | F_0&gt;</code> (the standard ADIIS model of
+  Hu &amp; Yang, JCP 132, 054109), not <code>2 * &lt;D_i - D_0 | F_i - F_0&gt;</code>
+  as the old comment claimed. Computation itself is unchanged.</li>
+</ul>
+<h4 id="misc">Misc.</h4>
+<ul>
+<li>Bare <code>double</code> literals in <code>scfsolver.hpp</code> arithmetic sites
+  (0.0, 1.0, 2.0, 10.0, 100.0, -1.0; 45 occurrences) wrapped in
+  <code>Tbase(N)</code>, so <code>float</code> and <code>__float128</code> instantiations no
+  longer silently promote through <code>double</code>. Bare 0.5 sites
+  rewritten as <code>Tbase(1)/Tbase(2)</code> (7 occurrences), and
+  scientific-notation / bare decimal defaults such as
+  <code>1e-4</code> / <code>0.02</code> wrapped in <code>Tbase(...)</code> (13 sites) for the
+  same reason.</li>
+</ul>
 <h2 id="v040-2026-07-20">v0.4.0 / 2026-07-20</h2>
 <h4 id="breaking-changes_1">Breaking Changes</h4>
 <ul>
@@ -1459,7 +1568,7 @@
   batched Fock builders automatically and forward <code>methods</code> through
   <code>kernel(methods=...)</code>.</li>
 </ul>
-<h4 id="misc">Misc.</h4>
+<h4 id="misc_1">Misc.</h4>
 <ul>
 <li>Armadillo is no longer a dependency of the header-only library. <code>atomtest</code>
   and the compat shim still require Eigen 3.4+; Armadillo is only pulled in
@@ -1483,7 +1592,7 @@
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/35">#35</a> Explicitly symmetrize matices
   for DIIS error calculation to avoid numerical issues.</li>
 </ul>
-<h4 id="bug-fixes">Bug Fixes</h4>
+<h4 id="bug-fixes_1">Bug Fixes</h4>
 <ul>
 <li>Fix four correctness bugs in SCF solver and CG optimizer</li>
 <li>get_energy: bounds check used &gt; instead of &gt;=, allowing out-of-bounds access when
@@ -1495,7 +1604,7 @@
 <li>CG Polak-Ribière: divided by dot(g_prev, g_prev) without guarding against a zero previous gradient,
     propagating NaN into the search direction. Fall back to steepest descent in that case.</li>
 </ul>
-<h4 id="misc_1">Misc.</h4>
+<h4 id="misc_2">Misc.</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/30">#30</a> <code>max(idx)</code> has been deprecated
   in Armadillo in favor of <code>index_max()</code> so switching to the new syntax.</li>
@@ -1514,14 +1623,14 @@
 <li>Increase <code>pure_ediis_factor</code></li>
 <li>Implement callback functionality</li>
 </ul>
-<h4 id="bug-fixes_1">Bug Fixes</h4>
+<h4 id="bug-fixes_2">Bug Fixes</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/27">#27</a> fix a <code>Col::subvec()</code> error
    with minimal basis sets.</li>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/27">#27</a> fix UHF with frozen
    occupations by disabling ODA.</li>
 </ul>
-<h4 id="misc_2">Misc.</h4>
+<h4 id="misc_3">Misc.</h4>
 <ul>
 <li>Added user guide to readme</li>
 <li>Deploy docs site</li>

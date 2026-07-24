@@ -26,9 +26,12 @@
 ## d
 
 * **doc** ([**OpenOrbitalOptimizer::SCFSolver::OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md))
+* **density\_diff\_cache\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **density\_restart\_factor\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **diis\_commutator\_cache\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **diis\_diagonal\_damping\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **diis\_epsilon\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **diis\_matrix\_cache\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **diis\_restart\_factor\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **diis\_threshold\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **diis** ([**OpenOrbitalOptimizer::SCFSolver::AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md))
@@ -145,6 +148,7 @@
 ## t
 
 * **type** ([**OpenOrbitalOptimizer::SCFSolver::OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md))
+* **trace\_DF\_cache\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 
 
 ## v

@@ -67,7 +67,7 @@ _SCF solver class._
 |  void | [**callback\_function**](#function-callback_function) (std::function&lt; void(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_function=nullptr) <br> |
 |  [**DiagonalizedFockMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-diagonalizedfockmatrix)&lt; Torb, Tbase &gt; | [**compute\_orbitals**](#function-compute_orbitals) (const FockMatrix&lt; Torb &gt; & fock) const<br>_Computes orbitals and orbital energies by diagonalizing the Fock matrix._  |
 |  bool | [**converged**](#function-converged) () const<br>_Check if we are converged._  |
-|  Tbase | [**density\_matrix\_difference**](#function-density_matrix_difference) (size\_t ihist, size\_t jhist) <br>_Density matrix difference norm._  |
+|  Tbase | [**density\_matrix\_difference**](#function-density_matrix_difference) (size\_t ihist, size\_t jhist) const<br>_Density matrix difference norm._  |
 |  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; | [**determine\_number\_of\_particles\_by\_aufbau**](#function-determine_number_of_particles_by_aufbau) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determine number of particles in each block._  |
 |  void | [**fixed\_number\_of\_particles\_per\_block**](#function-fixed_number_of_particles_per_block) (const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles\_per\_block) <br>_Fix the number of occupied orbitals per block._  |
 |  Tbase | [**get\_energy**](#function-get_energy) (size\_t ihist=0) const<br>_Get the energy for the n:th entry._  |
@@ -270,7 +270,7 @@ _Density matrix difference norm._
 inline Tbase OpenOrbitalOptimizer::SCFSolver::density_matrix_difference (
     size_t ihist,
     size_t jhist
-) 
+) const
 ```
 
 
