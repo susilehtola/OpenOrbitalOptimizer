@@ -1344,7 +1344,7 @@ namespace OpenOrbitalOptimizer {
       return std::make_pair(lam, model_value(lam));
     }
 
-    bool optimal_damping_step() {
+    bool optimal_damping_step(bool force_full = false) {
       auto particles_left = [](Tbase n) {
         return n >= 10*std::numeric_limits<Tbase>::epsilon();
       };
@@ -1509,6 +1509,45 @@ namespace OpenOrbitalOptimizer {
         }
       }
 
+      // Skeleton-set attempts. When the full enumeration would yield
+      // more skeletons than there are particle types (i.e. at least
+      // one particle has a degenerate group whose integer occupation
+      // patterns produce multiple vertices), first try a "smudged"
+      // pass where each particle's skeleton set collapses to its
+      // arithmetic mean: one skeleton per particle, one lambda per
+      // particle. That reduces npars from the enumerated total down
+      // to n_particle_types, cutting the vertex-evaluation cost from
+      // the pathological "high-symmetry guess" case (28 dimensions
+      // in the trace that motivated this) to a handful. Trust-region
+      // refits are only enabled on the fallback full-skeleton pass;
+      // the collapsed pass is a coarse first-approximation escape.
+      const size_t n_particle_types = number_of_blocks_per_particle_type_.size();
+      size_t full_npars = 0;
+      for(auto & trial: trial_occupations_per_particle)
+        full_npars += trial.size();
+      std::vector<std::vector<std::vector<std::vector<Vector<Tbase>>>>> attempts;
+      if(!force_full && full_npars > n_particle_types) {
+        auto collapsed = trial_occupations_per_particle;
+        for(auto & particle : collapsed) {
+          if(particle.size() < 2) continue;
+          auto avg = particle[0];
+          for(size_t s = 1; s < particle.size(); s++)
+            for(size_t b = 0; b < avg.size(); b++)
+              avg[b] += particle[s][b];
+          for(size_t b = 0; b < avg.size(); b++)
+            avg[b] /= Tbase(particle.size());
+          particle = { std::move(avg) };
+        }
+        attempts.push_back(std::move(collapsed));
+      }
+      attempts.push_back(std::move(trial_occupations_per_particle));
+
+      bool overall_succ = false;
+      for(size_t iattempt = 0; iattempt < attempts.size() && !overall_succ; iattempt++) {
+        trial_occupations_per_particle = std::move(attempts[iattempt]);
+        const bool refits_enabled = (iattempt == attempts.size() - 1);
+        if(iattempt > 0)
+          log_(5, "Collapsed polytope did not descend; retrying with full skeleton set.\n");
       size_t npars = 0;
       for(auto & trial: trial_occupations_per_particle)
         npars += trial.size();
@@ -1516,10 +1555,13 @@ namespace OpenOrbitalOptimizer {
       // can size its post-ODA orbital-rotation burst when the user has not overridden
       // orbital_rotation_steps_after_oda_.
       last_polytope_dimension_ = npars;
-      log_(5, "%i parameters in optimal damping\n", (int) npars);
+      log_(5, "%i parameters in optimal damping (attempt %s)\n", (int) npars,
+           attempts.size() > 1
+             ? (iattempt == 0 ? "collapsed" : "full")
+             : "full");
       log_flush_();
       if(npars==0)
-        return false;
+        continue;
 
       // Build mixed density from a parameter vector lambda. Per
       // particle type, the lambda subvector has one entry per skeleton;
@@ -1874,7 +1916,7 @@ namespace OpenOrbitalOptimizer {
       //       cannot influence the outer SCF stopping decision);
       //   (c) the refit fails to descend;
       //   (d) max_oda_refits_ iterations have been taken.
-      if(succ && max_oda_refits_ > 0) {
+      if(succ && refits_enabled && max_oda_refits_ > 0) {
         // Anchor for the "worth refining" test: use the improvement
         // achieved by the accepted initial trial-loop step. Refits
         // that squeeze at most one-tenth of the convergence threshold
@@ -1949,7 +1991,10 @@ namespace OpenOrbitalOptimizer {
         }
       }
 
-      if(succ) {
+      overall_succ = succ;
+      }  // end for(iattempt)
+
+      if(overall_succ) {
         // ODA has globally rearranged the orbital basis (and possibly
         // the occupation pattern); the recorded PR+ CG state is no
         // longer tied to the current iterate. The lazy L-BFGS state
@@ -1966,7 +2011,7 @@ namespace OpenOrbitalOptimizer {
       // Update the active-rotation count seen at the new iterate so the
       // outer state machine can size its orbital-rotation burst from it.
       last_active_rotation_count_ = compute_active_rotation_count();
-      return succ;
+      return overall_succ;
     }
 
     void cleanup() {
@@ -3700,6 +3745,24 @@ namespace OpenOrbitalOptimizer {
         log_(1, "Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", (int) iteration, (int) number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
         log_(5, "History size %i\n",(int) orbital_history_.size());
         if(converged()) {
+          // Every iteration where the collapsed skeleton set has been
+          // driving descent, we've only been optimising over a
+          // reduced-dimensionality polytope. Run one full-skeleton
+          // ODA step to confirm the reduced fixed point is also
+          // stationary in the full skeleton set. The check strictly
+          // rejects non-descent steps, so it self-terminates -- each
+          // acceptance is a strict energy drop -- and needs no
+          // book-keeping across iterations.
+          if(allowed.oda && optimal_damping_step(/*force_full=*/true)) {
+            log_(5, "Full-skeleton ODA found a further descent after convergence; "
+                    "resuming SCF.\n");
+            // Same post-ODA transition preference the state machine
+            // uses after a normal ODA step: relax at the new
+            // occupations before revisiting DIIS.
+            state = pick_next({StepKind::OrbitalRotation, StepKind::DIIS},
+                              StepKind::ODA);
+            continue;
+          }
           log_(1, "Converged to energy % .10f!\n", get_energy());
 
           // Print out info

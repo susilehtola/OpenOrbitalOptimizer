@@ -223,7 +223,7 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a68b3c4709abee1184112996f43f098f2" kind="function"><name>attempt_extrapolation</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6535a0dc7766bcbfac83ede96582d43e" kind="function"><name>attempt_fock</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab3423b195fefca0386d767f8e3e2d467" kind="function"><name>solve_polytope_qp_</name></member>
-    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa8f17504ffd6e60ce91eb024b9aec425" kind="function"><name>optimal_damping_step</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1df31b0ff478d0cbcb77c9144690f1c9" kind="function"><name>optimal_damping_step</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa3f4c8f4a100e667f5639372749c4c86" kind="function"><name>cleanup</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ad68ab86dfd297a6d07e11af5cf14bc48" kind="function"><name>degrees_of_freedom</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ac7bef9fa35e2f53dc0de26f50a4eb196" kind="function"><name>orbital_gradient_vector</name></member>
