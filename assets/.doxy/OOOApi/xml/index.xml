@@ -28,6 +28,8 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a8fdd13c1006ddf30cebec187de6b9af9" kind="function"><name>~LogStream</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a14a178863c3d3c4fb2a88a09028bd0be" kind="function"><name>operator&lt;&lt;</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a6b251585d9cda9a5fbdda7d03e25b81c" kind="function"><name>operator&lt;&lt;</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a79359ab8692e6ebce3769d03152244ad" kind="function"><name>enabled</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a0a54b24a79c2f257012bd187eef20111" kind="function"><name>stream</name></member>
   </compound>
   <compound refid="structEigen_1_1NumTraits_3_01__Float128_01_4" kind="struct"><name>Eigen::NumTraits&lt; _Float128 &gt;</name>
     <member refid="structEigen_1_1NumTraits_3_01__Float128_01_4_1a094f9b4c368e4e2d269d1f61d7a4049d" kind="enum"><name>@215310336050140100232061112275106223032043240162</name></member>

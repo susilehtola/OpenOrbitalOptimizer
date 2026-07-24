@@ -297,6 +297,8 @@ namespace OpenOrbitalOptimizer {
         if(enabled_) oss_ << manip;
         return *this;
       }
+      bool enabled() const { return enabled_; }
+      std::ostream & stream() { return oss_; }
     private:
       const SCFSolver * solver_;
       int level_;
@@ -3354,6 +3356,15 @@ namespace OpenOrbitalOptimizer {
     }
 
     void run() {
+      // Dump the current settings once at the top of run() so a
+      // verbosity 10 trace records exactly what the solver was
+      // configured with. Route through log_stream_ so the message
+      // ends up on the caller's log sink instead of unconditionally
+      // on stdout, and skip the (non-trivial) catalog walk when the
+      // gate is closed.
+      if(auto ls = log_stream_(10); ls.enabled())
+        print_settings(ls.stream());
+
       AllowedMethods allowed = parse_method_string(methods_);
       if(frozen_occupations_)
         allowed.oda = false;  // occupations are pinned; ODA cannot move them

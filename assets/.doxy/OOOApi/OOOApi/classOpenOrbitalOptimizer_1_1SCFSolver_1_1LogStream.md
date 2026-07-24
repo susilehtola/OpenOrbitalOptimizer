@@ -54,9 +54,11 @@
 |   | [**LogStream**](#function-logstream-13) (const [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-scfsolver) \* s, int level) <br> |
 |   | [**LogStream**](#function-logstream-23) (const LogStream &) = delete<br> |
 |   | [**LogStream**](#function-logstream-33) (LogStream && o) noexcept<br> |
+|  bool | [**enabled**](#function-enabled) () const<br> |
 |  LogStream & | [**operator&lt;&lt;**](#function-operator) (const T & v) <br> |
 |  LogStream & | [**operator&lt;&lt;**](#function-operator_1) (std::ostream &(\*)(std::ostream &) manip) <br> |
 |  LogStream & | [**operator=**](#function-operator_2) (const LogStream &) = delete<br> |
+|  std::ostream & | [**stream**](#function-stream) () <br> |
 |   | [**~LogStream**](#function-logstream) () <br> |
 
 
@@ -144,6 +146,23 @@ inline LogStream::LogStream (
 
 
 
+### function enabled 
+
+```C++
+inline bool LogStream::enabled () const
+```
+
+
+
+True iff the log gate opened and writes will be flushed. Use to short-circuit expensive formatting when the sink would discard it anyway. 
+
+
+        
+
+<hr>
+
+
+
 ### function operator&lt;&lt; 
 
 ```C++
@@ -185,6 +204,23 @@ LogStream & LogStream::operator= (
 
 
 
+
+<hr>
+
+
+
+### function stream 
+
+```C++
+inline std::ostream & LogStream::stream () 
+```
+
+
+
+Direct handle on the underlying std::ostream buffer, for helpers that write via a std::ostream& argument (e.g. print\_settings). Writes when the gate is closed still land in oss\_ but are dropped when the LogStream destructs. 
+
+
+        
 
 <hr>
 

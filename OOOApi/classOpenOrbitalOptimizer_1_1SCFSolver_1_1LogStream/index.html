@@ -1030,6 +1030,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-enabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function enabled
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-operator" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1056,6 +1067,17 @@
     <span class="md-ellipsis">
       
         function operator=
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-stream" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function stream
       
     </span>
   </a>
@@ -1120,6 +1142,10 @@
 <td style="text-align: left;"><a href="#function-logstream-33"><strong>LogStream</strong></a> (LogStream &amp;&amp; o) noexcept<br></td>
 </tr>
 <tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-enabled"><strong>enabled</strong></a> () const<br></td>
+</tr>
+<tr>
 <td style="text-align: right;">LogStream &amp;</td>
 <td style="text-align: left;"><a href="#function-operator"><strong>operator&lt;&lt;</strong></a> (const T &amp; v) <br></td>
 </tr>
@@ -1130,6 +1156,10 @@
 <tr>
 <td style="text-align: right;">LogStream &amp;</td>
 <td style="text-align: left;"><a href="#function-operator_2"><strong>operator=</strong></a> (const LogStream &amp;) = delete<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">std::ostream &amp;</td>
+<td style="text-align: left;"><a href="#function-stream"><strong>stream</strong></a> () <br></td>
 </tr>
 <tr>
 <td style="text-align: right;"></td>
@@ -1162,6 +1192,12 @@
 </code></pre>
 <hr>
 
+<h3 id="function-enabled">function enabled</h3>
+<pre><code class="language-C++">inline bool LogStream::enabled () const
+</code></pre>
+<p>True iff the log gate opened and writes will be flushed. Use to short-circuit expensive formatting when the sink would discard it anyway. </p>
+<hr>
+
 <h3 id="function-operator">function operator&lt;&lt;</h3>
 <pre><code class="language-C++">template&lt;class T&gt;
 inline LogStream &amp; LogStream::operator&lt;&lt; (
@@ -1182,6 +1218,12 @@ inline LogStream &amp; LogStream::operator&lt;&lt; (
     const LogStream &amp;
 ) = delete
 </code></pre>
+<hr>
+
+<h3 id="function-stream">function stream</h3>
+<pre><code class="language-C++">inline std::ostream &amp; LogStream::stream () 
+</code></pre>
+<p>Direct handle on the underlying std::ostream buffer, for helpers that write via a std::ostream&amp; argument (e.g. print_settings). Writes when the gate is closed still land in oss_ but are dropped when the LogStream destructs. </p>
 <hr>
 
 <h3 id="function-logstream">function ~LogStream</h3>
