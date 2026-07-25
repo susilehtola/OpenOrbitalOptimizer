@@ -1041,6 +1041,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#variable-lciis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        variable lciis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#variable-oda" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1138,6 +1149,10 @@
 </tr>
 <tr>
 <td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#variable-lciis"><strong>lciis</strong></a>   = <code>false</code><br></td>
+</tr>
+<tr>
+<td style="text-align: right;">bool</td>
 <td style="text-align: left;"><a href="#variable-oda"><strong>oda</strong></a>   = <code>false</code><br></td>
 </tr>
 </tbody>
@@ -1177,6 +1192,12 @@
 <h3 id="variable-lbfgs">variable lbfgs</h3>
 <pre><code class="language-C++">bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::AllowedMethods::lbfgs;
 </code></pre>
+<hr>
+
+<h3 id="variable-lciis">variable lciis</h3>
+<pre><code class="language-C++">bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::AllowedMethods::lciis;
+</code></pre>
+<p>LCIIS is a variant of the extrapolation step, not a step of its own: the "LCIIS" token sets <code>diis</code> as well, so every existing <code>allowed.diis</code> gate keeps working and this flag only selects which coefficients the extrapolation uses. </p>
 <hr>
 
 <h3 id="variable-oda">variable oda</h3>

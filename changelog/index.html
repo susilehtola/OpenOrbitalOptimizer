@@ -975,6 +975,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#new-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#enhancements" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -997,7 +1019,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#breaking-changes" class="md-nav__link">
+  <a href="#breaking-changes_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Breaking Changes
@@ -1008,7 +1030,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#new-features" class="md-nav__link">
+  <a href="#new-features_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1069,7 +1091,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#breaking-changes_1" class="md-nav__link">
+  <a href="#breaking-changes_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Breaking Changes
@@ -1080,7 +1102,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#new-features_1" class="md-nav__link">
+  <a href="#new-features_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1130,7 +1152,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#breaking-changes_2" class="md-nav__link">
+  <a href="#breaking-changes_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         Breaking Changes
@@ -1141,7 +1163,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#new-features_2" class="md-nav__link">
+  <a href="#new-features_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1202,7 +1224,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#breaking-changes_3" class="md-nav__link">
+  <a href="#breaking-changes_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         Breaking Changes
@@ -1213,7 +1235,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#new-features_3" class="md-nav__link">
+  <a href="#new-features_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1274,7 +1296,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new-features_4" class="md-nav__link">
+  <a href="#new-features_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         New Features
@@ -1322,6 +1344,60 @@
 -->
 
 <h2 id="v050-unreleased">v0.5.0 / (Unreleased)</h2>
+<h4 id="new-features">New Features</h4>
+<ul>
+<li>New <code>"LCIIS"</code> method token implementing the least-squares
+  commutator in the iterative subspace of Li &amp; Yaron, J. Chem.
+  Theory Comput. <strong>12</strong>, 5322 (2016),
+  doi:<a href="https://doi.org/10.1021/acs.jctc.6b00666">10.1021/acs.jctc.6b00666</a>.
+  Where Pulay's CDIIS minimises <code>|| sum_i c_i [F_i, D_i] ||_F^2</code>,
+  LCIIS minimises the commutator between the <em>predicted</em> Fock matrix
+  and the <em>predicted</em> density,
+  <code>|| [sum_i c_i F_i, sum_j c_j D_j] ||_F^2</code>, which is genuinely
+  quartic in <code>c</code> and therefore needs the full <code>M x M</code> grid of
+  mixed commutators <code>[F_i, D_j]</code> rather than just the diagonal.
+  The quartic is minimised under <code>sum_i c_i = 1</code> by Newton's
+  method on the Lagrangian, seeded from the CDIIS coefficients.<ul>
+<li>LCIIS is a variant of the extrapolation step, not a step of
+  its own: the token implies <code>"DIIS"</code>, so it slots into the
+  existing state machine and the A/EDIIS bracketing continues to
+  apply. Use it as <code>"LCIIS"</code>, <code>"LCIIS + ODA + CG"</code>, and so on.
+  Because the two share the one extrapolation step, asking for
+  both (<code>"DIIS + LCIIS"</code>) throws rather than silently
+  discarding the DIIS request.</li>
+<li>Any failure of the quartic solve -- singular KKT matrix,
+  non-finite iterate, no convergence within the iteration cap, a
+  negative target function -- falls back to the CDIIS
+  coefficients rather than throwing. LCIIS is a convergence
+  accelerator; a bad quartic solve is a reason to take the
+  ordinary DIIS step, not to abort the SCF.</li>
+<li>Three new settings: <code>lciis_maximum_history</code> (default 6),
+  <code>lciis_maximum_iterations</code> (50) and
+  <code>lciis_convergence_threshold</code> (1e-10). The history cap is
+  separate from <code>maximum_history_length</code> because LCIIS holds
+  the whole <code>M x M</code> commutator grid at once, so its memory
+  grows as <code>M^2 * n_basis^2</code> and its commutator build as
+  <code>M^2</code> rather than DIIS's <code>M</code>.</li>
+<li>On the oxygen atom with PBE/cc-pVDZ, LCIIS reaches the same
+  energies as DIIS in fewer iterations (7 vs 9 at M=1, 8 vs 9 at
+  M=3).</li>
+</ul>
+</li>
+<li><code>atomtest</code> gained a <code>--methods</code> flag that overrides the
+  driver's default method mix, so any token combination can be
+  exercised from the command line.</li>
+</ul>
+<h4 id="breaking-changes">Breaking Changes</h4>
+<ul>
+<li>Requesting two methods that occupy the same slot now throws
+  instead of silently resolving to one of them. This affects
+  <code>"CG + LBFGS"</code>, which previously ran L-BFGS and quietly ignored
+  the <code>CG</code> request -- the two are alternative implementations of
+  the single orbital-rotation step, not steps that can both run.
+  The new <code>"DIIS + LCIIS"</code> combination is rejected for the same
+  reason. Method strings naming only one of each pair are
+  unaffected.</li>
+</ul>
 <h4 id="enhancements">Enhancements</h4>
 <ul>
 <li>ODA now tries a "collapsed" polytope first: when the full
@@ -1473,7 +1549,7 @@ O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
   <code>if(verbosity_ &gt;= N)</code> gates; unconditional diagnostic warnings
   and the print_history dump use level 0.</li>
 </ul>
-<h4 id="breaking-changes">Breaking Changes</h4>
+<h4 id="breaking-changes_1">Breaking Changes</h4>
 <ul>
 <li>The per-option typed getters and setters on <code>SCFSolver</code> have been
   removed. Use the string-keyed façade instead:
@@ -1491,7 +1567,7 @@ O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
   <code>solver.settings.&lt;key&gt; = value</code>. <code>SCFSolver</code> and <code>OptionInfo</code> are
   now importable from the <code>openorbital</code> package top level.</li>
 </ul>
-<h4 id="new-features">New Features</h4>
+<h4 id="new-features_1">New Features</h4>
 <ul>
 <li>SCF convergence threshold is now clamped to an arithmetic-precision
   floor: the effective threshold is
@@ -1636,14 +1712,14 @@ O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
   same reason.</li>
 </ul>
 <h2 id="v040-2026-07-20">v0.4.0 / 2026-07-20</h2>
-<h4 id="breaking-changes_1">Breaking Changes</h4>
+<h4 id="breaking-changes_2">Breaking Changes</h4>
 <ul>
 <li>The linear-algebra backend switched from Armadillo to Eigen 3.4. The public
   API keeps the <code>SCFSolver&lt;Torb, Tbase&gt;</code> template signature via a compat shim,
   but callers that reached into Armadillo types directly must migrate to the
   new <code>OpenOrbitalOptimizer::Matrix&lt;T&gt;</code> / <code>Vector&lt;T&gt;</code> / <code>IndexVector</code> aliases.</li>
 </ul>
-<h4 id="new-features_1">New Features</h4>
+<h4 id="new-features_2">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/38">#38</a> Port the
   library and <code>atomtest</code> from Armadillo to Eigen 3, unlocking arbitrary-precision
@@ -1680,8 +1756,8 @@ O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
   explicitly opts in.</li>
 </ul>
 <h2 id="v030-2026-05-21">v0.3.0 / 2026-05-21</h2>
-<h4 id="breaking-changes_2">Breaking Changes</h4>
-<h4 id="new-features_2">New Features</h4>
+<h4 id="breaking-changes_3">Breaking Changes</h4>
+<h4 id="new-features_3">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/34">#34</a> Add Python interface!
   This covers the most common <code>SCFSolver&lt;double, double&gt;</code> case; others added upon request.</li>
@@ -1716,8 +1792,8 @@ O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
 <li>Added a <code>CLAUDE.md</code> file to aid agents.</li>
 </ul>
 <h2 id="v020-2025-08-12">v0.2.0 / 2025-08-12</h2>
-<h4 id="breaking-changes_3">Breaking Changes</h4>
-<h4 id="new-features_3">New Features</h4>
+<h4 id="breaking-changes_4">Breaking Changes</h4>
+<h4 id="new-features_4">New Features</h4>
 <h4 id="enhancements_4">Enhancements</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/26">#26</a> add callback so caller can
@@ -1741,7 +1817,7 @@ O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
 <li>Fix GCC 15 warnings</li>
 </ul>
 <h2 id="v010-2025-03-30">v0.1.0 / 2025-03-30</h2>
-<h4 id="new-features_4">New Features</h4>
+<h4 id="new-features_5">New Features</h4>
 <ul>
 <li><a href="https://github.com/SusiLehtola/OpenOrbitalOptimizer/pull/20">#20</a> Intf -- allow OOO and
    IntegratorXX to work on Windows.</li>

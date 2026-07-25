@@ -38,6 +38,7 @@
 |  bool | [**cg**](#variable-cg)   = `false`<br> |
 |  bool | [**diis**](#variable-diis)   = `false`<br> |
 |  bool | [**lbfgs**](#variable-lbfgs)   = `false`<br> |
+|  bool | [**lciis**](#variable-lciis)   = `false`<br> |
 |  bool | [**oda**](#variable-oda)   = `false`<br> |
 
 
@@ -135,6 +136,23 @@ bool OpenOrbitalOptimizer::SCFSolver< Torb, Tbase >::AllowedMethods::lbfgs;
 
 
 
+
+<hr>
+
+
+
+### variable lciis 
+
+```C++
+bool OpenOrbitalOptimizer::SCFSolver< Torb, Tbase >::AllowedMethods::lciis;
+```
+
+
+
+LCIIS is a variant of the extrapolation step, not a step of its own: the "LCIIS" token sets `diis` as well, so every existing `allowed.diis` gate keeps working and this flag only selects which coefficients the extrapolation uses. 
+
+
+        
 
 <hr>
 

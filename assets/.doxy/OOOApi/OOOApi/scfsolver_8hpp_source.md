@@ -143,6 +143,9 @@ namespace OpenOrbitalOptimizer {
     Tbase density_restart_factor_ = Tbase(1e-4);
     int maximum_history_length_ = 10;
     int oda_restart_steps_ = 5;
+    int lciis_maximum_history_ = 6;
+    int lciis_maximum_iterations_ = 50;
+    Tbase lciis_convergence_threshold_ = Tbase(1e-10);
     Tbase convergence_threshold_ = Tbase(1e-7);
     Tbase noise_safety_factor_ = 10;
     Tbase noise_floor_ = 0;
@@ -181,6 +184,7 @@ namespace OpenOrbitalOptimizer {
 
     struct AllowedMethods {
       bool diis = false, oda = false, cg = false, lbfgs = false;
+      bool lciis = false;
       bool orbital_rotation() const { return cg || lbfgs; }
       bool any() const { return diis || oda || orbital_rotation(); }
     };
@@ -192,20 +196,48 @@ namespace OpenOrbitalOptimizer {
                      [](unsigned char c){ return std::tolower(c); });
       std::istringstream iss(s);
       std::string token;
+      // Tracked separately from allowed.diis: the LCIIS token also
+      // enables the DIIS step, so the two have to be distinguishable
+      // afterwards to catch a request for both.
+      bool diis_token = false, lciis_token = false;
       while(std::getline(iss, token, '+')) {
         while(!token.empty() && std::isspace((unsigned char)token.front()))
           token.erase(token.begin());
         while(!token.empty() && std::isspace((unsigned char)token.back()))
           token.pop_back();
         if(token.empty()) continue;
-        if(token == "diis") allowed.diis = true;
+        if(token == "diis") diis_token = true;
+        else if(token == "lciis") lciis_token = true;
         else if(token == "oda") allowed.oda = true;
         else if(token == "cg") allowed.cg = true;
         else if(token == "lbfgs") allowed.lbfgs = true;
         else throw std::logic_error("Unknown method '" + token
             + "' in methods string '" + methods
-            + "' (allowed: DIIS, ODA, CG, LBFGS)");
+            + "' (allowed: DIIS, LCIIS, ODA, CG, LBFGS)");
       }
+      // LCIIS is not a step of its own: it substitutes its quartic
+      // solve for Pulay's CDIIS solve inside the one extrapolation
+      // step. Asking for both would therefore silently discard the
+      // DIIS request, so refuse it instead.
+      if(diis_token && lciis_token)
+        throw std::logic_error("Both DIIS and LCIIS requested in methods"
+            " string '" + methods + "': LCIIS replaces the CDIIS"
+            " coefficients within the same extrapolation step rather than"
+            " adding a step, so the combination is ambiguous. Ask for"
+            " exactly one of them.");
+      allowed.lciis = lciis_token;
+      allowed.diis = diis_token || lciis_token;
+
+      // Same story one level down: CG and L-BFGS are two ways to take
+      // the one orbital-rotation step, and the step picks a single
+      // one, so listing both would silently drop whichever lost.
+      if(allowed.cg && allowed.lbfgs)
+        throw std::logic_error("Both CG and LBFGS requested in methods"
+            " string '" + methods + "': they are alternative"
+            " implementations of the one orbital-rotation step, not"
+            " steps that can both run, so the combination is ambiguous."
+            " Ask for exactly one of them.");
+
       if(!allowed.any())
         throw std::logic_error("No methods enabled in '" + methods + "'");
       return allowed;
@@ -505,6 +537,27 @@ namespace OpenOrbitalOptimizer {
       return a <= b ? std::make_pair(a, b) : std::make_pair(b, a);
     }
 
+    Matrix<Torb> commutator_block_(size_t ihist_fock, size_t ihist_density,
+                                   size_t iblock) const {
+      auto F = get_fock_matrix_block(ihist_fock, iblock);
+      Matrix<Torb> F_sym = (Tbase(1)/Tbase(2)) * (F + F.adjoint());
+
+      Matrix<Torb> C_active;
+      Vector<Tbase> n_active;
+      active_natural_orbitals_(get_orbital_block(ihist_density, iblock),
+                               get_orbital_occupation_block(ihist_density, iblock),
+                               maximum_occupation_(iblock),
+                               C_active, n_active);
+      if(n_active.size() == 0)
+        return Matrix<Torb>::Zero(F_sym.rows(), F_sym.cols());
+
+      Matrix<Torb> FC = F_sym * C_active;                  // O(N^2 * k)
+      Matrix<Torb> FP = FC * n_active.asDiagonal()
+                     * C_active.adjoint();                 // O(N^2 * k)
+      // PF = (FP)^dagger since F and D are Hermitian.
+      return FP - FP.adjoint();
+    }
+
     const Matrix<Torb> &
     diis_commutator_cached_(size_t ihist, size_t iblock) const {
       const size_t idx = get_index(ihist);
@@ -513,26 +566,7 @@ namespace OpenOrbitalOptimizer {
         blocks.resize(number_of_blocks_);
       if(blocks[iblock].size() != 0)
         return blocks[iblock];
-
-      auto F = get_fock_matrix_block(ihist, iblock);
-      Matrix<Torb> F_sym = (Tbase(1)/Tbase(2)) * (F + F.adjoint());
-
-      // Extract occupied natural orbitals for the rank-k FP build.
-      Matrix<Torb> C_active;
-      Vector<Tbase> n_active;
-      active_natural_orbitals_(get_orbital_block(ihist, iblock),
-                               get_orbital_occupation_block(ihist, iblock),
-                               maximum_occupation_(iblock),
-                               C_active, n_active);
-      if(n_active.size() == 0) {
-        blocks[iblock] = Matrix<Torb>::Zero(F_sym.rows(), F_sym.cols());
-        return blocks[iblock];
-      }
-      Matrix<Torb> FC = F_sym * C_active;                  // O(N^2 * k)
-      Matrix<Torb> FP = FC * n_active.asDiagonal()
-                     * C_active.adjoint();                 // O(N^2 * k)
-      // PF = (FP)^dagger since F and P are Hermitian.
-      blocks[iblock] = FP - FP.adjoint();
+      blocks[iblock] = commutator_block_(ihist, ihist, iblock);
       return blocks[iblock];
     }
 
@@ -723,6 +757,181 @@ namespace OpenOrbitalOptimizer {
 
       return diis_weights_full;
     }
+    size_t lciis_subspace_size_() const {
+      size_t M = orbital_history_.size();
+      if(lciis_maximum_history_ > 0)
+        M = std::min(M, (size_t) lciis_maximum_history_);
+      return M;
+    }
+
+    std::vector<Tbase> lciis_tensor_(size_t M) const {
+      // Mixed commutators A[i*M + j] = [F_i, D_j], per block. This is
+      // the memory high-water mark of LCIIS: M^2 blocks of n_basis^2,
+      // which is why lciis_maximum_history exists as a separate cap
+      // from maximum_history_length.
+      std::vector<std::vector<Matrix<Torb>>> A(M * M);
+      for(size_t i = 0; i < M; i++)
+        for(size_t j = 0; j < M; j++) {
+          auto & Aij = A[i * M + j];
+          Aij.resize(number_of_blocks_);
+          for(size_t iblock = 0; iblock < number_of_blocks_; iblock++) {
+            if(empty_block(iblock))
+              continue;
+            Aij[iblock] = commutator_block_(i, j, iblock);
+          }
+        }
+
+      // T_ijkl = tr(A_ij^dagger A_kl). The commutators are
+      // anti-Hermitian, so A^dagger = -A and the Frobenius inner
+      // product is -Re tr(A_ij A_kl) -- the same identity
+      // diis_error_matrix_element uses on the diagonal.
+      //
+      // T_ijkl = T_klij because swapping the pairs conjugates the
+      // trace and we keep only the real part, so half the pair
+      // combinations come for free.
+      const size_t M2 = M * M;
+      std::vector<Tbase> T(M2 * M2, Tbase(0));
+      for(size_t ij = 0; ij < M2; ij++)
+        for(size_t kl = ij; kl < M2; kl++) {
+          Tbase el = Tbase(0);
+          for(size_t iblock = 0; iblock < number_of_blocks_; iblock++) {
+            if(empty_block(iblock))
+              continue;
+            el -= tr_of_product_(A[ij][iblock], A[kl][iblock]);
+          }
+          T[ij * M2 + kl] = el;
+          T[kl * M2 + ij] = el;
+        }
+
+      // Symmetrise over all 24 permutations of (i,j,k,l).
+      static const int perm[24][4] = {
+        {0,1,2,3},{0,1,3,2},{0,2,1,3},{0,2,3,1},{0,3,1,2},{0,3,2,1},
+        {1,0,2,3},{1,0,3,2},{1,2,0,3},{1,2,3,0},{1,3,0,2},{1,3,2,0},
+        {2,0,1,3},{2,0,3,1},{2,1,0,3},{2,1,3,0},{2,3,0,1},{2,3,1,0},
+        {3,0,1,2},{3,0,2,1},{3,1,0,2},{3,1,2,0},{3,2,0,1},{3,2,1,0}};
+      std::vector<Tbase> S(T.size(), Tbase(0));
+      size_t idx[4];
+      for(idx[0] = 0; idx[0] < M; idx[0]++)
+        for(idx[1] = 0; idx[1] < M; idx[1]++)
+          for(idx[2] = 0; idx[2] < M; idx[2]++)
+            for(idx[3] = 0; idx[3] < M; idx[3]++) {
+              Tbase acc = Tbase(0);
+              for(const auto & p : perm)
+                acc += T[((idx[p[0]] * M + idx[p[1]]) * M
+                          + idx[p[2]]) * M + idx[p[3]]];
+              S[((idx[0] * M + idx[1]) * M + idx[2]) * M + idx[3]]
+                  = acc / Tbase(24);
+            }
+      return S;
+    }
+
+    Vector<Tbase> lciis_weights() const {
+      const Vector<Tbase> cdiis = diis_weights();
+      const size_t M = lciis_subspace_size_();
+      // With one entry the constraint fixes c entirely.
+      if(M < 2)
+        return cdiis;
+
+      const std::vector<Tbase> S = lciis_tensor_(M);
+      const size_t M2 = M * M;
+
+      // Seed from CDIIS restricted to the leading M entries,
+      // renormalised so the constraint holds exactly at the start.
+      Vector<Tbase> c = cdiis.head(M);
+      const Tbase csum = c.sum();
+      if(!(std::abs(csum) > std::numeric_limits<Tbase>::epsilon()))
+        return cdiis;
+      c /= csum;
+
+      auto quartic_value = [&](const Vector<Tbase> & x) {
+        Tbase f = Tbase(0);
+        for(size_t i = 0; i < M; i++)
+          for(size_t j = 0; j < M; j++)
+            for(size_t k = 0; k < M; k++)
+              for(size_t l = 0; l < M; l++)
+                f += S[((i * M + j) * M + k) * M + l]
+                     * x(i) * x(j) * x(k) * x(l);
+        return f;
+      };
+
+      Tbase lambda = Tbase(0);
+      Tbase f_current = quartic_value(c);
+      bool converged = false;
+
+      for(int iter = 0; iter < lciis_maximum_iterations_; iter++) {
+        // Contract S with c twice to get the Hessian, then once more
+        // for the gradient: H_ij = 12 sum_kl S_ijkl c_k c_l and
+        // g_i = (1/3) sum_j H_ij c_j, using Euler's identity for the
+        // homogeneous quartic (H c = 3 g) so the gradient costs
+        // O(M^2) rather than a third O(M^3) contraction.
+        Matrix<Tbase> H = Matrix<Tbase>::Zero(M, M);
+        for(size_t i = 0; i < M; i++)
+          for(size_t j = 0; j < M; j++) {
+            Tbase acc = Tbase(0);
+            for(size_t k = 0; k < M; k++)
+              for(size_t l = 0; l < M; l++)
+                acc += S[((i * M + j) * M + k) * M + l] * c(k) * c(l);
+            H(i, j) = Tbase(12) * acc;
+          }
+        const Vector<Tbase> g = (H * c) / Tbase(3);
+
+        // Bordered KKT system.
+        Matrix<Tbase> K = Matrix<Tbase>::Zero(M + 1, M + 1);
+        K.block(0, 0, M, M) = H;
+        K.block(0, M, M, 1) = Vector<Tbase>::Ones(M);
+        K.block(M, 0, 1, M) = Vector<Tbase>::Ones(M).transpose();
+        Vector<Tbase> rhs(M + 1);
+        rhs.head(M) = -(g + lambda * Vector<Tbase>::Ones(M));
+        rhs(M) = -(c.sum() - Tbase(1));
+
+        Eigen::ColPivHouseholderQR<Matrix<Tbase>> qr(K);
+        if(qr.rank() < (Index) (M + 1))
+          break;                       // singular KKT: keep CDIIS
+        const Vector<Tbase> step = qr.solve(rhs);
+        if(has_nan(step) || has_inf(step))
+          break;
+
+        c += step.head(M);
+        lambda += step(M);
+
+        const Tbase f_new = quartic_value(c);
+        const Tbase step_norm = step.head(M).norm();
+        log_(10, "LCIIS iteration %i: f = %e, step norm %e\n",
+             (int) iter, (double) f_new, (double) step_norm);
+        if(step_norm <= lciis_convergence_threshold_) {
+          converged = true;
+          f_current = f_new;
+          break;
+        }
+        f_current = f_new;
+      }
+
+      if(!converged) {
+        log_(5, "LCIIS did not converge in %i iterations; "
+                "falling back to CDIIS weights.\n",
+             (int) lciis_maximum_iterations_);
+        return cdiis;
+      }
+      if(has_nan(c) || has_inf(c)) {
+        log_(5, "LCIIS produced a non-finite solution; "
+                "falling back to CDIIS weights.\n");
+        return cdiis;
+      }
+      // A negative minimum is numerically impossible for a squared
+      // norm and signals that the quartic model has been corrupted.
+      if(f_current < Tbase(0)) {
+        log_(5, "LCIIS target function went negative (%e); "
+                "falling back to CDIIS weights.\n", (double) f_current);
+        return cdiis;
+      }
+
+      // Pad back to the full history length: entries beyond the LCIIS
+      // subspace get zero weight.
+      Vector<Tbase> weights = Vector<Tbase>::Zero(orbital_history_.size());
+      weights.head(M) = c;
+      return weights;
+    }
+
     Vector<Tbase> aediis_weights(const Vector<Tbase> & b, const Matrix<Tbase> & A) const {
       if(b.size()==1) {
         // Nothing to optimize
@@ -920,12 +1129,18 @@ namespace OpenOrbitalOptimizer {
     }
 
     std::tuple<Vector<Tbase>,std::string> minimal_error_sampling_algorithm_weights(Tbase aediis_coeff) const {
-      // Form DIIS and ADIIS weights
-      Vector<Tbase> diis_w(diis_weights());
-      log_stream_(10) << "DIIS weights: " << diis_w.transpose() << std::endl;
+      // Form the linear-extrapolation weights. LCIIS replaces Pulay's
+      // CDIIS coefficients with the minimiser of the commutator norm
+      // between the predicted Fock matrix and the predicted density;
+      // everything downstream (the A/EDIIS mixing, the extrapolated
+      // Fock build) is unchanged.
+      const bool use_lciis = parse_method_string(methods_).lciis;
+      Vector<Tbase> diis_w(use_lciis ? lciis_weights() : diis_weights());
+      const std::string linear_step = use_lciis ? "LCIIS" : "DIIS";
+      log_stream_(10) << linear_step << " weights: "
+                      << diis_w.transpose() << std::endl;
       if(aediis_coeff == Tbase(0)) {
-        std::string step = "DIIS";
-        return std::make_tuple(diis_w,step);
+        return std::make_tuple(diis_w, linear_step);
       }
 
       // Get various extrapolation weights
@@ -958,7 +1173,7 @@ namespace OpenOrbitalOptimizer {
       if(aediis_coeff == Tbase(1)) {
         step = weight_legend[idx];
       } else {
-        step = weight_legend[idx] + "+DIIS";
+        step = weight_legend[idx] + "+" + linear_step;
       }
 
       return std::make_tuple(weights,step);
@@ -2789,7 +3004,7 @@ namespace OpenOrbitalOptimizer {
         {"error_norm",            "string", true,
          "DIIS error norm; one of rms, fro, inf, 1, 2"},
         {"methods",               "string", true,
-         "SCF method mix consumed by run(); e.g. \"DIIS + ODA + CG\", \"DIIS\", \"ODA + CG\", \"DIIS + ODA + LBFGS\""},
+         "SCF method mix consumed by run(); e.g. \"DIIS + ODA + CG\", \"DIIS\", \"LCIIS + ODA + CG\", \"ODA + CG\", \"DIIS + ODA + LBFGS\""},
         // -- DIIS ------------------------------------------------------------
         {"diis_epsilon",          "real", true,
          "pure-DIIS blend cutoff"},
@@ -2811,6 +3026,12 @@ namespace OpenOrbitalOptimizer {
          "DIIS and L-BFGS history depth"},
         {"oda_restart_steps",      "int", true,
          "steps of no DIIS progress before switching to ODA"},
+        {"lciis_maximum_history",  "int", true,
+         "history entries LCIIS extrapolates over (0 = no separate cap)"},
+        {"lciis_maximum_iterations", "int", true,
+         "max Newton iterations in the LCIIS quartic minimisation"},
+        {"lciis_convergence_threshold", "real", true,
+         "convergence threshold on the LCIIS Newton step norm"},
         {"orbital_rotation_steps_after_oda", "int", true,
          "orbital-rotation steps after each ODA (0 = use last_active_rotation_count)"},
         {"max_oda_refits", "int", true,
@@ -2872,6 +3093,7 @@ namespace OpenOrbitalOptimizer {
 
     void set_real(const std::string & key, Tbase v) {
       if      (key == "convergence_threshold")                 convergence_threshold_ = v;
+      else if (key == "lciis_convergence_threshold")           lciis_convergence_threshold_ = v;
       else if (key == "noise_safety_factor")                   noise_safety_factor_ = v;
       else if (key == "diis_epsilon")                          diis_epsilon_ = v;
       else if (key == "diis_threshold")                        diis_threshold_ = v;
@@ -2894,6 +3116,8 @@ namespace OpenOrbitalOptimizer {
       else if (key == "maximum_iterations")               maximum_iterations_ = (size_t) v;
       else if (key == "maximum_history_length")           maximum_history_length_ = v;
       else if (key == "oda_restart_steps")                oda_restart_steps_ = v;
+      else if (key == "lciis_maximum_history")            lciis_maximum_history_ = v;
+      else if (key == "lciis_maximum_iterations")         lciis_maximum_iterations_ = v;
       else if (key == "orbital_rotation_steps_after_oda") orbital_rotation_steps_after_oda_ = (size_t) v;
       else if (key == "max_oda_refits")                   max_oda_refits_ = v;
       else if (key == "frozen_occupations")               frozen_occupations_ = (v != 0);
@@ -2924,6 +3148,7 @@ namespace OpenOrbitalOptimizer {
 
     Tbase get_real(const std::string & key) const {
       if      (key == "convergence_threshold")                 return convergence_threshold_;
+      else if (key == "lciis_convergence_threshold")           return lciis_convergence_threshold_;
       else if (key == "noise_safety_factor")                   return noise_safety_factor_;
       else if (key == "noise_floor")                           return noise_floor_;
       else if (key == "diis_epsilon")                          return diis_epsilon_;
@@ -2947,6 +3172,8 @@ namespace OpenOrbitalOptimizer {
       else if (key == "maximum_iterations")               return (int) maximum_iterations_;
       else if (key == "maximum_history_length")           return maximum_history_length_;
       else if (key == "oda_restart_steps")                return oda_restart_steps_;
+      else if (key == "lciis_maximum_history")            return lciis_maximum_history_;
+      else if (key == "lciis_maximum_iterations")         return lciis_maximum_iterations_;
       else if (key == "orbital_rotation_steps_after_oda") return (int) orbital_rotation_steps_after_oda_;
       else if (key == "max_oda_refits")                   return max_oda_refits_;
       else if (key == "frozen_occupations")               return frozen_occupations_ ? 1 : 0;
@@ -3592,10 +3819,9 @@ namespace OpenOrbitalOptimizer {
           else
             clear_burst_watch();
         } else if(state == StepKind::OrbitalRotation) {
-          // CG vs L-BFGS: prefer L-BFGS when it is allowed (limited-
-          // memory quasi-Newton captures off-diagonal Hessian
-          // information the diagonal preconditioner alone misses).
-          bool use_lbfgs = allowed.lbfgs;
+          // CG vs L-BFGS: exactly one of the two is enabled, the
+          // parser having rejected a request for both.
+          const bool use_lbfgs = allowed.lbfgs;
           log_(5, "%s step (%i remaining in burst)\n",
                use_lbfgs ? "L-BFGS" : "Scaled steepest descent",
                (int) orbital_rotation_steps_remaining);
