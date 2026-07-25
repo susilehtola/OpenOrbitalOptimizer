@@ -181,8 +181,10 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae075d852573e58c5688f07769a29d7c3" kind="function"><name>log_flush_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1eb6e425f08babe3cb94e1218913c702" kind="function"><name>log_stream_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a57b7f1d5a457f1f365aad8bbff84e877" kind="function"><name>empty_block</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a111542ea8631a554f5347e746818264f" kind="function"><name>build_density_blocks_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ae5ab3b4e7f5093a98930cb6ca3668aba" kind="function"><name>get_density_matrix_block</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a67ddb0af22a38037ef36f7731b0bdbef" kind="function"><name>tr_of_product_</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a59f508d422edcad40076da952b2131e6" kind="function"><name>active_natural_orbitals_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa67d7b4d8a03e87f3a7dfe025d3f5aef" kind="function"><name>build_density_block_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aff327fdda23834c22fa61048dc12d1f5" kind="function"><name>get_orbital_block</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a2ab9acb5bc76179c1bd63bd8a95a98a4" kind="function"><name>get_orbital_occupation_block</name></member>
@@ -204,6 +206,8 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa5026b63d96fd799e395bd41e7849527" kind="function"><name>diis_error_vector</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8d70c6f14814f04fa47ac358c2ce7c16" kind="function"><name>diis_error_vector</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1acb1c694b52ecaccf0109fa957b380412" kind="function"><name>compute_noise_floor</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0e6dc57d1888e62d24621155c011845a" kind="function"><name>effective_convergence_threshold_</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0fdff0174c7ff9422da8bbb9054d3fcb" kind="function"><name>minimum_useful_descent_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1afb8fc1f218fc83c9e5b693f2e32767f3" kind="function"><name>diis_error_matrix_element</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aee13e65399467027cd8912b801e98596" kind="function"><name>diis_error_matrix</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a796e3eff8fa579de98702a751f915749" kind="function"><name>diis_error_matrix_diagonal</name></member>
@@ -220,6 +224,8 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6408d81be7fd7010b740179b673cd213" kind="function"><name>density_projection</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a8ee859e6748aecd2d56e67c3c6f64c6b" kind="function"><name>occupation_difference</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a81d901152bd83e694040fab0f310f7d9" kind="function"><name>extrapolate_fock</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1acdb8cdd9f410e6dd7aa832a47cba0026" kind="function"><name>natural_orbitals_</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0efb2c1ea8a6209b87e97291c9d96b3f" kind="function"><name>require_nonnegative_occupations_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a31f82dbb4c7dd4aa78a60431a9c41a92" kind="function"><name>extrapolate_density</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa04b785045a04e49bdf6e45d04fb4624" kind="function"><name>density_overlap</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a68b3c4709abee1184112996f43f098f2" kind="function"><name>attempt_extrapolation</name></member>
@@ -273,6 +279,7 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1cd4b2212f3985975fd5c4898be2211f" kind="function"><name>reset_history</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a05154d8013f3c8c326ded36a2bfd0f6a" kind="function"><name>compute_orbitals</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a7c64b8e93ae142c7585b99ff44d2565a" kind="function"><name>particle_block_offset</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0c7602aed1304f5123eeba649adf18b6" kind="function"><name>degenerate_cluster_end_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af42651c092ba5d6b20e3687ab917a8b2" kind="function"><name>order_orbitals_by_energy</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ad361054089302a8160954d44c3eacbb7" kind="function"><name>determine_number_of_particles_by_aufbau</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a924d6a3808cc3254bd2395bdc719f27a" kind="function"><name>update_occupations</name></member>

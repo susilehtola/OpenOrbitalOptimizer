@@ -1096,6 +1096,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-degenerate_cluster_end_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function degenerate_cluster_end_
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-density_matrix_difference" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1605,6 +1616,10 @@
 <td style="text-align: left;"><a href="#function-converged"><strong>converged</strong></a> () const<br><em>Check if we are converged.</em></td>
 </tr>
 <tr>
+<td style="text-align: right;">size_t</td>
+<td style="text-align: left;"><a href="#function-degenerate_cluster_end_"><strong>degenerate_cluster_end_</strong></a> (size_t start, size_t n, EnergyAt &amp;&amp; energy_at) const<br></td>
+</tr>
+<tr>
 <td style="text-align: right;">Tbase</td>
 <td style="text-align: left;"><a href="#function-density_matrix_difference"><strong>density_matrix_difference</strong></a> (size_t ihist, size_t jhist) const<br><em>Density matrix difference norm.</em></td>
 </tr>
@@ -1827,6 +1842,19 @@
 <p><em>Check if we are converged.</em> </p>
 <pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::converged () const
 </code></pre>
+<hr>
+
+<h3 id="function-degenerate_cluster_end_">function degenerate_cluster_end_</h3>
+<pre><code class="language-C++">template&lt;typename EnergyAt&gt;
+inline size_t OpenOrbitalOptimizer::SCFSolver::degenerate_cluster_end_ (
+    size_t start,
+    size_t n,
+    EnergyAt &amp;&amp; energy_at
+) const
+</code></pre>
+<p>Find the end of the near-degenerate orbital cluster starting at index <code>start</code> in an energy-ascending list of <code>n</code> orbitals. The cluster is anchored on its first member: it extends while <code>energy(k) - energy(start) &lt;= optimal_damping_degeneracy_threshold_</code>. The return value is one past the last member, so the cluster is the half-open range <code>[start, end)</code> and is never empty.</p>
+<p>Anchoring on the first member rather than on the previous one is what keeps the cluster width bounded by the threshold; a pairwise-gap walk would chain arbitrarily far up a dense ladder of orbitals.</p>
+<p>This is the single definition of "degenerate group" in the solver. The ODA skeleton enumeration uses it to decide which orbitals share a fractional filling, and the active-rotation count uses it to size the post-ODA CG burst  the latter has to size the burst <em>for the clusters the former created</em>, so the two must agree exactly, boundary included. </p>
 <hr>
 
 <h3 id="function-density_matrix_difference">function density_matrix_difference</h3>

@@ -67,6 +67,7 @@ _SCF solver class._
 |  void | [**callback\_function**](#function-callback_function) (std::function&lt; void(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_function=nullptr) <br> |
 |  [**DiagonalizedFockMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-diagonalizedfockmatrix)&lt; Torb, Tbase &gt; | [**compute\_orbitals**](#function-compute_orbitals) (const FockMatrix&lt; Torb &gt; & fock) const<br>_Computes orbitals and orbital energies by diagonalizing the Fock matrix._  |
 |  bool | [**converged**](#function-converged) () const<br>_Check if we are converged._  |
+|  size\_t | [**degenerate\_cluster\_end\_**](#function-degenerate_cluster_end_) (size\_t start, size\_t n, EnergyAt && energy\_at) const<br> |
 |  Tbase | [**density\_matrix\_difference**](#function-density_matrix_difference) (size\_t ihist, size\_t jhist) const<br>_Density matrix difference norm._  |
 |  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; | [**determine\_number\_of\_particles\_by\_aufbau**](#function-determine_number_of_particles_by_aufbau) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determine number of particles in each block._  |
 |  void | [**fixed\_number\_of\_particles\_per\_block**](#function-fixed_number_of_particles_per_block) (const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles\_per\_block) <br>_Fix the number of occupied orbitals per block._  |
@@ -263,6 +264,34 @@ inline bool OpenOrbitalOptimizer::SCFSolver::converged () const
 
 
 
+
+<hr>
+
+
+
+### function degenerate\_cluster\_end\_ 
+
+```C++
+template<typename EnergyAt>
+inline size_t OpenOrbitalOptimizer::SCFSolver::degenerate_cluster_end_ (
+    size_t start,
+    size_t n,
+    EnergyAt && energy_at
+) const
+```
+
+
+
+Find the end of the near-degenerate orbital cluster starting at index `start` in an energy-ascending list of `n` orbitals. The cluster is anchored on its first member: it extends while `energy(k) - energy(start) <= optimal_damping_degeneracy_threshold_`. The return value is one past the last member, so the cluster is the half-open range `[start, end)` and is never empty.
+
+
+Anchoring on the first member rather than on the previous one is what keeps the cluster width bounded by the threshold; a pairwise-gap walk would chain arbitrarily far up a dense ladder of orbitals.
+
+
+This is the single definition of "degenerate group" in the solver. The ODA skeleton enumeration uses it to decide which orbitals share a fractional filling, and the active-rotation count uses it to size the post-ODA CG burst  the latter has to size the burst _for the clusters the former created_, so the two must agree exactly, boundary included. 
+
+
+        
 
 <hr>
 
