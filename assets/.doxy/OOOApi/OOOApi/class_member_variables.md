@@ -79,6 +79,7 @@
 ## l
 
 * **last\_active\_rotation\_count\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **last\_oda\_via\_collapsed\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **last\_polytope\_dimension\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **lbfgs\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **level\_shift\_factor\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))

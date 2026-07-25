@@ -169,6 +169,7 @@
 * **last\_polytope\_dimension** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md))
 * **largest\_index** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **last\_active\_rotation\_count\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **last\_oda\_via\_collapsed\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **last\_polytope\_dimension\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **lbfgs\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **lbfgs\_direction\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))

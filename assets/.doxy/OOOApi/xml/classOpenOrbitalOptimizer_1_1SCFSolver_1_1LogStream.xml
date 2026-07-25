@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="504" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="504" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="509" column="24" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="509" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a9e0b4f5323c240630ed74a5284dc8f45" prot="private" static="no" mutable="no">
         <type>int</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="505" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="505" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="510" column="11" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="510" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a09c0b5961a62f1a81b502dc8443f5470" prot="private" static="no" mutable="no">
         <type>bool</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="506" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="506" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="511" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="511" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1aba96a181c10cca86dcafea71b935c872" prot="private" static="no" mutable="no">
         <type>std::ostringstream</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="507" column="26" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="507" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="512" column="26" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="512" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -81,7 +81,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="469" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="469" bodyend="470"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="474" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="474" bodyend="475"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1af4e2934eb7596db39151a2a084b3afbd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -98,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="471" column="7"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="476" column="7"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a34b4bb6f65e4e2ff33306b7fc3f5bf5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>LogStream &amp;</type>
@@ -115,7 +115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="472" column="18"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="477" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a1c9bb537737cf58eaf0663f8b3ae3c1d" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
         <type></type>
@@ -133,7 +133,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="473" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="473" bodyend="477"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="478" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="478" bodyend="482"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a8fdd13c1006ddf30cebec187de6b9af9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -147,7 +147,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="478" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="478" bodyend="483"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="483" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="483" bodyend="488"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a14a178863c3d3c4fb2a88a09028bd0be" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -170,7 +170,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="485" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="485" bodyend="488"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="490" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="490" bodyend="493"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a6b251585d9cda9a5fbdda7d03e25b81c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>LogStream &amp;</type>
@@ -188,7 +188,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="490" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="490" bodyend="493"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="495" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="495" bodyend="498"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a79359ab8692e6ebce3769d03152244ad" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -203,7 +203,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="497" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="497" bodyend="497"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="502" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="502" bodyend="502"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a0a54b24a79c2f257012bd187eef20111" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::ostream &amp;</type>
@@ -218,7 +218,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="502" column="21" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="502" bodyend="502"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="507" column="21" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="507" bodyend="507"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -226,7 +226,7 @@
     <detaileddescription>
 <para>Ostream-style companion to log_(). Constructed via <computeroutput>log_stream_(level)</computeroutput>; accumulates output through <computeroutput>operator&lt;&lt;</computeroutput> and flushes to the logger / stdout on destruction. If <computeroutput>verbosity_ &lt; level</computeroutput> the object is inert (its <computeroutput>operator&lt;&lt;</computeroutput> is a no-op), so the caller writes <computeroutput>log_stream_(N) &lt;&lt; ...</computeroutput> in place of <computeroutput>if(verbosity_&gt;=N) std::cout &lt;&lt; ...</computeroutput> without a manual gate. </para>
     </detaileddescription>
-    <location file="openorbitaloptimizer/scfsolver.hpp" line="467" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="467" bodyend="508"/>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="472" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="472" bodyend="513"/>
     <listofallmembers>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a79359ab8692e6ebce3769d03152244ad" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::LogStream</scope><name>enabled</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream_1a09c0b5961a62f1a81b502dc8443f5470" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::LogStream</scope><name>enabled_</name></member>

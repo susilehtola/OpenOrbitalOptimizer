@@ -1161,6 +1161,7 @@ namespace OpenOrbitalOptimizer {
     int max_oda_refits_ = 3;
     size_t last_polytope_dimension_ = 0;
     size_t last_active_rotation_count_ = 0;
+    bool last_oda_via_collapsed_ = false;
 
     Tbase old_energy_ = Tbase(0);
 
@@ -2508,10 +2509,13 @@ namespace OpenOrbitalOptimizer {
       }
       attempts.push_back(std::move(trial_occupations_per_particle));
 
+      last_oda_via_collapsed_ = false;
       bool overall_succ = false;
       for(size_t iattempt = 0; iattempt &lt; attempts.size() &amp;&amp; !overall_succ; iattempt++) {
         trial_occupations_per_particle = std::move(attempts[iattempt]);
         const bool refits_enabled = (iattempt == attempts.size() - 1);
+        const bool this_attempt_is_collapsed =
+            (iattempt == 0 &amp;&amp; attempts.size() &gt; 1);
         if(iattempt &gt; 0)
           log_(5, &quot;Collapsed polytope did not descend; retrying with full skeleton set.\n&quot;);
       size_t npars = 0;
@@ -2957,6 +2961,8 @@ namespace OpenOrbitalOptimizer {
         }
       }
 
+      if(succ &amp;&amp; this_attempt_is_collapsed)
+        last_oda_via_collapsed_ = true;
       overall_succ = succ;
       }  // end for(iattempt)
 
@@ -4710,24 +4716,46 @@ namespace OpenOrbitalOptimizer {
         log_(5, &quot;\n\n&quot;);
         log_(1, &quot;Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n&quot;, (int) iteration, (int) number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
         log_(5, &quot;History size %i\n&quot;,(int) orbital_history_.size());
+        if(verbosity_&gt;=5) {
+          const auto occupations = get_orbital_occupations();
+          auto occ_idx(occupied_orbitals(occupations));
+          for(size_t l=0;l&lt;occ_idx.size();l++) {
+            if(occ_idx[l].size())
+              log_stream_(5) &lt;&lt; block_descriptions_[l] + &quot; occupations: &quot; &lt;&lt; occupations[l].head(occ_idx[l].maxCoeff()+1).transpose() &lt;&lt; std::endl;
+          }
+        }
         if(converged()) {
-          // Every iteration where the collapsed skeleton set has been
-          // driving descent, we've only been optimising over a
-          // reduced-dimensionality polytope. Run one full-skeleton
-          // ODA step to confirm the reduced fixed point is also
-          // stationary in the full skeleton set. The check strictly
-          // rejects non-descent steps, so it self-terminates -- each
-          // acceptance is a strict energy drop -- and needs no
-          // book-keeping across iterations.
-          if(allowed.oda &amp;&amp; optimal_damping_step(/*force_full=*/true)) {
-            log_(5, &quot;Full-skeleton ODA found a further descent after convergence; &quot;
-                    &quot;resuming SCF.\n&quot;);
-            // Same post-ODA transition preference the state machine
-            // uses after a normal ODA step: relax at the new
-            // occupations before revisiting DIIS.
-            state = pick_next({StepKind::OrbitalRotation, StepKind::DIIS},
-                              StepKind::ODA);
-            continue;
+          // When the collapsed skeleton set has been driving descent
+          // for this SCF run, run one full-skeleton ODA step to
+          // confirm the reduced fixed point is also stationary in
+          // the full skeleton set. Skip the check when the last ODA
+          // step already used the full skeletons (nothing new to
+          // verify) or when ODA is disallowed. Sub-noise energy
+          // drops are rejected on the same tolerance the trust-
+          // region refit loop uses -- otherwise a &quot;descent&quot; of a few
+          // times machine epsilon per iteration keeps the SCF
+          // spinning at the arithmetic floor.
+          if(allowed.oda &amp;&amp; last_oda_via_collapsed_) {
+            const Tbase E_before = get_energy();
+            const bool descended = optimal_damping_step(/*force_full=*/true);
+            const Tbase actual_descent = E_before - get_energy();
+            const Tbase min_useful_descent = Tbase(1)/Tbase(10)
+                * std::max(convergence_threshold_,
+                           noise_safety_factor_ * noise_floor_);
+            if(descended &amp;&amp; actual_descent &gt; min_useful_descent) {
+              log_(5, &quot;Full-skeleton ODA found a %e Eh descent after &quot;
+                      &quot;convergence; resuming SCF.\n&quot;, actual_descent);
+              // Same post-ODA transition preference the state
+              // machine uses after a normal ODA step: relax at the
+              // new occupations before revisiting DIIS.
+              state = pick_next({StepKind::OrbitalRotation, StepKind::DIIS},
+                                StepKind::ODA);
+              continue;
+            }
+            if(descended)
+              log_(5, &quot;Full-skeleton ODA descent %e below noise threshold %e; &quot;
+                      &quot;treating as converged.\n&quot;,
+                      actual_descent, min_useful_descent);
           }
           log_(1, &quot;Converged to energy % .10f!\n&quot;, get_energy());
 
@@ -4736,15 +4764,6 @@ namespace OpenOrbitalOptimizer {
           if(callback_function_)
             callback_function_(callback_data);
           break;
-        }
-
-        if(verbosity_&gt;=5) {
-          const auto occupations = get_orbital_occupations();
-          auto occ_idx(occupied_orbitals(occupations));
-          for(size_t l=0;l&lt;occ_idx.size();l++) {
-            if(occ_idx[l].size())
-              log_stream_(5) &lt;&lt; block_descriptions_[l] + &quot; occupations: &quot; &lt;&lt; occupations[l].head(occ_idx[l].maxCoeff()+1).transpose() &lt;&lt; std::endl;
-          }
         }
 
         // Pre-step transition: bail out of DIIS if it is stalling or
