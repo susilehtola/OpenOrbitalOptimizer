@@ -28,6 +28,7 @@
 
 #include <complex>
 #include <functional>
+#include <memory>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -134,7 +135,7 @@ namespace Armadillo {
     using EigenDM = OpenOrbitalOptimizer::DensityMatrix<Torb, Tbase>;
     using EigenFR = OpenOrbitalOptimizer::FockBuilderReturn<Torb, Tbase>;
 
-    FockBuilder<Torb, Tbase> arma_fock_builder_;
+    std::shared_ptr<FockBuilder<Torb, Tbase>> arma_fock_builder_;
     EigenSolver impl_;
 
   public:
@@ -143,15 +144,16 @@ namespace Armadillo {
               const arma::Col<Tbase> & number_of_particles,
               const FockBuilder<Torb, Tbase> & fock_builder,
               const std::vector<std::string> & block_descriptions)
-      : arma_fock_builder_(fock_builder),
+      : arma_fock_builder_(
+            std::make_shared<FockBuilder<Torb, Tbase>>(fock_builder)),
         impl_(to_eigen(number_of_blocks_per_particle_type),
               to_eigen(maximum_occupation),
               to_eigen(number_of_particles),
-              [this](const EigenDM & dm) -> EigenFR {
+              [builder = arma_fock_builder_](const EigenDM & dm) -> EigenFR {
                 DensityMatrix<Torb, Tbase> arma_dm{
                     to_arma(dm.first),
                     to_arma(dm.second)};
-                FockBuilderReturn<Torb, Tbase> arma_ret = arma_fock_builder_(arma_dm);
+                FockBuilderReturn<Torb, Tbase> arma_ret = (*builder)(arma_dm);
                 return std::make_pair(arma_ret.first, to_eigen(arma_ret.second));
               },
               block_descriptions) {}

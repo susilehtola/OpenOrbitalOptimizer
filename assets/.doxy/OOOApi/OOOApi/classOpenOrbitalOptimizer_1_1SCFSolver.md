@@ -84,6 +84,7 @@ _SCF solver class._
 |  void | [**initialize\_with\_fock**](#function-initialize_with_fock) (const FockMatrix&lt; Torb &gt; & fock\_guess) <br>_Initialize the solver with a guess Fock matrix._  |
 |  void | [**initialize\_with\_orbitals**](#function-initialize_with_orbitals) (const [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; & orbitals, const OrbitalOccupations&lt; Tbase &gt; & orbital\_occupations) <br>_Initialize with precomputed orbitals and occupations._  |
 |  void | [**logger**](#function-logger) (std::function&lt; void(int, const std::string &)&gt; sink=nullptr) <br> |
+|  [**OrbitalHistoryEntry**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalhistoryentry)&lt; Torb, Tbase &gt; | [**make\_history\_entry**](#function-make_history_entry) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density\_matrix, const [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; & fock) const<br> |
 |  Tbase | [**norm**](#function-norm) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; Tbase &gt; & mat, std::string norm="") const<br>_Evaluate the norm._  |
 |  std::vector&lt; std::tuple&lt; Tbase, size\_t, size\_t &gt; &gt; | [**order\_orbitals\_by\_energy**](#function-order_orbitals_by_energy) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies, size\_t iparticle) const<br> |
 |  [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) | [**particle\_block\_offset**](#function-particle_block_offset) (size\_t iparticle) const<br>_Determines the offset for the blocks of the iparticle:th particle._  |
@@ -91,10 +92,14 @@ _SCF solver class._
 |  void | [**print\_settings**](#function-print_settings) (std::ostream & os=std::cout) const<br> |
 |  void | [**reset\_history**](#function-reset_history) () <br>_Reset the DIIS history._  |
 |  void | [**run**](#function-run) () <br> |
-|  void | [**set**](#function-set-13) (const std::string & key, Tbase v) <br>_Set a real-valued option._  |
-|  void | [**set**](#function-set-23) (const std::string & key, int v) <br>_Set an integer-valued option. Bool settings ride here as 0/1._  |
-|  void | [**set**](#function-set-33) (const std::string & key, const std::string & v) <br>_Set a string-valued option._  |
+|  void | [**set**](#function-set-14) (const std::string & key, T value) <br> |
+|  void | [**set**](#function-set-14) (const std::string & key, T value) <br> |
+|  void | [**set**](#function-set-34) (const std::string & key, const std::string & value) <br> |
+|  void | [**set**](#function-set-44) (const std::string & key, const char \* value) <br> |
 |  void | [**set\_batched\_fock\_builder**](#function-set_batched_fock_builder) ([**BatchedFockBuilder**](namespaceOpenOrbitalOptimizer.md#typedef-batchedfockbuilder)&lt; Torb, Tbase &gt; builder) <br> |
+|  void | [**set\_int**](#function-set_int) (const std::string & key, int v) <br>_Set an integer-valued option. Bool settings ride here as 0/1._  |
+|  void | [**set\_real**](#function-set_real) (const std::string & key, Tbase v) <br>_Set a real-valued option._  |
+|  void | [**set\_string**](#function-set_string) (const std::string & key, const std::string & v) <br>_Set a string-valued option._  |
 |  OrbitalOccupations&lt; Tbase &gt; | [**update\_occupations**](#function-update_occupations) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determines occupations based on the current orbital energies._  |
 
 
@@ -536,6 +541,29 @@ Register a log sink. The callback receives `(level, message)` where `level` is t
 
 
 
+### function make\_history\_entry 
+
+```C++
+inline OrbitalHistoryEntry < Torb, Tbase > OpenOrbitalOptimizer::SCFSolver::make_history_entry (
+    const DensityMatrix < Torb, Tbase > & density_matrix,
+    const FockBuilderReturn < Torb, Tbase > & fock
+) const
+```
+
+
+
+Make an orbital history entry, stamping it with a monotonically increasing index.
+
+
+The index is a per-solver member rather than a function-local static. It was originally a static, which was harmless while the index served only to order the history stack; but the DIIS caches key on it, so it is now correctness-critical that it be unique within a solver. A static is shared by every instance of a given instantiation and `index++` is a non-atomic read-modify-write, so two solvers driven from different threads could lose an update and hand one solver a repeated index  which would make a cache return another entry's commutator and silently corrupt the DIIS extrapolation. 
+
+
+        
+
+<hr>
+
+
+
 ### function norm 
 
 _Evaluate the norm._ 
@@ -662,13 +690,37 @@ State-transition rules: from DIIS we leave to ODA (or to CG when ODA is not allo
 
 
 
-### function set [1/3]
+### function set [1/4]
 
-_Set a real-valued option._ 
 ```C++
+template<typename T, std::enable_if_t< std::is_integral_v< T >, int >>
 inline void OpenOrbitalOptimizer::SCFSolver::set (
     const std::string & key,
-    Tbase v
+    T value
+) 
+```
+
+
+
+Set an option, dispatching on the argument type: integral arguments go to `set_int`, floating-point (and `Tbase`) arguments to `set_real`, strings to `set_string`.
+
+
+These are SFINAE-constrained templates rather than plain overloads on `(Tbase)` and `(int)`: with plain overloads a literal like `1e-9` converts to both `int` and a non-double `Tbase` at the same rank, so `set ("convergence_threshold", 1e-9)` was ambiguous — i.e. it did not compile at all — for the `float` and `_Float128` instantiations, and `set(key, 100u)` was ambiguous for every instantiation. Dispatching on `is_integral` removes the tie. 
+
+
+        
+
+<hr>
+
+
+
+### function set [1/4]
+
+```C++
+template<typename T, std::enable_if_t<!std::is_integral_v< T > &&(std::is_floating_point_v< T >||std::is_same_v< T, Tbase >), int >>
+inline void OpenOrbitalOptimizer::SCFSolver::set (
+    const std::string & key,
+    T value
 ) 
 ```
 
@@ -679,13 +731,12 @@ inline void OpenOrbitalOptimizer::SCFSolver::set (
 
 
 
-### function set [2/3]
+### function set [3/4]
 
-_Set an integer-valued option. Bool settings ride here as 0/1._ 
 ```C++
 inline void OpenOrbitalOptimizer::SCFSolver::set (
     const std::string & key,
-    int v
+    const std::string & value
 ) 
 ```
 
@@ -696,18 +747,21 @@ inline void OpenOrbitalOptimizer::SCFSolver::set (
 
 
 
-### function set [3/3]
+### function set [4/4]
 
-_Set a string-valued option._ 
 ```C++
 inline void OpenOrbitalOptimizer::SCFSolver::set (
     const std::string & key,
-    const std::string & v
+    const char * value
 ) 
 ```
 
 
 
+String-literal overload; without it a `const char *` argument would not match the `std::string` overload any better than the numeric templates reject it, and the diagnostic would be poor. 
+
+
+        
 
 <hr>
 
@@ -727,6 +781,57 @@ Register a batched Fock builder. When set, optimal\_damping\_step uses it for th
 
 
         
+
+<hr>
+
+
+
+### function set\_int 
+
+_Set an integer-valued option. Bool settings ride here as 0/1._ 
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::set_int (
+    const std::string & key,
+    int v
+) 
+```
+
+
+
+
+<hr>
+
+
+
+### function set\_real 
+
+_Set a real-valued option._ 
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::set_real (
+    const std::string & key,
+    Tbase v
+) 
+```
+
+
+
+
+<hr>
+
+
+
+### function set\_string 
+
+_Set a string-valued option._ 
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::set_string (
+    const std::string & key,
+    const std::string & v
+) 
+```
+
+
+
 
 <hr>
 

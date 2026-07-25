@@ -1019,21 +1019,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-fit_quartic_polynomial_with_derivatives" class="md-nav__link">
+  <a href="#function-project_onto_unit_simplex" class="md-nav__link">
     <span class="md-ellipsis">
       
-        function fit_quartic_polynomial_with_derivatives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#function-real_roots_in_interval" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        function real_roots_in_interval
+        function project_onto_unit_simplex
       
     </span>
   </a>
@@ -1086,12 +1075,8 @@
 <td style="text-align: left;"><a href="#function-fit_cubic_polynomial_with_derivatives"><strong>fit_cubic_polynomial_with_derivatives</strong></a> (T E0, T dE0, T x1, T E1, T dE1) <br></td>
 </tr>
 <tr>
-<td style="text-align: right;">std::tuple&lt; T, T, T, T, T &gt;</td>
-<td style="text-align: left;"><a href="#function-fit_quartic_polynomial_with_derivatives"><strong>fit_quartic_polynomial_with_derivatives</strong></a> (T E0, T dE0, T d2E0, T x1, T E1, T dE1) <br></td>
-</tr>
-<tr>
-<td style="text-align: right;">std::vector&lt; T &gt;</td>
-<td style="text-align: left;"><a href="#function-real_roots_in_interval"><strong>real_roots_in_interval</strong></a> (Fn &amp;&amp; f, T x_lo, T x_hi, int n_samples=33) <br></td>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-project_onto_unit_simplex"><strong>project_onto_unit_simplex</strong></a> (<a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><strong>Vector</strong></a>&lt; T &gt; &amp; v) <br></td>
 </tr>
 </tbody>
 </table>
@@ -1131,30 +1116,15 @@ std::tuple&lt; T, T, T, T &gt; OpenOrbitalOptimizer::HelperRoutines::fit_cubic_p
 <p>Fit cubic polynomial f(x) = a0 + a1*x + a2*x^2 + a3*x^3 to the data {f(0)=E0, f'(0)=dE0, f(x1)=E1, f'(x1)=dE1}. </p>
 <hr>
 
-<h3 id="function-fit_quartic_polynomial_with_derivatives">function fit_quartic_polynomial_with_derivatives</h3>
+<h3 id="function-project_onto_unit_simplex">function project_onto_unit_simplex</h3>
 <pre><code class="language-C++">template&lt;typename T&gt;
-std::tuple&lt; T, T, T, T, T &gt; OpenOrbitalOptimizer::HelperRoutines::fit_quartic_polynomial_with_derivatives (
-    T E0,
-    T dE0,
-    T d2E0,
-    T x1,
-    T E1,
-    T dE1
+void OpenOrbitalOptimizer::HelperRoutines::project_onto_unit_simplex (
+    Vector &lt; T &gt; &amp; v
 ) 
 </code></pre>
-<p>Fit the quartic polynomial f(x) = a0 + a1*x + a2*x^2 + a3*x^3 + a4*x^4 to the Hermite data {f(0)=E0, f'(0)=dE0, f''(0)=d2E0, f(x1)=E1, f'(x1)=dE1}  five constraints for five coefficients. Used along ODA polytope axes and pair-diagonal edges where the diagonal (or projected) Hessian element gives a free quartic data point without an additional Fock build. </p>
-<hr>
-
-<h3 id="function-real_roots_in_interval">function real_roots_in_interval</h3>
-<pre><code class="language-C++">template&lt;typename T, class Fn&gt;
-std::vector&lt; T &gt; OpenOrbitalOptimizer::HelperRoutines::real_roots_in_interval (
-    Fn &amp;&amp; f,
-    T x_lo,
-    T x_hi,
-    int n_samples=33
-) 
-</code></pre>
-<p>Bisect for real roots of <code>f</code> in <code>[x_lo, x_hi]</code> by sampling on a coarse grid and refining sign changes. Robust and free of external polynomial-root dependencies. Used to locate the stationary points of the quartic axis / edge fits, where the derivative is a cubic. </p>
+<p>Project <code>v</code> onto the simplex {v_i &gt;= 0, sum(v) &lt;= 1}: negative entries are clamped to zero, and if the sum then still exceeds one the whole vector is rescaled by 1/sum.</p>
+<p>Rescaling rather than merely capping the sum matters wherever the individual entries are used as weights in their own right: capping the sum alone would leave the entries summing to more than one while the complementary weight (1 - sum) went to zero, which shifts the total.</p>
+<p>Used on the ODA polytope parameters, where the QP solver enforces the simplex only to the accuracy of its constrained linear solve. An ill-conditioned reduced Hessian  what a density projected between two different basis sets produces  can leave the sum above one by of order cond * eps, which hands the reference density a negative weight and yields a non-positive-semidefinite mixed density. </p>
 <hr>
 
 <hr />

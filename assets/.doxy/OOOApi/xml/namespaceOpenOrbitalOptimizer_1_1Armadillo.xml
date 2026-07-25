@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="114" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="114" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="115" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="115" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a41e45cc8335da2fb70ffbf117eb0d001" prot="public" static="no">
         <templateparamlist>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="115" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="115" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="116" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="116" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1ae519c8d1efd7c882228dd1b8e2893f0c" prot="public" static="no">
         <templateparamlist>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="116" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="116" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="117" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="117" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a5e2a9e2248a004df2bfe95cb63e0009d" prot="public" static="no">
         <templateparamlist>
@@ -78,7 +78,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="117" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="117" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="118" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="118" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a187ac00250483d63bb7bf6fab39a8c8f" prot="public" static="no">
         <templateparamlist>
@@ -97,7 +97,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="118" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="118" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="119" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="119" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a059398ad4256838217336c69400a4cb0" prot="public" static="no">
         <templateparamlist>
@@ -116,7 +116,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="119" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="119" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="120" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="120" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1ae6d6247c04aed24344d4a353f123aa81" prot="public" static="no">
         <templateparamlist>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="120" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="120" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="121" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="121" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a5e5798ae6366ba55ca23b327b6bdcad9" prot="public" static="no">
         <templateparamlist>
@@ -154,7 +154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="121" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="121" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="122" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="122" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1add0216ce1fd5f50b46023b9071a5405d" prot="public" static="no">
         <templateparamlist>
@@ -176,7 +176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="123" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="123" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="124" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="124" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1aa9da0829dc0e2064c5ad9cdf71b15dce" prot="public" static="no">
         <templateparamlist>
@@ -195,7 +195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="124" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="124" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="125" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="125" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a835443a038dec80555c719aa42c54ebf" prot="public" static="no">
         <templateparamlist>
@@ -214,7 +214,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="125" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="125" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="126" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="126" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a25c8fad977dc1d13a8baaf7cf0a43f8a" prot="public" static="no">
         <templateparamlist>
@@ -233,7 +233,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="126" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="126" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="127" column="15" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="127" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a31398e9e7268971d4bbe586aa8073ca4" prot="public" static="no">
         <templateparamlist>
@@ -255,7 +255,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="128" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="128" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="129" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="129" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a2f9c7b6bc34e37371815669a269a4ee3" prot="public" static="no">
         <templateparamlist>
@@ -277,7 +277,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="130" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="130" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="131" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="131" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a99dd0f0ba8fe7e6bdc814a4e4f5a01d5" prot="public" static="no">
         <templateparamlist>
@@ -299,7 +299,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="132" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="132" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="133" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="133" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="armadillo__compat_8hpp_1a2f5b686e61e7378d0bd21d23d5d0f3ff" prot="public" static="no">
         <type>std::tuple&lt; size_t, arma::uword, arma::uword &gt;</type>
@@ -313,7 +313,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="133" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="133" bodyend="-1"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="134" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="134" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -338,7 +338,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="47" column="39" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="47" bodyend="50"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="48" column="39" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="48" bodyend="51"/>
       </memberdef>
       <memberdef kind="function" id="armadillo__compat_8hpp_1a24ce5a0dd8bc868154b364ea6376bb5d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -361,7 +361,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="53" column="39" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="53" bodyend="56"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="54" column="39" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="54" bodyend="57"/>
       </memberdef>
       <memberdef kind="function" id="armadillo__compat_8hpp_1ae05040ad9197f6ef566a8efea33f1515" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceOpenOrbitalOptimizer_1a654aeaf2c63cbcfb783b2f3c7ea53d49" kindref="member">OpenOrbitalOptimizer::IndexVector</ref></type>
@@ -379,7 +379,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="58" column="44" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="58" bodyend="64"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="59" column="44" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="59" bodyend="65"/>
       </memberdef>
       <memberdef kind="function" id="armadillo__compat_8hpp_1ad5d88de5f28cb99f57ae8624da546e1e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -402,7 +402,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="67" column="20" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="67" bodyend="69"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="68" column="20" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="68" bodyend="70"/>
       </memberdef>
       <memberdef kind="function" id="armadillo__compat_8hpp_1a97234182ed2c118ae815612821d84697" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -425,7 +425,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="72" column="20" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="72" bodyend="74"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="73" column="20" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="73" bodyend="75"/>
       </memberdef>
       <memberdef kind="function" id="armadillo__compat_8hpp_1a748e39c6888db21dcc41c58bea8b8def" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -448,7 +448,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="78" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="78" bodyend="83"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="79" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="79" bodyend="84"/>
       </memberdef>
       <memberdef kind="function" id="armadillo__compat_8hpp_1a262a042d079662941355b6727a6661cc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -471,7 +471,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="87" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="87" bodyend="92"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="88" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="88" bodyend="93"/>
       </memberdef>
       <memberdef kind="function" id="armadillo__compat_8hpp_1ad73a5d52885b94d5827cbed15cdfd1f4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -494,7 +494,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="96" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="96" bodyend="101"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="97" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="97" bodyend="102"/>
       </memberdef>
       <memberdef kind="function" id="armadillo__compat_8hpp_1ab79f09c773f080467bd965fa7deac79d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -517,13 +517,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="105" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="105" bodyend="110"/>
+        <location file="openorbitaloptimizer/armadillo_compat.hpp" line="106" column="3" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="106" bodyend="111"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="openorbitaloptimizer/armadillo_compat.hpp" line="42" column="1"/>
+    <location file="openorbitaloptimizer/armadillo_compat.hpp" line="43" column="1"/>
   </compounddef>
 </doxygen>

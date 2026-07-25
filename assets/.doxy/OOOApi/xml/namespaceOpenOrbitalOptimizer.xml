@@ -4,7 +4,6 @@
     <compoundname>OpenOrbitalOptimizer</compoundname>
     <innerclass refid="classOpenOrbitalOptimizer_1_1SCFSolver" prot="public">OpenOrbitalOptimizer::SCFSolver</innerclass>
     <innernamespace refid="namespaceOpenOrbitalOptimizer_1_1Armadillo">OpenOrbitalOptimizer::Armadillo</innernamespace>
-    <innernamespace refid="namespaceOpenOrbitalOptimizer_1_1ConjugateGradients">OpenOrbitalOptimizer::ConjugateGradients</innernamespace>
     <innernamespace refid="namespaceOpenOrbitalOptimizer_1_1HelperRoutines">OpenOrbitalOptimizer::HelperRoutines</innernamespace>
     <sectiondef kind="typedef">
       <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1ab6d3889d9982a2c18039ede09d74a583" prot="public" static="no">
@@ -587,70 +586,6 @@
         </inbodydescription>
         <location file="openorbitaloptimizer/eigen_compat.hpp" line="62" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="62" bodyend="73"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ac9f5a20e1e7b35cd54b587bbc51b1912" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class T</type>
-          </param>
-        </templateparamlist>
-        <type>std::enable_if_t&lt;!Eigen::NumTraits&lt; T &gt;::IsComplex, <ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; T &gt; &gt;</type>
-        <definition>std::enable_if_t&lt;!Eigen::NumTraits&lt; T &gt;::IsComplex, Matrix&lt; T &gt; &gt; OpenOrbitalOptimizer::unvectorise_real_imag</definition>
-        <argsstring>(const Vector&lt; T &gt; &amp;v, Index rows, Index cols)</argsstring>
-        <name>unvectorise_real_imag</name>
-        <qualifiedname>OpenOrbitalOptimizer::unvectorise_real_imag</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt; &amp;</type>
-          <declname>v</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
-          <declname>rows</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
-          <declname>cols</declname>
-        </param>
-        <briefdescription>
-<para>Inverse of vectorise_real_imag for the real case. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="78" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="78" bodyend="80"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a69e99a58739cd178442688e7840b5153" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class T</type>
-          </param>
-        </templateparamlist>
-        <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; std::complex&lt; T &gt; &gt;</type>
-        <definition>Matrix&lt; std::complex&lt; T &gt; &gt; OpenOrbitalOptimizer::unvectorise_real_imag_complex</definition>
-        <argsstring>(const Vector&lt; T &gt; &amp;v, Index rows, Index cols)</argsstring>
-        <name>unvectorise_real_imag_complex</name>
-        <qualifiedname>OpenOrbitalOptimizer::unvectorise_real_imag_complex</qualifiedname>
-        <param>
-          <type>const <ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt; &amp;</type>
-          <declname>v</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
-          <declname>rows</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
-          <declname>cols</declname>
-        </param>
-        <briefdescription>
-<para>Inverse of vectorise_real_imag for the complex case. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="85" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="85" bodyend="92"/>
-      </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ae57d9b32d9026c96bff8b307f1a91def" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -680,7 +615,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="97" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="97" bodyend="107"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="78" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="78" bodyend="88"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a50cb07b3e01c3487de37be3d1ae91918" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -704,123 +639,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="112" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="112" bodyend="118"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a51d8f949f79d19fe7b42d3c730685c2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class T</type>
-          </param>
-        </templateparamlist>
-        <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt;</type>
-        <definition>Vector&lt; T &gt; OpenOrbitalOptimizer::linspace</definition>
-        <argsstring>(T a, T b, Index n)</argsstring>
-        <name>linspace</name>
-        <qualifiedname>OpenOrbitalOptimizer::linspace</qualifiedname>
-        <param>
-          <type>T</type>
-          <declname>a</declname>
-        </param>
-        <param>
-          <type>T</type>
-          <declname>b</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
-          <declname>n</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>arma::linspace(a, b, n) replacement returning n equally-spaced points [a, b]. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="123" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="123" bodyend="133"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a175dbe375d14e0d5fa7af99b86bc47bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class T</type>
-          </param>
-        </templateparamlist>
-        <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; T &gt;</type>
-        <definition>Vector&lt; T &gt; OpenOrbitalOptimizer::logspace</definition>
-        <argsstring>(T a, T b, Index n)</argsstring>
-        <name>logspace</name>
-        <qualifiedname>OpenOrbitalOptimizer::logspace</qualifiedname>
-        <param>
-          <type>T</type>
-          <declname>a</declname>
-        </param>
-        <param>
-          <type>T</type>
-          <declname>b</declname>
-        </param>
-        <param>
-          <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
-          <declname>n</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Logarithmically-spaced points 10^a ... 10^b (n points). Mirrors arma::logspace. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="138" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="138" bodyend="143"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a4371e67353436276aec216b65bf8f4dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class Vec</type>
-          </param>
-        </templateparamlist>
-        <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
-        <definition>Index OpenOrbitalOptimizer::index_max_abs</definition>
-        <argsstring>(const Vec &amp;v)</argsstring>
-        <name>index_max_abs</name>
-        <qualifiedname>OpenOrbitalOptimizer::index_max_abs</qualifiedname>
-        <param>
-          <type>const Vec &amp;</type>
-          <declname>v</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref> of the largest absolute value in v (matches arma&apos;s index_max for real and arma&apos;s index_max(abs(v)) for complex). </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="148" column="9" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="148" bodyend="158"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a0d302095fa4d81807c5979f6243d2c0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class Mat</type>
-          </param>
-        </templateparamlist>
-        <type>void</type>
-        <definition>void OpenOrbitalOptimizer::save_raw_ascii</definition>
-        <argsstring>(const Mat &amp;M, const std::string &amp;filename)</argsstring>
-        <name>save_raw_ascii</name>
-        <qualifiedname>OpenOrbitalOptimizer::save_raw_ascii</qualifiedname>
-        <param>
-          <type>const Mat &amp;</type>
-          <declname>M</declname>
-        </param>
-        <param>
-          <type>const std::string &amp;</type>
-          <declname>filename</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Dump a dense matrix as ASCII (one row per line, space-separated). Stand-in for arma::Mat::save(name, arma::raw_ascii). </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="163" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="163" bodyend="174"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="93" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="93" bodyend="99"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ab5234ea49d41628358745d71c3482f53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -844,7 +663,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="178" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="178" bodyend="180"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="103" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="103" bodyend="105"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a96b5b2cde8ddc98f7ca1a6b0b593d2cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -868,38 +687,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="184" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="184" bodyend="186"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1aecaf6e06801a764ebafe7e24fca30071" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class V1</type>
-          </param>
-          <param>
-            <type>class V2</type>
-          </param>
-        </templateparamlist>
-        <type>auto</type>
-        <definition>auto OpenOrbitalOptimizer::dot_nonconj</definition>
-        <argsstring>(const V1 &amp;a, const V2 &amp;b)</argsstring>
-        <name>dot_nonconj</name>
-        <qualifiedname>OpenOrbitalOptimizer::dot_nonconj</qualifiedname>
-        <param>
-          <type>const V1 &amp;</type>
-          <declname>a</declname>
-        </param>
-        <param>
-          <type>const V2 &amp;</type>
-          <declname>b</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>arma::dot for complex vectors is non-conjugating; Eigen&apos;s a.dot(b) is conjugating. Provide a non-conjugating dot for parity. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="191" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="191" bodyend="193"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="109" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="109" bodyend="111"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1aafee980572d982823a5ad35cfb3db9a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -923,26 +711,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="202" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="202" bodyend="234"/>
-      </memberdef>
-      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a8b5a0f6f4efbbe441d6562aa394f8588" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="namespaceOpenOrbitalOptimizer_1a654aeaf2c63cbcfb783b2f3c7ea53d49" kindref="member">IndexVector</ref></type>
-        <definition>IndexVector OpenOrbitalOptimizer::randperm</definition>
-        <argsstring>(Index n)</argsstring>
-        <name>randperm</name>
-        <qualifiedname>OpenOrbitalOptimizer::randperm</qualifiedname>
-        <param>
-          <type><ref refid="namespaceOpenOrbitalOptimizer_1a969a98950723c337864d375176ee4051" kindref="member">Index</ref></type>
-          <declname>n</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Return a random permutation of {0, 1, ..., n-1}. Mirrors arma::randperm. Uses a Mersenne Twister seeded once per program. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="238" column="22" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="238" bodyend="244"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="120" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="120" bodyend="152"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -953,6 +722,6 @@
 <para>with all containers Armadillo-typed (arma::Mat, arma::Col, arma::uvec, etc.). Internally wraps the new Eigen-based <ref refid="classOpenOrbitalOptimizer_1_1SCFSolver" kindref="compound">OpenOrbitalOptimizer::SCFSolver&lt;Tbase, IsComplex&gt;</ref>, with Armadillo&lt;-&gt; Eigen conversion at the <ref refid="classOpenOrbitalOptimizer_1_1SCFSolver" kindref="compound">SCFSolver</ref> boundary. The conversions are memcpy-cost (column-major to column-major) and the Fock-builder callback is bridged transparently.</para>
 <para>Including this header pulls in &lt;armadillo&gt;. The core library itself remains Armadillo-free; only consumers who include this header pay the Armadillo dependency. Only the four legacy scalar pairs are supported: (float,float), (double,double), (std::complex&lt;float&gt;,float), (std::complex&lt;double&gt;,double). </para>
     </detaileddescription>
-    <location file="openorbitaloptimizer/armadillo_compat.hpp" line="41" column="1"/>
+    <location file="openorbitaloptimizer/armadillo_compat.hpp" line="42" column="1"/>
   </compounddef>
 </doxygen>

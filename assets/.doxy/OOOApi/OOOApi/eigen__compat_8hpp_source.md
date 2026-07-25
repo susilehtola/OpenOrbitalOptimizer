@@ -73,23 +73,6 @@ namespace OpenOrbitalOptimizer {
     return out;
   }
 
-  template <class T>
-  std::enable_if_t<!Eigen::NumTraits<T>::IsComplex, Matrix<T>>
-  unvectorise_real_imag(const Vector<T> & v, Index rows, Index cols) {
-    return Eigen::Map<const Matrix<T>>(v.data(), rows, cols);
-  }
-
-  template <class T>
-  Matrix<std::complex<T>>
-  unvectorise_real_imag_complex(const Vector<T> & v, Index rows, Index cols) {
-    Matrix<std::complex<T>> out(rows, cols);
-    const Index n = rows * cols;
-    auto interleaved = Eigen::Map<Matrix<T>>(reinterpret_cast<T*>(out.data()), 2, n);
-    interleaved.row(0) = v.head(n).transpose();
-    interleaved.row(1) = v.tail(n).transpose();
-    return out;
-  }
-
   template <class Vec, class Pred>
   IndexVector find_indices_where(const Vec & v, Pred pred) {
     std::vector<Index> hits;
@@ -112,54 +95,6 @@ namespace OpenOrbitalOptimizer {
     return idx;
   }
 
-  template <class T>
-  Vector<T> linspace(T a, T b, Index n) {
-    Vector<T> out(n);
-    if (n == 1) {
-      out[0] = a;
-      return out;
-    }
-    const T step = (b - a) / static_cast<T>(n - 1);
-    for (Index i = 0; i < n; ++i)
-      out[i] = a + step * static_cast<T>(i);
-    return out;
-  }
-
-  template <class T>
-  Vector<T> logspace(T a, T b, Index n) {
-    Vector<T> exponents = linspace(a, b, n);
-    for (Index i = 0; i < n; ++i)
-      exponents[i] = std::pow(static_cast<T>(10), exponents[i]);
-    return exponents;
-  }
-
-  template <class Vec>
-  Index index_max_abs(const Vec & v) {
-    using S = typename Vec::Scalar;
-    using R = typename Eigen::NumTraits<S>::Real;
-    Index best = 0;
-    R bestVal = std::abs(v[0]);
-    for (Index i = 1; i < v.size(); ++i) {
-      R x = std::abs(v[i]);
-      if (x > bestVal) { bestVal = x; best = i; }
-    }
-    return best;
-  }
-
-  template <class Mat>
-  void save_raw_ascii(const Mat & M, const std::string & filename) {
-    std::ofstream os(filename);
-    if (!os) throw std::runtime_error("save_raw_ascii: cannot open " + filename);
-    os << std::setprecision(std::numeric_limits<double>::max_digits10);
-    for (Index r = 0; r < M.rows(); ++r) {
-      for (Index c = 0; c < M.cols(); ++c) {
-        if (c) os << ' ';
-        os << M(r, c);
-      }
-      os << '\n';
-    }
-  }
-
   template <class Mat>
   bool has_nan(const Mat & M) {
     return M.array().isNaN().any();
@@ -168,11 +103,6 @@ namespace OpenOrbitalOptimizer {
   template <class Mat>
   bool has_inf(const Mat & M) {
     return (M.array().isInf()).any();
-  }
-
-  template <class V1, class V2>
-  auto dot_nonconj(const V1 & a, const V2 & b) {
-    return (a.array() * b.array()).sum();
   }
 
   template <class T>
@@ -208,14 +138,6 @@ namespace OpenOrbitalOptimizer {
           out(r, c) = static_cast<T>(C(r, c).real());
       return out;
     }
-  }
-
-  inline IndexVector randperm(Index n) {
-    IndexVector out(n);
-    std::iota(out.data(), out.data() + n, Index{0});
-    static thread_local std::mt19937_64 rng{std::random_device{}()};
-    std::shuffle(out.data(), out.data() + n, rng);
-    return out;
   }
 
 } // namespace OpenOrbitalOptimizer

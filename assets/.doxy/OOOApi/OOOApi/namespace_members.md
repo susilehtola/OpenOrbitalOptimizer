@@ -10,7 +10,6 @@
 
 ## c
 
-* **cg\_optimize** ([**OpenOrbitalOptimizer::ConjugateGradients**](namespaceOpenOrbitalOptimizer_1_1ConjugateGradients.md))
 * **cubic\_polynomial\_zeros** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 
 
@@ -20,7 +19,6 @@
 * **DiagonalOrbitalHessianBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * **DiagonalOrbitalHessians** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * **DiagonalizedFockMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
-* **dot\_nonconj** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## e
@@ -36,7 +34,6 @@
 * **FockMatrix** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * **FockMatrixBlock** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md), [**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * **fit\_cubic\_polynomial\_with\_derivatives** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
-* **fit\_quartic\_polynomial\_with\_derivatives** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 * **find\_indices\_where** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
@@ -50,18 +47,11 @@
 
 * **Index** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 * **IndexVector** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **index\_max\_abs** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## j
 
 * **join\_columns** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-
-
-## l
-
-* **linspace** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **logspace** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## m
@@ -84,16 +74,18 @@
 * **OrbitalScalar** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
+## p
+
+* **project\_onto\_unit\_simplex** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
+
+
 ## r
 
-* **real\_roots\_in\_interval** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 * **RealOf** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **randperm** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## s
 
-* **save\_raw\_ascii** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 * **sort\_index\_ascending** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
@@ -101,12 +93,6 @@
 
 * **to\_arma** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * **to\_eigen** ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
-
-
-## u
-
-* **unvectorise\_real\_imag** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
-* **unvectorise\_real\_imag\_complex** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## v

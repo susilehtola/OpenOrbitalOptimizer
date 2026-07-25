@@ -28,7 +28,6 @@
 | Type | Name |
 | ---: | :--- |
 | namespace | [**Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md) <br> |
-| namespace | [**ConjugateGradients**](namespaceOpenOrbitalOptimizer_1_1ConjugateGradients.md) <br> |
 | namespace | [**HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md) <br> |
 
 
@@ -92,20 +91,12 @@
 
 | Type | Name |
 | ---: | :--- |
-|  auto | [**dot\_nonconj**](#function-dot_nonconj) (const V1 & a, const V2 & b) <br> |
 |  [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; T &gt; | [**expm\_antihermitian**](#function-expm_antihermitian) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; T &gt; & K) <br> |
 |  [**IndexVector**](namespaceOpenOrbitalOptimizer.md#typedef-indexvector) | [**find\_indices\_where**](#function-find_indices_where) (const Vec & v, Pred pred) <br> |
 |  bool | [**has\_inf**](#function-has_inf) (const Mat & M) <br>_True iff M contains an infinity._  |
 |  bool | [**has\_nan**](#function-has_nan) (const Mat & M) <br>_True iff M contains a NaN. Eigen has allFinite() but not_ [_**has\_nan()**_](namespaceOpenOrbitalOptimizer.md#function-has_nan) _._ |
-|  [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) | [**index\_max\_abs**](#function-index_max_abs) (const Vec & v) <br> |
 |  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; T &gt; | [**join\_columns**](#function-join_columns) (const std::vector&lt; [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; T &gt; &gt; & parts) <br> |
-|  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; T &gt; | [**linspace**](#function-linspace) (T a, T b, [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) n) <br> |
-|  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; T &gt; | [**logspace**](#function-logspace) (T a, T b, [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) n) <br> |
-|  [**IndexVector**](namespaceOpenOrbitalOptimizer.md#typedef-indexvector) | [**randperm**](#function-randperm) ([**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) n) <br> |
-|  void | [**save\_raw\_ascii**](#function-save_raw_ascii) (const Mat & M, const std::string & filename) <br> |
 |  [**IndexVector**](namespaceOpenOrbitalOptimizer.md#typedef-indexvector) | [**sort\_index\_ascending**](#function-sort_index_ascending) (const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; T &gt; & v) <br> |
-|  std::enable\_if\_t&lt;!Eigen::NumTraits&lt; T &gt;::IsComplex, [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; T &gt; &gt; | [**unvectorise\_real\_imag**](#function-unvectorise_real_imag) (const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; T &gt; & v, [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) rows, [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) cols) <br>_Inverse of vectorise\_real\_imag for the real case._  |
-|  [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; std::complex&lt; T &gt; &gt; | [**unvectorise\_real\_imag\_complex**](#function-unvectorise_real_imag_complex) (const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; T &gt; & v, [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) rows, [**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) cols) <br>_Inverse of vectorise\_real\_imag for the complex case._  |
 |  std::enable\_if\_t&lt;!Eigen::NumTraits&lt; T &gt;::IsComplex, [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; T &gt; &gt; | [**vectorise\_real\_imag**](#function-vectorise_real_imag) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; T &gt; & M) <br> |
 |  std::enable\_if\_t&lt; Eigen::NumTraits&lt; T &gt;::IsComplex, [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; [**RealOf**](namespaceOpenOrbitalOptimizer.md#typedef-realof)&lt; T &gt; &gt; &gt; | [**vectorise\_real\_imag**](#function-vectorise_real_imag) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; T &gt; & M) <br> |
 
@@ -510,27 +501,6 @@ using OpenOrbitalOptimizer::Vector = Eigen::Matrix<T, Eigen::Dynamic, 1>;
 
 
 
-### function dot\_nonconj 
-
-```C++
-template<class V1, class V2>
-auto OpenOrbitalOptimizer::dot_nonconj (
-    const V1 & a,
-    const V2 & b
-) 
-```
-
-
-
-arma::dot for complex vectors is non-conjugating; Eigen's a.dot(b) is conjugating. Provide a non-conjugating dot for parity. 
-
-
-        
-
-<hr>
-
-
-
 ### function expm\_antihermitian 
 
 ```C++
@@ -606,26 +576,6 @@ bool OpenOrbitalOptimizer::has_nan (
 
 
 
-### function index\_max\_abs 
-
-```C++
-template<class Vec>
-Index OpenOrbitalOptimizer::index_max_abs (
-    const Vec & v
-) 
-```
-
-
-
-[**Index**](namespaceOpenOrbitalOptimizer.md#typedef-index) of the largest absolute value in v (matches arma's index\_max for real and arma's index\_max(abs(v)) for complex). 
-
-
-        
-
-<hr>
-
-
-
 ### function join\_columns 
 
 ```C++
@@ -638,90 +588,6 @@ Vector < T > OpenOrbitalOptimizer::join_columns (
 
 
 Stack a vector of column vectors into one long column vector. Replaces arma::join\_cols on Cols. 
-
-
-        
-
-<hr>
-
-
-
-### function linspace 
-
-```C++
-template<class T>
-Vector < T > OpenOrbitalOptimizer::linspace (
-    T a,
-    T b,
-    Index n
-) 
-```
-
-
-
-arma::linspace(a, b, n) replacement returning n equally-spaced points [a, b]. 
-
-
-        
-
-<hr>
-
-
-
-### function logspace 
-
-```C++
-template<class T>
-Vector < T > OpenOrbitalOptimizer::logspace (
-    T a,
-    T b,
-    Index n
-) 
-```
-
-
-
-Logarithmically-spaced points 10^a ... 10^b (n points). Mirrors arma::logspace. 
-
-
-        
-
-<hr>
-
-
-
-### function randperm 
-
-```C++
-inline IndexVector OpenOrbitalOptimizer::randperm (
-    Index n
-) 
-```
-
-
-
-Return a random permutation of {0, 1, ..., n-1}. Mirrors arma::randperm. Uses a Mersenne Twister seeded once per program. 
-
-
-        
-
-<hr>
-
-
-
-### function save\_raw\_ascii 
-
-```C++
-template<class Mat>
-void OpenOrbitalOptimizer::save_raw_ascii (
-    const Mat & M,
-    const std::string & filename
-) 
-```
-
-
-
-Dump a dense matrix as ASCII (one row per line, space-separated). Stand-in for arma::Mat::save(name, arma::raw\_ascii). 
 
 
         
@@ -745,44 +611,6 @@ Return the indices that sort v in ascending order (stable). Stand-in for arma::s
 
 
         
-
-<hr>
-
-
-
-### function unvectorise\_real\_imag 
-
-_Inverse of vectorise\_real\_imag for the real case._ 
-```C++
-template<class T>
-std::enable_if_t<!Eigen::NumTraits< T >::IsComplex, Matrix < T > > OpenOrbitalOptimizer::unvectorise_real_imag (
-    const Vector < T > & v,
-    Index rows,
-    Index cols
-) 
-```
-
-
-
-
-<hr>
-
-
-
-### function unvectorise\_real\_imag\_complex 
-
-_Inverse of vectorise\_real\_imag for the complex case._ 
-```C++
-template<class T>
-Matrix < std::complex< T > > OpenOrbitalOptimizer::unvectorise_real_imag_complex (
-    const Vector < T > & v,
-    Index rows,
-    Index cols
-) 
-```
-
-
-
 
 <hr>
 

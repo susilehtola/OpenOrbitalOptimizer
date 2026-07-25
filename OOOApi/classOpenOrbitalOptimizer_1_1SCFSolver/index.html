@@ -1283,6 +1283,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-make_history_entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function make_history_entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-norm" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1360,10 +1371,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-set-13" class="md-nav__link">
+  <a href="#function-set-14" class="md-nav__link">
     <span class="md-ellipsis">
       
-        function set [1/3]
+        function set [1/4]
       
     </span>
   </a>
@@ -1371,10 +1382,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-set-23" class="md-nav__link">
+  <a href="#function-set-14_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        function set [2/3]
+        function set [1/4]
       
     </span>
   </a>
@@ -1382,10 +1393,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-set-33" class="md-nav__link">
+  <a href="#function-set-34" class="md-nav__link">
     <span class="md-ellipsis">
       
-        function set [3/3]
+        function set [3/4]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-set-44" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function set [4/4]
       
     </span>
   </a>
@@ -1397,6 +1419,39 @@
     <span class="md-ellipsis">
       
         function set_batched_fock_builder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-set_int" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function set_int
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-set_real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function set_real
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-set_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function set_string
       
     </span>
   </a>
@@ -1618,6 +1673,10 @@
 <td style="text-align: left;"><a href="#function-logger"><strong>logger</strong></a> (std::function&lt; void(int, const std::string &amp;)&gt; sink=nullptr) <br></td>
 </tr>
 <tr>
+<td style="text-align: right;"><a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitalhistoryentry"><strong>OrbitalHistoryEntry</strong></a>&lt; Torb, Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-make_history_entry"><strong>make_history_entry</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-densitymatrix"><strong>DensityMatrix</strong></a>&lt; Torb, Tbase &gt; &amp; density_matrix, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-fockbuilderreturn"><strong>FockBuilderReturn</strong></a>&lt; Torb, Tbase &gt; &amp; fock) const<br></td>
+</tr>
+<tr>
 <td style="text-align: right;">Tbase</td>
 <td style="text-align: left;"><a href="#function-norm"><strong>norm</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-matrix"><strong>Matrix</strong></a>&lt; Tbase &gt; &amp; mat, std::string norm="") const<br><em>Evaluate the norm.</em></td>
 </tr>
@@ -1647,19 +1706,35 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-set-13"><strong>set</strong></a> (const std::string &amp; key, Tbase v) <br><em>Set a real-valued option.</em></td>
+<td style="text-align: left;"><a href="#function-set-14"><strong>set</strong></a> (const std::string &amp; key, T value) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-set-23"><strong>set</strong></a> (const std::string &amp; key, int v) <br><em>Set an integer-valued option. Bool settings ride here as 0/1.</em></td>
+<td style="text-align: left;"><a href="#function-set-14"><strong>set</strong></a> (const std::string &amp; key, T value) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-set-33"><strong>set</strong></a> (const std::string &amp; key, const std::string &amp; v) <br><em>Set a string-valued option.</em></td>
+<td style="text-align: left;"><a href="#function-set-34"><strong>set</strong></a> (const std::string &amp; key, const std::string &amp; value) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-set-44"><strong>set</strong></a> (const std::string &amp; key, const char * value) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-set_batched_fock_builder"><strong>set_batched_fock_builder</strong></a> (<a href="../namespaceOpenOrbitalOptimizer/#typedef-batchedfockbuilder"><strong>BatchedFockBuilder</strong></a>&lt; Torb, Tbase &gt; builder) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-set_int"><strong>set_int</strong></a> (const std::string &amp; key, int v) <br><em>Set an integer-valued option. Bool settings ride here as 0/1.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-set_real"><strong>set_real</strong></a> (const std::string &amp; key, Tbase v) <br><em>Set a real-valued option.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-set_string"><strong>set_string</strong></a> (const std::string &amp; key, const std::string &amp; v) <br><em>Set a string-valued option.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">OrbitalOccupations&lt; Tbase &gt;</td>
@@ -1888,6 +1963,16 @@
 <p>Register a log sink. The callback receives <code>(level, message)</code> where <code>level</code> is the minimum verbosity_ at which the message would normally print and <code>message</code> is the finished, formatted text (newlines included). Pass a default-constructed std::function (or nullptr) to restore the stdout default. </p>
 <hr>
 
+<h3 id="function-make_history_entry">function make_history_entry</h3>
+<pre><code class="language-C++">inline OrbitalHistoryEntry &lt; Torb, Tbase &gt; OpenOrbitalOptimizer::SCFSolver::make_history_entry (
+    const DensityMatrix &lt; Torb, Tbase &gt; &amp; density_matrix,
+    const FockBuilderReturn &lt; Torb, Tbase &gt; &amp; fock
+) const
+</code></pre>
+<p>Make an orbital history entry, stamping it with a monotonically increasing index.</p>
+<p>The index is a per-solver member rather than a function-local static. It was originally a static, which was harmless while the index served only to order the history stack; but the DIIS caches key on it, so it is now correctness-critical that it be unique within a solver. A static is shared by every instance of a given instantiation and <code>index++</code> is a non-atomic read-modify-write, so two solvers driven from different threads could lose an update and hand one solver a repeated index  which would make a cache return another entry's commutator and silently corrupt the DIIS extrapolation. </p>
+<hr>
+
 <h3 id="function-norm">function norm</h3>
 <p><em>Evaluate the norm.</em> </p>
 <pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::norm (
@@ -1943,31 +2028,41 @@
 <p>State-transition rules: from DIIS we leave to ODA (or to CG when ODA is not allowed) on stall or large error; from ODA we hand to DIIS on integer occupations or to CG on fractional / failed occupations; from CG we burst <code>orbital_rotation_steps_after_oda_</code> (or the polytope dimension when that is left at zero) steps and then hand back to DIIS. The state-machine collapses gracefully when only a subset of the methods is allowed: <code>"DIIS"</code> alone keeps retrying DIIS until <code>maximum_iterations_</code> runs out; other subsets terminate early when every allowed method has failed in succession. </p>
 <hr>
 
-<h3 id="function-set-13">function set [1/3]</h3>
-<p><em>Set a real-valued option.</em> </p>
-<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set (
+<h3 id="function-set-14">function set [1/4]</h3>
+<pre><code class="language-C++">template&lt;typename T, std::enable_if_t&lt; std::is_integral_v&lt; T &gt;, int &gt;&gt;
+inline void OpenOrbitalOptimizer::SCFSolver::set (
     const std::string &amp; key,
-    Tbase v
+    T value
+) 
+</code></pre>
+<p>Set an option, dispatching on the argument type: integral arguments go to <code>set_int</code>, floating-point (and <code>Tbase</code>) arguments to <code>set_real</code>, strings to <code>set_string</code>.</p>
+<p>These are SFINAE-constrained templates rather than plain overloads on <code>(Tbase)</code> and <code>(int)</code>: with plain overloads a literal like <code>1e-9</code> converts to both <code>int</code> and a non-double <code>Tbase</code> at the same rank, so <code>set ("convergence_threshold", 1e-9)</code> was ambiguous — i.e. it did not compile at all — for the <code>float</code> and <code>_Float128</code> instantiations, and <code>set(key, 100u)</code> was ambiguous for every instantiation. Dispatching on <code>is_integral</code> removes the tie. </p>
+<hr>
+
+<h3 id="function-set-14_1">function set [1/4]</h3>
+<pre><code class="language-C++">template&lt;typename T, std::enable_if_t&lt;!std::is_integral_v&lt; T &gt; &amp;&amp;(std::is_floating_point_v&lt; T &gt;||std::is_same_v&lt; T, Tbase &gt;), int &gt;&gt;
+inline void OpenOrbitalOptimizer::SCFSolver::set (
+    const std::string &amp; key,
+    T value
 ) 
 </code></pre>
 <hr>
 
-<h3 id="function-set-23">function set [2/3]</h3>
-<p><em>Set an integer-valued option. Bool settings ride here as 0/1.</em> </p>
+<h3 id="function-set-34">function set [3/4]</h3>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set (
     const std::string &amp; key,
-    int v
+    const std::string &amp; value
 ) 
 </code></pre>
 <hr>
 
-<h3 id="function-set-33">function set [3/3]</h3>
-<p><em>Set a string-valued option.</em> </p>
+<h3 id="function-set-44">function set [4/4]</h3>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set (
     const std::string &amp; key,
-    const std::string &amp; v
+    const char * value
 ) 
 </code></pre>
+<p>String-literal overload; without it a <code>const char *</code> argument would not match the <code>std::string</code> overload any better than the numeric templates reject it, and the diagnostic would be poor. </p>
 <hr>
 
 <h3 id="function-set_batched_fock_builder">function set_batched_fock_builder</h3>
@@ -1976,6 +2071,33 @@
 ) 
 </code></pre>
 <p>Register a batched Fock builder. When set, optimal_damping_step uses it for the axis-vertex sweep, sharing integral / grid setup across the N_par builds. The single-density fock_builder remains in use for mixed-density trials (model minimum, cubic edges, backoff scales). Passing a default-constructed std::function clears the override and restores the loop-over- fock_builder default. </p>
+<hr>
+
+<h3 id="function-set_int">function set_int</h3>
+<p><em>Set an integer-valued option. Bool settings ride here as 0/1.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set_int (
+    const std::string &amp; key,
+    int v
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-set_real">function set_real</h3>
+<p><em>Set a real-valued option.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set_real (
+    const std::string &amp; key,
+    Tbase v
+) 
+</code></pre>
+<hr>
+
+<h3 id="function-set_string">function set_string</h3>
+<p><em>Set a string-valued option.</em> </p>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set_string (
+    const std::string &amp; key,
+    const std::string &amp; v
+) 
+</code></pre>
 <hr>
 
 <h3 id="function-update_occupations">function update_occupations</h3>

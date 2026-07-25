@@ -78,21 +78,12 @@ namespace OpenOrbitalOptimizer {
     }
 
     template<typename T>
-    std::tuple<T,T,T,T,T> fit_quartic_polynomial_with_derivatives(
-        T E0, T dE0, T d2E0, T x1, T E1, T dE1) {
-      T a0 = E0;
-      T a1 = dE0;
-      T a2 = d2E0 / T(2);
-      T x1sq = x1 * x1;
-      T x1cu = x1sq * x1;
-      // Solve for a3, a4:
-      //   a3*x1^3 + a4*x1^4 = E1 - a0 - a1*x1 - a2*x1^2
-      //   3*a3*x1^2 + 4*a4*x1^3 = dE1 - a1 - 2*a2*x1
-      T r1 = E1 - a0 - a1 * x1 - a2 * x1sq;
-      T r2 = dE1 - a1 - T(2) * a2 * x1;
-      T a3 = (T(4) * r1 - x1 * r2) / x1cu;
-      T a4 = (x1 * r2 - T(3) * r1) / (x1cu * x1);
-      return std::make_tuple(a0, a1, a2, a3, a4);
+    void project_onto_unit_simplex(Vector<T> & v) {
+      for(Index i = 0; i < v.size(); i++)
+        if(v(i) < T(0)) v(i) = T(0);
+      T s = v.sum();
+      if(s > T(1))
+        v /= s;
     }
 
     template<typename T, size_t N>
@@ -101,33 +92,6 @@ namespace OpenOrbitalOptimizer {
       for (size_t i = N - 1; i-- > 0;)
         r = r * x + coeffs[i];
       return r;
-    }
-
-    template<typename T, class Fn>
-    std::vector<T> real_roots_in_interval(Fn && f, T x_lo, T x_hi,
-                                          int n_samples = 33) {
-      std::vector<T> roots;
-      T dx = (x_hi - x_lo) / T(n_samples - 1);
-      T x_prev = x_lo;
-      T y_prev = f(x_prev);
-      for (int i = 1; i < n_samples; i++) {
-        T x_cur = x_lo + T(i) * dx;
-        T y_cur = f(x_cur);
-        if ((y_prev >= T(0)) != (y_cur >= T(0))) {
-          T lo = x_prev, hi = x_cur;
-          T ylo = y_prev, yhi = y_cur;
-          for (int j = 0; j < 60; j++) {
-            T mid = (T(1)/T(2)) * (lo + hi);
-            T ymid = f(mid);
-            if ((ymid >= T(0)) == (ylo >= T(0))) { lo = mid; ylo = ymid; }
-            else                                 { hi = mid; yhi = ymid; }
-          }
-          roots.push_back((T(1)/T(2)) * (lo + hi));
-        }
-        x_prev = x_cur;
-        y_prev = y_cur;
-      }
-      return roots;
     }
 
   }
@@ -157,6 +121,8 @@ namespace OpenOrbitalOptimizer {
     size_t number_of_blocks_;
     OrbitalHistory<Torb, Tbase> orbital_history_;
     OrbitalOccupations<Tbase> orbital_occupations_;
+
+    mutable size_t next_history_index_ = 0;
 
     mutable std::map<size_t, std::vector<Matrix<Torb>>> diis_commutator_cache_;
 
@@ -431,27 +397,15 @@ namespace OpenOrbitalOptimizer {
     }
 
     Vector<Tbase> vectorise(const std::vector<Matrix<Torb>> & mat) const {
-      // Compute length of return vector
-      size_t N=0;
-
       std::vector<Vector<Tbase>> vectors(mat.size());
       for(size_t iblock=0;iblock<mat.size();iblock++) {
         if(mat[iblock].size()==0)
           continue;
         vectors[iblock]=vectorise(mat[iblock]);
-        N += vectors[iblock].size();
       }
-
-      Vector<Tbase> v = Vector<Tbase>::Zero(N);
-      size_t ioff=0;
-      for(size_t iblock=0;iblock<vectors.size();iblock++) {
-        if(mat[iblock].size()==0)
-          continue;
-        v.segment(ioff, vectors[iblock].size())=vectors[iblock];
-        ioff += vectors[iblock].size();
-      }
-
-      return v;
+      // join_columns skips zero-length parts, so empty blocks need no
+      // special-casing in the concatenation.
+      return join_columns(vectors);
     }
 
     Matrix<Torb> matricise(const Vector<Tbase> & vec, size_t nrows, size_t ncols) const {
@@ -498,6 +452,27 @@ namespace OpenOrbitalOptimizer {
       trace_DF_cache_.clear();
       diis_matrix_cache_.clear();
       density_diff_cache_.clear();
+    }
+
+    void prune_diis_caches_() const {
+      std::vector<size_t> live;
+      live.reserve(orbital_history_.size());
+      for(size_t i = 0; i < orbital_history_.size(); i++)
+        live.push_back(get_index(i));
+      std::sort(live.begin(), live.end());
+      auto is_live = [&live](size_t idx) {
+        return std::binary_search(live.begin(), live.end(), idx);
+      };
+      for(auto it = diis_commutator_cache_.begin(); it != diis_commutator_cache_.end(); )
+        it = is_live(it->first) ? std::next(it) : diis_commutator_cache_.erase(it);
+      auto prune_pair_keyed = [&is_live](auto & cache) {
+        for(auto it = cache.begin(); it != cache.end(); )
+          it = (is_live(it->first.first) && is_live(it->first.second))
+                 ? std::next(it) : cache.erase(it);
+      };
+      prune_pair_keyed(trace_DF_cache_);
+      prune_pair_keyed(diis_matrix_cache_);
+      prune_pair_keyed(density_diff_cache_);
     }
 
     static std::pair<size_t, size_t> sorted_pair_(size_t a, size_t b) {
@@ -591,27 +566,15 @@ namespace OpenOrbitalOptimizer {
       std::vector<Vector<Tbase>> error_vectors(number_of_blocks_);
       for(size_t iblock = 0; iblock<number_of_blocks_;iblock++) {
         error_vectors[iblock] = diis_error_vector(ihist, iblock);
-        log_(20, "ihist %i block %i error vector norm %e\n", (int) ihist, (int) iblock, norm(error_vectors[iblock]));
+        log_(20, "ihist %i block %i error vector norm %e\n", (int) ihist, (int) iblock, (double) (norm(error_vectors[iblock])));
         log_stream_(30) << error_vectors[iblock] << std::endl;
       }
 
-      // Compound error vector
-      size_t nelem = 0;
-      for(auto & block: error_vectors)
-        nelem += block.size();
-
-      Vector<Tbase> return_vector(nelem);
-      size_t ioff=0;
-      for(auto & block: error_vectors) {
-        if(block.size()>0) {
-          return_vector.segment(ioff, block.size()) = block;
-          ioff += block.size();
-        }
-      }
-      if(ioff!=nelem)
-        throw std::logic_error("Indexing error!\n");
-
-      return return_vector;
+      // Compound error vector. join_columns skips zero-length parts
+      // and gets the offset bookkeeping right by construction, so the
+      // hand-rolled offset loop and its "Indexing error!" assertion
+      // are no longer needed.
+      return join_columns(error_vectors);
     }
 
     Tbase compute_noise_floor() const {
@@ -779,7 +742,6 @@ namespace OpenOrbitalOptimizer {
 
       IndexVector idx(sort_index_ascending(yguess));
       Vector<Tbase> x = xguess[idx[0]];
-      //std::cout << "Initial x: " << x.transpose() << std::endl;
 
       Matrix<Tbase> search_directions = Matrix<Tbase>::Identity(b.size(), b.size());
 
@@ -826,35 +788,13 @@ namespace OpenOrbitalOptimizer {
         }
         old_x = x;
 
-        //std::cout << "x: " << x.transpose() << std::endl;
         if(dE > -df_tol) {
           log_(10, "A/EDIIS weights converged in %i macroiterations\n",(int) imacro);
-          //std::cout << "xconv: " << x.transpose() << std::endl;
           break;
         } else if(imacro==max_iter-1) {
-          log_(10, "A/EDIIS weights did not converge in %i macroiterations, dE=%e\n", (int) imacro, dE);
-          //std::cout << "xfinal: " << x.transpose() << std::endl;
+          log_(10, "A/EDIIS weights did not converge in %i macroiterations, dE=%e\n", (int) imacro, (double) (dE));
         }
 
-        /*
-        // Rotate search directions. Generate a random ordering of the columns
-        IndexVector rp(randperm(search_directions.cols()));
-        {
-          Matrix<Tbase> tmp(search_directions.rows(), search_directions.cols());
-          for(Index c=0;c<search_directions.cols();c++)
-            tmp.col(c) = search_directions.col(rp(c));
-          search_directions = tmp;
-        }
-        // Mix the vectors together
-        for(Index i=0;i<search_directions.cols();i++)
-          for(Index j=0;j<i;j++) {
-            Tbase r = 0;
-            Vector<Tbase> newi = (1-r)*search_directions.col(i) + r*search_directions.col(j);
-            Vector<Tbase> newj = (1-r)*search_directions.col(j) + r*search_directions.col(i);
-            search_directions.col(i) = newi;
-            search_directions.col(j) = newj;
-          }
-        */
       }
 
       // Handle the edge case where the last matrix has zero norm
@@ -877,7 +817,6 @@ namespace OpenOrbitalOptimizer {
             }
           }
         }
-        //std::cout << "Using suboptimal solution instead: " << x.transpose() << std::endl;
       }
 
       //printf("Current energy %e\n",current_point);
@@ -987,7 +926,7 @@ namespace OpenOrbitalOptimizer {
 
       Index idx;
       density_projections.maxCoeff(&idx);
-      log_(10, "Max density projection %e with %s weights\n",density_projections(idx),weight_legend[idx].c_str());
+      log_(10, "Max density projection %e with %s weights\n",(double) (density_projections(idx)),weight_legend[idx].c_str());
 
       Vector<Tbase> aediis_w = candidate_w.col(idx);
       Vector<Tbase> weights(aediis_coeff * aediis_w + (Tbase(1) - aediis_coeff) * diis_w);
@@ -1100,37 +1039,6 @@ namespace OpenOrbitalOptimizer {
       }
 
       return std::make_pair(orbitals,occupations);
-    }
-
-    OrbitalOccupations<Tbase> determine_maximum_overlap_occupations(const OrbitalOccupations<Tbase> & reference_occupations, const Orbitals<Torb> & C_reference, const Orbitals<Torb> & C_new) const {
-      OrbitalOccupations<Tbase> new_occupations(reference_occupations);
-      for(size_t iblock=0; iblock<new_occupations.size(); iblock++) {
-        if(C_reference[iblock].size() == 0)
-          continue;
-        // Initialize
-        new_occupations[iblock].setZero();
-
-        // Magnitude of the overlap between the new orbitals and the reference ones
-        Matrix<Tbase> orbital_projections = (C_new[iblock].adjoint()*C_reference[iblock]).array().abs().matrix();
-
-        // Occupy the orbitals in ascending energy, especially if there are unoccupied orbitals in-between
-        for(Index iorb=0; iorb<reference_occupations[iblock].size(); iorb++) {
-          // Projections for this orbital
-          Vector<Tbase> projection = orbital_projections.col(iorb);
-          // Find the maximum index
-          Index maximal_projection_index;
-          Tbase maximal_projection = projection.maxCoeff(&maximal_projection_index);
-          (void) maximal_projection;
-          // Store projection
-          new_occupations[iblock][maximal_projection_index] = reference_occupations[iblock](iorb);
-          // and reset the corresponding row so that the orbital can't be reused
-          orbital_projections.row(maximal_projection_index).setZero();
-
-          //printf("Symmetry %i: reference orbital %i with occupation %.3f matches new orbital %i with projection %e\n",(int) iblock, (int) iorb, reference_occupations[iblock](iorb), (int) maximal_projection_index, maximal_projection);
-        }
-      }
-
-      return new_occupations;
     }
 
     Tbase density_overlap(const Orbitals<Torb> & lorb, const OrbitalOccupations<Tbase> & locc, const Orbitals<Torb> & rorb, const OrbitalOccupations<Tbase> & rocc) const {
@@ -1412,7 +1320,7 @@ namespace OpenOrbitalOptimizer {
                 log_(5, "%s %3i % .9f\n",
                        block_descriptions_[std::get<1>(all_energies[iorb])].c_str(),
                        (int) std::get<2>(all_energies[iorb]),
-                       std::get<0>(all_energies[iorb]));
+                       (double) (std::get<0>(all_energies[iorb])));
             }
 
             // Enumerate the extremal vertices of the integer-filling
@@ -1579,7 +1487,23 @@ namespace OpenOrbitalOptimizer {
           size_t ntrial = trial_occupations_per_particle[iparticle].size();
           if(ntrial==0)
             continue;
-          Tbase lambda_sum = lambda.segment(iparam, ntrial).sum();
+          // Project this particle's lambda block onto its simplex
+          // {lambda >= 0, sum(lambda) <= 1} before using it.
+          //
+          // The QP solver enforces that simplex only to the accuracy
+          // of its constrained linear solve, so an ill-conditioned
+          // reduced Hessian -- exactly what a starting density
+          // projected between two different basis sets produces --
+          // can leave sum(lambda) above 1 by of order cond * eps.
+          // Any overshoot hands old_dm a negative weight and makes
+          // the mixed density non-positive-semidefinite, which then
+          // surfaces far downstream as a negative natural occupation.
+          // Nothing in the algorithm wants lambda outside the
+          // simplex: the trial loop only ever scales candidates
+          // *down*, so clamping here loses no intended step.
+          Vector<Tbase> lam_p = lambda.segment(iparam, ntrial);
+          HelperRoutines::project_onto_unit_simplex<Tbase>(lam_p);
+          const Tbase lambda_sum = lam_p.sum();
 
           for(size_t iblock_particle = 0; iblock_particle < (size_t)number_of_blocks_per_particle_type_(iparticle); iblock_particle++) {
             size_t iblock = iblock_particle + particle_block_offset(iparticle);
@@ -1590,9 +1514,9 @@ namespace OpenOrbitalOptimizer {
                 reference_orbitals[iblock], reference_occupations[iblock],
                 maximum_occupation_(iblock));
 
-            Vector<Tbase> new_occ = lambda(iparam)*trial_occupations_per_particle[iparticle][0][iblock_particle];
+            Vector<Tbase> new_occ = lam_p(0)*trial_occupations_per_particle[iparticle][0][iblock_particle];
             for(size_t itrial=1; itrial<ntrial; itrial++)
-              new_occ += lambda(iparam+itrial)*trial_occupations_per_particle[iparticle][itrial][iblock_particle];
+              new_occ += lam_p(itrial)*trial_occupations_per_particle[iparticle][itrial][iblock_particle];
 
             Matrix<Torb> new_dm = build_density_block_(
                 new_orbitals[iblock], new_occ, maximum_occupation_(iblock));
@@ -1604,13 +1528,32 @@ namespace OpenOrbitalOptimizer {
             interp_orbs[iblock] = es.eigenvectors();
             interp_occs[iblock] *= Tbase{-1};
 
-            const Tbase zero_tol = 10*maximum_occupation_(iblock)*std::numeric_limits<Tbase>::epsilon();
+            // Noise tolerances for the natural occupations. Both are
+            // powers of epsilon so they stay tight in extended
+            // precision, and both scale with the block's occupation
+            // magnitude.
+            //
+            // An absolute multiple of epsilon is right for a density
+            // that was just built, but far too tight for one that has
+            // been projected between basis sets and then mixed: the
+            // eigendecomposition of such a matrix carries error of
+            // order cond * eps, which can be thousands of epsilons.
+            //   zero_tol = sqrt(eps)      ~ 1.5e-8 (double), 1e-17 (quad)
+            //   fail_tol = eps^(1/4)      ~ 1.2e-4 (double), 1e-8  (quad)
+            // Occupations below zero_tol are chemically meaningless
+            // and are clamped to zero; the guard then fires only on
+            // occupations negative enough to mean a genuinely corrupt
+            // density (order 0.1), never on numerical noise.
+            const Tbase eps_occ   = std::numeric_limits<Tbase>::epsilon();
+            const Tbase occ_scale = std::max(Tbase(1), maximum_occupation_(iblock));
+            const Tbase zero_tol  = std::sqrt(eps_occ) * occ_scale;
+            const Tbase fail_tol  = std::sqrt(std::sqrt(eps_occ)) * occ_scale;
             for(Index k=0; k<interp_occs[iblock].size(); k++) {
               if(std::abs(interp_occs[iblock](k)) <= zero_tol)
                 interp_occs[iblock](k) = Tbase{0};
             }
 
-            if(interp_occs[iblock].minCoeff() < -100*std::numeric_limits<Tbase>::epsilon()) {
+            if(interp_occs[iblock].minCoeff() < -fail_tol) {
               std::ostringstream oss;
               oss << "Negative natural occupation numbers in block " << iblock << "!\n" << interp_occs[iblock];
               throw std::logic_error(oss.str());
@@ -1694,7 +1637,7 @@ namespace OpenOrbitalOptimizer {
         evaluations[idim] = std::make_pair(std::move(axis_densities[idim]),
                                            std::move(axis_fock[idim]));
         log_(5, "Roothaan step in dimension %i yields energy % .10f change %e\n",
-               (int) idim, evaluations[idim].second.first, evaluations[idim].second.first - E_orig);
+               (int) idim, (double) (evaluations[idim].second.first), (double) (evaluations[idim].second.first - E_orig));
       }
 
       // Build a second-order Taylor model of the energy on the product
@@ -1764,21 +1707,36 @@ namespace OpenOrbitalOptimizer {
           hess, grad, E_orig, particle_off, particle_len);
       log_(5, "Quadratic model minimum at lambda = (");
       for(Index i=0; i<lam_opt.size(); i++)
-        log_(5, "%s%g", i ? "," : "", lam_opt(i));
-      log_(5, "), model energy change %e\n", model_min - E_orig);
+        log_(5, "%s%g", i ? "," : "", (double) (lam_opt(i)));
+      log_(5, "), model energy change %e\n", (double) (model_min - E_orig));
 
       // Candidate list: (lambda, tag, model-predicted energy at lambda).
       // The QP model gives one; along each 1D axis and each pair-
-      // diagonal edge we also fit a quartic Hermite polynomial through
-      // the two endpoint values, endpoint slopes, and the second
-      // derivative at lambda=0 taken from the analytic Hessian block
-      // (H_ii on an axis, d^T H d on an edge). That's exactly the
-      // five data points a quartic needs; no additional Fock builds
-      // beyond the npars axis vertices already evaluated. Roots of
-      // each 1D quartic's derivative inside (0,1) become candidates,
-      // scored by their own polynomial value at the root (the multi-
-      // dim quadratic underestimates 1D non-linearity along that
-      // direction).
+      // diagonal edge we also fit a cubic Hermite polynomial through
+      // the two endpoint energies and the two endpoint slopes. Those
+      // four data exactly determine a cubic and cost no Fock builds
+      // beyond the npars axis vertices already evaluated. Interior
+      // minima of each 1D cubic become candidates, scored by that
+      // polynomial's own value at the root (the multi-dimensional
+      // quadratic underestimates 1D non-linearity along the ray).
+      //
+      // A quartic is deliberately NOT used. Along a linear ray in
+      // density space the Hartree-Fock energy is exactly quadratic, so
+      // the cubic already carries a spare order for the
+      // exchange-correlation non-linearity. More to the point, no
+      // genuinely independent fifth datum is available for free:
+      //   * H_ii = 2 (E_1 - E_0 - g_0) is itself the Hermite quadratic
+      //     through the same three data, so imposing it makes the
+      //     quartic's residual vanish identically -- it adds nothing.
+      //   * E'(1) - E'(0) is a function of two constraints the fit
+      //     already carries; its residual equals -a3/2 of this very
+      //     cubic, i.e. the same information redistributed.
+      // Both would also form that residual as a difference of two
+      // total energies, so near convergence they amplify roundoff into
+      // spurious stationary points. A real fifth datum would need a
+      // midpoint energy (an extra Fock build per ray) or the
+      // exchange-correlation kernel, which the Fock-builder interface
+      // does not expose.
       struct Candidate {
         Vector<Tbase> lam;
         std::string tag;
@@ -1787,34 +1745,57 @@ namespace OpenOrbitalOptimizer {
       std::vector<Candidate> candidates;
       if(lam_opt.template lpNorm<Eigen::Infinity>() > 100*eps)
         candidates.push_back({lam_opt, "model min", model_min});
+
+      // Fit the cubic through (0, E0, dE0) and (1, E1, dE1) and emit a
+      // candidate at each interior minimum. ``place`` writes the root
+      // into the lambda vector for the ray being probed.
+      auto add_cubic_candidates =
+          [&](Tbase E0, Tbase dE0, Tbase E1, Tbase dE1,
+              const std::string & tag, auto && place) {
+        auto c = HelperRoutines::fit_cubic_polynomial_with_derivatives<Tbase>(
+                     E0, dE0, Tbase(1), E1, dE1);
+        std::pair<Tbase, Tbase> zeros;
+        try {
+          zeros = std::apply(HelperRoutines::cubic_polynomial_zeros<Tbase>, c);
+        } catch(std::logic_error &) {
+          return;   // constant derivative, or no real stationary point
+        }
+        const std::array<Tbase, 4> coeffs = {std::get<0>(c), std::get<1>(c),
+                                             std::get<2>(c), std::get<3>(c)};
+        bool emitted = false;
+        Tbase first_root = Tbase(0);
+        for(Tbase z : {zeros.first, zeros.second}) {
+          if(!(z > 100*eps && z < Tbase(1) - 100*eps))
+            continue;
+          // Keep minima only: f''(z) = 2 a2 + 6 a3 z > 0. The other
+          // root of the derivative is a maximum and is never a useful
+          // trial step. This is the same test the sigma line search
+          // applies to its cubic fits.
+          if(!(Tbase(2)*coeffs[2] + Tbase(6)*coeffs[3]*z > Tbase(0)))
+            continue;
+          // cubic_polynomial_zeros returns a doubled root when the
+          // cubic degenerates to a quadratic; do not emit it twice.
+          if(emitted && std::abs(z - first_root) <= 100*eps)
+            continue;
+          Vector<Tbase> xc = Vector<Tbase>::Zero(npars);
+          place(z, xc);
+          candidates.push_back({std::move(xc), tag,
+                                HelperRoutines::evaluate_polynomial<Tbase, 4>(coeffs, z)});
+          emitted = true;
+          first_root = z;
+        }
+      };
+
       for(size_t i=0; i<npars; i++) {
         Tbase E_i = evaluations[i].second.first;
         Tbase g_i = grad(i);
-        Tbase H_ii = hess(i, i);
         Tbase slope_at_1 = trace_diff(D_axis[i], D_orig, evaluations[i].second.second);
-        auto q = HelperRoutines::fit_quartic_polynomial_with_derivatives<Tbase>(
-            E_orig, g_i, H_ii, Tbase(1), E_i, slope_at_1);
-        std::array<Tbase, 5> coeffs = {std::get<0>(q), std::get<1>(q), std::get<2>(q),
-                                       std::get<3>(q), std::get<4>(q)};
-        // Derivative is a cubic (coefficients: a1, 2a2, 3a3, 4a4).
-        auto dpoly = [&](Tbase x) {
-          return coeffs[1] + x * (Tbase(2)*coeffs[2]
-                          + x * (Tbase(3)*coeffs[3] + x * Tbase(4)*coeffs[4]));
-        };
-        auto zeros = HelperRoutines::real_roots_in_interval<Tbase>(
-            dpoly, 100*eps, Tbase(1) - 100*eps);
-        for(Tbase z : zeros) {
-          Vector<Tbase> xc = Vector<Tbase>::Zero(npars);
-          xc(i) = z;
-          Tbase E_pred = HelperRoutines::evaluate_polynomial<Tbase, 5>(coeffs, z);
-          candidates.push_back({std::move(xc),
-                                std::string("quartic axis ") + std::to_string(i),
-                                E_pred});
-        }
+        add_cubic_candidates(E_orig, g_i, E_i, slope_at_1,
+                             std::string("cubic axis ") + std::to_string(i),
+                             [i](Tbase z, Vector<Tbase> & xc) { xc(i) = z; });
       }
-      // Pair-diagonal quartics along each edge from vertex e_i to
-      // vertex e_j. Direction d = e_j - e_i; the second derivative at
-      // t=0 in that direction is d^T H d = H_ii + H_jj - 2 H_ij.
+      // Pair-diagonal cubics along each edge from vertex e_i to vertex
+      // e_j, parameterised by t with lambda = (1-t) e_i + t e_j.
       for(size_t i=0; i<npars; i++) {
         for(size_t j=i+1; j<npars; j++) {
           const auto & F_i = evaluations[i].second.second;
@@ -1823,26 +1804,12 @@ namespace OpenOrbitalOptimizer {
           Tbase E_j = evaluations[j].second.first;
           Tbase slope_i = trace_diff(D_axis[j], D_axis[i], F_i);
           Tbase slope_j = trace_diff(D_axis[j], D_axis[i], F_j);
-          Tbase d2_along_edge = hess(i, i) + hess(j, j) - Tbase(2) * hess(i, j);
-          auto q = HelperRoutines::fit_quartic_polynomial_with_derivatives<Tbase>(
-              E_i, slope_i, d2_along_edge, Tbase(1), E_j, slope_j);
-          std::array<Tbase, 5> coeffs = {std::get<0>(q), std::get<1>(q), std::get<2>(q),
-                                         std::get<3>(q), std::get<4>(q)};
-          auto dpoly = [&](Tbase x) {
-            return coeffs[1] + x * (Tbase(2)*coeffs[2]
-                            + x * (Tbase(3)*coeffs[3] + x * Tbase(4)*coeffs[4]));
-          };
-          auto zeros = HelperRoutines::real_roots_in_interval<Tbase>(
-              dpoly, 100*eps, Tbase(1) - 100*eps);
-          for(Tbase z : zeros) {
-            Vector<Tbase> xc = Vector<Tbase>::Zero(npars);
-            xc(i) = Tbase(1) - z;
-            xc(j) = z;
-            Tbase E_pred = HelperRoutines::evaluate_polynomial<Tbase, 5>(coeffs, z);
-            candidates.push_back({std::move(xc),
-                                  std::string("quartic edge ") + std::to_string(i) + "-" + std::to_string(j),
-                                  E_pred});
-          }
+          add_cubic_candidates(E_i, slope_i, E_j, slope_j,
+                               std::string("cubic edge ") + std::to_string(i) + "-" + std::to_string(j),
+                               [i,j](Tbase z, Vector<Tbase> & xc) {
+                                 xc(i) = Tbase(1) - z;
+                                 xc(j) = z;
+                               });
         }
       }
 
@@ -1862,11 +1829,11 @@ namespace OpenOrbitalOptimizer {
         size_t n_model = 0, n_axis = 0, n_edge = 0;
         for(const auto & cand : candidates) {
           if(cand.tag == "model min") n_model++;
-          else if(cand.tag.rfind("quartic axis", 0) == 0) n_axis++;
-          else if(cand.tag.rfind("quartic edge", 0) == 0) n_edge++;
+          else if(cand.tag.rfind("cubic axis", 0) == 0) n_axis++;
+          else if(cand.tag.rfind("cubic edge", 0) == 0) n_edge++;
         }
         log_(5, "Trial loop: %zu candidates (%zu quadratic-model + "
-               "%zu quartic-axis + %zu quartic-edge); ordered by "
+               "%zu cubic-axis + %zu cubic-edge); ordered by "
                "predicted energy so the first Fock build usually "
                "lands the ODA step.\n",
                candidates.size(), n_model, n_axis, n_edge);
@@ -1895,8 +1862,8 @@ namespace OpenOrbitalOptimizer {
             eval_accepted = std::move(eval);
           }
           log_(10, "ODA %s at scale %g gives E = % .10f, change %e%s\n",
-                 cand.tag.c_str(), scale, ok ? eval_accepted.second.first : eval.second.first,
-                 (ok ? eval_accepted.second.first : eval.second.first) - E_orig,
+                 cand.tag.c_str(), (double) (scale), (double) (ok ? eval_accepted.second.first : eval.second.first),
+                 (double) ((ok ? eval_accepted.second.first : eval.second.first) - E_orig),
                  ok ? " (accepted)" : "");
           if(ok) break;
         }
@@ -1950,7 +1917,7 @@ namespace OpenOrbitalOptimizer {
           Tbase delta_inf = delta.template lpNorm<Eigen::Infinity>();
           if(delta_inf < Tbase(100) * eps) {
             log_(10, "ODA refit %i: |dlambda|_inf = %e below noise, model has "
-                     "converged at the accepted iterate.\n", refit + 1, delta_inf);
+                     "converged at the accepted iterate.\n", refit + 1, (double) (delta_inf));
             break;
           }
           // Predicted improvement pre-check: if the QP's own model
@@ -1963,7 +1930,7 @@ namespace OpenOrbitalOptimizer {
           if(-model_delta < refit_progress_tol) {
             log_(10, "ODA refit %i: model predicts progress %e below %e; "
                      "skipping Fock build and exiting refinement.\n",
-                     refit + 1, -model_delta, refit_progress_tol);
+                     refit + 1, (double) (-model_delta), (double) (refit_progress_tol));
             break;
           }
           auto eval_new = evaluate(lam_new);
@@ -1973,7 +1940,7 @@ namespace OpenOrbitalOptimizer {
           Tbase delta_E = E_new - E_at_x;
           log_(10, "ODA refit %i: |dlambda|_inf = %e, model E = % .10f, "
                    "actual E = % .10f, change %e%s\n",
-                   refit + 1, delta_inf, model_min_new, E_new, delta_E,
+                   refit + 1, (double) (delta_inf), (double) (model_min_new), (double) (E_new), (double) (delta_E),
                    ok ? " (accepted)" : "");
           if(!ok) {
             // Refined step didn't improve on the previously accepted
@@ -1989,7 +1956,7 @@ namespace OpenOrbitalOptimizer {
             // iterate and let DIIS spend its Fock builds instead.
             log_(10, "ODA refit %i: further refit progress %e below "
                      "%e; exiting refinement loop.\n",
-                     refit + 1, -delta_E, refit_progress_tol);
+                     refit + 1, (double) (-delta_E), (double) (refit_progress_tol));
             break;
           }
         }
@@ -2028,7 +1995,7 @@ namespace OpenOrbitalOptimizer {
       if(verbosity_ >= 10) {
         log_stream_(10) << "Density differences: " << density_differences.transpose() << std::endl;
       } else if(verbosity_>=5) {
-        log_(5, "Density matrix difference %e between lowest-energy and newest entry\n",density_differences(0));
+        log_(5, "Density matrix difference %e between lowest-energy and newest entry\n",(double) (density_differences(0)));
       }
 
       // Sort the differences
@@ -2050,304 +2017,10 @@ namespace OpenOrbitalOptimizer {
           // Remember the off-by-one in the indices
           orbital_history_.erase(orbital_history_.begin()+ihistm1+1);
         }
+        prune_diis_caches_();
       }
     }
 
-    std::vector<OrbitalRotation> degrees_of_freedom() const {
-      std::vector<OrbitalRotation> dofs;
-      // Reference calculation
-      const auto reference_occupations = get_orbital_occupations();
-
-      // List occupied-occupied rotations, in case some orbitals are not fully occupied
-      for(size_t iblock = 0; iblock < reference_occupations.size(); iblock++) {
-        if(empty_block(iblock))
-          continue;
-        IndexVector occupied_indices = find_indices_where(reference_occupations[iblock], [](Tbase v){ return v > Tbase(0); });
-        for(Index io1 = 0; io1 < occupied_indices.size(); io1++)
-          for(Index io2 = 0; io2 < io1; io2++) {
-            auto o1 = occupied_indices[io1];
-            auto o2 = occupied_indices[io2];
-            if(reference_occupations[iblock][o1] != reference_occupations[iblock][o2])
-              dofs.push_back(std::make_tuple(iblock, o1, o2));
-          }
-      }
-
-      // List occupied-virtual rotations
-      for(size_t iblock = 0; iblock < reference_occupations.size(); iblock++) {
-        if(empty_block(iblock))
-          continue;
-        // Find the occupied and virtual blocks
-        IndexVector occupied_indices = find_indices_where(reference_occupations[iblock], [](Tbase v){ return v > Tbase(0); });
-        IndexVector virtual_indices = find_indices_where(reference_occupations[iblock], [](Tbase v){ return v == Tbase(0); });
-        for(Index oi=0; oi<occupied_indices.size(); oi++)
-          for(Index vi=0; vi<virtual_indices.size(); vi++)
-            dofs.push_back(std::make_tuple(iblock, occupied_indices[oi], virtual_indices[vi]));
-      }
-
-      return dofs;
-    }
-
-    Vector<Tbase> orbital_gradient_vector() const {
-      // Get the degrees of freedom
-      auto dof_list = degrees_of_freedom();
-      Vector<Tbase> orb_grad;
-
-      if constexpr (!Eigen::NumTraits<Torb>::IsComplex) {
-        orb_grad = Vector<Tbase>::Zero(dof_list.size());
-      } else {
-        orb_grad = Vector<Tbase>::Zero(2*dof_list.size());
-      }
-
-      // Extract the orbital gradient
-      for(size_t idof = 0; idof < dof_list.size(); idof++) {
-        auto dof(dof_list[idof]);
-        auto iblock = std::get<0>(dof);
-        auto iorb = std::get<1>(dof);
-        auto jorb = std::get<2>(dof);
-        auto fock_block = get_fock_matrix_block(0, iblock);
-        auto orbital_block = get_orbital_block(0, iblock);
-        auto occ_block = get_orbital_occupation_block(0, iblock);
-
-        Matrix<Torb> fock_mo = orbital_block.adjoint() * fock_block * orbital_block;
-        orb_grad(idof) = 2*std::real(fock_mo(iorb,jorb))*(occ_block(jorb)-occ_block(iorb));
-        if constexpr (Eigen::NumTraits<Torb>::IsComplex) {
-          orb_grad(dof_list.size() + idof) = 2*std::imag(fock_mo(iorb,jorb))*(occ_block(jorb)-occ_block(iorb));
-        }
-      }
-
-      if(has_nan(orb_grad))
-        throw std::logic_error("Orbital gradient has NaNs");
-
-      return orb_grad;
-    }
-
-    Vector<Tbase> diagonal_orbital_hessian() const {
-      // Get the degrees of freedom
-      auto dof_list = degrees_of_freedom();
-      Vector<Tbase> orb_hess;
-
-      if constexpr (!Eigen::NumTraits<Torb>::IsComplex) {
-        orb_hess = Vector<Tbase>::Zero(dof_list.size());
-      } else {
-        orb_hess = Vector<Tbase>::Zero(2*dof_list.size());
-      }
-
-      // Extract the orbital hessient
-      for(size_t idof = 0; idof < dof_list.size(); idof++) {
-        auto dof(dof_list[idof]);
-        auto iblock = std::get<0>(dof);
-        auto iorb = std::get<1>(dof);
-        auto jorb = std::get<2>(dof);
-        auto fock_block = get_fock_matrix_block(0, iblock);
-        auto orbital_block = get_orbital_block(0, iblock);
-        auto occ_block = get_orbital_occupation_block(0, iblock);
-
-        Matrix<Torb> fock_mo = orbital_block.adjoint() * fock_block * orbital_block;
-        orb_hess(idof) = 2*std::real((fock_mo(iorb,iorb)-fock_mo(jorb,jorb))*(occ_block(jorb)-occ_block(iorb)));
-        if constexpr (Eigen::NumTraits<Torb>::IsComplex) {
-          orb_hess(dof_list.size() + idof) = orb_hess(idof);
-        }
-      }
-      return orb_hess;
-    }
-
-    Vector<Tbase> precondition_search_direction(const Vector<Tbase> & gradient, const Vector<Tbase> & diagonal_hessian, Tbase shift=Tbase(0.1)) const {
-      if(gradient.size() != diagonal_hessian.size())
-        throw std::logic_error("precondition_search_direction: gradient and diagonal hessian have different size!\n");
-
-      // Build positive definite diagonal Hessian
-      Vector<Tbase> positive_hessian(diagonal_hessian);
-      positive_hessian += (-diagonal_hessian.minCoeff()+shift)*Vector<Tbase>::Ones(positive_hessian.size());
-
-      Tbase normalized_projection;
-      Tbase maximum_spread = positive_hessian.maxCoeff();
-      Vector<Tbase> preconditioned_direction;
-      while(true) {
-        // Normalize the largest values
-        Vector<Tbase> normalized_hessian(positive_hessian);
-        for(Index k=0;k<normalized_hessian.size();k++)
-          if(normalized_hessian(k) > maximum_spread)
-            normalized_hessian(k) = maximum_spread;
-
-        // and divide the gradient by its square root
-        preconditioned_direction = gradient.array()/normalized_hessian.array().sqrt();
-        if(has_nan(preconditioned_direction))
-          throw std::logic_error("Preconditioned search direction has NaNs");
-
-        normalized_projection = preconditioned_direction.dot(gradient) / std::sqrt(preconditioned_direction.norm()*gradient.norm());
-        if(normalized_projection >= minimal_gradient_projection_) {
-          return preconditioned_direction;
-        } else {
-          log_(5, "Warning - projection of preconditioned search direction on negative gradient %e is too small, decreasing spread of Hessian values from %e by factor 10\n",normalized_projection,maximum_spread);
-          maximum_spread /= 10;
-        }
-      }
-    }
-
-    Orbitals<Torb> form_rotation_matrices(const Vector<Tbase> & x) const {
-      const Orbitals<Torb> reference_orbitals(get_orbitals());
-
-      // Get the degrees of freedom
-      auto dof_list = degrees_of_freedom();
-      Vector<Tbase> orb_grad(dof_list.size());
-      // Sort them by symmetry
-      std::vector<std::vector<std::tuple<Index, Index, size_t>>> blocked_dof(reference_orbitals.size());
-      for(size_t idof=0; idof<dof_list.size(); idof++) {
-        auto dof = dof_list[idof];
-        auto iblock = std::get<0>(dof);
-        auto iorb = std::get<1>(dof);
-        auto jorb = std::get<2>(dof);
-        blocked_dof[iblock].push_back(std::make_tuple(iorb,jorb,idof));
-      }
-
-      // Form the rotation matrices
-      Orbitals<Torb> kappa(reference_orbitals.size());
-      for(size_t iblock=0; iblock < reference_orbitals.size(); iblock++) {
-        if(empty_block(iblock))
-          continue;
-        // Collect the rotation parameters
-        kappa[iblock] = Matrix<Torb>::Zero(reference_orbitals[iblock].cols(), reference_orbitals[iblock].cols());
-        for(auto dof: blocked_dof[iblock]) {
-          auto iorb = std::get<0>(dof);
-          auto jorb = std::get<1>(dof);
-          auto idof = std::get<2>(dof);
-          kappa[iblock](iorb,jorb) = x(idof);
-        }
-        // imaginary parameters
-        if constexpr (Eigen::NumTraits<Torb>::IsComplex) {
-          for(auto dof: blocked_dof[iblock]) {
-            auto iorb = std::get<0>(dof);
-            auto jorb = std::get<1>(dof);
-            auto idof = std::get<2>(dof);
-            kappa[iblock](iorb,jorb) += Torb(Tbase(0),x(dof_list.size()+idof));
-          }
-        }
-        // Antisymmetrize
-        kappa[iblock] -= kappa[iblock].adjoint().eval();
-      }
-
-      return kappa;
-    }
-
-    Tbase maximum_rotation_step(const Vector<Tbase> & x) const {
-      // Get the rotation matrices
-      auto kappa(form_rotation_matrices(x));
-
-      Tbase maximum_step = std::numeric_limits<Tbase>::max();
-      for(size_t iblock=0; iblock < kappa.size(); iblock++) {
-        if(kappa[iblock].size()==0)
-          continue;
-        Matrix<std::complex<Tbase>> kappa_imag =
-            kappa[iblock].template cast<std::complex<Tbase>>() *
-            std::complex<Tbase>(Tbase{0}, Tbase{-1});
-        Eigen::SelfAdjointEigenSolver<Matrix<std::complex<Tbase>>> es(kappa_imag);
-        Vector<Tbase> eval = es.eigenvalues();
-
-        // Assume objective function is 4th order in orbitals
-        Tbase block_maximum = Tbase(0.5*M_PI)/(eval.array().abs().maxCoeff());
-        // The maximum allowed step is determined as the minimum of the block-wise steps
-        maximum_step = std::min(maximum_step, block_maximum);
-      }
-
-      return maximum_step;
-    }
-
-    Orbitals<Torb> rotate_orbitals(const Vector<Tbase> & x) const {
-      auto kappa(form_rotation_matrices(x));
-
-      // Rotate the orbitals
-      Orbitals<Torb> new_orbitals(get_orbitals());
-      for(size_t iblock=0; iblock < new_orbitals.size(); iblock++) {
-        if(empty_block(iblock))
-          continue;
-
-        // Exponentiated kappa
-        Matrix<Torb> expkappa;
-
-#if 0
-        expkappa = expm_antihermitian(kappa[iblock]);
-#else
-        // Do eigendecomposition of -i*kappa (Hermitian) -> real evals,
-        // complex evecs. Then exp(kappa) = evec * diag(exp(i*eval)) * evec^H.
-        Matrix<std::complex<Tbase>> kappa_imag =
-            kappa[iblock].template cast<std::complex<Tbase>>() *
-            std::complex<Tbase>(Tbase{0}, Tbase{-1});
-        Eigen::SelfAdjointEigenSolver<Matrix<std::complex<Tbase>>> es(kappa_imag);
-        Vector<Tbase> eval = es.eigenvalues();
-        Matrix<std::complex<Tbase>> evec = es.eigenvectors();
-        Vector<std::complex<Tbase>> exp_diag(eval.size());
-        for(Index k=0; k<eval.size(); ++k)
-          exp_diag[k] = std::exp(std::complex<Tbase>(Tbase{0}, eval[k]));
-        Matrix<std::complex<Tbase>> expkappa_imag = evec * exp_diag.asDiagonal() * evec.adjoint();
-        if constexpr (!Eigen::NumTraits<Torb>::IsComplex) {
-          expkappa = expkappa_imag.real();
-        } else {
-          expkappa = expkappa_imag;
-        }
-#endif
-
-        // Do the rotation
-        new_orbitals[iblock] = new_orbitals[iblock]*expkappa;
-      }
-
-      return new_orbitals;
-    }
-    OrbitalHistoryEntry<Torb, Tbase> make_history_entry(const DensityMatrix<Torb, Tbase> & density_matrix, const FockBuilderReturn<Torb, Tbase> & fock) const {
-      static size_t index=0;
-      return std::make_tuple(density_matrix, fock, index++);
-    }
-    OrbitalHistoryEntry<Torb, Tbase> evaluate_rotation(const Vector<Tbase> & x) {
-      // Rotate orbitals
-      auto new_orbitals(rotate_orbitals(x));
-      // Compute the Fock matrix
-      auto reference_occupations = get_orbital_occupations();
-
-      auto density_matrix = std::make_pair(new_orbitals, reference_occupations);
-      auto fock = fock_builder_(density_matrix);
-      number_of_fock_evaluations_++;
-      return make_history_entry(density_matrix, fock);
-    }
-    void level_shifting_step() {
-      Tbase level_shift = initial_level_shift_;
-      Tbase reference_energy = get_energy();
-      size_t start_index = largest_index();
-
-      log_(5, "Entering level shifting code, reference energy %e\n",reference_energy);
-
-      // Get Fock matrix
-      FockMatrix<Torb> fock = get_fock_matrix();
-      // Form level shift matrix
-      FockMatrix<Torb> shifted_fock;
-
-      for(size_t ishift=0; ishift < 50; ishift++) {
-        // Shift virtual orbitals up in energy. In practice, scale
-        // the level shift by the fraction of unoccupied character,
-        // so that SOMOs get half the shift
-        shifted_fock = fock;
-        for(size_t iblock=0; iblock<fock.size(); iblock++) {
-          if(empty_block(iblock))
-            continue;
-          Vector<Tbase> fractional_occupations(get_orbital_occupation_block(0, iblock)/maximum_occupation_(iblock));
-          fractional_occupations = Vector<Tbase>::Ones(fractional_occupations.size()) - fractional_occupations;
-          shifted_fock[iblock] += level_shift * build_density_block_(
-              get_orbital_block(0, iblock), fractional_occupations,
-              maximum_occupation_(iblock));
-        }
-
-        // Add new Fock matrix
-        attempt_fock(shifted_fock);
-        Tbase best_energy = get_lowest_energy_after_index(start_index);
-        log_(5, "Level shift iteration %i: shift %e energy change % e\n", ishift, level_shift, best_energy-reference_energy);
-
-        if(best_energy > reference_energy) {
-          // Energy did not decrease; increase level shift
-          level_shift *= level_shift_factor_;
-          continue;
-        } else {
-          return;
-        }
-      }
-    }
     // --- Orbital-rotation step infrastructure ----------------------
     //
     // scaled_steepest_descent_step() (PR+ CG) and lbfgs_step()
@@ -2559,7 +2232,7 @@ namespace OpenOrbitalOptimizer {
         Tbase slope_0 = d.dot(ctx.g);  // dE/dt at t = 0
         if(!std::isfinite(slope_0) || slope_0 >= 0) {
           log_(5, "%s: direction at sigma = %e is not descent (g.d = %e).\n",
-                 tag, sigma, slope_0);
+                 tag, (double) (sigma), (double) (slope_0));
           sigma *= 2;
           first_sigma = false;
           continue;
@@ -2568,7 +2241,7 @@ namespace OpenOrbitalOptimizer {
         Orbitals<Torb> K = build_K_(d, ctx);
         Tbase t_max = t_max_for_K_(K);
         if(!std::isfinite(t_max) || t_max <= 0) {
-          log_(5, "%s: t_max not well-defined at sigma = %e.\n", tag, sigma);
+          log_(5, "%s: t_max not well-defined at sigma = %e.\n", tag, (double) (sigma));
           sigma *= 2;
           first_sigma = false;
           continue;
@@ -2582,7 +2255,7 @@ namespace OpenOrbitalOptimizer {
           auto trial_result = evaluate_rotation_at_(K, t, ctx);
           Tbase E_t = trial_result.second.first;
           log_(5, "%s: trial sigma %e t %e, energy % .10f, change %e\n",
-                 tag, sigma, t, E_t, E_t - ctx.E_ref);
+                 tag, (double) (sigma), (double) (t), (double) (E_t), (double) (E_t - ctx.E_ref));
 
           if(E_t < ctx.E_ref) {
             add_entry(trial_result.first, trial_result.second);
@@ -2632,7 +2305,7 @@ namespace OpenOrbitalOptimizer {
             if(std::isfinite(t_star) && t_star > 0 && t_star < t) {
               t_next = t_star;
               log_(5, "%s: cubic Hermite predicts t = %e (in [0, %e]).\n",
-                     tag, t_next, t);
+                     tag, (double) (t_next), (double) (t));
             }
           } catch(const std::logic_error &) {
             // Cubic derivative has no real roots; fall through to halving.
@@ -2669,7 +2342,7 @@ namespace OpenOrbitalOptimizer {
                  && predicted < sigma * 100) {
                 sigma_next = predicted;
                 log_(5, "%s: cubic Hermite predicts sigma = %e (u* = %e).\n",
-                       tag, sigma_next, u_star);
+                       tag, (double) (sigma_next), (double) (u_star));
               }
             }
           } catch(const std::logic_error &) {
@@ -2693,7 +2366,7 @@ namespace OpenOrbitalOptimizer {
       Tbase beta = std::max(beta_PR, Tbase(0));
       Vector<Tbase> d_cg = d + beta * previous_orbital_direction_;
       if(d_cg.dot(ctx.g) < 0) {
-        log_(5, "Scaled SD: CG update with beta = %e (PR = %e).\n", beta, beta_PR);
+        log_(5, "Scaled SD: CG update with beta = %e (PR = %e).\n", (double) (beta), (double) (beta_PR));
         d = d_cg;
       } else if(verbosity_ >= 5) {
         log_(5, "Scaled SD: CG direction not descent, resetting to preconditioned SD.\n");
@@ -2791,7 +2464,7 @@ namespace OpenOrbitalOptimizer {
             st.rho.pop_front();
           }
         } else if(verbosity_ >= 5) {
-          log_(5, "L-BFGS: curvature condition violated (y.s = %e), pair dropped.\n", ys);
+          log_(5, "L-BFGS: curvature condition violated (y.s = %e), pair dropped.\n", (double) (ys));
         }
       } else if(!st.history_dofs.empty() && st.history_dofs != ctx.dofs) {
         clear_lbfgs_state_();
@@ -3162,7 +2835,29 @@ namespace OpenOrbitalOptimizer {
       return catalog;
     }
 
-    void set(const std::string & key, Tbase v) {
+    template<typename T,
+             std::enable_if_t<std::is_integral_v<T>, int> = 0>
+    void set(const std::string & key, T value) {
+      set_int(key, static_cast<int>(value));
+    }
+
+    template<typename T,
+             std::enable_if_t<!std::is_integral_v<T> &&
+                              (std::is_floating_point_v<T> ||
+                               std::is_same_v<T, Tbase>), int> = 0>
+    void set(const std::string & key, T value) {
+      set_real(key, static_cast<Tbase>(value));
+    }
+
+    void set(const std::string & key, const std::string & value) {
+      set_string(key, value);
+    }
+
+    void set(const std::string & key, const char * value) {
+      set_string(key, std::string(value));
+    }
+
+    void set_real(const std::string & key, Tbase v) {
       if      (key == "convergence_threshold")                 convergence_threshold_ = v;
       else if (key == "noise_safety_factor")                   noise_safety_factor_ = v;
       else if (key == "diis_epsilon")                          diis_epsilon_ = v;
@@ -3181,7 +2876,7 @@ namespace OpenOrbitalOptimizer {
         "SCFSolver::set(real): unknown or non-real key '" + key + "'");
     }
 
-    void set(const std::string & key, int v) {
+    void set_int(const std::string & key, int v) {
       if      (key == "verbosity")                        verbosity_ = v;
       else if (key == "maximum_iterations")               maximum_iterations_ = (size_t) v;
       else if (key == "maximum_history_length")           maximum_history_length_ = v;
@@ -3193,7 +2888,7 @@ namespace OpenOrbitalOptimizer {
         "SCFSolver::set(int): unknown or non-int key '" + key + "'");
     }
 
-    void set(const std::string & key, const std::string & v) {
+    void set_string(const std::string & key, const std::string & v) {
       if (key == "error_norm") {
         std::string prev = error_norm_;
         error_norm_ = v;
@@ -3358,6 +3053,10 @@ namespace OpenOrbitalOptimizer {
       }
     }
 
+    OrbitalHistoryEntry<Torb, Tbase> make_history_entry(const DensityMatrix<Torb, Tbase> & density_matrix, const FockBuilderReturn<Torb, Tbase> & fock) const {
+      return std::make_tuple(density_matrix, fock, next_history_index_++);
+    }
+
     bool add_entry(const DensityMatrix<Torb, Tbase> & density) {
       // Compute the Fock matrix
       auto fock = fock_builder_(density);
@@ -3365,7 +3064,7 @@ namespace OpenOrbitalOptimizer {
 
       if(verbosity_>=5) {
         auto reference_energy = orbital_history_.size()>0 ? get_energy() : Tbase(0);
-        log_(5, "Evaluated energy % .10f (change from lowest %e)\n", fock.first, fock.first-reference_energy);
+        log_(5, "Evaluated energy % .10f (change from lowest %e)\n", (double) (fock.first), (double) (fock.first-reference_energy));
       }
       return add_entry(density, fock);
     }
@@ -3414,8 +3113,10 @@ namespace OpenOrbitalOptimizer {
         }
 
         // Drop last entry if we are over the history length limit
-        if((int) orbital_history_.size() > maximum_history_length_)
+        if((int) orbital_history_.size() > maximum_history_length_) {
           orbital_history_.pop_back();
+          prune_diis_caches_();
+        }
 
         return return_value;
       }
@@ -3425,7 +3126,7 @@ namespace OpenOrbitalOptimizer {
       // Unconditional (caller invokes this explicitly for diagnostics).
       log_(0, "Orbital history\n");
       for(size_t ihist=0;ihist<orbital_history_.size();ihist++)
-        log_(0, "%2i % .9f % e % i\n",(int) ihist, get_energy(ihist), get_energy(ihist)-get_energy(), (int) get_index(ihist));
+        log_(0, "%2i % .9f % e % i\n",(int) ihist, (double) (get_energy(ihist)), (double) (get_energy(ihist)-get_energy()), (int) get_index(ihist));
     }
 
     void reset_history() {
@@ -3691,7 +3392,7 @@ namespace OpenOrbitalOptimizer {
               log_(5, "Burst exit: block %zu orbitals %u, %u have a "
                      "canonical-energy gap shift %+e Eh (> threshold %e Eh).\n",
                      b, (unsigned) i, (unsigned) j,
-                     deltat - delta0, optimal_damping_degeneracy_threshold_);
+                     (double) (deltat - delta0), (double) (optimal_damping_degeneracy_threshold_));
               return true;
             }
           }
@@ -3712,7 +3413,7 @@ namespace OpenOrbitalOptimizer {
             if(span_w < burst_subblock_overlap_floor) {
               log_(5, "Burst exit: block %zu orbital %u has sub-block "
                      "overlap %.3f < %.3f.\n",
-                     b, (unsigned) i, span_w, burst_subblock_overlap_floor);
+                     b, (unsigned) i, (double) (span_w), (double) (burst_subblock_overlap_floor));
               return true;
             }
           }
@@ -3748,7 +3449,7 @@ namespace OpenOrbitalOptimizer {
         callback_data["diis_max_error"] = diis_max_error;
 
         log_(5, "\n\n");
-        log_(1, "Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", (int) iteration, (int) number_of_fock_evaluations_, get_energy(), dE, error_norm_.c_str(), diis_error);
+        log_(1, "Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", (int) iteration, (int) number_of_fock_evaluations_, (double) (get_energy()), (double) (dE), error_norm_.c_str(), (double) (diis_error));
         log_(5, "History size %i\n",(int) orbital_history_.size());
         if(verbosity_>=5) {
           const auto occupations = get_orbital_occupations();
@@ -3778,7 +3479,7 @@ namespace OpenOrbitalOptimizer {
                            noise_safety_factor_ * noise_floor_);
             if(descended && actual_descent > min_useful_descent) {
               log_(5, "Full-skeleton ODA found a %e Eh descent after "
-                      "convergence; resuming SCF.\n", actual_descent);
+                      "convergence; resuming SCF.\n", (double) (actual_descent));
               // Same post-ODA transition preference the state
               // machine uses after a normal ODA step: relax at the
               // new occupations before revisiting DIIS.
@@ -3789,9 +3490,9 @@ namespace OpenOrbitalOptimizer {
             if(descended)
               log_(5, "Full-skeleton ODA descent %e below noise threshold %e; "
                       "treating as converged.\n",
-                      actual_descent, min_useful_descent);
+                      (double) (actual_descent), (double) (min_useful_descent));
           }
-          log_(1, "Converged to energy % .10f!\n", get_energy());
+          log_(1, "Converged to energy % .10f!\n", (double) (get_energy()));
 
           // Print out info
           callback_data["step"] = std::string("Converged");
@@ -3815,7 +3516,7 @@ namespace OpenOrbitalOptimizer {
                                    : (allowed.lbfgs ? "L-BFGS" : "CG");
                 if(diis_max_error >= optimal_damping_threshold_)
                   log_(5, "Switching DIIS -> %s: DIIS max error %e exceeds threshold %e\n",
-                         nname, diis_max_error, optimal_damping_threshold_);
+                         nname, (double) (diis_max_error), (double) (optimal_damping_threshold_));
                 else
                   log_(5, "Switching DIIS -> %s: %i consecutive failed DIIS iterations\n",
                          nname, failed_iterations);
@@ -3953,7 +3654,7 @@ namespace OpenOrbitalOptimizer {
             (!allowed.orbital_rotation() || rotation_failed);
           if(all_failed) {
             log_(1, "All allowed SCF methods failed at iteration %i; stopping with DIIS error vector %s norm %e.\n",
-                   (int) iteration, error_norm_.c_str(), diis_error);
+                   (int) iteration, error_norm_.c_str(), (double) (diis_error));
             callback_data["step"] = std::string("Stalled");
             if(callback_function_)
               callback_function_(callback_data);
@@ -4063,7 +3764,7 @@ namespace OpenOrbitalOptimizer {
 
                 fixed_number_of_particles_per_block_ = trial_number;
 
-                log_(0, "isource = %i itarget = %i imoved = %f\n", (int)iblock_source, (int)iblock_target, i_moved);
+                log_(0, "isource = %i itarget = %i imoved = %f\n", (int)iblock_source, (int)iblock_target, (double) (i_moved));
                 log_stream_(0) << "trial number of particles: " << trial_number.transpose() << std::endl;
                 log_flush_();
 
@@ -4118,8 +3819,8 @@ namespace OpenOrbitalOptimizer {
                     int num_j_max = std::ceil(std::min(num_j_source, j_target_capacity_left));
                     num_j_max = std::min(num_j_max, (int) std::round(std::min(maximum_occupation_[jblock_source], maximum_occupation_[jblock_target])));
 
-                    log_(0, "i: source %f capacity left %f num max %i\n",num_i_source,i_target_capacity_left,num_i_max);
-                    log_(0, "j: source %f capacity left %f num max %i\n",num_j_source,j_target_capacity_left,num_j_max);
+                    log_(0, "i: source %f capacity left %f num max %i\n",(double) (num_i_source),(double) (i_target_capacity_left),num_i_max);
+                    log_(0, "j: source %f capacity left %f num max %i\n",(double) (num_j_source),(double) (j_target_capacity_left),num_j_max);
                     log_flush_();
 
                     // Generate trials by moving particles
@@ -4153,8 +3854,8 @@ namespace OpenOrbitalOptimizer {
 
                         fixed_number_of_particles_per_block_ = trial_number;
 
-                        log_(0, "isource = %i itarget = %i imoved = %f\n", (int)iblock_source, (int)iblock_target, i_moved);
-                        log_(0, "jsource = %i jtarget = %i jmoved = %f\n", (int)jblock_source, (int)jblock_target, j_moved);
+                        log_(0, "isource = %i itarget = %i imoved = %f\n", (int)iblock_source, (int)iblock_target, (double) (i_moved));
+                        log_(0, "jsource = %i jtarget = %i jmoved = %f\n", (int)jblock_source, (int)jblock_target, (double) (j_moved));
                         log_stream_(0) << "trial number of particles: " << trial_number.transpose() << std::endl;
                         log_flush_();
 
@@ -4180,12 +3881,12 @@ namespace OpenOrbitalOptimizer {
 
         log_(0, "Configurations\n");
         for(size_t iconf=0;iconf<list_of_energies.size();iconf++) {
-          log_(0, "%4i E= % .10f with occupations\n",(int) iconf, list_of_energies[iconf].second);
+          log_(0, "%4i E= % .10f with occupations\n",(int) iconf, (double) (list_of_energies[iconf].second));
           log_stream_(0) << list_of_energies[iconf].first.transpose() << std::endl;
         }
 
         if(list_of_energies[0].second < reference_energy) {
-          log_(0, "Energy changed by %e by improved reference\n", list_of_energies[0].second - reference_energy);
+          log_(0, "Energy changed by %e by improved reference\n", (double) (list_of_energies[0].second - reference_energy));
 
           // Update the reference
           fixed_number_of_particles_per_block_ = list_of_energies[0].first;
