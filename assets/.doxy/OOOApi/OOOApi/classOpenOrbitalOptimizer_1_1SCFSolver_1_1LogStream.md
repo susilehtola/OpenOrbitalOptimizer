@@ -51,7 +51,7 @@
 
 | Type | Name |
 | ---: | :--- |
-|   | [**LogStream**](#function-logstream-13) (const [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-scfsolver) \* s, int level) <br> |
+|   | [**LogStream**](#function-logstream-13) (const [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-scfsolver-12) \* s, int level) <br> |
 |   | [**LogStream**](#function-logstream-23) (const LogStream &) = delete<br> |
 |   | [**LogStream**](#function-logstream-33) (LogStream && o) noexcept<br> |
 |  bool | [**enabled**](#function-enabled) () const<br> |

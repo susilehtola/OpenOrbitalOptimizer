@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
+  <compounddef id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase" kind="class" language="C++" prot="private" abstract="yes">
+    <compoundname>OpenOrbitalOptimizer::SCFSolver::SettingBase</compoundname>
+    <derivedcompoundref refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting" prot="public" virt="non-virtual">OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::Setting&lt; Tbase &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting" prot="public" virt="non-virtual">OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::Setting&lt; std::string &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting" prot="public" virt="non-virtual">OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::Setting&lt; int &gt;</derivedcompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a6da1fb6ec835eb59ac0db4567d162c8a" prot="private" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::key_</definition>
+        <argsstring></argsstring>
+        <name>key_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::key_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="179" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="179" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a0a63e768a518db8e586020e110b3130d" prot="private" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::doc_</definition>
+        <argsstring></argsstring>
+        <name>doc_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::doc_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="180" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="180" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a20431e66aeef759868ea20b3f368988d" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::writable_</definition>
+        <argsstring></argsstring>
+        <name>writable_</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::writable_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="181" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="181" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a379171b2983b4494aad9ad7323fcb95e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::SettingBase</definition>
+        <argsstring>(const char *key, const char *doc, bool writable)</argsstring>
+        <name>SettingBase</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::SettingBase</qualifiedname>
+        <param>
+          <type>const char *</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>doc</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>writable</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="164" column="7" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="164" bodyend="165"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a7258fd1cdc3bf4747d8d0f5b30de4696" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::~SettingBase</definition>
+        <argsstring>()=default</argsstring>
+        <name>~SettingBase</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::~SettingBase</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="166" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a1f175390445e7607f97980b58c42280d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::key</definition>
+        <argsstring>() const</argsstring>
+        <name>key</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::key</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="168" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="168" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1acbf83e6d11f5b81b262c283895002efc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::doc</definition>
+        <argsstring>() const</argsstring>
+        <name>doc</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::doc</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="169" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="169" bodyend="169"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1aea40ba37834a74f2ddb458f8712b2e2d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::writable</definition>
+        <argsstring>() const</argsstring>
+        <name>writable</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::writable</qualifiedname>
+        <briefdescription>
+<para>False for read-only diagnostics, which the facade refuses to set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="171" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="171" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a82228a0d5a9cd4a52a8dc1d26826b550" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>const char *</type>
+        <definition>virtual const char * OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::type</definition>
+        <argsstring>() const =0</argsstring>
+        <name>type</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::type</qualifiedname>
+        <briefdescription>
+<para>&quot;real&quot;, &quot;int&quot; or &quot;string&quot; <ndash/> which typed facade reaches this. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="174" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a80ce855a04a57a239eb852fb601953f9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase::print_value</definition>
+        <argsstring>(std::ostream &amp;os) const =0</argsstring>
+        <name>print_value</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::SettingBase::print_value</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <briefdescription>
+<para>Used by print_settings, which does not know the value type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="176" column="20"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Everything about a setting that does not depend on its type. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::Setting&lt; Tbase &gt;</label>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::Setting&lt; int &gt;</label>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::Setting&lt; std::string &gt;</label>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::SettingBase</label>
+      </node>
+    </inheritancegraph>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="162" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="162" bodyend="182"/>
+    <listofallmembers>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1acbf83e6d11f5b81b262c283895002efc" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>doc</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a0a63e768a518db8e586020e110b3130d" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>doc_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a1f175390445e7607f97980b58c42280d" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>key</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a6da1fb6ec835eb59ac0db4567d162c8a" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>key_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a80ce855a04a57a239eb852fb601953f9" prot="public" virt="pure-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>print_value</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a379171b2983b4494aad9ad7323fcb95e" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>SettingBase</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a82228a0d5a9cd4a52a8dc1d26826b550" prot="public" virt="pure-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>type</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1aea40ba37834a74f2ddb458f8712b2e2d" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>writable</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a20431e66aeef759868ea20b3f368988d" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>writable_</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase_1a7258fd1cdc3bf4747d8d0f5b30de4696" prot="public" virt="virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingBase</scope><name>~SettingBase</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -36,5 +36,8 @@
 ([**OpenOrbitalOptimizer::Armadillo**](namespaceOpenOrbitalOptimizer_1_1Armadillo.md))
 * [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md)
 ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* [**Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md)
+* [**SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md)
+* [**SettingRegistry**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry.md)
 
 

@@ -19,7 +19,7 @@
     
     
       
-        <title>Class OpenOrbitalOptimizer::SCFSolver::LogStream - OpenOrbitalOptimizer Docs</title>
+        <title>Class OpenOrbitalOptimizer::SCFSolver::SettingRegistry - OpenOrbitalOptimizer Docs</title>
       
     
     
@@ -60,7 +60,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#class-openorbitaloptimizerscfsolverlogstream" class="md-skip">
+        <a href="#class-openorbitaloptimizerscfsolversettingregistry" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +96,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Class OpenOrbitalOptimizer::SCFSolver::LogStream
+              Class OpenOrbitalOptimizer::SCFSolver::SettingRegistry
             
           </span>
         </div>
@@ -997,10 +997,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#function-logstream-13" class="md-nav__link">
+  <a href="#function-add" class="md-nav__link">
     <span class="md-ellipsis">
       
-        function LogStream [1/3]
+        function add
       
     </span>
   </a>
@@ -1008,10 +1008,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-logstream-23" class="md-nav__link">
+  <a href="#function-settings-12" class="md-nav__link">
     <span class="md-ellipsis">
       
-        function LogStream [2/3]
+        function settings [1/2]
       
     </span>
   </a>
@@ -1019,76 +1019,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-logstream-33" class="md-nav__link">
+  <a href="#function-settings-22" class="md-nav__link">
     <span class="md-ellipsis">
       
-        function LogStream [3/3]
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#function-enabled" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        function enabled
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#function-operator" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        function operator&lt;&lt;
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#function-operator_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        function operator&lt;&lt;
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#function-operator_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        function operator=
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#function-stream" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        function stream
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#function-logstream" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        function ~LogStream
+        function settings [2/2]
       
     </span>
   </a>
@@ -1117,8 +1051,8 @@
 
 
 
-<h1 id="class-openorbitaloptimizerscfsolverlogstream">Class OpenOrbitalOptimizer::SCFSolver::LogStream</h1>
-<p><a href="../annotated/"><strong>ClassList</strong></a> <strong>&gt;</strong> <a href="./"><strong>LogStream</strong></a></p>
+<h1 id="class-openorbitaloptimizerscfsolversettingregistry">Class OpenOrbitalOptimizer::SCFSolver::SettingRegistry</h1>
+<p><a href="../annotated/"><strong>ClassList</strong></a> <strong>&gt;</strong> <a href="./"><strong>SettingRegistry</strong></a></p>
 <p><a href="#detailed-description">More...</a></p>
 <h2 id="public-functions">Public Functions</h2>
 <table>
@@ -1130,104 +1064,38 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: right;"></td>
-<td style="text-align: left;"><a href="#function-logstream-13"><strong>LogStream</strong></a> (const <a href="../classOpenOrbitalOptimizer_1_1SCFSolver/#function-scfsolver-12"><strong>SCFSolver</strong></a> * s, int level) <br></td>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-add"><strong>add</strong></a> (const SettingBase * setting) <br></td>
 </tr>
 <tr>
-<td style="text-align: right;"></td>
-<td style="text-align: left;"><a href="#function-logstream-23"><strong>LogStream</strong></a> (const LogStream &amp;) = delete<br></td>
+<td style="text-align: right;">std::vector&lt; SettingBase * &gt;</td>
+<td style="text-align: left;"><a href="#function-settings-12"><strong>settings</strong></a> () <br></td>
 </tr>
 <tr>
-<td style="text-align: right;"></td>
-<td style="text-align: left;"><a href="#function-logstream-33"><strong>LogStream</strong></a> (LogStream &amp;&amp; o) noexcept<br></td>
-</tr>
-<tr>
-<td style="text-align: right;">bool</td>
-<td style="text-align: left;"><a href="#function-enabled"><strong>enabled</strong></a> () const<br></td>
-</tr>
-<tr>
-<td style="text-align: right;">LogStream &amp;</td>
-<td style="text-align: left;"><a href="#function-operator"><strong>operator&lt;&lt;</strong></a> (const T &amp; v) <br></td>
-</tr>
-<tr>
-<td style="text-align: right;">LogStream &amp;</td>
-<td style="text-align: left;"><a href="#function-operator_1"><strong>operator&lt;&lt;</strong></a> (std::ostream &amp;(*)(std::ostream &amp;) manip) <br></td>
-</tr>
-<tr>
-<td style="text-align: right;">LogStream &amp;</td>
-<td style="text-align: left;"><a href="#function-operator_2"><strong>operator=</strong></a> (const LogStream &amp;) = delete<br></td>
-</tr>
-<tr>
-<td style="text-align: right;">std::ostream &amp;</td>
-<td style="text-align: left;"><a href="#function-stream"><strong>stream</strong></a> () <br></td>
-</tr>
-<tr>
-<td style="text-align: right;"></td>
-<td style="text-align: left;"><a href="#function-logstream"><strong>~LogStream</strong></a> () <br></td>
+<td style="text-align: right;">std::vector&lt; const SettingBase * &gt;</td>
+<td style="text-align: left;"><a href="#function-settings-22"><strong>settings</strong></a> () const<br></td>
 </tr>
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>Ostream-style companion to log_(). Constructed via <code>log_stream_(level)</code>; accumulates output through <code>operator&lt;&lt;</code> and flushes to the logger / stdout on destruction. If <code>verbosity_ &lt; level</code> the object is inert (its <code>operator&lt;&lt;</code> is a no-op), so the caller writes <code>log_stream_(N) &lt;&lt; ...</code> in place of <code>if(verbosity_&gt;=N) std::cout &lt;&lt; ...</code> without a manual gate. </p>
+<p>Collects the solver's settings as they are constructed, so that declaring a setting is all it takes to publish it through the string facade  there is no second list to keep in step.</p>
+<p>It records each setting's offset from the registry rather than its address. An address would belong to the object the setting was constructed in, and <a href="../classOpenOrbitalOptimizer_1_1SCFSolver/"><strong>SCFSolver</strong></a> is movable, so a registry of addresses would point into the moved-from object. Offsets describe the class layout instead, which is by definition the same in the moved-to object, so the implicitly generated move stays correct and needs no fixup. </p>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
-<h3 id="function-logstream-13">function LogStream [1/3]</h3>
-<pre><code class="language-C++">inline LogStream::LogStream (
-    const SCFSolver * s,
-    int level
+<h3 id="function-add">function add</h3>
+<pre><code class="language-C++">inline void SettingRegistry::add (
+    const SettingBase * setting
 ) 
 </code></pre>
+<p>Called by each Setting's constructor. The conversion to SettingBase * happens in the caller, so what is recorded is the offset of the base subobject  exactly what settings() hands back. </p>
 <hr>
 
-<h3 id="function-logstream-23">function LogStream [2/3]</h3>
-<pre><code class="language-C++">LogStream::LogStream (
-    const LogStream &amp;
-) = delete
+<h3 id="function-settings-12">function settings [1/2]</h3>
+<pre><code class="language-C++">inline std::vector&lt; SettingBase * &gt; SettingRegistry::settings () 
 </code></pre>
 <hr>
 
-<h3 id="function-logstream-33">function LogStream [3/3]</h3>
-<pre><code class="language-C++">inline LogStream::LogStream (
-    LogStream &amp;&amp; o
-) noexcept
-</code></pre>
-<hr>
-
-<h3 id="function-enabled">function enabled</h3>
-<pre><code class="language-C++">inline bool LogStream::enabled () const
-</code></pre>
-<p>True iff the log gate opened and writes will be flushed. Use to short-circuit expensive formatting when the sink would discard it anyway. </p>
-<hr>
-
-<h3 id="function-operator">function operator&lt;&lt;</h3>
-<pre><code class="language-C++">template&lt;class T&gt;
-inline LogStream &amp; LogStream::operator&lt;&lt; (
-    const T &amp; v
-) 
-</code></pre>
-<hr>
-
-<h3 id="function-operator_1">function operator&lt;&lt;</h3>
-<pre><code class="language-C++">inline LogStream &amp; LogStream::operator&lt;&lt; (
-    std::ostream &amp;(*)(std::ostream &amp;) manip
-) 
-</code></pre>
-<hr>
-
-<h3 id="function-operator_2">function operator=</h3>
-<pre><code class="language-C++">LogStream &amp; LogStream::operator= (
-    const LogStream &amp;
-) = delete
-</code></pre>
-<hr>
-
-<h3 id="function-stream">function stream</h3>
-<pre><code class="language-C++">inline std::ostream &amp; LogStream::stream () 
-</code></pre>
-<p>Direct handle on the underlying std::ostream buffer, for helpers that write via a std::ostream&amp; argument (e.g. print_settings). Writes when the gate is closed still land in oss_ but are dropped when the LogStream destructs. </p>
-<hr>
-
-<h3 id="function-logstream">function ~LogStream</h3>
-<pre><code class="language-C++">inline LogStream::~LogStream () 
+<h3 id="function-settings-22">function settings [2/2]</h3>
+<pre><code class="language-C++">inline std::vector&lt; const SettingBase * &gt; SettingRegistry::settings () const
 </code></pre>
 <hr>
 

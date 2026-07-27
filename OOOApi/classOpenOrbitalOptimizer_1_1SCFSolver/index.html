@@ -1008,10 +1008,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#function-scfsolver" class="md-nav__link">
+  <a href="#function-scfsolver-12" class="md-nav__link">
     <span class="md-ellipsis">
       
-        function SCFSolver
+        function SCFSolver [1/2]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-scfsolver-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function SCFSolver [2/2]
       
     </span>
   </a>
@@ -1585,7 +1596,11 @@
 <tbody>
 <tr>
 <td style="text-align: right;"></td>
-<td style="text-align: left;"><a href="#function-scfsolver"><strong>SCFSolver</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-indexvector"><strong>IndexVector</strong></a> &amp; number_of_blocks_per_particle_type, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><strong>Vector</strong></a>&lt; Tbase &gt; &amp; maximum_occupation, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><strong>Vector</strong></a>&lt; Tbase &gt; &amp; number_of_particles, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-fockbuilder"><strong>FockBuilder</strong></a>&lt; Torb, Tbase &gt; &amp; fock_builder, const std::vector&lt; std::string &gt; &amp; block_descriptions) <br><em>Constructor.</em></td>
+<td style="text-align: left;"><a href="#function-scfsolver-12"><strong>SCFSolver</strong></a> () = default<br></td>
+</tr>
+<tr>
+<td style="text-align: right;"></td>
+<td style="text-align: left;"><a href="#function-scfsolver-22"><strong>SCFSolver</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-indexvector"><strong>IndexVector</strong></a> &amp; number_of_blocks_per_particle_type, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><strong>Vector</strong></a>&lt; Tbase &gt; &amp; maximum_occupation, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><strong>Vector</strong></a>&lt; Tbase &gt; &amp; number_of_particles, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-fockbuilder"><strong>FockBuilder</strong></a>&lt; Torb, Tbase &gt; &amp; fock_builder, const std::vector&lt; std::string &gt; &amp; block_descriptions) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">bool</td>
@@ -1741,7 +1756,7 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-set_int"><strong>set_int</strong></a> (const std::string &amp; key, int v) <br><em>Set an integer-valued option. Bool settings ride here as 0/1.</em></td>
+<td style="text-align: left;"><a href="#function-set_int"><strong>set_int</strong></a> (const std::string &amp; key, int v) <br><em>Set an integer-valued option. Bool-like settings ride here as 0/1.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
@@ -1772,7 +1787,7 @@
 </tr>
 <tr>
 <td style="text-align: right;">const std::vector&lt; <a href="../structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo/"><strong>OptionInfo</strong></a> &gt; &amp;</td>
-<td style="text-align: left;"><a href="#function-options"><strong>options</strong></a> () <br><em>Enumerate every option the solver understands.</em></td>
+<td style="text-align: left;"><a href="#function-options"><strong>options</strong></a> () <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
@@ -1781,8 +1796,13 @@
 </tbody>
 </table>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
-<h3 id="function-scfsolver">function SCFSolver</h3>
-<p><em>Constructor.</em> </p>
+<h3 id="function-scfsolver-12">function SCFSolver [1/2]</h3>
+<pre><code class="language-C++">OpenOrbitalOptimizer::SCFSolver::SCFSolver () = default
+</code></pre>
+<p>Constructor Default constructor, private and used only by prototype_(): every setting carries its own initialiser, so a default object describes the catalog correctly. </p>
+<hr>
+
+<h3 id="function-scfsolver-22">function SCFSolver [2/2]</h3>
 <pre><code class="language-C++">inline OpenOrbitalOptimizer::SCFSolver::SCFSolver (
     const IndexVector &amp; number_of_blocks_per_particle_type,
     const Vector &lt; Tbase &gt; &amp; maximum_occupation,
@@ -2102,7 +2122,7 @@ inline void OpenOrbitalOptimizer::SCFSolver::set (
 <hr>
 
 <h3 id="function-set_int">function set_int</h3>
-<p><em>Set an integer-valued option. Bool settings ride here as 0/1.</em> </p>
+<p><em>Set an integer-valued option. Bool-like settings ride here as 0/1.</em> </p>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::set_int (
     const std::string &amp; key,
     int v
@@ -2143,9 +2163,10 @@ inline void OpenOrbitalOptimizer::SCFSolver::set (
 <hr>
 
 <h3 id="function-options">function options</h3>
-<p><em>Enumerate every option the solver understands.</em> </p>
 <pre><code class="language-C++">static inline const std::vector&lt; OptionInfo &gt; &amp; OpenOrbitalOptimizer::SCFSolver::options () 
 </code></pre>
+<p>Enumerate every option the solver understands, in declaration order. Read straight off the settings themselves, so it cannot drift out of step with what set_* and get_* accept.</p>
+<p>Static, so callers can inspect the catalog without building a solver  the Python layer does exactly that. The settings own their values, so describing them needs <em>an</em> object; a private default-constructed prototype supplies one. Every setting carries its own default initialiser, so the prototype has the right metadata even though its other members are empty. </p>
 <hr>
 
 <h3 id="function-print_citation">function print_citation</h3>

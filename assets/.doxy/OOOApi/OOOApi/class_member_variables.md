@@ -18,6 +18,7 @@
 
 * **callback\_convergence\_function\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **callback\_function\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **converged\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **convergence\_threshold\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **cg** ([**OpenOrbitalOptimizer::SCFSolver::AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md))
 * **C\_pseudo** ([**OpenOrbitalOptimizer::SCFSolver::RotationStepContext**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext.md))
@@ -36,6 +37,7 @@
 * **diis\_threshold\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **diis** ([**OpenOrbitalOptimizer::SCFSolver::AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md))
 * **dofs** ([**OpenOrbitalOptimizer::SCFSolver::RotationStepContext**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext.md))
+* **doc\_** ([**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
 
 
 ## e
@@ -62,6 +64,7 @@
 
 * **history\_dofs** ([**OpenOrbitalOptimizer::SCFSolver::LBFGSState**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState.md))
 * **h** ([**OpenOrbitalOptimizer::SCFSolver::RotationStepContext**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext.md))
+* **hook\_** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
 
 
 ## i
@@ -74,6 +77,7 @@
 ## k
 
 * **key** ([**OpenOrbitalOptimizer::SCFSolver::OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md))
+* **key\_** ([**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
 
 
 ## l
@@ -129,6 +133,7 @@
 * **orbital\_rotation\_steps\_after\_oda\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **oda** ([**OpenOrbitalOptimizer::SCFSolver::AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md))
 * **oss\_** ([**OpenOrbitalOptimizer::SCFSolver::LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md))
+* **offsets\_** ([**OpenOrbitalOptimizer::SCFSolver::SettingRegistry**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry.md))
 
 
 ## p
@@ -147,8 +152,10 @@
 
 ## s
 
+* **settings\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **s** ([**OpenOrbitalOptimizer::SCFSolver::LBFGSState**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState.md))
 * **solver\_** ([**OpenOrbitalOptimizer::SCFSolver::LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md))
+* **source\_** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
 
 
 ## t
@@ -160,11 +167,13 @@
 ## v
 
 * **verbosity\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **value\_** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
 
 
 ## w
 
 * **writable** ([**OpenOrbitalOptimizer::SCFSolver::OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md))
+* **writable\_** ([**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
 
 
 ## y

@@ -11,17 +11,21 @@
 * **adiis\_quadratic\_term** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **adiis\_weights** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **aediis\_weights** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **all\_settings\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **apply\_lbfgs\_correction\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **apply\_pr\_plus\_cg\_mix\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **assign\_setting\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **attempt\_extrapolation** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **attempt\_fock** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **any** ([**OpenOrbitalOptimizer::SCFSolver::AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md))
+* **add** ([**OpenOrbitalOptimizer::SCFSolver::SettingRegistry**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry.md))
 
 
 ## b
 
 * **brute\_force\_search\_for\_lowest\_configuration** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md), [**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **build\_K\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **build\_catalog\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **build\_density\_block\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **build\_density\_blocks\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **build\_rotation\_step\_context\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
@@ -34,6 +38,8 @@
 * **convergence\_threshold** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md))
 * **callback\_convergence\_function** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **callback\_function** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **canonicalise\_error\_norm\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **canonicalise\_methods\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **citation** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **cleanup** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **clear\_diis\_caches\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
@@ -41,6 +47,7 @@
 * **commutator\_block\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **compute\_active\_rotation\_count** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **compute\_noise\_floor** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **converged\_as\_int\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 
 
 ## d
@@ -64,6 +71,7 @@
 * **diis\_residual** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **diis\_weights** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **directional\_gradient\_at\_trial\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **doc** ([**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
 
 
 ## e
@@ -86,6 +94,7 @@
 
 * **fixed\_number\_of\_particles\_per\_block** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md), [**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **frozen\_occupations** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md))
+* **find\_setting\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 
 
 ## g
@@ -105,6 +114,7 @@
 * **get\_orbital\_occupation\_block** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **get\_real** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **get\_string** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **get** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
 
 
 ## h
@@ -113,12 +123,18 @@
 * **has\_batched\_fock\_builder** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **has\_integer\_occupations** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **has\_logger** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **hook** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
 
 
 ## i
 
 * **initialize\_with\_fock** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md), [**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **initialize\_with\_orbitals** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md), [**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+
+
+## k
+
+* **key** ([**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
 
 
 ## l
@@ -170,7 +186,9 @@
 * **order\_orbitals\_by\_energy** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **orbital\_rotation** ([**OpenOrbitalOptimizer::SCFSolver::AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md))
 * **operator&lt;&lt;** ([**OpenOrbitalOptimizer::SCFSolver::LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md))
-* **operator=** ([**OpenOrbitalOptimizer::SCFSolver::LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md))
+* **operator=** ([**OpenOrbitalOptimizer::SCFSolver::LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md), [**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
+* **operator const T &** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
+* **operator+=** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
 
 
 ## p
@@ -181,8 +199,10 @@
 * **preconditioned\_sd\_direction\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **print\_citation** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **print\_settings** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **prototype\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **prune\_diis\_caches\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **pseudo\_canonicalise\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **print\_value** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md), [**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
 
 
 ## r
@@ -205,6 +225,10 @@
 * **solve\_polytope\_qp\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **sorted\_pair\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **stream** ([**OpenOrbitalOptimizer::SCFSolver::LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md))
+* **Setting** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
+* **source** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
+* **SettingBase** ([**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
+* **settings** ([**OpenOrbitalOptimizer::SCFSolver::SettingRegistry**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry.md))
 
 
 ## t
@@ -213,6 +237,7 @@
 * **to\_upper\_copy** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **tr\_of\_product\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **trace\_DF\_cached\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **type** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md), [**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
 
 
 ## u
@@ -227,9 +252,15 @@
 * **vectorise** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 
 
+## w
+
+* **writable** ([**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
+
+
 ## ~
 
 * **~LogStream** ([**OpenOrbitalOptimizer::SCFSolver::LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md))
+* **~SettingBase** ([**OpenOrbitalOptimizer::SCFSolver::SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md))
 
 
 

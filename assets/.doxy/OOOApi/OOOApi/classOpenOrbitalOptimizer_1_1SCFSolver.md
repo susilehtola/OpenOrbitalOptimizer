@@ -59,7 +59,8 @@ _SCF solver class._
 
 | Type | Name |
 | ---: | :--- |
-|   | [**SCFSolver**](#function-scfsolver) (const [**IndexVector**](namespaceOpenOrbitalOptimizer.md#typedef-indexvector) & number\_of\_blocks\_per\_particle\_type, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & maximum\_occupation, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles, const [**FockBuilder**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilder)&lt; Torb, Tbase &gt; & fock\_builder, const std::vector&lt; std::string &gt; & block\_descriptions) <br>_Constructor._  |
+|   | [**SCFSolver**](#function-scfsolver-12) () = default<br> |
+|   | [**SCFSolver**](#function-scfsolver-22) (const [**IndexVector**](namespaceOpenOrbitalOptimizer.md#typedef-indexvector) & number\_of\_blocks\_per\_particle\_type, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & maximum\_occupation, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles, const [**FockBuilder**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilder)&lt; Torb, Tbase &gt; & fock\_builder, const std::vector&lt; std::string &gt; & block\_descriptions) <br> |
 |  bool | [**add\_entry**](#function-add_entry-12) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density) <br>_Add entry to history, return value is True if energy was lowered._  |
 |  bool | [**add\_entry**](#function-add_entry-22) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density, const [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; & fock) <br>_Add entry to history, return value is True if energy was lowered._  |
 |  void | [**brute\_force\_search\_for\_lowest\_configuration**](#function-brute_force_search_for_lowest_configuration) () <br>_Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search._  |
@@ -98,7 +99,7 @@ _SCF solver class._
 |  void | [**set**](#function-set-34) (const std::string & key, const std::string & value) <br> |
 |  void | [**set**](#function-set-44) (const std::string & key, const char \* value) <br> |
 |  void | [**set\_batched\_fock\_builder**](#function-set_batched_fock_builder) ([**BatchedFockBuilder**](namespaceOpenOrbitalOptimizer.md#typedef-batchedfockbuilder)&lt; Torb, Tbase &gt; builder) <br> |
-|  void | [**set\_int**](#function-set_int) (const std::string & key, int v) <br>_Set an integer-valued option. Bool settings ride here as 0/1._  |
+|  void | [**set\_int**](#function-set_int) (const std::string & key, int v) <br>_Set an integer-valued option. Bool-like settings ride here as 0/1._  |
 |  void | [**set\_real**](#function-set_real) (const std::string & key, Tbase v) <br>_Set a real-valued option._  |
 |  void | [**set\_string**](#function-set_string) (const std::string & key, const std::string & v) <br>_Set a string-valued option._  |
 |  OrbitalOccupations&lt; Tbase &gt; | [**update\_occupations**](#function-update_occupations) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determines occupations based on the current orbital energies._  |
@@ -109,7 +110,7 @@ _SCF solver class._
 | Type | Name |
 | ---: | :--- |
 |  std::string | [**citation**](#function-citation) () <br> |
-|  const std::vector&lt; [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) &gt; & | [**options**](#function-options) () <br>_Enumerate every option the solver understands._  |
+|  const std::vector&lt; [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) &gt; & | [**options**](#function-options) () <br> |
 |  void | [**print\_citation**](#function-print_citation) (std::ostream & os=std::cout) <br>_Print a two-line "please cite" block to_ `os` _._ |
 
 
@@ -142,9 +143,25 @@ _SCF solver class._
 
 
 
-### function SCFSolver 
+### function SCFSolver [1/2]
 
-_Constructor._ 
+```C++
+OpenOrbitalOptimizer::SCFSolver::SCFSolver () = default
+```
+
+
+
+Constructor Default constructor, private and used only by prototype\_(): every setting carries its own initialiser, so a default object describes the catalog correctly. 
+
+
+        
+
+<hr>
+
+
+
+### function SCFSolver [2/2]
+
 ```C++
 inline OpenOrbitalOptimizer::SCFSolver::SCFSolver (
     const IndexVector & number_of_blocks_per_particle_type,
@@ -817,7 +834,7 @@ Register a batched Fock builder. When set, optimal\_damping\_step uses it for th
 
 ### function set\_int 
 
-_Set an integer-valued option. Bool settings ride here as 0/1._ 
+_Set an integer-valued option. Bool-like settings ride here as 0/1._ 
 ```C++
 inline void OpenOrbitalOptimizer::SCFSolver::set_int (
     const std::string & key,
@@ -903,13 +920,19 @@ Canonical citation for the library. Downstream drivers should forward this to th
 
 ### function options 
 
-_Enumerate every option the solver understands._ 
 ```C++
 static inline const std::vector< OptionInfo > & OpenOrbitalOptimizer::SCFSolver::options () 
 ```
 
 
 
+Enumerate every option the solver understands, in declaration order. Read straight off the settings themselves, so it cannot drift out of step with what set\_\* and get\_\* accept.
+
+
+Static, so callers can inspect the catalog without building a solver  the Python layer does exactly that. The settings own their values, so describing them needs _an_ object; a private default-constructed prototype supplies one. Every setting carries its own default initialiser, so the prototype has the right metadata even though its other members are empty. 
+
+
+        
 
 <hr>
 

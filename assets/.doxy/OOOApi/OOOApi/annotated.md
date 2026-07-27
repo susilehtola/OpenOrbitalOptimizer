@@ -16,4 +16,7 @@ Here are the classes, structs, unions and interfaces with brief descriptions:
 * **struct** [**LBFGSState**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState.md)     
 * **class** [**LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md)     
 * **struct** [**RotationStepContext**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1RotationStepContext.md)     
+* **class** [**Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md)     
+* **class** [**SettingBase**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingBase.md) _Everything about a setting that does not depend on its type._     
+* **class** [**SettingRegistry**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry.md)     
 
