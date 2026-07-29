@@ -656,16 +656,16 @@
         </inbodydescription>
         <location file="openorbitaloptimizer/armadillo_compat.hpp" line="229" column="10" bodyfile="openorbitaloptimizer/armadillo_compat.hpp" bodystart="229" bodyend="232"/>
       </memberdef>
-      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa0152022ba70cd93bc5b1c02fc69559e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ab3df39de8588534a15a7393f9cba34c4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void OpenOrbitalOptimizer::Armadillo::SCFSolver&lt; Torb, Tbase &gt;::run</definition>
-        <argsstring>(const std::string &amp;methods=&quot;DIIS + ODA + CG&quot;)</argsstring>
+        <argsstring>(const std::string &amp;methods=&quot;DIIS + ODA + LBFGS&quot;)</argsstring>
         <name>run</name>
         <qualifiedname>OpenOrbitalOptimizer::Armadillo::SCFSolver::run</qualifiedname>
         <param>
           <type>const std::string &amp;</type>
           <declname>methods</declname>
-          <defval>&quot;DIIS + ODA + CG&quot;</defval>
+          <defval>&quot;DIIS + ODA + LBFGS&quot;</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -935,7 +935,7 @@
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a81e5aae9de58550200be1eb13240ee93" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>orbital_rotation_steps_after_oda</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a7691d78acdc0a12d7bcdf032768c4536" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>print_history</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aea280384d810e1e95a655df981361436" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>reset_history</name></member>
-      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1aa0152022ba70cd93bc5b1c02fc69559e" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>run</name></member>
+      <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ab3df39de8588534a15a7393f9cba34c4" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>run</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a5f17bcdaee156d96340a4bd29a8477bc" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>SCFSolver</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1a35a78ffadcfeb5909261f2fa62331af4" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>update_occupations</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver_1ac1c635ada5d9f953f25b24a74ab8c6ab" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::Armadillo::SCFSolver</scope><name>verbosity</name></member>

@@ -1179,7 +1179,7 @@ namespace Armadillo {
 
     // ---- Driving the SCF --------------------------------------------
 
-    void run(const std::string &amp; methods = &quot;DIIS + ODA + CG&quot;) {
+    void run(const std::string &amp; methods = &quot;DIIS + ODA + LBFGS&quot;) {
       std::string saved = impl_.get_string(&quot;methods&quot;);
       impl_.set(&quot;methods&quot;, methods);
       try { impl_.run(); }

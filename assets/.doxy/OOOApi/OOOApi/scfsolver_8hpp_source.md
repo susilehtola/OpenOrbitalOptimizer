@@ -236,8 +236,8 @@ namespace OpenOrbitalOptimizer {
 
     Setting<std::string> methods_{
         settings_, "methods",
-        "SCF method mix consumed by run(); e.g. \"DIIS + ODA + CG\", \"DIIS\", \"LCIIS + ODA + CG\", \"ODA + CG\", \"DIIS + ODA + LBFGS\"",
-        "DIIS + ODA + CG",
+        "SCF method mix consumed by run(); e.g. \"DIIS + ODA + LBFGS\", \"DIIS\", \"LCIIS + ODA + CG\", \"ODA + CG\", \"DIIS + ODA + CG\"",
+        "DIIS + ODA + LBFGS",
         true,
         &SCFSolver::canonicalise_methods_};
 
@@ -397,7 +397,7 @@ namespace OpenOrbitalOptimizer {
       Vector<Tbase> pending_g;
       std::vector<OrbitalRotation> history_dofs;
     };
-    std::unique_ptr<LBFGSState> lbfgs_;
+    LBFGSState lbfgs_;
 
     struct AllowedMethods {
       bool diis = false, oda = false, cg = false, lbfgs = false;
@@ -2410,17 +2410,12 @@ namespace OpenOrbitalOptimizer {
 
       if(overall_succ) {
         // ODA has globally rearranged the orbital basis (and possibly
-        // the occupation pattern); the recorded PR+ CG state is no
-        // longer tied to the current iterate. The lazy L-BFGS state
-        // is also released if it was allocated; clear_lbfgs_state_()
-        // is a no-op when L-BFGS has not been used.
+        // the occupation pattern), so the orbital-rotation history no
+        // longer describes the current iterate.
         // The end-of-iteration cleanup() in run() runs the density-
         // matrix-difference pruning; doing it here too would print the
         // "Density matrix difference ..." line twice per ODA iteration.
-        previous_orbital_gradient_.resize(0);
-        previous_orbital_direction_.resize(0);
-        previous_orbital_dofs_.clear();
-        clear_lbfgs_state_();
+        clear_orbital_rotation_history_();
       }
       // Update the active-rotation count seen at the new iterate so the
       // outer state machine can size its orbital-rotation burst from it.
@@ -2650,6 +2645,7 @@ namespace OpenOrbitalOptimizer {
     bool sigma_line_search_(const RotationStepContext & ctx,
                             Trial0DirectionFunc trial_0_direction,
                             Vector<Tbase> & d_accepted,
+                            Tbase & t_accepted,
                             const char * tag) {
       const Tbase sigma_0 = initial_level_shift_;
       const int max_sigma_trials = 3;
@@ -2701,6 +2697,7 @@ namespace OpenOrbitalOptimizer {
           if(E_t < ctx.E_ref) {
             add_entry(trial_result.first, trial_result.second);
             d_accepted = d;
+            t_accepted = t;
             success = true;
             break;
           }
@@ -2819,6 +2816,7 @@ namespace OpenOrbitalOptimizer {
       if(!build_rotation_step_context_(ctx)) return false;
 
       Vector<Tbase> d_accepted;
+      Tbase t_accepted = 0;
       bool success = sigma_line_search_(
           ctx,
           [&](Tbase sigma) {
@@ -2827,6 +2825,7 @@ namespace OpenOrbitalOptimizer {
             return d;
           },
           d_accepted,
+          t_accepted,
           "Scaled SD");
 
       if(success) {
@@ -2841,15 +2840,18 @@ namespace OpenOrbitalOptimizer {
       return success;
     }
 
-    void clear_lbfgs_state_() {
-      lbfgs_.reset();
+    void clear_orbital_rotation_history_() {
+      previous_orbital_gradient_.resize(0);
+      previous_orbital_direction_.resize(0);
+      previous_orbital_dofs_.clear();
+      lbfgs_ = LBFGSState();
     }
 
     Vector<Tbase> lbfgs_direction_(
         const RotationStepContext & ctx, Tbase sigma) const {
-      const auto & s = lbfgs_->s;
-      const auto & y = lbfgs_->y;
-      const auto & rho = lbfgs_->rho;
+      const auto & s = lbfgs_.s;
+      const auto & y = lbfgs_.y;
+      const auto & rho = lbfgs_.rho;
       Vector<Tbase> q = ctx.g;
       size_t m = s.size();
       std::vector<Tbase> alpha(m);
@@ -2867,25 +2869,30 @@ namespace OpenOrbitalOptimizer {
       return -r;
     }
 
+    static constexpr Tbase lbfgs_minimum_relative_descent_ = Tbase(0.5);
+
     void apply_lbfgs_correction_(Vector<Tbase> & d,
                                  const RotationStepContext & ctx) const {
-      if(!lbfgs_ || lbfgs_->s.empty()) return;
-      if(lbfgs_->history_dofs != ctx.dofs) return;
+      if(lbfgs_.s.empty()) return;
+      if(lbfgs_.history_dofs != ctx.dofs) return;
       Vector<Tbase> d_lbfgs = lbfgs_direction_(ctx, initial_level_shift_);
-      if(d_lbfgs.dot(ctx.g) < 0) {
+      Tbase rate_lbfgs = -d_lbfgs.dot(ctx.g) / d_lbfgs.norm();
+      Tbase rate_sd = -d.dot(ctx.g) / d.norm();
+      if(rate_lbfgs >= lbfgs_minimum_relative_descent_ * rate_sd) {
         log_(5, "L-BFGS: applying two-loop direction (history size %zu).\n",
-               lbfgs_->s.size());
+               lbfgs_.s.size());
         d = d_lbfgs;
       } else if(verbosity_ >= 5) {
-        log_(5, "L-BFGS: two-loop direction not descent, resetting to preconditioned SD.\n");
+        log_(5, "L-BFGS: two-loop direction descends at %e per unit length "
+                "against preconditioned SD's %e, keeping SD.\n",
+             (double) (rate_lbfgs), (double) (rate_sd));
       }
     }
 
     bool lbfgs_step() {
       RotationStepContext ctx;
       if(!build_rotation_step_context_(ctx)) return false;
-      if(!lbfgs_) lbfgs_ = std::make_unique<LBFGSState>();
-      LBFGSState & st = *lbfgs_;
+      LBFGSState & st = lbfgs_;
 
       // Promote the pending (s, g_prev) into a full (s, y) history
       // pair using the current gradient, but only if the DOF set is
@@ -2908,17 +2915,14 @@ namespace OpenOrbitalOptimizer {
           log_(5, "L-BFGS: curvature condition violated (y.s = %e), pair dropped.\n", (double) (ys));
         }
       } else if(!st.history_dofs.empty() && st.history_dofs != ctx.dofs) {
-        clear_lbfgs_state_();
-        lbfgs_ = std::make_unique<LBFGSState>();
-        // st reference is now dangling -- rebind below if we keep using it.
+        st = LBFGSState();
       }
       // Pending pair has been consumed; clear it before this step.
-      if(lbfgs_) {
-        lbfgs_->pending_s.resize(0);
-        lbfgs_->pending_g.resize(0);
-      }
+      st.pending_s.resize(0);
+      st.pending_g.resize(0);
 
       Vector<Tbase> d_accepted;
+      Tbase t_accepted = 0;
       bool success = sigma_line_search_(
           ctx,
           [&](Tbase sigma) {
@@ -2927,15 +2931,19 @@ namespace OpenOrbitalOptimizer {
             return d;
           },
           d_accepted,
+          t_accepted,
           "L-BFGS");
 
       if(success) {
-        if(!lbfgs_) lbfgs_ = std::make_unique<LBFGSState>();
-        lbfgs_->pending_s = d_accepted;
-        lbfgs_->pending_g = ctx.g;
-        lbfgs_->history_dofs = ctx.dofs;
+        // s is the displacement the step actually made, t*d, not the
+        // direction d: the gradient difference y that pairs with it was
+        // measured across exp(t*K), and the line search routinely
+        // accepts t several orders of magnitude away from 1.
+        st.pending_s = t_accepted * d_accepted;
+        st.pending_g = ctx.g;
+        st.history_dofs = ctx.dofs;
       } else {
-        clear_lbfgs_state_();
+        st = LBFGSState();
       }
       return success;
     }
@@ -4023,6 +4031,9 @@ namespace OpenOrbitalOptimizer {
           } else {
             failed_iterations=0;
             oda_failed = rotation_failed = false;
+            // The extrapolation moved the iterate, so the recorded
+            // rotation trajectory no longer leads to it.
+            clear_orbital_rotation_history_();
           }
           // Stay in DIIS; the pre-step check at the top of the next
           // iteration will move us to ODA / CG if DIIS keeps stalling.

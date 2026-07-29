@@ -721,10 +721,10 @@ inline void OpenOrbitalOptimizer::SCFSolver::run ()
 Run the SCF
 
 
-Consumes the `methods` string setting, a `+`-separated case-insensitive list drawn from `"DIIS"` (Pulay's A/EDIIS-bracketed direct inversion in the iterative subspace), `"LCIIS"` (Li & Yaron's least-squares commutator variant of the same extrapolation step  it replaces the CDIIS coefficients and implies `"DIIS"`, so asking for both is an error rather than a silent preference), `"ODA"` (optimal-damping polytope step on the skeleton density matrices), and `"CG"` (preconditioned PR+ scaled steepest descent on orbital rotations at fixed occupations). Configure via `set ("methods", ...)`; default is `"DIIS + ODA + CG"`. Examples:
+Consumes the `methods` string setting, a `+`-separated case-insensitive list drawn from `"DIIS"` (Pulay's A/EDIIS-bracketed direct inversion in the iterative subspace), `"LCIIS"` (Li & Yaron's least-squares commutator variant of the same extrapolation step  it replaces the CDIIS coefficients and implies `"DIIS"`, so asking for both is an error rather than a silent preference), `"ODA"` (optimal-damping polytope step on the skeleton density matrices), and `"CG"` (preconditioned PR+ scaled steepest descent on orbital rotations at fixed occupations). Configure via `set ("methods", ...)`; default is `"DIIS + ODA + LBFGS"`. Examples:
 
 
-`"DIIS"` pure A/EDIIS extrapolation `"LCIIS"` least-squares commutator extrapolation `"ODA"` standalone polytope minimisation `"DIIS + ODA + CG"` full compound algorithm (default) `"ODA + CG"` DIIS-less compound `"DIIS + ODA + LBFGS"` L-BFGS in place of PR+ CG
+`"DIIS"` pure A/EDIIS extrapolation `"LCIIS"` least-squares commutator extrapolation `"ODA"` standalone polytope minimisation `"DIIS + ODA + LBFGS"` full compound algorithm (default) `"DIIS + ODA + CG"` PR+ CG in place of L-BFGS `"ODA + CG"` DIIS-less compound
 
 
 State-transition rules: from DIIS we leave to ODA (or to CG when ODA is not allowed) on stall or large error; from ODA we hand to DIIS on integer occupations or to CG on fractional / failed occupations; from CG we burst `orbital_rotation_steps_after_oda_` (or the polytope dimension when that is left at zero) steps and then hand back to DIIS. The state-machine collapses gracefully when only a subset of the methods is allowed: `"DIIS"` alone keeps retrying DIIS until `maximum_iterations_` runs out; other subsets terminate early when every allowed method has failed in succession. 

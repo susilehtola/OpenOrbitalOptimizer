@@ -1389,6 +1389,13 @@
 </ul>
 <h4 id="breaking-changes">Breaking Changes</h4>
 <ul>
+<li>The default method mix is now <code>"DIIS + ODA + LBFGS"</code> rather than
+  <code>"DIIS + ODA + CG"</code>: the orbital-rotation step is taken by L-BFGS
+  instead of preconditioned PR+ CG. Callers that relied on the old
+  default can ask for it explicitly with
+  <code>set("methods", "DIIS + ODA + CG")</code>. The Armadillo shim's
+  <code>run()</code> default argument and the Python binding's documented
+  default follow suit.</li>
 <li>Requesting two methods that occupy the same slot now throws
   instead of silently resolving to one of them. This affects
   <code>"CG + LBFGS"</code>, which previously ran L-BFGS and quietly ignored
@@ -1655,6 +1662,35 @@ O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
 </ul>
 <h4 id="bug-fixes">Bug Fixes</h4>
 <ul>
+<li>L-BFGS no longer stalls when combined with ODA. On open-shell
+  oxygen (PBE/cc-pVDZ, M = 3) <code>"ODA + LBFGS"</code> used to exhaust
+  1000 iterations at −74.1255 Eh, 0.85 Eh above the answer that
+  <code>"ODA + CG"</code> reached in 24; it now converges in 26 to the same
+  −74.9722875549 Eh. Three defects contributed, each fixed:<ul>
+<li>The curvature pair recorded the search <em>direction</em> <code>d</code> as
+  its <code>s</code>, but the step taken is <code>exp(t K)</code>, a displacement
+  of <code>t*d</code>. The paired <code>y = g_new - g_old</code> was therefore
+  measured across a different displacement than <code>s</code>
+  described. Since the line search routinely accepts <code>t</code>
+  orders of magnitude away from 1 -- 1.4e-8 in the stalling
+  run -- the stored pairs were inconsistent with each other by
+  the same orders of magnitude, and the resulting two-loop
+  direction exceeded the preconditioned-SD one in length by up
+  to a factor of 5.7e6.</li>
+<li>Neither the L-BFGS history nor the PR+ CG direction was
+  cleared after an accepted extrapolation, so the recorded
+  gradient belonged to the pre-extrapolation iterate and the
+  next <code>y</code> spanned the DIIS jump as well as the rotation.
+  ODA accepts already cleared it; DIIS accepts now do too.
+  This is what left <code>"DIIS + LBFGS"</code> needing 200 iterations
+  at M = 3, now 15.</li>
+<li>The two-loop direction replaced the preconditioned-SD one on
+  the strength of <code>d.g &lt; 0</code> alone. Descending is not the same
+  as being worth taking: the direction it displaced routinely
+  descended several times faster per unit length. The
+  replacement now has to retain at least half that rate.</li>
+</ul>
+</li>
 <li>ODA no longer aborts with "Negative natural occupation numbers"
   on an SCF started from a density projected between two
   different basis sets. Two independent problems fed the same

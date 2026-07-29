@@ -96,7 +96,7 @@
 |  size\_t | [**orbital\_rotation\_steps\_after\_oda**](#function-orbital_rotation_steps_after_oda-22) () const<br> |
 |  void | [**print\_history**](#function-print_history) () const<br> |
 |  void | [**reset\_history**](#function-reset_history) () <br> |
-|  void | [**run**](#function-run) (const std::string & methods="DIIS + ODA + CG") <br> |
+|  void | [**run**](#function-run) (const std::string & methods="DIIS + ODA + LBFGS") <br> |
 |  OrbitalOccupations&lt; Tbase &gt; | [**update\_occupations**](#function-update_occupations) (const OrbitalEnergies&lt; Tbase &gt; & orbital\_energies) const<br> |
 |  void | [**verbosity**](#function-verbosity-12) (int v) <br> |
 |  int | [**verbosity**](#function-verbosity-22) () const<br> |
@@ -749,7 +749,7 @@ inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::reset_history ()
 
 ```C++
 inline void OpenOrbitalOptimizer::Armadillo::SCFSolver::run (
-    const std::string & methods="DIIS + ODA + CG"
+    const std::string & methods="DIIS + ODA + LBFGS"
 ) 
 ```
 

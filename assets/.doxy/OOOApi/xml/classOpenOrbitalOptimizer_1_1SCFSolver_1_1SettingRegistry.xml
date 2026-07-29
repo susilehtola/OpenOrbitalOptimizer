@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="225" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="225" bodyend="-1"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="226" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="226" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -36,7 +36,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="201" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="201" bodyend="204"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="202" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="202" bodyend="205"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry_1a45ac81fa32d5d3c64d4b544216b0df1a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; SettingBase * &gt;</type>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="206" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="206" bodyend="213"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="207" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="207" bodyend="214"/>
       </memberdef>
       <memberdef kind="function" id="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry_1a78cf78ae4ec4f948f304091fb5a2c715" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; const SettingBase * &gt;</type>
@@ -64,16 +64,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/scfsolver.hpp" line="215" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="215" bodyend="222"/>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="216" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="216" bodyend="223"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>Collects the solver&apos;s settings as they are constructed, so that declaring a setting is all it takes to publish it through the string facade <ndash/> there is no second list to keep in step.</para>
-<para>It records each setting&apos;s offset from the registry rather than its address. An address would belong to the object the setting was constructed in, and <ref refid="classOpenOrbitalOptimizer_1_1SCFSolver" kindref="compound">SCFSolver</ref> is movable, so a registry of addresses would point into the moved-from object. Offsets describe the class layout instead, which is by definition the same in the moved-to object, so the implicitly generated move stays correct and needs no fixup. </para>
+<para>It records each setting&apos;s offset from the registry rather than its address. An address would belong to the object the setting was constructed in, and <ref refid="classOpenOrbitalOptimizer_1_1SCFSolver" kindref="compound">SCFSolver</ref> is copyable and movable, so a registry of addresses would point into the source object. Offsets describe the class layout instead, which is by definition the same in the destination object, so the implicitly generated copy and move stay correct and need no fixup. </para>
     </detaileddescription>
-    <location file="openorbitaloptimizer/scfsolver.hpp" line="195" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="195" bodyend="226"/>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="196" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="196" bodyend="227"/>
     <listofallmembers>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry_1ac924e4aa05ea96e8ff10bc4f86cfb6a7" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingRegistry</scope><name>add</name></member>
       <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry_1aabb977fff650216895411da73c42eff8" prot="private" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::SettingRegistry</scope><name>offsets_</name></member>
