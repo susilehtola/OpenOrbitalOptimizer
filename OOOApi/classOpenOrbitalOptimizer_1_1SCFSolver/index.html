@@ -1052,6 +1052,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-aufbau_cleanup_step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function aufbau_cleanup_step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-brute_force_search_for_lowest_configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1611,6 +1622,10 @@
 <td style="text-align: left;"><a href="#function-add_entry-22"><strong>add_entry</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-densitymatrix"><strong>DensityMatrix</strong></a>&lt; Torb, Tbase &gt; &amp; density, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-fockbuilderreturn"><strong>FockBuilderReturn</strong></a>&lt; Torb, Tbase &gt; &amp; fock) <br><em>Add entry to history, return value is True if energy was lowered.</em></td>
 </tr>
 <tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-aufbau_cleanup_step"><strong>aufbau_cleanup_step</strong></a> () <br></td>
+</tr>
+<tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-brute_force_search_for_lowest_configuration"><strong>brute_force_search_for_lowest_configuration</strong></a> () <br><em>Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search.</em></td>
 </tr>
@@ -1828,6 +1843,15 @@
     const FockBuilderReturn &lt; Torb, Tbase &gt; &amp; fock
 ) 
 </code></pre>
+<hr>
+
+<h3 id="function-aufbau_cleanup_step">function aufbau_cleanup_step</h3>
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::aufbau_cleanup_step () 
+</code></pre>
+<p>Replace the converged iterate's occupations with the Aufbau filling of the converged Fock matrix.</p>
+<p>What the SCF reports at convergence is the natural occupation vector of a <em>mixed</em> density. A mixture of densities carrying different orbitals is not idempotent shell by shell, so a nominally full shell comes out at max_occ - epsilon and orbitals well above the Fermi level carry epsilon  even though the minimiser of a fractional-occupation energy functional is Aufbau: full below the Fermi level, zero above it, fractional only inside the degenerate cluster at it.</p>
+<p>This is one ODA step with the current density left out of the polytope. That is all it takes, because the mixing is the whole problem: every skeleton is an Aufbau filling of one common set of orbitals, so any combination of skeletons alone has those same orbitals as its natural orbitals and the combined occupation vector as its occupations, exactly. The Aufbau structure is inherited rather than imposed, and the Fermi-level fractions come from minimising the energy over the skeleton simplex rather than from a filling rule  which matters, since that is the one place where the occupations are genuinely free.</p>
+<p>Being an ODA step, it is adopted only if it lowers the energy; a cleanup that raised it would mean the converged iterate was not the Aufbau minimiser it is reported to be, which is worth leaving visible rather than papering over. </p>
 <hr>
 
 <h3 id="function-brute_force_search_for_lowest_configuration">function brute_force_search_for_lowest_configuration</h3>

@@ -237,12 +237,13 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a81d901152bd83e694040fab0f310f7d9" kind="function"><name>extrapolate_fock</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1acdb8cdd9f410e6dd7aa832a47cba0026" kind="function"><name>natural_orbitals_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0efb2c1ea8a6209b87e97291c9d96b3f" kind="function"><name>require_nonnegative_occupations_</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4e948a0cac1bf51d411aa55361e3767c" kind="function"><name>conserve_block_occupations_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a31f82dbb4c7dd4aa78a60431a9c41a92" kind="function"><name>extrapolate_density</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa04b785045a04e49bdf6e45d04fb4624" kind="function"><name>density_overlap</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a68b3c4709abee1184112996f43f098f2" kind="function"><name>attempt_extrapolation</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6535a0dc7766bcbfac83ede96582d43e" kind="function"><name>attempt_fock</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab3423b195fefca0386d767f8e3e2d467" kind="function"><name>solve_polytope_qp_</name></member>
-    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1df31b0ff478d0cbcb77c9144690f1c9" kind="function"><name>optimal_damping_step</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af6690cb17aee4d122481c93f6137f715" kind="function"><name>optimal_damping_step</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa3f4c8f4a100e667f5639372749c4c86" kind="function"><name>cleanup</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a881f1a75d6711847f1b8e14a73ed7099" kind="function"><name>build_rotation_step_context_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4b36fff6c5d885dafe1ad714cc6b7dc5" kind="function"><name>preconditioned_sd_direction_</name></member>
@@ -306,6 +307,7 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af42651c092ba5d6b20e3687ab917a8b2" kind="function"><name>order_orbitals_by_energy</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ad361054089302a8160954d44c3eacbb7" kind="function"><name>determine_number_of_particles_by_aufbau</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a924d6a3808cc3254bd2395bdc719f27a" kind="function"><name>update_occupations</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af8fd1b795982a3ccc16800b1f5fca1a8" kind="function"><name>aufbau_cleanup_step</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a05e8fd7e915665580418ab47e44629e5" kind="function"><name>converged</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0e46cd54304afa2a530f4ef787fb2335" kind="function"><name>run</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ac6c5ba9873cbd926433d1d7827eaedd4" kind="function"><name>get_solution</name></member>

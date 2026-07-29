@@ -63,6 +63,7 @@ _SCF solver class._
 |   | [**SCFSolver**](#function-scfsolver-22) (const [**IndexVector**](namespaceOpenOrbitalOptimizer.md#typedef-indexvector) & number\_of\_blocks\_per\_particle\_type, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & maximum\_occupation, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles, const [**FockBuilder**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilder)&lt; Torb, Tbase &gt; & fock\_builder, const std::vector&lt; std::string &gt; & block\_descriptions) <br> |
 |  bool | [**add\_entry**](#function-add_entry-12) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density) <br>_Add entry to history, return value is True if energy was lowered._  |
 |  bool | [**add\_entry**](#function-add_entry-22) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density, const [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; & fock) <br>_Add entry to history, return value is True if energy was lowered._  |
+|  bool | [**aufbau\_cleanup\_step**](#function-aufbau_cleanup_step) () <br> |
 |  void | [**brute\_force\_search\_for\_lowest\_configuration**](#function-brute_force_search_for_lowest_configuration) () <br>_Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search._  |
 |  void | [**callback\_convergence\_function**](#function-callback_convergence_function) (std::function&lt; bool(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_convergence\_function=nullptr) <br> |
 |  void | [**callback\_function**](#function-callback_function) (std::function&lt; void(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_function=nullptr) <br> |
@@ -207,6 +208,32 @@ inline bool OpenOrbitalOptimizer::SCFSolver::add_entry (
 
 
 
+
+<hr>
+
+
+
+### function aufbau\_cleanup\_step 
+
+```C++
+inline bool OpenOrbitalOptimizer::SCFSolver::aufbau_cleanup_step () 
+```
+
+
+
+Replace the converged iterate's occupations with the Aufbau filling of the converged Fock matrix.
+
+
+What the SCF reports at convergence is the natural occupation vector of a _mixed_ density. A mixture of densities carrying different orbitals is not idempotent shell by shell, so a nominally full shell comes out at max\_occ - epsilon and orbitals well above the Fermi level carry epsilon  even though the minimiser of a fractional-occupation energy functional is Aufbau: full below the Fermi level, zero above it, fractional only inside the degenerate cluster at it.
+
+
+This is one ODA step with the current density left out of the polytope. That is all it takes, because the mixing is the whole problem: every skeleton is an Aufbau filling of one common set of orbitals, so any combination of skeletons alone has those same orbitals as its natural orbitals and the combined occupation vector as its occupations, exactly. The Aufbau structure is inherited rather than imposed, and the Fermi-level fractions come from minimising the energy over the skeleton simplex rather than from a filling rule  which matters, since that is the one place where the occupations are genuinely free.
+
+
+Being an ODA step, it is adopted only if it lowers the energy; a cleanup that raised it would mean the converged iterate was not the Aufbau minimiser it is reported to be, which is worth leaving visible rather than papering over. 
+
+
+        
 
 <hr>
 
