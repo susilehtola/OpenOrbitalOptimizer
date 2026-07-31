@@ -3287,6 +3287,33 @@ namespace OpenOrbitalOptimizer {
         throw std::logic_error("Fed in orbitals and orbital occupations are not consistent!\n");
       if(orbitals.size() != number_of_blocks_)
         throw std::logic_error("Fed in orbitals and orbital occupations do not have the required number of blocks!\n");
+
+      // Refuse a basis that cannot hold the particles it is being asked
+      // to hold. Every occupation rule in the solver fills orbitals in
+      // energy order until the particles run out, so with too few
+      // orbitals the fill runs off the end of the list. Detecting that
+      // here rather than there is the difference between naming the
+      // problem and failing deep inside an occupation walk with no
+      // indication of why -- and silently filling what orbitals there
+      // are would be worse still, since the answer would then be a
+      // system with the wrong number of particles in it.
+      for(Index iparticle = 0;
+          iparticle < number_of_blocks_per_particle_type_.size(); iparticle++) {
+        const size_t offset = particle_block_offset(iparticle);
+        Tbase capacity = 0;
+        for(size_t iblock = offset;
+            iblock < offset + (size_t) number_of_blocks_per_particle_type_(iparticle);
+            iblock++)
+          capacity += Tbase(orbitals[iblock].cols()) * maximum_occupation_(iblock);
+        if(capacity < number_of_particles_(iparticle)) {
+          std::ostringstream oss;
+          oss << "Particle type " << iparticle << " has " << (double) capacity
+              << " orbital capacity but is asked to hold "
+              << (double) number_of_particles_(iparticle) << " particles!\n";
+          throw std::logic_error(oss.str());
+        }
+      }
+
       orbital_history_.clear();
       clear_diis_caches_();
 
