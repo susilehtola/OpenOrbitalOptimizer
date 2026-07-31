@@ -222,6 +222,12 @@ namespace OpenOrbitalOptimizer {
         settings_, "convergence_threshold",
         "DIIS-error convergence threshold", Tbase(1e-7)};
 
+    Setting<Tbase> aufbau_convergence_threshold_{
+        settings_, "aufbau_convergence_threshold",
+        "occupation outside the Fermi-level window allowed at convergence; "
+        "negative disables the check",
+        Tbase(1e-6)};
+
     Setting<Tbase> noise_safety_factor_{
         settings_, "noise_safety_factor",
         "K in effective threshold max(convergence_threshold, K * noise_floor)",
@@ -359,6 +365,22 @@ namespace OpenOrbitalOptimizer {
         nullptr,
         &SCFSolver::converged_as_int_};
 
+    Setting<Tbase> particle_number_error_{
+        settings_, "particle_number_error",
+        "largest |sum(n) - N| over the particle types -- re-measured now",
+        Tbase(0),
+        false,
+        nullptr,
+        &SCFSolver::particle_number_error};
+
+    Setting<Tbase> aufbau_error_{
+        settings_, "aufbau_error",
+        "largest occupation outside the Fermi-level window -- re-measured now",
+        Tbase(0),
+        false,
+        nullptr,
+        &SCFSolver::aufbau_error};
+
     std::vector<SettingBase *> all_settings_() {
       return settings_.settings();
     }
@@ -398,6 +420,9 @@ namespace OpenOrbitalOptimizer {
       std::vector<OrbitalRotation> history_dofs;
     };
     LBFGSState lbfgs_;
+
+    using SkeletonOccupations =
+        std::vector<std::vector<std::vector<Vector<Tbase>>>>;
 
     struct AllowedMethods {
       bool diis = false, oda = false, cg = false, lbfgs = false;
@@ -1740,8 +1765,20 @@ namespace OpenOrbitalOptimizer {
       return std::make_pair(lam, model_value(lam));
     }
 
-    bool optimal_damping_step(bool force_full = false,
-                              bool exclude_reference = false) {
+    bool optimal_damping_step(bool force_full = false) {
+      std::pair<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>>
+        best_evaluated;
+      SkeletonOccupations skeletons;
+      return optimal_damping_step_(force_full, /*exclude_reference=*/false,
+                                   best_evaluated, skeletons);
+    }
+
+    bool optimal_damping_step_(bool force_full,
+                               bool exclude_reference,
+                               std::pair<DensityMatrix<Torb, Tbase>,
+                                         FockBuilderReturn<Torb, Tbase>>
+                                 & best_evaluated,
+                               SkeletonOccupations & skeletons) {
       auto particles_left = [](Tbase n) {
         return n >= 10*std::numeric_limits<Tbase>::epsilon();
       };
@@ -1760,9 +1797,13 @@ namespace OpenOrbitalOptimizer {
         reference_orbitals = new_orbitals;
 
       // Skeleton occupations per particle type: [iparticle][itrial][iblock_within_particle]
-      std::vector<std::vector<std::vector<Vector<Tbase>>>> trial_occupations_per_particle(number_of_blocks_per_particle_type_.size());
+      SkeletonOccupations trial_occupations_per_particle(number_of_blocks_per_particle_type_.size());
 
-      for(Index iparticle=0; iparticle<number_of_blocks_per_particle_type_.size(); iparticle++) {
+      const bool reuse_skeletons = !skeletons.empty();
+      if(reuse_skeletons)
+        trial_occupations_per_particle = skeletons;
+
+      for(Index iparticle=0; !reuse_skeletons && iparticle<number_of_blocks_per_particle_type_.size(); iparticle++) {
         size_t iblock_start = particle_block_offset(iparticle);
         size_t nblocks_iparticle = number_of_blocks_per_particle_type_(iparticle);
 
@@ -1904,6 +1945,10 @@ namespace OpenOrbitalOptimizer {
         }
       }
 
+      // Hand the enumerated set back so later calls can hold it fixed.
+      if(!reuse_skeletons)
+        skeletons = trial_occupations_per_particle;
+
       // Skeleton-set attempts. When the full enumeration would yield
       // more skeletons than there are particle types (i.e. at least
       // one particle has a degenerate group whose integer occupation
@@ -1954,15 +1999,15 @@ namespace OpenOrbitalOptimizer {
           // Hessian would carry a zero mode and the axis vertex would
           // cost a Fock build to re-evaluate the reference.
           //
-          // Nothing else has to change. The polytope is still
-          // {lambda >= 0, sum(lambda) <= 1}, so the QP, the cubic rays
-          // and the backoff scaling all work as they are -- but every
-          // vertex is now an Aufbau filling of one common set of
-          // orbitals, so every point in it is a convex combination of
-          // those and has them as its natural orbitals. Mixing
-          // densities that carry *different* orbitals is what makes
-          // the natural occupations depart from Aufbau, and the
-          // current density was the only ingredient doing it.
+          // The polytope keeps its shape, {lambda >= 0,
+          // sum(lambda) <= 1}, so the QP, the cubic rays and the
+          // backoff scaling need no special case. Every vertex is then
+          // an Aufbau filling of one common set of orbitals, so every
+          // point in it is a convex combination of those and has them
+          // as its natural orbitals. Mixing densities that carry
+          // *different* orbitals is what makes natural occupations
+          // depart from Aufbau, and the current density is the only
+          // ingredient that would.
           for(size_t iparticle = 0;
               iparticle < trial_occupations_per_particle.size(); iparticle++) {
             auto & trials = trial_occupations_per_particle[iparticle];
@@ -1980,7 +2025,10 @@ namespace OpenOrbitalOptimizer {
           // for the solution like any other trial this step evaluates.
           add_entry(std::make_pair(reference_orbitals, reference_occupations),
                     reference_build);
-          log_(5, "Aufbau cleanup: lambda = 0 vertex is now a skeleton, "
+          best_evaluated = std::make_pair(
+              std::make_pair(reference_orbitals, reference_occupations),
+              reference_build);
+          log_(5, "Aufbau cleanup: lambda = 0 vertex set to a skeleton, "
                   "energy % .10f\n", (double) (reference_energy));
         }
 
@@ -2374,6 +2422,12 @@ namespace OpenOrbitalOptimizer {
             Vector<Tbase> x_scaled = scale * cand.lam;
             auto eval = evaluate(x_scaled);
             number_of_fock_evaluations_++;
+            // Only the excluded-reference path wants this, and there
+            // best_evaluated was seeded from the promoted vertex above,
+            // so the comparison always has something to compare to.
+            if(exclude_reference
+               && eval.second.first < best_evaluated.second.first)
+              best_evaluated = eval;
             bool ok = add_entry(eval.first, eval.second);
             if(ok) {
               succ = true;
@@ -3700,14 +3754,421 @@ namespace OpenOrbitalOptimizer {
       return occupations;
     }
 
-    bool aufbau_cleanup_step() {
+    void relax_orbitals_at_fixed_occupations_(const AllowedMethods & allowed) {
+      if(!allowed.orbital_rotation()) return;
+      // The rotation step works at fixed occupations by construction;
+      // freezing them as well keeps anything it calls from quietly
+      // re-Aufbau-filling and undoing the choice being tested.
+      struct FrozenGuard {
+        Setting<int> * flag;
+        int saved;
+        ~FrozenGuard() { *flag = saved; }
+      } guard{&frozen_occupations_, frozen_occupations_};
+      frozen_occupations_ = 1;
+
+      // Relax to stationarity rather than for a fixed burst. The
+      // rotation step reports failure once it can no longer descend,
+      // which is the natural stopping point; the cap is only there so
+      // a pathological case cannot spin. A burst sized for the usual
+      // post-ODA relaxation is far too short here -- the occupations
+      // have just moved by a finite amount, not a converged step's
+      // worth, and it is the fully relaxed energy that decides whether
+      // the new occupations are worth adopting at all.
+      const size_t maximum_steps = 100;
+      for(size_t step = 0; step < maximum_steps; step++)
+        if(!(allowed.lbfgs ? lbfgs_step() : scaled_steepest_descent_step()))
+          break;
+    }
+
+    void skeleton_axis_layout_(const SkeletonOccupations & skeletons,
+                               std::vector<size_t> & particle_off,
+                               std::vector<size_t> & particle_len,
+                               std::vector<std::pair<size_t, size_t>> & axis) const {
+      particle_off.clear();
+      particle_len.clear();
+      axis.clear();
+      for(size_t iparticle = 0; iparticle < skeletons.size(); iparticle++) {
+        const size_t ntrial = skeletons[iparticle].size();
+        if(ntrial < 2) continue;
+        particle_off.push_back(axis.size());
+        particle_len.push_back(ntrial - 1);
+        for(size_t itrial = 1; itrial < ntrial; itrial++)
+          axis.emplace_back(iparticle, itrial);
+      }
+    }
+
+    OrbitalOccupations<Tbase> occupations_from_lambda_(
+        const SkeletonOccupations & skeletons,
+        const std::vector<std::pair<size_t, size_t>> & axis,
+        const Vector<Tbase> & lambda) const {
+      std::vector<Tbase> spent(skeletons.size(), Tbase(0));
+      for(size_t k = 0; k < axis.size(); k++)
+        spent[axis[k].first] += lambda(k);
+
+      OrbitalOccupations<Tbase> occupations(number_of_blocks_);
+      for(size_t iparticle = 0; iparticle < skeletons.size(); iparticle++) {
+        if(skeletons[iparticle].empty()) continue;
+        const size_t offset = particle_block_offset(iparticle);
+        for(size_t iblock = 0; iblock < skeletons[iparticle][0].size(); iblock++)
+          occupations[offset + iblock] =
+            ((Tbase(1) - spent[iparticle]) * skeletons[iparticle][0][iblock]).eval();
+      }
+      for(size_t k = 0; k < axis.size(); k++) {
+        const size_t iparticle = axis[k].first, itrial = axis[k].second;
+        const size_t offset = particle_block_offset(iparticle);
+        for(size_t iblock = 0; iblock < skeletons[iparticle][itrial].size(); iblock++)
+          occupations[offset + iblock] +=
+            lambda(k) * skeletons[iparticle][itrial][iblock];
+      }
+      return occupations;
+    }
+
+    Vector<Tbase> relaxed_occupation_gradient_(
+        const SkeletonOccupations & skeletons,
+        const std::vector<std::pair<size_t, size_t>> & axis) const {
+      Orbitals<Torb> C_pseudo;
+      OrbitalEnergies<Tbase> eps;
+      pseudo_canonicalise_(get_orbitals(), get_fock_matrix(),
+                           get_orbital_occupations(), C_pseudo, eps);
+      Vector<Tbase> gradient = Vector<Tbase>::Zero(axis.size());
+      for(size_t k = 0; k < axis.size(); k++) {
+        const size_t iparticle = axis[k].first, itrial = axis[k].second;
+        const size_t offset = particle_block_offset(iparticle);
+        Tbase value = 0;
+        for(size_t iblock = 0; iblock < skeletons[iparticle][itrial].size(); iblock++)
+          for(Index iorb = 0; iorb < skeletons[iparticle][itrial][iblock].size(); iorb++)
+            value += (skeletons[iparticle][itrial][iblock](iorb)
+                      - skeletons[iparticle][0][iblock](iorb))
+                     * eps[offset + iblock](iorb);
+        gradient(k) = value;
+      }
+      return gradient;
+    }
+
+    Tbase relaxed_occupation_search_(const AllowedMethods & allowed,
+                                     const SkeletonOccupations & skeletons,
+                                     const Orbitals<Torb> & orbitals,
+                                     int & fock_evaluations) {
+      std::vector<size_t> particle_off, particle_len;
+      std::vector<std::pair<size_t, size_t>> axis;
+      skeleton_axis_layout_(skeletons, particle_off, particle_len, axis);
+      const size_t npars = axis.size();
+
+      auto sample = [&](const Vector<Tbase> & lambda) {
+        fock_evaluations += number_of_fock_evaluations_;
+        initialize_with_orbitals(
+            orbitals, occupations_from_lambda_(skeletons, axis, lambda));
+        relax_orbitals_at_fixed_occupations_(allowed);
+        return get_energy();
+      };
+
+      const Vector<Tbase> origin = Vector<Tbase>::Zero(npars);
+      const Tbase E_origin = sample(origin);
+      const Vector<Tbase> gradient = relaxed_occupation_gradient_(skeletons, axis);
+      auto best_state = get_solution();
+      Tbase best_energy = E_origin;
+
+      Matrix<Tbase> hessian(npars, npars);
+      for(size_t j = 0; j < npars; j++) {
+        Vector<Tbase> vertex = Vector<Tbase>::Zero(npars);
+        vertex(j) = Tbase(1);
+        const Tbase E_vertex = sample(vertex);
+        if(E_vertex < best_energy) {
+          best_energy = E_vertex;
+          best_state = get_solution();
+        }
+        hessian.col(j) = relaxed_occupation_gradient_(skeletons, axis) - gradient;
+      }
+      // The Hessian is symmetric; the finite differences are not, quite.
+      hessian = ((hessian + hessian.transpose()) / Tbase(2)).eval();
+
+      // Walk to the stationary point of the relaxed energy rather than
+      // stopping at the model's first guess. The model is fitted from
+      // finite differences across the whole polytope, so it locates the
+      // minimum only to a few percent, which leaves the energy a part
+      // in 1e6 high -- on a spin-restricted transition metal that is
+      // the entire gain the cleanup is trying to bank. Each step
+      // re-anchors the quadratic on the point just sampled, using the
+      // gradient there, which costs nothing beyond the relaxation
+      // already paid for.
+      Vector<Tbase> anchor = origin;
+      Vector<Tbase> anchor_gradient = gradient;
+      Tbase anchor_energy = E_origin;
+      const size_t maximum_refinements = 4;
+      for(size_t refinement = 0; refinement < maximum_refinements; refinement++) {
+        // Re-expand the model about the anchor: the QP works in
+        // absolute lambda, so fold the shift into the linear and
+        // constant terms.
+        const Vector<Tbase> g_effective = anchor_gradient - hessian * anchor;
+        const Tbase E_effective =
+            anchor_energy - anchor_gradient.dot(anchor)
+            + Tbase(1)/Tbase(2) * (anchor.transpose() * hessian * anchor).value();
+
+        Vector<Tbase> lambda_star;
+        Tbase model_minimum;
+        std::tie(lambda_star, model_minimum) = solve_polytope_qp_(
+            hessian, g_effective, E_effective, particle_off, particle_len);
+        const Vector<Tbase> step = lambda_star - anchor;
+        if(step.template lpNorm<Eigen::Infinity>()
+             <= Tbase(100) * std::numeric_limits<Tbase>::epsilon())
+          break;
+
+        const Tbase E_star = sample(lambda_star);
+        log_stream_(5) << "Relaxed polytope: lambda = "
+                       << lambda_star.transpose() << ", E = " << E_star
+                       << std::endl;
+        if(E_star < best_energy) {
+          best_energy = E_star;
+          best_state = get_solution();
+        }
+        // A step that does not pay is the end of the walk; the model
+        // has stopped describing the surface well enough to trust.
+        if(E_star >= anchor_energy - minimum_useful_descent_()) break;
+
+        const Vector<Tbase> new_gradient =
+            relaxed_occupation_gradient_(skeletons, axis);
+
+        // Correct the curvature along the step just taken. The
+        // finite-difference Hessian spans the whole polytope, so it
+        // describes the surface between its vertices rather than
+        // around the minimum, and stepping on it alone overshoots and
+        // rings. Imposing the secant condition H s = y on the
+        // direction just walked -- a symmetric rank-one update --
+        // makes the next step use the curvature actually seen there.
+        const Vector<Tbase> y = new_gradient - anchor_gradient;
+        const Vector<Tbase> residual = y - hessian * step;
+        const Tbase denominator = residual.dot(step);
+        if(std::abs(denominator)
+             > Tbase(1e-8) * step.norm() * residual.norm())
+          hessian += (residual * residual.transpose()) / denominator;
+
+        anchor = lambda_star;
+        anchor_gradient = new_gradient;
+        anchor_energy = E_star;
+      }
+
+      fock_evaluations += number_of_fock_evaluations_;
+      initialize_with_orbitals(best_state.first, best_state.second);
+      return best_energy;
+    }
+
+    bool aufbau_cleanup_step(const AllowedMethods & allowed) {
       if(frozen_occupations_) {
         log_(5, "Aufbau cleanup skipped: occupations are frozen.\n");
         return false;
       }
-      log_(5, "Aufbau cleanup: ODA over the skeletons alone.\n");
-      return optimal_damping_step(/*force_full=*/true,
-                                  /*exclude_reference=*/true);
+      log_(5, "Aufbau cleanup: choosing occupations, then relaxing at them.\n");
+
+      // Everything below runs on a scratch iterate; keep what it would
+      // otherwise overwrite.
+      const auto saved_history = orbital_history_;
+      const Tbase reference_energy = get_energy();
+      const int saved_fock_evaluations = number_of_fock_evaluations_;
+      const auto saved_cg_gradient = previous_orbital_gradient_;
+      const auto saved_cg_direction = previous_orbital_direction_;
+      const auto saved_cg_dofs = previous_orbital_dofs_;
+      const auto saved_lbfgs = lbfgs_;
+
+      // initialize_with_orbitals resets the Fock counter, so the count
+      // has to be banked before each pass wipes it.
+      int cleanup_fock_evaluations = 0;
+
+      // Best Aufbau state found so far, kept explicitly: a pass can
+      // land below the one before it -- once the occupations stop
+      // being fractional the skeleton simplex collapses to a point and
+      // the step falls back on a plain Aufbau fill, which breaks the
+      // symmetry of the degenerate shell and costs far more than the
+      // pass was going to win -- and the answer must not follow it
+      // down.
+      DensityMatrix<Torb, Tbase> best_state;
+      Tbase best_energy = std::numeric_limits<Tbase>::infinity();
+
+      // The skeleton set is established once, here, from the converged
+      // Fock matrix, and then held fixed for the rest of the cleanup.
+      // It describes the solution being refined -- which orbitals are
+      // degenerate at it and which integer fillings of them to span --
+      // and re-deriving it from each relaxed iterate destroys it: the
+      // relaxation moves the cluster apart by more than the degeneracy
+      // window, the walk stops recognising it, and the simplex
+      // collapses to a point after the first pass.
+      SkeletonOccupations skeletons;
+
+      // Establish the skeleton set, and with it the orbitals the
+      // skeletons are indexed against.
+      auto diagonalized = compute_orbitals(get_fock_matrix());
+      {
+        std::pair<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>>
+          discard;
+        SkeletonOccupations enumerated;
+        // A dry run purely to enumerate; its energy verdict is not used.
+        const auto history_before = orbital_history_;
+        optimal_damping_step_(/*force_full=*/true, /*exclude_reference=*/true,
+                              discard, enumerated);
+        orbital_history_ = history_before;
+        clear_diis_caches_();
+        skeletons = std::move(enumerated);
+      }
+
+      // Where the polytope is small enough to afford it, the coupling
+      // between the occupations and the orbitals is modelled directly
+      // rather than alternated around. Both branches below relax at
+      // every point they sample; they differ only in the fit.
+      //
+      // The dimension is capped because each sample costs a full
+      // relaxation -- about a hundred Fock builds on the iron atom,
+      // against 576 for its entire SCF -- and the count is one per
+      // vertex plus one at the model minimum. A degenerate f shell can
+      // enumerate skeletons into the tens, where this would cost
+      // several times the SCF it is cleaning up after; those fall back
+      // to the alternation, which is cheap and merely imperfect.
+      const size_t maximum_modelled_dimension = 6;
+      std::vector<size_t> off_unused, len_unused;
+      std::vector<std::pair<size_t, size_t>> axis;
+      skeleton_axis_layout_(skeletons, off_unused, len_unused, axis);
+
+      if(!axis.empty() && axis.size() <= maximum_modelled_dimension) {
+        log_(5, "Aufbau cleanup: relaxed search over %zu occupation "
+                "degrees of freedom.\n", axis.size());
+        relaxed_occupation_search_(allowed, skeletons, diagonalized.first,
+                                   cleanup_fock_evaluations);
+      } else {
+        if(!axis.empty())
+          log_(5, "Aufbau cleanup: %zu occupation degrees of freedom is "
+                  "more than the %zu worth relaxing at, alternating "
+                  "instead.\n", axis.size(), maximum_modelled_dimension);
+      const size_t maximum_passes = 8;
+      for(size_t pass = 0; pass < maximum_passes; pass++) {
+        // Occupations: ODA over the fixed skeleton set, the reference
+        // excluded so the result stays a combination of skeletons and
+        // therefore Aufbau.
+        std::pair<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>>
+          best_aufbau;
+        optimal_damping_step_(/*force_full=*/true, /*exclude_reference=*/true,
+                              best_aufbau, skeletons);
+        if(best_aufbau.first.first.empty()) break;
+
+        // The first pass moves whatever it costs -- swapping the
+        // occupations is the point, and the relaxation that pays for
+        // it has not run yet. After that, moving somewhere worse than
+        // the best Aufbau state in hand is pure loss, the relaxation
+        // only climbing back to where it started.
+        if(pass > 0 && best_aufbau.second.first >= best_energy) break;
+
+        // Stand on it, whether or not it beat what we were standing on
+        // -- it is about to be relaxed, and it is the relaxed energy
+        // that decides. This also makes the history hold nothing but
+        // Aufbau states, so its lowest-energy entry is the best of
+        // those rather than the mixed density we are trying to
+        // improve on.
+        cleanup_fock_evaluations += number_of_fock_evaluations_;
+        initialize_with_orbitals(best_aufbau.first.first,
+                                 best_aufbau.first.second);
+        relax_orbitals_at_fixed_occupations_(allowed);
+
+        // Progress is measured along the Aufbau trajectory, not
+        // against the mixed density we started from: the first pass is
+        // expected to land above it, that being the whole reason the
+        // relaxation is needed.
+        const Tbase now = get_energy();
+        if(now >= best_energy - minimum_useful_descent_()) break;
+        best_energy = now;
+        best_state = get_solution();
+      }
+
+      }
+
+      // Stand on the best pass, not the last one.
+      if(!best_state.first.empty()
+         && get_energy() > best_energy + minimum_useful_descent_()) {
+        cleanup_fock_evaluations += number_of_fock_evaluations_;
+        initialize_with_orbitals(best_state.first, best_state.second);
+      }
+
+      const Tbase aufbau_energy = get_energy();
+      // The scratch passes reset the counter; the Fock builds they made
+      // were real, so fold them back onto the total rather than losing
+      // them.
+      cleanup_fock_evaluations += number_of_fock_evaluations_;
+      number_of_fock_evaluations_ =
+          saved_fock_evaluations + cleanup_fock_evaluations;
+
+      if(aufbau_energy <= reference_energy) {
+        log_(5, "Aufbau cleanup accepted, energy change %e\n",
+             (double) (aufbau_energy - reference_energy));
+        return true;
+      }
+
+      log_(1, "Aufbau cleanup rejected: the relaxed Aufbau state lies %e Eh "
+              "above the converged density, whose mixed occupations are "
+              "reported instead.\n",
+           (double) (aufbau_energy - reference_energy));
+      orbital_history_ = saved_history;
+      clear_diis_caches_();
+      previous_orbital_gradient_ = saved_cg_gradient;
+      previous_orbital_direction_ = saved_cg_direction;
+      previous_orbital_dofs_ = saved_cg_dofs;
+      lbfgs_ = saved_lbfgs;
+      return false;
+    }
+
+    Tbase particle_number_error() const {
+      if(orbital_history_.empty()) return 0;
+      const auto occupations = get_orbital_occupations();
+      Tbase worst = 0;
+      for(Index iparticle = 0;
+          iparticle < number_of_blocks_per_particle_type_.size(); iparticle++) {
+        const size_t offset = particle_block_offset(iparticle);
+        Tbase sum = 0;
+        for(size_t iblock = offset;
+            iblock < offset + (size_t) number_of_blocks_per_particle_type_(iparticle);
+            iblock++)
+          sum += occupations[iblock].sum();
+        worst = std::max(worst,
+                         std::abs(sum - number_of_particles_(iparticle)));
+      }
+      return worst;
+    }
+
+    Tbase aufbau_error() const {
+      if(orbital_history_.empty() || frozen_occupations_) return 0;
+
+      Orbitals<Torb> C_pseudo;
+      OrbitalEnergies<Tbase> eps;
+      const auto occupations = get_orbital_occupations();
+      pseudo_canonicalise_(get_orbitals(), get_fock_matrix(), occupations,
+                           C_pseudo, eps);
+      const auto aufbau = update_occupations(eps);
+
+      Tbase worst = 0;
+      for(Index iparticle = 0;
+          iparticle < number_of_blocks_per_particle_type_.size(); iparticle++) {
+        const auto levels = order_orbitals_by_energy(eps, iparticle);
+        // Fermi level: the highest energy that Aufbau actually fills.
+        bool have_fermi = false;
+        Tbase eps_fermi = 0;
+        for(const auto & level : levels) {
+          const size_t iblock = std::get<1>(level);
+          const size_t iorb = std::get<2>(level);
+          if(aufbau[iblock](iorb) > occupation_change_threshold_) {
+            eps_fermi = std::get<0>(level);
+            have_fermi = true;
+          }
+        }
+        if(!have_fermi) continue;
+
+        for(const auto & level : levels) {
+          const Tbase energy = std::get<0>(level);
+          const size_t iblock = std::get<1>(level);
+          const size_t iorb = std::get<2>(level);
+          if(std::abs(energy - eps_fermi) <= optimal_damping_degeneracy_threshold_)
+            continue;  // inside the Fermi-level cluster; free to be fractional
+          const Tbase n = occupations[iblock](iorb);
+          worst = std::max(worst, energy > eps_fermi
+                                    ? std::abs(n)
+                                    : std::abs(maximum_occupation_(iblock) - n));
+        }
+      }
+      return worst;
     }
 
     bool converged() const {
@@ -3729,6 +4190,11 @@ namespace OpenOrbitalOptimizer {
             return norm(diis_error_vector(0))
                 <= effective_convergence_threshold_();
         }
+    }
+
+    bool occupations_converged() const {
+        if(aufbau_convergence_threshold_ < Tbase(0)) return true;
+        return aufbau_error() <= aufbau_convergence_threshold_;
     }
 
     void run() {
@@ -3783,6 +4249,9 @@ namespace OpenOrbitalOptimizer {
 
       old_energy_ = Tbase(0);
       int failed_iterations = 0;
+      // Whether the "gradient converged, occupations have not" notice
+      // has already been given at full volume this run.
+      bool occupations_blocked_reported = false;
       // Number of orbital-rotation steps still owed by the current ODA -> orbital-rotation burst,
       // budgeted by orbital_rotation_steps_after_oda_ at the ODA transition.
       size_t orbital_rotation_steps_remaining = 0;
@@ -3934,6 +4403,9 @@ namespace OpenOrbitalOptimizer {
         log_(5, "\n\n");
         log_(1, "Iteration %i: %i Fock evaluations energy % .10f change % e DIIS error vector %s norm %e\n", (int) iteration, (int) number_of_fock_evaluations_, (double) (get_energy()), (double) (dE), error_norm_.get().c_str(), (double) (diis_error));
         log_(5, "History size %i\n",(int) orbital_history_.size());
+        if(verbosity_>=5)
+          log_(5, "Occupations: particle-number error %e, Aufbau error %e\n",
+               (double) (particle_number_error()), (double) (aufbau_error()));
         if(verbosity_>=5) {
           const auto occupations = get_orbital_occupations();
           auto occ_idx(occupied_orbitals(occupations));
@@ -3977,7 +4449,42 @@ namespace OpenOrbitalOptimizer {
           // are only Aufbau up to the residual mixing. Report the
           // Aufbau filling of the converged Fock matrix instead, when
           // it does not cost energy.
-          aufbau_cleanup_step();
+          const bool cleanup_adopted = aufbau_cleanup_step(allowed);
+
+          // Occupation space is judged after the cleanup, never
+          // before: the cleanup is the step that puts the occupations
+          // right, so testing ahead of it would block on an error
+          // nothing has yet been able to fix.
+          //
+          // A cleanup that ran and was refused is the end of the road:
+          // the same attempt would be made and refused on every
+          // further pass, so blocking on the occupations would spin to
+          // maximum_iterations. Report what is being
+          // handed back and stop.
+          if(!cleanup_adopted && !occupations_converged())
+            log_(0, "Warning: converged occupations carry %e outside the "
+                    "Fermi-level window, above the %e threshold, and the "
+                    "Aufbau cleanup did not improve on them.\n",
+                 (double) (aufbau_error()),
+                 (double) (aufbau_convergence_threshold_.get()));
+
+          if(cleanup_adopted && !occupations_converged()) {
+            // Said once at the volume of the iteration line, then
+            // demoted, so the extra iterations read as a stated
+            // reason rather than as a stall.
+            log_(occupations_blocked_reported ? 5 : 1,
+                 "Orbital gradient converged, but %e of occupation sits "
+                 "outside the Fermi-level window (threshold %e); "
+                 "continuing.\n",
+                 (double) (aufbau_error()),
+                 (double) (aufbau_convergence_threshold_.get()));
+            occupations_blocked_reported = true;
+            // Occupations are ODA's business, so hand it the next step
+            // when it is available.
+            state = pick_next({StepKind::ODA, StepKind::OrbitalRotation},
+                              StepKind::DIIS);
+            continue;
+          }
 
           log_(1, "Converged to energy % .10f!\n", (double) (get_energy()));
 

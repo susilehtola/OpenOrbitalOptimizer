@@ -33,6 +33,7 @@
 
 ## s
 
+* **SkeletonOccupations** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **Source** ([**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md))
 
 

@@ -6,6 +6,8 @@
 ## a
 
 * **arma\_fock\_builder\_** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md))
+* **aufbau\_convergence\_threshold\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **aufbau\_error\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 
 
 ## b
@@ -139,6 +141,7 @@
 
 ## p
 
+* **particle\_number\_error\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **previous\_orbital\_direction\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **previous\_orbital\_dofs\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **previous\_orbital\_gradient\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))

@@ -1346,6 +1346,41 @@
 <h2 id="v050-unreleased">v0.5.0 / (Unreleased)</h2>
 <h4 id="new-features">New Features</h4>
 <ul>
+<li>Convergence is now judged in occupation space as well as in the
+  orbital gradient. Two diagnostics measure it, both re-evaluated on
+  every read like <code>converged</code>:<ul>
+<li><code>particle_number_error</code> -- the largest <code>|sum(n) - N|</code> over
+  the particle types. This is an invariant rather than a
+  convergence measure: every step mixes densities that already
+  carry the right particle number, so losing any means something
+  discarded it, and iterating will not bring it back. It is
+  therefore reported but deliberately does not gate convergence,
+  since a solver that cannot finish is worse than one that tells
+  you its answer is off.</li>
+<li><code>aufbau_error</code> -- the largest occupation sitting above the
+  Fermi level or missing from below it, measured against the
+  Aufbau filling of the current orbital energies. Orbitals inside
+  the Fermi-level degenerate cluster are exempt, that being where
+  fractional occupation is legitimate. This one <em>is</em> a convergence
+  measure and bounds convergence through the new
+  <code>aufbau_convergence_threshold</code> setting (default 1e-6, negative
+  to switch the check off).</li>
+<li>The order matters and is why the bound is a separate predicate,
+  <code>occupations_converged()</code>, rather than part of <code>converged()</code>:
+  occupation space is put right by the Aufbau cleanup step, which
+  needs the gradient to have converged first. A single predicate
+  demanding both would block on an error that nothing had yet been
+  allowed to fix -- measured on iron, the Aufbau error sits at
+  5e-6 and never falls until the cleanup runs. <code>run()</code> therefore
+  orders them gradient, then cleanup, then occupations, and says
+  so at the volume of the iteration line if the occupations are
+  what is holding the SCF open.</li>
+<li>Costs nothing on a healthy SCF. On oxygen the Aufbau error is
+  already exactly 0 several iterations before the DIIS error
+  reaches its threshold, and iron converges in the same 431
+  iterations to the same energy with the check on or off.</li>
+</ul>
+</li>
 <li>New <code>"LCIIS"</code> method token implementing the least-squares
   commutator in the iterative subspace of Li &amp; Yaron, J. Chem.
   Theory Comput. <strong>12</strong>, 5322 (2016),
@@ -1662,6 +1697,65 @@ O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
 </ul>
 <h4 id="bug-fixes">Bug Fixes</h4>
 <ul>
+<li>The Aufbau cleanup is no longer rejected on atoms with a fractionally
+  occupied Fermi level. It swapped the occupation vector but judged it
+  on orbitals that were relaxed for the <em>old</em> occupations, so it lost
+  to the converged mixed density every time and was discarded --
+  silently, its return value being dropped. The occupations reported
+  stayed the mixed ones, Rydberg tail and all.<ul>
+<li>The step now relaxes the orbitals at the occupations it chose,
+  to stationarity, and compares only the relaxed energy. On iron
+  (PBE/cc-pVDZ) that alone took the gap from 1.64e-2 Eh to
+  9.74e-4.</li>
+<li>The skeleton set is established once and held fixed across the
+  cleanup's passes. Which orbitals are degenerate is a property of
+  the solution being refined, and re-deriving it from each relaxed
+  iterate destroyed it: the relaxation moves the cluster apart by
+  more than <code>optimal_damping_degeneracy_threshold</code>, after which
+  the walk no longer recognises it and hands back a simplex of
+  dimension zero.</li>
+<li>What was left was a curvature the model could not see. ODA
+  expands the energy in the occupations at <em>fixed</em> orbitals, so it
+  misses the response term in
+  <code>H_relaxed = H_ll - H_lk H_kk^-1 H_kl</code>, and being too stiff it
+  stops short: on iron it put the beta 4s/3d split at 0.826/1.174
+  where the SCF finds 0.657/1.343 -- both on the same
+  one-parameter line, so this was never a missing degree of
+  freedom. Alternating the two halves does not recover it either;
+  each is exact given the other, so the alternation has a fixed
+  point and sits down at it.</li>
+<li>Where the Fermi level is a single degenerate pair, the cleanup
+  now models the coupling. It relaxes at the sampled points and
+  fits a cubic through relaxed data rather than forming the Schur
+  complement, which would need orbital response equations the
+  solver does not have. The endpoint slopes are free: at an
+  orbital-stationary point the orbital-response contribution to
+  <code>dE/dlambda</code> carries a factor <code>dE/dkappa = 0</code>, leaving
+  Hellmann-Feynman.</li>
+<li>Iron's minimum now lands at lambda = 0.6596, against the SCF's
+  0.6567, and reaches 1.3e-6 Eh <em>below</em> the converged mixed
+  density, so the cleanup is accepted and the reported occupations
+  are Aufbau. Oxygen accepts at M = 1, 3 and 5 across three method
+  mixes with the reference energies unchanged.</li>
+<li>This stays out of the SCF loop deliberately: it cost about 100
+  Fock builds on iron against 576 for the whole run, the loop
+  already performs the alternation across its iterations, and the
+  free-slope argument holds only at a stationary point.</li>
+<li>Fermi levels spanning more than two orbitals still fall back to
+  the alternation and may still be rejected.</li>
+</ul>
+</li>
+<li><code>atomtest</code> gained <code>--M 0</code>, which runs the spin-restricted code
+  whatever the shell structure and gives an open shell a fractionally
+  occupied Fermi level rather than refusing it. The <code>restricted</code>
+  flag it supersedes is removed; it was computed and never read.</li>
+<li><code>atomtest</code> accepts functional id 0. Libxc numbers its functionals
+  from one, so a non-positive id means "nothing to add here" -- 0 as
+  written by someone wanting exchange only, -1 as returned by
+  <code>xc_functional_get_number</code> for a name it does not know. Only -1 was
+  honoured, and only in two of the three builders, so <code>--xfunc 0</code>
+  threw and NEO without an electron-proton correlation functional could
+  not run at all.</li>
 <li>The occupations reported at convergence are now Aufbau: full below
   the Fermi level, exactly zero above it, fractional only inside the
   degenerate cluster at it. What was reported before was the natural

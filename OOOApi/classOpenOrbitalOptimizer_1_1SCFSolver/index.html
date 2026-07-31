@@ -1063,6 +1063,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-aufbau_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function aufbau_error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-brute_force_search_for_lowest_configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1338,6 +1349,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-occupations_converged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function occupations_converged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-occupations_from_lambda_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function occupations_from_lambda_
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-order_orbitals_by_energy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1360,6 +1393,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-particle_number_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function particle_number_error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-print_history" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1375,6 +1419,39 @@
     <span class="md-ellipsis">
       
         function print_settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-relax_orbitals_at_fixed_occupations_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function relax_orbitals_at_fixed_occupations_
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-relaxed_occupation_gradient_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function relaxed_occupation_gradient_
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-relaxed_occupation_search_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function relaxed_occupation_search_
       
     </span>
   </a>
@@ -1485,6 +1562,17 @@
     <span class="md-ellipsis">
       
         function set_string
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-skeleton_axis_layout_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function skeleton_axis_layout_
       
     </span>
   </a>
@@ -1623,7 +1711,11 @@
 </tr>
 <tr>
 <td style="text-align: right;">bool</td>
-<td style="text-align: left;"><a href="#function-aufbau_cleanup_step"><strong>aufbau_cleanup_step</strong></a> () <br></td>
+<td style="text-align: left;"><a href="#function-aufbau_cleanup_step"><strong>aufbau_cleanup_step</strong></a> (const AllowedMethods &amp; allowed) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-aufbau_error"><strong>aufbau_error</strong></a> () const<br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
@@ -1726,6 +1818,14 @@
 <td style="text-align: left;"><a href="#function-norm"><strong>norm</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-matrix"><strong>Matrix</strong></a>&lt; Tbase &gt; &amp; mat, std::string norm="") const<br><em>Evaluate the norm.</em></td>
 </tr>
 <tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-occupations_converged"><strong>occupations_converged</strong></a> () const<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">OrbitalOccupations&lt; Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-occupations_from_lambda_"><strong>occupations_from_lambda_</strong></a> (const SkeletonOccupations &amp; skeletons, const std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &amp; axis, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><strong>Vector</strong></a>&lt; Tbase &gt; &amp; lambda) const<br></td>
+</tr>
+<tr>
 <td style="text-align: right;">std::vector&lt; std::tuple&lt; Tbase, size_t, size_t &gt; &gt;</td>
 <td style="text-align: left;"><a href="#function-order_orbitals_by_energy"><strong>order_orbitals_by_energy</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitalenergies"><strong>OrbitalEnergies</strong></a>&lt; Tbase &gt; &amp; orbital_energies, size_t iparticle) const<br></td>
 </tr>
@@ -1734,12 +1834,28 @@
 <td style="text-align: left;"><a href="#function-particle_block_offset"><strong>particle_block_offset</strong></a> (size_t iparticle) const<br><em>Determines the offset for the blocks of the iparticle:th particle.</em></td>
 </tr>
 <tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-particle_number_error"><strong>particle_number_error</strong></a> () const<br></td>
+</tr>
+<tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-print_history"><strong>print_history</strong></a> () const<br><em>Print the DIIS history.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-print_settings"><strong>print_settings</strong></a> (std::ostream &amp; os=std::cout) const<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-relax_orbitals_at_fixed_occupations_"><strong>relax_orbitals_at_fixed_occupations_</strong></a> (const AllowedMethods &amp; allowed) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;"><a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><strong>Vector</strong></a>&lt; Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-relaxed_occupation_gradient_"><strong>relaxed_occupation_gradient_</strong></a> (const SkeletonOccupations &amp; skeletons, const std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &amp; axis) const<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-relaxed_occupation_search_"><strong>relaxed_occupation_search_</strong></a> (const AllowedMethods &amp; allowed, const SkeletonOccupations &amp; skeletons, const <a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitals"><strong>Orbitals</strong></a>&lt; Torb &gt; &amp; orbitals, int &amp; fock_evaluations) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
@@ -1780,6 +1896,10 @@
 <tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-set_string"><strong>set_string</strong></a> (const std::string &amp; key, const std::string &amp; v) <br><em>Set a string-valued option.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-skeleton_axis_layout_"><strong>skeleton_axis_layout_</strong></a> (const SkeletonOccupations &amp; skeletons, std::vector&lt; size_t &gt; &amp; particle_off, std::vector&lt; size_t &gt; &amp; particle_len, std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &amp; axis) const<br></td>
 </tr>
 <tr>
 <td style="text-align: right;">OrbitalOccupations&lt; Tbase &gt;</td>
@@ -1846,12 +1966,24 @@
 <hr>
 
 <h3 id="function-aufbau_cleanup_step">function aufbau_cleanup_step</h3>
-<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::aufbau_cleanup_step () 
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::aufbau_cleanup_step (
+    const AllowedMethods &amp; allowed
+) 
 </code></pre>
-<p>Replace the converged iterate's occupations with the Aufbau filling of the converged Fock matrix.</p>
-<p>What the SCF reports at convergence is the natural occupation vector of a <em>mixed</em> density. A mixture of densities carrying different orbitals is not idempotent shell by shell, so a nominally full shell comes out at max_occ - epsilon and orbitals well above the Fermi level carry epsilon  even though the minimiser of a fractional-occupation energy functional is Aufbau: full below the Fermi level, zero above it, fractional only inside the degenerate cluster at it.</p>
-<p>This is one ODA step with the current density left out of the polytope. That is all it takes, because the mixing is the whole problem: every skeleton is an Aufbau filling of one common set of orbitals, so any combination of skeletons alone has those same orbitals as its natural orbitals and the combined occupation vector as its occupations, exactly. The Aufbau structure is inherited rather than imposed, and the Fermi-level fractions come from minimising the energy over the skeleton simplex rather than from a filling rule  which matters, since that is the one place where the occupations are genuinely free.</p>
-<p>Being an ODA step, it is adopted only if it lowers the energy; a cleanup that raised it would mean the converged iterate was not the Aufbau minimiser it is reported to be, which is worth leaving visible rather than papering over. </p>
+<p>Replace the converged iterate's occupations with an Aufbau filling, relaxing the orbitals at those occupations before judging whether the swap was worth making.</p>
+<p>What the SCF converges to is the natural occupation vector of a <em>mixed</em> density. A mixture of densities carrying different orbitals is not idempotent shell by shell, so a nominally full shell comes out at max_occ - epsilon and orbitals far above the Fermi level carry epsilon  even though the minimiser of a fractional-occupation functional is Aufbau.</p>
+<p>Both halves are needed and neither suffices alone. Choosing occupations is an ODA step over the skeletons with the current density excluded, which keeps the result Aufbau: every skeleton is an Aufbau filling of one common set of orbitals, so any combination of them has those orbitals as its natural orbitals and the combined vector as its occupations, exactly. Judging that vector on orbitals relaxed for the <em>previous</em> occupations costs 1e-4 to 2e-2 Eh on a transition metal, which is more than the swap is worth, so the orbitals are relaxed at the new occupations before any energy is compared.</p>
+<p>Where the polytope is one-dimensional the two are coupled directly up to <code>maximum_modelled_dimension</code>, see <code>relaxed_occupation_search_</code>; beyond that they alternate, which makes this a small SCF restricted to Aufbau-occupied densities.</p>
+<p>All of it runs on a scratch iterate seeded from the converged Fock matrix, so the history holds nothing but Aufbau states and its lowest-energy entry is the best of them rather than the mixed density  which is what makes the final comparison possible at all, the history being kept sorted by energy.</p>
+<p>The result is adopted only if it does not cost energy. Losing after relaxation would say the mixed density sits below every Aufbau-occupied state, which a variational fractional-occupation functional should not permit, so a rejection is reported rather than passed over in silence. </p>
+<hr>
+
+<h3 id="function-aufbau_error">function aufbau_error</h3>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::aufbau_error () const
+</code></pre>
+<p>How far the occupations are from Aufbau: the largest occupation sitting above the Fermi level, or missing from below it, measured against the Aufbau filling of the current orbital energies.</p>
+<p><a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitals"><strong>Orbitals</strong></a> inside the degenerate cluster the Fermi level lands in are exempt, since that is where fractional occupation is legitimate; the window is the same <code>optimal_damping_degeneracy_threshold_</code> the ODA skeleton walk uses. The comparison is against the whole particle type's energy ordering rather than each block's, because the Fermi level is filled across blocks and its degeneracies routinely span them.</p>
+<p>Unlike the particle-number error this <em>is</em> a convergence measure: the iterate is a mixed density whose occupations are only Aufbau once the mixing has collapsed onto the minimiser, so this falls as the SCF converges. Returns 0 when the occupations are not the solver's to choose. </p>
 <hr>
 
 <h3 id="function-brute_force_search_for_lowest_configuration">function brute_force_search_for_lowest_configuration</h3>
@@ -2054,6 +2186,23 @@ inline size_t OpenOrbitalOptimizer::SCFSolver::degenerate_cluster_end_ (
 </code></pre>
 <hr>
 
+<h3 id="function-occupations_converged">function occupations_converged</h3>
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::occupations_converged () const
+</code></pre>
+<p>Whether the occupations are Aufbau to within <code>aufbau_convergence_threshold_</code>. The other half of convergence: <code>converged()</code> asks whether the orbitals are at a stationary point, this asks whether the occupations are at one.</p>
+<p>Kept separate rather than folded into <code>converged()</code> because the two are established differently. The gradient criterion is a pure observation, but occupation space is only put right by <code>aufbau_cleanup_step</code>, which needs the gradient to have converged first  so a single predicate that demanded both would be circular, blocking on an error that nothing had yet been allowed to fix. <code>run()</code> therefore orders them: gradient, then cleanup, then this. </p>
+<hr>
+
+<h3 id="function-occupations_from_lambda_">function occupations_from_lambda_</h3>
+<pre><code class="language-C++">inline OrbitalOccupations&lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver::occupations_from_lambda_ (
+    const SkeletonOccupations &amp; skeletons,
+    const std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &amp; axis,
+    const Vector &lt; Tbase &gt; &amp; lambda
+) const
+</code></pre>
+<p>Occupations at a point of that polytope: the promoted skeleton carries the slack 1 - sum(lambda), the axes carry the rest, and a particle offering only one skeleton contributes it whole. </p>
+<hr>
+
 <h3 id="function-order_orbitals_by_energy">function order_orbitals_by_energy</h3>
 <pre><code class="language-C++">inline std::vector&lt; std::tuple&lt; Tbase, size_t, size_t &gt; &gt; OpenOrbitalOptimizer::SCFSolver::order_orbitals_by_energy (
     const OrbitalEnergies &lt; Tbase &gt; &amp; orbital_energies,
@@ -2071,6 +2220,13 @@ inline size_t OpenOrbitalOptimizer::SCFSolver::degenerate_cluster_end_ (
 </code></pre>
 <hr>
 
+<h3 id="function-particle_number_error">function particle_number_error</h3>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::particle_number_error () const
+</code></pre>
+<p>How far the occupations are from carrying the requested number of particles: the largest <code>|sum(n) - N|</code> over the particle types.</p>
+<p>This is an invariant rather than a convergence measure. Every step forms densities out of ingredients that already carry the right particle number, so the only way to lose any is for something to discard it, and iterating will not bring it back. It is reported so that a run cannot quietly finish carrying a micro-electron of error, but deliberately does not gate <code>converged()</code>: a solver that cannot converge is worse than one that tells you its answer is off. </p>
+<hr>
+
 <h3 id="function-print_history">function print_history</h3>
 <p><em>Print the DIIS history.</em> </p>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::print_history () const
@@ -2083,6 +2239,40 @@ inline size_t OpenOrbitalOptimizer::SCFSolver::degenerate_cluster_end_ (
 ) const
 </code></pre>
 <p>Print every catalog entry with its current value to <code>os</code>. Read-only diagnostics that require a populated orbital history (converged; anything derived from the current Fock) print as "n/a" before the first <code>initialize_with_*</code>. </p>
+<hr>
+
+<h3 id="function-relax_orbitals_at_fixed_occupations_">function relax_orbitals_at_fixed_occupations_</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::relax_orbitals_at_fixed_occupations_ (
+    const AllowedMethods &amp; allowed
+) 
+</code></pre>
+<p>Replace the converged iterate's occupations with the Aufbau filling of the converged Fock matrix.</p>
+<p>What the SCF reports at convergence is the natural occupation vector of a <em>mixed</em> density. A mixture of densities carrying different orbitals is not idempotent shell by shell, so a nominally full shell comes out at max_occ - epsilon and orbitals well above the Fermi level carry epsilon  even though the minimiser of a fractional-occupation energy functional is Aufbau: full below the Fermi level, zero above it, fractional only inside the degenerate cluster at it.</p>
+<p>This is one ODA step with the current density left out of the polytope. That is all it takes, because the mixing is the whole problem: every skeleton is an Aufbau filling of one common set of orbitals, so any combination of skeletons alone has those same orbitals as its natural orbitals and the combined occupation vector as its occupations, exactly. The Aufbau structure is inherited rather than imposed, and the Fermi-level fractions come from minimising the energy over the skeleton simplex rather than from a filling rule  which matters, since that is the one place where the occupations are genuinely free.</p>
+<p>Being an ODA step, it is adopted only if it lowers the energy; a cleanup that raised it would mean the converged iterate was not the Aufbau minimiser it is reported to be, which is worth leaving visible rather than papering over. Relax the orbitals at the occupations the iterate already carries, the way the state machine does after an ODA step. Runs the same burst, and stops early once a rotation step stops descending. </p>
+<hr>
+
+<h3 id="function-relaxed_occupation_gradient_">function relaxed_occupation_gradient_</h3>
+<pre><code class="language-C++">inline Vector &lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver::relaxed_occupation_gradient_ (
+    const SkeletonOccupations &amp; skeletons,
+    const std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &amp; axis
+) const
+</code></pre>
+<p>Gradient of the relaxed energy with respect to those axes, at the current iterate. The one-dimensional case of this is Free of any orbital-response term: at an orbital-stationary point that term carries a factor dE/dkappa = 0, and Hellmann-Feynman is all that is left. </p>
+<hr>
+
+<h3 id="function-relaxed_occupation_search_">function relaxed_occupation_search_</h3>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::relaxed_occupation_search_ (
+    const AllowedMethods &amp; allowed,
+    const SkeletonOccupations &amp; skeletons,
+    const Orbitals &lt; Torb &gt; &amp; orbitals,
+    int &amp; fock_evaluations
+) 
+</code></pre>
+<p>Minimise the relaxed energy over a skeleton polytope of any dimension, and leave the iterate at the best point found.</p>
+<p>The relaxed Hessian </p>
+<p>is what governs where the minimum sits, and it is never formed here  the Schur complement would need the orbital response equations the solver does not have. It does not need to be. The object being minimised is the reduced surface E_relaxed(lambda) = min_kappa E(lambda, kappa), whose gradient is free at any relaxed point, so relaxing at the lambda = 0 vertex and at each axis vertex gives H_relaxed column by column as a difference of gradients: </p>
+<p>That is the whole generalisation. The energies come along for the ride and are kept as candidates. Cost is one relaxation per vertex plus one at the predicted minimum, which is why the caller caps the dimension it will attempt this at. </p>
 <hr>
 
 <h3 id="function-reset_history">function reset_history</h3>
@@ -2170,6 +2360,17 @@ inline void OpenOrbitalOptimizer::SCFSolver::set (
     const std::string &amp; v
 ) 
 </code></pre>
+<hr>
+
+<h3 id="function-skeleton_axis_layout_">function skeleton_axis_layout_</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::skeleton_axis_layout_ (
+    const SkeletonOccupations &amp; skeletons,
+    std::vector&lt; size_t &gt; &amp; particle_off,
+    std::vector&lt; size_t &gt; &amp; particle_len,
+    std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &amp; axis
+) const
+</code></pre>
+<p>Axis layout of the skeleton polytope once the first skeleton of each particle is promoted to the lambda = 0 vertex: one axis per skeleton after that, and <code>axis[k]</code> names the (particle, skeleton) the k'th axis carries. Matches what <code>optimal_damping_step_</code> searches under <code>exclude_reference</code>, so the same QP can minimise over it. </p>
 <hr>
 
 <h3 id="function-update_occupations">function update_occupations</h3>

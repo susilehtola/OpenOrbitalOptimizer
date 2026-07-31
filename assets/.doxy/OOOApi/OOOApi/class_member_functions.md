@@ -18,6 +18,7 @@
 * **attempt\_extrapolation** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **attempt\_fock** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **aufbau\_cleanup\_step** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **aufbau\_error** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **any** ([**OpenOrbitalOptimizer::SCFSolver::AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md))
 * **add** ([**OpenOrbitalOptimizer::SCFSolver::SettingRegistry**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry.md))
 
@@ -182,8 +183,11 @@
 * **optimal\_damping\_threshold** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md))
 * **orbital\_rotation\_steps\_after\_oda** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md))
 * **occupation\_difference** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **occupations\_converged** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **occupations\_from\_lambda\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **occupied\_orbitals** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **optimal\_damping\_step** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **optimal\_damping\_step\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **options** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **order\_orbitals\_by\_energy** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **orbital\_rotation** ([**OpenOrbitalOptimizer::SCFSolver::AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md))
@@ -198,6 +202,7 @@
 * **print\_history** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md), [**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **parse\_method\_string** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **particle\_block\_offset** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **particle\_number\_error** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **preconditioned\_sd\_direction\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **print\_citation** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **print\_settings** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
@@ -211,6 +216,9 @@
 
 * **reset\_history** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md), [**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **run** ([**OpenOrbitalOptimizer::Armadillo::SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md), [**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **relax\_orbitals\_at\_fixed\_occupations\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **relaxed\_occupation\_gradient\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **relaxed\_occupation\_search\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **require\_nonnegative\_occupations\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 
 
@@ -224,6 +232,7 @@
 * **set\_real** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **set\_string** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **sigma\_line\_search\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+* **skeleton\_axis\_layout\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **solve\_polytope\_qp\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **sorted\_pair\_** ([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
 * **stream** ([**OpenOrbitalOptimizer::SCFSolver::LogStream**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1LogStream.md))
