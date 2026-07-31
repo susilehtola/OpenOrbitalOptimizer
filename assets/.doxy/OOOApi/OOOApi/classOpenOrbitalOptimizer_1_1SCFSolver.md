@@ -97,6 +97,7 @@ _SCF solver class._
 |  Tbase | [**particle\_number\_error**](#function-particle_number_error) () const<br> |
 |  void | [**print\_history**](#function-print_history) () const<br>_Print the DIIS history._  |
 |  void | [**print\_settings**](#function-print_settings) (std::ostream & os=std::cout) const<br> |
+|  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; | [**project\_occupations\_onto\_polytope\_**](#function-project_occupations_onto_polytope_) (const SkeletonOccupations & skeletons, const std::vector&lt; std::pair&lt; size\_t, size\_t &gt; &gt; & axis, const std::vector&lt; size\_t &gt; & particle\_off, const std::vector&lt; size\_t &gt; & particle\_len) const<br> |
 |  void | [**relax\_orbitals\_at\_fixed\_occupations\_**](#function-relax_orbitals_at_fixed_occupations_) (const AllowedMethods & allowed) <br> |
 |  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; | [**relaxed\_occupation\_gradient\_**](#function-relaxed_occupation_gradient_) (const SkeletonOccupations & skeletons, const std::vector&lt; std::pair&lt; size\_t, size\_t &gt; &gt; & axis) const<br> |
 |  Tbase | [**relaxed\_occupation\_search\_**](#function-relaxed_occupation_search_) (const AllowedMethods & allowed, const SkeletonOccupations & skeletons, const [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; & orbitals, int & fock\_evaluations) <br> |
@@ -815,6 +816,31 @@ inline void OpenOrbitalOptimizer::SCFSolver::print_settings (
 
 
 Print every catalog entry with its current value to `os`. Read-only diagnostics that require a populated orbital history (converged; anything derived from the current Fock) print as "n/a" before the first `initialize_with_*`. 
+
+
+        
+
+<hr>
+
+
+
+### function project\_occupations\_onto\_polytope\_ 
+
+```C++
+inline Vector < Tbase > OpenOrbitalOptimizer::SCFSolver::project_occupations_onto_polytope_ (
+    const SkeletonOccupations & skeletons,
+    const std::vector< std::pair< size_t, size_t > > & axis,
+    const std::vector< size_t > & particle_off,
+    const std::vector< size_t > & particle_len
+) const
+```
+
+
+
+The polytope point whose occupations best reproduce those the solver is standing on, in the least-squares sense.
+
+
+occ(lambda) is affine in lambda  the promoted skeleton plus a combination of the differences to the others  so the fit is a quadratic on the same simplex the energy model is minimised over, and the same QP solves it. 
 
 
         

@@ -1426,6 +1426,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-project_occupations_onto_polytope_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function project_occupations_onto_polytope_
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-relax_orbitals_at_fixed_occupations_" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1846,6 +1857,10 @@
 <td style="text-align: left;"><a href="#function-print_settings"><strong>print_settings</strong></a> (std::ostream &amp; os=std::cout) const<br></td>
 </tr>
 <tr>
+<td style="text-align: right;"><a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><strong>Vector</strong></a>&lt; Tbase &gt;</td>
+<td style="text-align: left;"><a href="#function-project_occupations_onto_polytope_"><strong>project_occupations_onto_polytope_</strong></a> (const SkeletonOccupations &amp; skeletons, const std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &amp; axis, const std::vector&lt; size_t &gt; &amp; particle_off, const std::vector&lt; size_t &gt; &amp; particle_len) const<br></td>
+</tr>
+<tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-relax_orbitals_at_fixed_occupations_"><strong>relax_orbitals_at_fixed_occupations_</strong></a> (const AllowedMethods &amp; allowed) <br></td>
 </tr>
@@ -2239,6 +2254,18 @@ inline size_t OpenOrbitalOptimizer::SCFSolver::degenerate_cluster_end_ (
 ) const
 </code></pre>
 <p>Print every catalog entry with its current value to <code>os</code>. Read-only diagnostics that require a populated orbital history (converged; anything derived from the current Fock) print as "n/a" before the first <code>initialize_with_*</code>. </p>
+<hr>
+
+<h3 id="function-project_occupations_onto_polytope_">function project_occupations_onto_polytope_</h3>
+<pre><code class="language-C++">inline Vector &lt; Tbase &gt; OpenOrbitalOptimizer::SCFSolver::project_occupations_onto_polytope_ (
+    const SkeletonOccupations &amp; skeletons,
+    const std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &amp; axis,
+    const std::vector&lt; size_t &gt; &amp; particle_off,
+    const std::vector&lt; size_t &gt; &amp; particle_len
+) const
+</code></pre>
+<p>The polytope point whose occupations best reproduce those the solver is standing on, in the least-squares sense.</p>
+<p>occ(lambda) is affine in lambda  the promoted skeleton plus a combination of the differences to the others  so the fit is a quadratic on the same simplex the energy model is minimised over, and the same QP solves it. </p>
 <hr>
 
 <h3 id="function-relax_orbitals_at_fixed_occupations_">function relax_orbitals_at_fixed_occupations_</h3>

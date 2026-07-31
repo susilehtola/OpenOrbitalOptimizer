@@ -3845,6 +3845,50 @@ namespace OpenOrbitalOptimizer {
       return gradient;
     }
 
+    Vector<Tbase> project_occupations_onto_polytope_(
+        const SkeletonOccupations & skeletons,
+        const std::vector<std::pair<size_t, size_t>> & axis,
+        const std::vector<size_t> & particle_off,
+        const std::vector<size_t> & particle_len) const {
+      const size_t npars = axis.size();
+      const auto current = get_orbital_occupations();
+      const Vector<Tbase> zero = Vector<Tbase>::Zero(npars);
+      const auto base = occupations_from_lambda_(skeletons, axis, zero);
+
+      // Columns of A are the occupation changes each axis produces.
+      std::vector<OrbitalOccupations<Tbase>> column(npars);
+      for(size_t k = 0; k < npars; k++) {
+        Vector<Tbase> unit = Vector<Tbase>::Zero(npars);
+        unit(k) = Tbase(1);
+        column[k] = occupations_from_lambda_(skeletons, axis, unit);
+      }
+
+      auto dot = [&](const OrbitalOccupations<Tbase> & u,
+                     const OrbitalOccupations<Tbase> & v,
+                     const OrbitalOccupations<Tbase> & u0,
+                     const OrbitalOccupations<Tbase> & v0) {
+        Tbase acc = 0;
+        for(size_t b = 0; b < u.size(); b++)
+          for(Index i = 0; i < u[b].size(); i++)
+            acc += (u[b](i) - u0[b](i)) * (v[b](i) - v0[b](i));
+        return acc;
+      };
+
+      Matrix<Tbase> H(npars, npars);
+      Vector<Tbase> g(npars);
+      for(size_t k = 0; k < npars; k++) {
+        for(size_t l = 0; l < npars; l++)
+          H(k, l) = Tbase(2) * dot(column[k], column[l], base, base);
+        g(k) = Tbase(-2) * dot(column[k], current, base, base);
+      }
+
+      Vector<Tbase> lambda;
+      Tbase value;
+      std::tie(lambda, value) = solve_polytope_qp_(H, g, Tbase(0),
+                                                  particle_off, particle_len);
+      return lambda;
+    }
+
     Tbase relaxed_occupation_search_(const AllowedMethods & allowed,
                                      const SkeletonOccupations & skeletons,
                                      const Orbitals<Torb> & orbitals,
@@ -3862,11 +3906,30 @@ namespace OpenOrbitalOptimizer {
         return get_energy();
       };
 
+      // Start where the solver already is, not at an arbitrary corner.
+      // The converged occupations are typically Aufbau to within the
+      // residual tail, so the polytope point closest to them is a
+      // fraction of a millihartree from the answer, whereas a skeleton
+      // vertex can sit an entire hartree above it. Relaxing from there
+      // is a correction; relaxing from a vertex is a climb, and a climb
+      // that stops short is reported as the Aufbau state losing on
+      // energy when it has merely not arrived.
+      const Vector<Tbase> anchor_start = project_occupations_onto_polytope_(
+          skeletons, axis, particle_off, particle_len);
+      const Tbase E_start = sample(anchor_start);
+      auto best_state = get_solution();
+      Tbase best_energy = E_start;
+      log_stream_(5) << "Relaxed polytope: starting from lambda = "
+                     << anchor_start.transpose() << ", E = " << E_start
+                     << std::endl;
+
       const Vector<Tbase> origin = Vector<Tbase>::Zero(npars);
       const Tbase E_origin = sample(origin);
       const Vector<Tbase> gradient = relaxed_occupation_gradient_(skeletons, axis);
-      auto best_state = get_solution();
-      Tbase best_energy = E_origin;
+      if(E_origin < best_energy) {
+        best_energy = E_origin;
+        best_state = get_solution();
+      }
 
       Matrix<Tbase> hessian(npars, npars);
       for(size_t j = 0; j < npars; j++) {
@@ -4092,7 +4155,15 @@ namespace OpenOrbitalOptimizer {
       number_of_fock_evaluations_ =
           saved_fock_evaluations + cleanup_fock_evaluations;
 
-      if(aufbau_energy <= reference_energy) {
+      // Accept unless the Aufbau state is worse by an amount the SCF
+      // itself would act on. Demanding a strict improvement throws away
+      // exactly-Aufbau occupations to defend an energy difference
+      // smaller than the descent the solver already calls noise, which
+      // is the wrong trade: the occupations are the point of the step,
+      // and an energy difference below that scale is not evidence of a
+      // preference for the mixed density.
+      const Tbase tolerance = minimum_useful_descent_();
+      if(aufbau_energy <= reference_energy + tolerance) {
         log_(5, "Aufbau cleanup accepted, energy change %e\n",
              (double) (aufbau_energy - reference_energy));
         return true;
@@ -4660,6 +4731,19 @@ namespace OpenOrbitalOptimizer {
         // Do cleanup
         cleanup();
       }
+
+      // Every way out of the loop that is not the converged one -- the
+      // state machine giving up with all methods failed, or the
+      // iteration cap -- lands here, and gets the occupations cleaned
+      // up too. A run that stalls a few percent above the threshold is
+      // not meaningfully different from one that reaches it, and
+      // without this the two hand back utterly different things: an
+      // Aufbau occupation vector from the converged exit, the raw mixed
+      // density with its whole Rydberg tail from these. The step is
+      // adopted only if it does not raise the energy, so it cannot make
+      // the reported answer worse.
+      if(!converged())
+        aufbau_cleanup_step(allowed);
     }
 
     DensityMatrix<Torb, Tbase> get_solution(size_t ihist=0) const {

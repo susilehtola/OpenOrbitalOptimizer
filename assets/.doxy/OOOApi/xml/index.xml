@@ -316,6 +316,7 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1adf6c6cecf73ae46f74f8c04914a74254" kind="function"><name>skeleton_axis_layout_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a553bfaf1d9611f0011470e62134bf5c7" kind="function"><name>occupations_from_lambda_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4903453c50a11f2b3e5d3113b6fee2de" kind="function"><name>relaxed_occupation_gradient_</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a018b55fb19927733ff33bbf5ea8cace0" kind="function"><name>project_occupations_onto_polytope_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1acbfc300ea5875e73e0a4f3e3e0e399cd" kind="function"><name>relaxed_occupation_search_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af5bad1b79be0e1c41f8a6cb6f57e753d" kind="function"><name>aufbau_cleanup_step</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a55e788f92870d4480abcf74145445ff7" kind="function"><name>particle_number_error</name></member>
