@@ -248,7 +248,7 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a6535a0dc7766bcbfac83ede96582d43e" kind="function"><name>attempt_fock</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1ab3423b195fefca0386d767f8e3e2d467" kind="function"><name>solve_polytope_qp_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a1df31b0ff478d0cbcb77c9144690f1c9" kind="function"><name>optimal_damping_step</name></member>
-    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a13358b12cf918edfe84813e662caeb98" kind="function"><name>optimal_damping_step_</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a3f0992c5e0e8e234cb9d7e7906d2647d" kind="function"><name>optimal_damping_step_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa3f4c8f4a100e667f5639372749c4c86" kind="function"><name>cleanup</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a881f1a75d6711847f1b8e14a73ed7099" kind="function"><name>build_rotation_step_context_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4b36fff6c5d885dafe1ad714cc6b7dc5" kind="function"><name>preconditioned_sd_direction_</name></member>
@@ -318,7 +318,7 @@
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a4903453c50a11f2b3e5d3113b6fee2de" kind="function"><name>relaxed_occupation_gradient_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a018b55fb19927733ff33bbf5ea8cace0" kind="function"><name>project_occupations_onto_polytope_</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1acbfc300ea5875e73e0a4f3e3e0e399cd" kind="function"><name>relaxed_occupation_search_</name></member>
-    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1af5bad1b79be0e1c41f8a6cb6f57e753d" kind="function"><name>aufbau_cleanup_step</name></member>
+    <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a0e8be013e5c0d242c781818dba11580d" kind="function"><name>aufbau_cleanup_step</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a55e788f92870d4480abcf74145445ff7" kind="function"><name>particle_number_error</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1aa524238ecd40fa2b0a164d5a85db3570" kind="function"><name>aufbau_error</name></member>
     <member refid="classOpenOrbitalOptimizer_1_1SCFSolver_1a05e8fd7e915665580418ab47e44629e5" kind="function"><name>converged</name></member>

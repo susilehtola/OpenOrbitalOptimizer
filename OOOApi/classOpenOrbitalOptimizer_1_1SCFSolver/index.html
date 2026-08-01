@@ -1722,7 +1722,7 @@
 </tr>
 <tr>
 <td style="text-align: right;">bool</td>
-<td style="text-align: left;"><a href="#function-aufbau_cleanup_step"><strong>aufbau_cleanup_step</strong></a> (const AllowedMethods &amp; allowed) <br></td>
+<td style="text-align: left;"><a href="#function-aufbau_cleanup_step"><strong>aufbau_cleanup_step</strong></a> (const AllowedMethods &amp; allowed, bool must_stay_converged) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">Tbase</td>
@@ -1982,7 +1982,8 @@
 
 <h3 id="function-aufbau_cleanup_step">function aufbau_cleanup_step</h3>
 <pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::aufbau_cleanup_step (
-    const AllowedMethods &amp; allowed
+    const AllowedMethods &amp; allowed,
+    bool must_stay_converged
 ) 
 </code></pre>
 <p>Replace the converged iterate's occupations with an Aufbau filling, relaxing the orbitals at those occupations before judging whether the swap was worth making.</p>
@@ -1990,7 +1991,7 @@
 <p>Both halves are needed and neither suffices alone. Choosing occupations is an ODA step over the skeletons with the current density excluded, which keeps the result Aufbau: every skeleton is an Aufbau filling of one common set of orbitals, so any combination of them has those orbitals as its natural orbitals and the combined vector as its occupations, exactly. Judging that vector on orbitals relaxed for the <em>previous</em> occupations costs 1e-4 to 2e-2 Eh on a transition metal, which is more than the swap is worth, so the orbitals are relaxed at the new occupations before any energy is compared.</p>
 <p>Where the polytope is one-dimensional the two are coupled directly up to <code>maximum_modelled_dimension</code>, see <code>relaxed_occupation_search_</code>; beyond that they alternate, which makes this a small SCF restricted to Aufbau-occupied densities.</p>
 <p>All of it runs on a scratch iterate seeded from the converged Fock matrix, so the history holds nothing but Aufbau states and its lowest-energy entry is the best of them rather than the mixed density  which is what makes the final comparison possible at all, the history being kept sorted by energy.</p>
-<p>The result is adopted only if it does not cost energy. Losing after relaxation would say the mixed density sits below every Aufbau-occupied state, which a variational fractional-occupation functional should not permit, so a rejection is reported rather than passed over in silence. </p>
+<p>The result is adopted only if it does not cost energy. Losing after relaxation would say the mixed density sits below every Aufbau-occupied state, which a variational fractional-occupation functional should not permit, so a rejection is reported rather than passed over in silence. <code>must_stay_converged</code> refuses a swap that costs the gradient criterion. The cleanup trades on energy and occupations and says nothing about the commutator, so an accepted swap can leave a state that no longer satisfies <code>converged()</code>  after which <a href="./#function-run"><strong>run()</strong></a> has announced convergence and the solver denies it. Set where convergence has already been established; the exits that never had it have nothing to lose. </p>
 <hr>
 
 <h3 id="function-aufbau_error">function aufbau_error</h3>

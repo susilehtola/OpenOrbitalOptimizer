@@ -63,7 +63,7 @@ _SCF solver class._
 |   | [**SCFSolver**](#function-scfsolver-22) (const [**IndexVector**](namespaceOpenOrbitalOptimizer.md#typedef-indexvector) & number\_of\_blocks\_per\_particle\_type, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & maximum\_occupation, const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles, const [**FockBuilder**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilder)&lt; Torb, Tbase &gt; & fock\_builder, const std::vector&lt; std::string &gt; & block\_descriptions) <br> |
 |  bool | [**add\_entry**](#function-add_entry-12) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density) <br>_Add entry to history, return value is True if energy was lowered._  |
 |  bool | [**add\_entry**](#function-add_entry-22) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density, const [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; & fock) <br>_Add entry to history, return value is True if energy was lowered._  |
-|  bool | [**aufbau\_cleanup\_step**](#function-aufbau_cleanup_step) (const AllowedMethods & allowed) <br> |
+|  bool | [**aufbau\_cleanup\_step**](#function-aufbau_cleanup_step) (const AllowedMethods & allowed, bool must\_stay\_converged) <br> |
 |  Tbase | [**aufbau\_error**](#function-aufbau_error) () const<br> |
 |  void | [**brute\_force\_search\_for\_lowest\_configuration**](#function-brute_force_search_for_lowest_configuration) () <br>_Finds the lowest "Aufbau" configuration by moving particles between symmetries by brute force search._  |
 |  void | [**callback\_convergence\_function**](#function-callback_convergence_function) (std::function&lt; bool(const std::map&lt; std::string, std::any &gt; &)&gt; callback\_convergence\_function=nullptr) <br> |
@@ -226,7 +226,8 @@ inline bool OpenOrbitalOptimizer::SCFSolver::add_entry (
 
 ```C++
 inline bool OpenOrbitalOptimizer::SCFSolver::aufbau_cleanup_step (
-    const AllowedMethods & allowed
+    const AllowedMethods & allowed,
+    bool must_stay_converged
 ) 
 ```
 
@@ -247,7 +248,7 @@ Where the polytope is one-dimensional the two are coupled directly up to `maximu
 All of it runs on a scratch iterate seeded from the converged Fock matrix, so the history holds nothing but Aufbau states and its lowest-energy entry is the best of them rather than the mixed density  which is what makes the final comparison possible at all, the history being kept sorted by energy.
 
 
-The result is adopted only if it does not cost energy. Losing after relaxation would say the mixed density sits below every Aufbau-occupied state, which a variational fractional-occupation functional should not permit, so a rejection is reported rather than passed over in silence. 
+The result is adopted only if it does not cost energy. Losing after relaxation would say the mixed density sits below every Aufbau-occupied state, which a variational fractional-occupation functional should not permit, so a rejection is reported rather than passed over in silence. `must_stay_converged` refuses a swap that costs the gradient criterion. The cleanup trades on energy and occupations and says nothing about the commutator, so an accepted swap can leave a state that no longer satisfies `converged()`  after which [**run()**](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-run) has announced convergence and the solver denies it. Set where convergence has already been established; the exits that never had it have nothing to lose. 
 
 
         

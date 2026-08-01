@@ -1778,7 +1778,8 @@ namespace OpenOrbitalOptimizer {
                                std::pair<DensityMatrix<Torb, Tbase>,
                                          FockBuilderReturn<Torb, Tbase>>
                                  & best_evaluated,
-                               SkeletonOccupations & skeletons) {
+                               SkeletonOccupations & skeletons,
+                               bool enumerate_only = false) {
       auto particles_left = [](Tbase n) {
         return n >= 10*std::numeric_limits<Tbase>::epsilon();
       };
@@ -1948,6 +1949,11 @@ namespace OpenOrbitalOptimizer {
       // Hand the enumerated set back so later calls can hold it fixed.
       if(!reuse_skeletons)
         skeletons = trial_occupations_per_particle;
+
+      // Everything past this point evaluates densities. A caller that
+      // only wanted to know the shape of the polytope stops here.
+      if(enumerate_only)
+        return false;
 
       // Skeleton-set attempts. When the full enumeration would yield
       // more skeletons than there are particle types (i.e. at least
@@ -4042,7 +4048,8 @@ namespace OpenOrbitalOptimizer {
       return best_energy;
     }
 
-    bool aufbau_cleanup_step(const AllowedMethods & allowed) {
+    bool aufbau_cleanup_step(const AllowedMethods & allowed,
+                             bool must_stay_converged) {
       if(frozen_occupations_) {
         log_(5, "Aufbau cleanup skipped: occupations are frozen.\n");
         return false;
@@ -4084,19 +4091,36 @@ namespace OpenOrbitalOptimizer {
       SkeletonOccupations skeletons;
 
       // Establish the skeleton set, and with it the orbitals the
-      // skeletons are indexed against.
+      // skeletons are indexed against. Enumeration alone, so this costs
+      // a diagonalisation and no Fock builds.
       auto diagonalized = compute_orbitals(get_fock_matrix());
       {
         std::pair<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>>
           discard;
         SkeletonOccupations enumerated;
-        // A dry run purely to enumerate; its energy verdict is not used.
-        const auto history_before = orbital_history_;
         optimal_damping_step_(/*force_full=*/true, /*exclude_reference=*/true,
-                              discard, enumerated);
-        orbital_history_ = history_before;
-        clear_diis_caches_();
+                              discard, enumerated, /*enumerate_only=*/true);
         skeletons = std::move(enumerated);
+      }
+
+      // Nothing to clean if the polytope has no dimensions. That means
+      // no degenerate cluster is fractionally filled, so the occupations
+      // are already the only Aufbau filling available and no amount of
+      // relaxing will change them. Worth checking before anything else:
+      // the relaxation that would otherwise follow is a full orbital
+      // optimisation run outside the SCF's own convergence control, and
+      // on a metal with an integer-filled Fermi level it can cost a
+      // large fraction of the run for a result that cannot differ.
+      {
+        std::vector<size_t> off, len;
+        std::vector<std::pair<size_t, size_t>> axis;
+        skeleton_axis_layout_(skeletons, off, len, axis);
+        if(axis.empty()) {
+          log_(5, "Aufbau cleanup: no fractionally filled degenerate "
+                  "cluster, so the occupations are already Aufbau; "
+                  "nothing to do.\n");
+          return false;
+        }
       }
 
       // Where the polytope is small enough to afford it, the coupling
@@ -4190,11 +4214,17 @@ namespace OpenOrbitalOptimizer {
       // and an energy difference below that scale is not evidence of a
       // preference for the mixed density.
       const Tbase tolerance = minimum_useful_descent_();
-      if(aufbau_energy <= reference_energy + tolerance) {
+      if(aufbau_energy <= reference_energy + tolerance
+         && !(must_stay_converged && !converged())) {
         log_(5, "Aufbau cleanup accepted, energy change %e\n",
              (double) (aufbau_energy - reference_energy));
         return true;
       }
+
+      if(must_stay_converged && aufbau_energy <= reference_energy + tolerance)
+        log_(5, "Aufbau cleanup would cost the convergence criterion; "
+                "keeping the converged density.\n");
+      else
 
       log_(1, "Aufbau cleanup rejected: the relaxed Aufbau state lies %e Eh "
               "above the converged density, whose mixed occupations are "
@@ -4350,6 +4380,9 @@ namespace OpenOrbitalOptimizer {
       // Whether the "gradient converged, occupations have not" notice
       // has already been given at full volume this run.
       bool occupations_blocked_reported = false;
+      // Whether the loop was left because every method had failed, as
+      // opposed to running out of iterations.
+      bool stopped_on_stall = false;
       // Number of orbital-rotation steps still owed by the current ODA -> orbital-rotation burst,
       // budgeted by orbital_rotation_steps_after_oda_ at the ODA transition.
       size_t orbital_rotation_steps_remaining = 0;
@@ -4547,7 +4580,8 @@ namespace OpenOrbitalOptimizer {
           // are only Aufbau up to the residual mixing. Report the
           // Aufbau filling of the converged Fock matrix instead, when
           // it does not cost energy.
-          const bool cleanup_adopted = aufbau_cleanup_step(allowed);
+          const bool cleanup_adopted =
+            aufbau_cleanup_step(allowed, /*must_stay_converged=*/true);
 
           // Occupation space is judged after the cleanup, never
           // before: the cleanup is the step that puts the occupations
@@ -4749,6 +4783,7 @@ namespace OpenOrbitalOptimizer {
           if(all_failed) {
             log_(1, "All allowed SCF methods failed at iteration %i; stopping with DIIS error vector %s norm %e.\n",
                    (int) iteration, error_norm_.get().c_str(), (double) (diis_error));
+            stopped_on_stall = true;
             callback_data["step"] = std::string("Stalled");
             if(callback_function_)
               callback_function_(callback_data);
@@ -4759,18 +4794,23 @@ namespace OpenOrbitalOptimizer {
         cleanup();
       }
 
-      // Every way out of the loop that is not the converged one -- the
-      // state machine giving up with all methods failed, or the
-      // iteration cap -- lands here, and gets the occupations cleaned
-      // up too. A run that stalls a few percent above the threshold is
-      // not meaningfully different from one that reaches it, and
-      // without this the two hand back utterly different things: an
+      // A run that stalled a few percent above the threshold is not
+      // meaningfully different from one that reached it, and without
+      // this the two would hand back utterly different things: an
       // Aufbau occupation vector from the converged exit, the raw mixed
-      // density with its whole Rydberg tail from these. The step is
-      // adopted only if it does not raise the energy, so it cannot make
-      // the reported answer worse.
-      if(!converged())
-        aufbau_cleanup_step(allowed);
+      // density with its whole Rydberg tail from the stalled one. The
+      // step is adopted only if it does not raise the energy, so it
+      // cannot make the reported answer worse.
+      //
+      // Running out of iterations is a different matter. There the
+      // caller asked for a bounded amount of work, and the iterate is
+      // wherever the SCF happened to be rather than near a fixed point,
+      // so the cleanup's relaxation would be a full orbital
+      // optimisation outside the SCF's own convergence control -- easily
+      // more work than the iterations that were asked for.
+      // ``maximum_iterations`` should mean what it says.
+      if(!converged() && stopped_on_stall)
+        aufbau_cleanup_step(allowed, /*must_stay_converged=*/false);
     }
 
     DensityMatrix<Torb, Tbase> get_solution(size_t ihist=0) const {
