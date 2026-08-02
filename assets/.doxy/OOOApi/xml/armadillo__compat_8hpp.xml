@@ -16,13 +16,13 @@
         <link refid="armadillo__compat_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="31" relation="include">
+        <childnode refid="32" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
@@ -40,9 +40,9 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
@@ -56,6 +56,8 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
         <childnode refid="10" relation="include">
         </childnode>
       </node>
@@ -66,41 +68,41 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
         <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
         <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
         <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="31" relation="include">
-        </childnode>
         <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
         </childnode>
         <childnode refid="32" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
@@ -142,70 +144,70 @@
       <node id="6">
         <label>Eigen/QR</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>algorithm</label>
       </node>
-      <node id="24">
+      <node id="25">
         <label>any</label>
       </node>
-      <node id="33">
+      <node id="34">
         <label>armadillo</label>
       </node>
-      <node id="23">
+      <node id="24">
         <label>array</label>
       </node>
-      <node id="25">
+      <node id="26">
         <label>cctype</label>
       </node>
-      <node id="15">
+      <node id="16">
         <label>cmath</label>
       </node>
       <node id="7">
         <label>complex</label>
       </node>
-      <node id="26">
+      <node id="27">
         <label>cstdarg</label>
       </node>
-      <node id="27">
+      <node id="28">
         <label>cstdio</label>
       </node>
-      <node id="28">
+      <node id="29">
         <label>deque</label>
       </node>
-      <node id="16">
+      <node id="17">
         <label>fstream</label>
       </node>
       <node id="8">
         <label>functional</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>iomanip</label>
       </node>
-      <node id="29">
+      <node id="30">
         <label>iostream</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>limits</label>
       </node>
-      <node id="30">
+      <node id="31">
         <label>map</label>
       </node>
-      <node id="31">
+      <node id="32">
         <label>memory</label>
       </node>
-      <node id="19">
+      <node id="20">
         <label>numeric</label>
       </node>
-      <node id="20">
+      <node id="21">
         <label>random</label>
       </node>
-      <node id="32">
+      <node id="33">
         <label>sstream</label>
       </node>
-      <node id="21">
+      <node id="22">
         <label>stdexcept</label>
       </node>
-      <node id="22">
+      <node id="23">
         <label>string</label>
       </node>
       <node id="9">
@@ -213,6 +215,9 @@
       </node>
       <node id="10">
         <label>type_traits</label>
+      </node>
+      <node id="14">
+        <label>unsupported/Eigen/MatrixFunctions</label>
       </node>
       <node id="11">
         <label>utility</label>

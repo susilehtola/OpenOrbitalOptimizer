@@ -988,6 +988,8 @@
 
 #include &quot;types.hpp&quot;
 
+#include &lt;unsupported/Eigen/MatrixFunctions&gt;
+
 #include &lt;algorithm&gt;
 #include &lt;cmath&gt;
 #include &lt;complex&gt;
@@ -1072,7 +1074,7 @@ namespace OpenOrbitalOptimizer {
   }
 
   template &lt;class T&gt;
-  Matrix&lt;T&gt; expm_antihermitian(const Matrix&lt;T&gt; &amp; K) {
+  Matrix&lt;T&gt; expm_antihermitian_by_eigendecomposition(const Matrix&lt;T&gt; &amp; K) {
     using R = RealOf&lt;T&gt;;
     // Build iK. For complex T this is a rotation; for real T we need to widen.
     if constexpr (Eigen::NumTraits&lt;T&gt;::IsComplex) {
@@ -1104,6 +1106,18 @@ namespace OpenOrbitalOptimizer {
           out(r, c) = static_cast&lt;T&gt;(C(r, c).real());
       return out;
     }
+  }
+
+  template &lt;class T&gt;
+  Matrix&lt;T&gt; expm_antihermitian(const Matrix&lt;T&gt; &amp; K) {
+    // Eigen's exponential asserts on an empty matrix rather than
+    // returning one, and the solver has blocks with no orbitals in them.
+    if(K.rows() == 0)
+      return Matrix&lt;T&gt;(0, 0);
+    if constexpr (Eigen::internal::is_exp_known_type&lt;RealOf&lt;T&gt;&gt;::value)
+      return K.exp();
+    else
+      return expm_antihermitian_by_eigendecomposition(K);
   }
 
 } // namespace OpenOrbitalOptimizer

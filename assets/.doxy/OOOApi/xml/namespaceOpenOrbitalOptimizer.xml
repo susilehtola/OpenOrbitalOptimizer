@@ -24,7 +24,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="31" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="31" bodyend="-1"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="33" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" prot="public" static="no">
         <templateparamlist>
@@ -536,7 +536,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="36" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="36" bodyend="46"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="38" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="38" bodyend="48"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ae3fcef05c7e2c36fb643d3d52513e9c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -560,7 +560,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="52" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="52" bodyend="54"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="54" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="54" bodyend="56"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ae974527b7c83771ed802e66327e65c4d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -584,7 +584,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="62" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="62" bodyend="73"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="64" column="3" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="64" bodyend="75"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ae57d9b32d9026c96bff8b307f1a91def" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -615,7 +615,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="78" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="78" bodyend="88"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="80" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="80" bodyend="90"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a50cb07b3e01c3487de37be3d1ae91918" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -639,7 +639,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="93" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="93" bodyend="99"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="95" column="15" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="95" bodyend="101"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1ab5234ea49d41628358745d71c3482f53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -663,7 +663,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="103" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="103" bodyend="105"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="105" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="105" bodyend="107"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1a96b5b2cde8ddc98f7ca1a6b0b593d2cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -687,7 +687,32 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="109" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="109" bodyend="111"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="111" column="8" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="111" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1abbe7d6aa12bd478003e5219d7dbb3760" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; T &gt;</type>
+        <definition>Matrix&lt; T &gt; OpenOrbitalOptimizer::expm_antihermitian_by_eigendecomposition</definition>
+        <argsstring>(const Matrix&lt; T &gt; &amp;K)</argsstring>
+        <name>expm_antihermitian_by_eigendecomposition</name>
+        <qualifiedname>OpenOrbitalOptimizer::expm_antihermitian_by_eigendecomposition</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; T &gt; &amp;</type>
+          <declname>K</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>exp(K) for an anti-Hermitian K = -K^\dagger, via the Hermitian eigendecomposition of iK: iK = U diag(w) U^\dagger with real w, so exp(K) = exp(-i * iK) = U diag(exp(-i w)) U^\dagger.</para>
+<para>This is the slower of the two routes for the scalar types Eigen exponentiates natively, and is reserved for those it does not <ndash/> see expm_antihermitian. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="123" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="123" bodyend="155"/>
       </memberdef>
       <memberdef kind="function" id="namespaceOpenOrbitalOptimizer_1aafee980572d982823a5ad35cfb3db9a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -707,11 +732,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>exp(K) for an anti-Hermitian K = -K^\dagger. Computed via the Hermitian eigendecomposition of iK: iK = U diag(w) U^\dagger with real w, so exp(K) = exp(-i * iK) = U diag(exp(-i w)) U^\dagger. Returns a matrix of the same scalar type as K (so complex-typed K produces a complex result; for a real K the caller is expected to have used the block trick or wrap in complex first). </para>
+<para>exp(K) for an anti-Hermitian K = -K^\dagger. Returns a matrix of the same scalar type as K, orthogonal for a real K and unitary for a complex one to round-off, which is what an orbital rotation has to be.</para>
+<para>Eigen&apos;s matrix exponential <ndash/> scaling and squaring with a diagonal Pade approximant <ndash/> is several times faster than diagonalising, and a real anti-symmetric K stays in real arithmetic throughout it: the approximant is a handful of matrix multiplications and one LU solve, so nothing has to be widened to complex to make eigenvalues real.</para>
+<para>It carries that Pade path only for the scalar types it names, though. Everything else it routes through a complex Schur decomposition, which for _Float128 is both slower than diagonalising iK directly (measured 49 s against 8.5 s at n = 150) and reintroduces the very complex promotion the Pade path avoids. So the choice is made on Eigen&apos;s own dispatch condition rather than on a copy of it: a copy would keep taking the Schur route in silence if Eigen ever dropped a type from the list, where naming the trait fails to compile if it goes away, and picks up any type Eigen adds. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="openorbitaloptimizer/eigen_compat.hpp" line="120" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="120" bodyend="152"/>
+        <location file="openorbitaloptimizer/eigen_compat.hpp" line="177" column="10" bodyfile="openorbitaloptimizer/eigen_compat.hpp" bodystart="177" bodyend="186"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

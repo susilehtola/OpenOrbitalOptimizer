@@ -92,6 +92,7 @@
 | Type | Name |
 | ---: | :--- |
 |  [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; T &gt; | [**expm\_antihermitian**](#function-expm_antihermitian) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; T &gt; & K) <br> |
+|  [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; T &gt; | [**expm\_antihermitian\_by\_eigendecomposition**](#function-expm_antihermitian_by_eigendecomposition) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; T &gt; & K) <br> |
 |  [**IndexVector**](namespaceOpenOrbitalOptimizer.md#typedef-indexvector) | [**find\_indices\_where**](#function-find_indices_where) (const Vec & v, Pred pred) <br> |
 |  bool | [**has\_inf**](#function-has_inf) (const Mat & M) <br>_True iff M contains an infinity._  |
 |  bool | [**has\_nan**](#function-has_nan) (const Mat & M) <br>_True iff M contains a NaN. Eigen has allFinite() but not_ [_**has\_nan()**_](namespaceOpenOrbitalOptimizer.md#function-has_nan) _._ |
@@ -512,7 +513,36 @@ Matrix < T > OpenOrbitalOptimizer::expm_antihermitian (
 
 
 
-exp(K) for an anti-Hermitian K = -K^\dagger. Computed via the Hermitian eigendecomposition of iK: iK = U diag(w) U^\dagger with real w, so exp(K) = exp(-i \* iK) = U diag(exp(-i w)) U^\dagger. Returns a matrix of the same scalar type as K (so complex-typed K produces a complex result; for a real K the caller is expected to have used the block trick or wrap in complex first). 
+exp(K) for an anti-Hermitian K = -K^\dagger. Returns a matrix of the same scalar type as K, orthogonal for a real K and unitary for a complex one to round-off, which is what an orbital rotation has to be.
+
+
+Eigen's matrix exponential  scaling and squaring with a diagonal Pade approximant  is several times faster than diagonalising, and a real anti-symmetric K stays in real arithmetic throughout it: the approximant is a handful of matrix multiplications and one LU solve, so nothing has to be widened to complex to make eigenvalues real.
+
+
+It carries that Pade path only for the scalar types it names, though. Everything else it routes through a complex Schur decomposition, which for \_Float128 is both slower than diagonalising iK directly (measured 49 s against 8.5 s at n = 150) and reintroduces the very complex promotion the Pade path avoids. So the choice is made on Eigen's own dispatch condition rather than on a copy of it: a copy would keep taking the Schur route in silence if Eigen ever dropped a type from the list, where naming the trait fails to compile if it goes away, and picks up any type Eigen adds. 
+
+
+        
+
+<hr>
+
+
+
+### function expm\_antihermitian\_by\_eigendecomposition 
+
+```C++
+template<class T>
+Matrix < T > OpenOrbitalOptimizer::expm_antihermitian_by_eigendecomposition (
+    const Matrix < T > & K
+) 
+```
+
+
+
+exp(K) for an anti-Hermitian K = -K^\dagger, via the Hermitian eigendecomposition of iK: iK = U diag(w) U^\dagger with real w, so exp(K) = exp(-i \* iK) = U diag(exp(-i w)) U^\dagger.
+
+
+This is the slower of the two routes for the scalar types Eigen exponentiates natively, and is reserved for those it does not  see expm\_antihermitian. 
 
 
         

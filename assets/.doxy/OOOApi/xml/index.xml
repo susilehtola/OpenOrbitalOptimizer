@@ -407,6 +407,7 @@
     <member refid="namespaceOpenOrbitalOptimizer_1a50cb07b3e01c3487de37be3d1ae91918" kind="function"><name>sort_index_ascending</name></member>
     <member refid="namespaceOpenOrbitalOptimizer_1ab5234ea49d41628358745d71c3482f53" kind="function"><name>has_nan</name></member>
     <member refid="namespaceOpenOrbitalOptimizer_1a96b5b2cde8ddc98f7ca1a6b0b593d2cc" kind="function"><name>has_inf</name></member>
+    <member refid="namespaceOpenOrbitalOptimizer_1abbe7d6aa12bd478003e5219d7dbb3760" kind="function"><name>expm_antihermitian_by_eigendecomposition</name></member>
     <member refid="namespaceOpenOrbitalOptimizer_1aafee980572d982823a5ad35cfb3db9a2" kind="function"><name>expm_antihermitian</name></member>
   </compound>
   <compound refid="namespaceOpenOrbitalOptimizer_1_1Armadillo" kind="namespace"><name>OpenOrbitalOptimizer::Armadillo</name>

@@ -25,6 +25,7 @@
 
 * **evaluate\_polynomial** ([**OpenOrbitalOptimizer::HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md))
 * **expm\_antihermitian** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
+* **expm\_antihermitian\_by\_eigendecomposition** ([**OpenOrbitalOptimizer**](namespaceOpenOrbitalOptimizer.md))
 
 
 ## f

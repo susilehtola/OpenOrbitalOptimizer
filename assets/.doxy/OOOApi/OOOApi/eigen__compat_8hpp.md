@@ -11,6 +11,7 @@
 
 
 * `#include "types.hpp"`
+* `#include <unsupported/Eigen/MatrixFunctions>`
 * `#include <algorithm>`
 * `#include <cmath>`
 * `#include <complex>`
