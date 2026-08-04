@@ -1604,6 +1604,46 @@ O(nhist^2 * n_basis^3) naive to O(n_basis^2) steady-state
   useful trial step), and de-duplicate the doubled root returned
   when the cubic degenerates to a quadratic. Axis and edge probes
   now share one fitting routine.</li>
+<li>The orbital rotation <code>exp(K)</code> is taken from Eigen's matrix
+  exponential -- scaling and squaring with a diagonal Pade
+  approximant -- instead of being assembled from an eigen-
+  decomposition. Diagonalising an anti-Hermitian <code>K</code> needs
+  eigenvalues that are real, which for a real anti-symmetric <code>K</code>
+  means promoting the whole problem to complex arithmetic to
+  diagonalise <code>iK</code>. The Pade route is a handful of matrix
+  multiplications and one LU solve and stays in real arithmetic
+  throughout, and a diagonal Pade approximant of an anti-Hermitian
+  argument is unitary exactly, not just to the approximation
+  error: with <code>r(K) = D(K)^-1 N(K)</code> and <code>N(K)^dagger = N(-K) =
+  D(K)</code>, the numerator and denominator commute as polynomials in
+  <code>K</code>. Measured 3.8x to 9.8x faster over matrix sizes 100 to
+  1000, and up to 16.6x at the small rotation norms an SCF
+  approaching convergence actually produces. Orthogonality of the
+  result holds to 0-20 machine epsilons across every instantiated
+  scalar type.<ul>
+<li>Eigen carries the Pade path only for the scalar types it
+  names, routing everything else through a complex Schur
+  decomposition. For <code>_Float128</code> that is both slower than
+  diagonalising <code>iK</code> directly (49 s against 8.5 s at
+  n = 150) and reintroduces the complex promotion the Pade
+  path exists to avoid, so the choice is gated on Eigen's own
+  <code>is_exp_known_type</code> and the eigendecomposition is kept as
+  the fallback. Naming Eigen's trait rather than copying its
+  list means the gate fails to compile if the trait goes away
+  and picks up any type Eigen adds, instead of silently
+  reverting to Schur.</li>
+<li>This makes the library depend on Eigen's <code>unsupported/</code>
+  module tree, <code>unsupported/Eigen/MatrixFunctions</code>.</li>
+</ul>
+</li>
+<li>The trust radius for the line search along <code>exp(tK)</code> no longer
+  forms eigenvectors it does not use. It is set by the largest
+  <code>|eigenvalue|</code> of <code>-iK</code> alone, so the decomposition runs with
+  <code>Eigen::EigenvaluesOnly</code>: the tridiagonal reduction is kept and
+  the back-transformation dropped, for the same eigenvalues to the
+  bit. Measured 1.7x to 5.9x faster over block sizes 20 to 800.
+  Per orbital-rotation step this runs once, next to the exponential
+  above.</li>
 </ul>
 <h4 id="new-features-continued">New Features (continued)</h4>
 <ul>

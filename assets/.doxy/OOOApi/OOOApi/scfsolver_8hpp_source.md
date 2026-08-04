@@ -2724,7 +2724,10 @@ namespace OpenOrbitalOptimizer {
         // Hermitize to suppress eig_sym roundoff warnings; -iK is
         // analytically Hermitian for anti-Hermitian K.
         KI = std::complex<Tbase>(Tbase{(Tbase(1)/Tbase(2))}) * (KI + KI.adjoint().eval());
-        Eigen::SelfAdjointEigenSolver<Matrix<std::complex<Tbase>>> es(KI);
+        // Only the extreme eigenvalue is wanted, so the eigenvectors are
+        // not formed: the step length is a trust radius, and the
+        // rotation itself is built by expm_antihermitian.
+        Eigen::SelfAdjointEigenSolver<Matrix<std::complex<Tbase>>> es(KI, Eigen::EigenvaluesOnly);
         Vector<Tbase> ev = es.eigenvalues();
         if(ev.size() > 0) {
           Tbase max_abs = ev.array().abs().maxCoeff();
