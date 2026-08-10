@@ -1337,6 +1337,23 @@
 #### New Features
 
 #### Enhancements
+* ``atomtest`` tabulates its two-electron radial integrals on first
+  use instead of recomputing them inside every Fock build. They depend
+  only on the basis exponents and quantum numbers, so they are the
+  same on every build, and evaluating them in the innermost loop of
+  the density contraction meant 7.7 million ``tgamma`` calls per Fock
+  matrix on a lanthanum atom in AHGBS-7. A profile put 94 per cent of
+  that calculation inside ``GTOBasis::coulomb`` with four fifths of it
+  in the gamma function.
+    - Tabulated, the contraction is a matrix-vector product. The La+
+      cation goes from 1243 to 62 seconds, a factor of twenty, and the
+      table costs 21 MB for that basis.
+    - The integrals are unchanged -- the first Fock build reproduces
+      its energy to the last digit -- but the summation order is not,
+      so trajectories shift exactly as they do between different
+      kinds of CPU core.
+    - This is test-driver work; the library does not have the
+      integrals.
 
 #### Bug Fixes
 
