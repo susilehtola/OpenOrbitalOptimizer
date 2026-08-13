@@ -272,3 +272,87 @@ set_tests_properties(
   else()
     message(STATUS "Skipping quad-precision (_Float128) tests: compiler does not provide std::sqrt(_Float128) under -std=c++23")
   endif()
+
+# ====  Fully numerical tests, via HelFEM  =====================================
+#
+# HelFEM's finite-element drivers use this library for their orbital
+# optimization, which makes them the natural place to test it without a
+# basis set in the way: a converged HelFEM atom has no basis-set error,
+# so what is left is the solver. The fractional-occupation work in
+# particular is easier to judge there -- on iron at M = 0 the 4s/3d
+# split differs from its cc-pVDZ value in the third decimal, while the
+# stationarity conditions settle it to eight, so the basis and the
+# algorithm are cleanly separated.
+#
+# Built as an ExternalProject rather than add_subdirectory. HelFEM
+# brings some fifty tests of its own and a good many targets, and none
+# of that belongs in this project's suite; this way only the driver
+# binary crosses the boundary.
+if(${ooo}_BUILD_HELFEM_TESTS)
+  include(ExternalProject)
+
+  if(${ooo}_HELFEM_SOURCE_DIR)
+    set(_helfem_source SOURCE_DIR "${${ooo}_HELFEM_SOURCE_DIR}")
+    message(STATUS "HelFEM tests: building from ${${ooo}_HELFEM_SOURCE_DIR}")
+  else()
+    set(_helfem_source
+        GIT_REPOSITORY https://github.com/susilehtola/HelFEM.git
+        GIT_TAG        ${${ooo}_HELFEM_GIT_TAG})
+    message(STATUS "HelFEM tests: fetching ${${ooo}_HELFEM_GIT_TAG} from GitHub")
+  endif()
+
+  # OpenOrbitalOptimizer_DIR points at this build tree, which the
+  # export(EXPORT) in the top-level CMakeLists makes consumable in
+  # place. HelFEM's own find_package then succeeds and its FetchContent
+  # fallback -- the one pinned to a fixed commit -- never fires, so the
+  # driver is compiled against these headers.
+  ExternalProject_Add(helfem_numerical
+    ${_helfem_source}
+    CMAKE_ARGS
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      -DOpenOrbitalOptimizer_DIR=${PROJECT_BINARY_DIR}
+      -DHELFEM_BINARIES=ON
+      -DHELFEM_PYTHON=OFF
+    BUILD_COMMAND "${CMAKE_COMMAND}" --build <BINARY_DIR> --target gensap
+    INSTALL_COMMAND ""
+    TEST_COMMAND ""
+    EXCLUDE_FROM_ALL TRUE
+    USES_TERMINAL_BUILD TRUE
+  )
+  ExternalProject_Get_Property(helfem_numerical BINARY_DIR)
+  set(HELFEM_GENSAP "${BINARY_DIR}/src/gensap")
+
+  add_test(
+    NAME openorbopt/helfem/build
+    COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target helfem_numerical
+  )
+  set_tests_properties(openorbopt/helfem/build PROPERTIES TIMEOUT 3600)
+
+  # Iron at M = 0, spin-restricted, fully numerical: the same case the
+  # basis-set tests run, with the basis-set error removed. Without DIIS,
+  # for the reason given above the transition-metal tests.
+  #
+  # The functional is given with a dash, which is how HelFEM separates
+  # exchange from correlation.
+  add_test(
+    NAME openorbopt/helfem/iron-restricted
+    COMMAND ${HELFEM_GENSAP} --Z Fe --M 0 --restricted 1
+            --lmax 3 --nelem 10 --nnodes 8
+            --method gga_x_pbe-gga_c_pbe
+            --scfmethods "ODA + ARH"
+  )
+  # Matched to seven decimals. The energy reproduces exactly across a
+  # local build and a clean clone; what does scatter, by the same
+  # trajectory noise the basis-set tests show, is the last digit or two
+  # of the occupations and the stationarity residual -- 1.09114 against
+  # 1.09115 in the 4s, 2.8e-8 against 1.3e-8 in the residual -- so those
+  # are not pinned. Asserting only that something converged would pass
+  # on a wrong answer.
+  set_tests_properties(
+    openorbopt/helfem/iron-restricted
+    PROPERTIES
+      DEPENDS openorbopt/helfem/build
+      TIMEOUT 600
+      PASS_REGULAR_EXPRESSION "Converged to energy -1263\\.3357152"
+  )
+endif()

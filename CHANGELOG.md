@@ -8,6 +8,36 @@
 #### New Features
 
 #### Enhancements
+* Fully numerical regression tests, run through HelFEM's finite-element
+  drivers, behind ``OpenOrbitalOptimizer_BUILD_HELFEM_TESTS`` (default
+  OFF). HelFEM's drivers already use this library for their orbital
+  optimization, so there is nothing to interface -- what is new is
+  building them against the working tree and asserting on the result.
+    - A converged HelFEM atom carries no basis-set error, which
+      separates the solver from the basis cleanly. On iron at M = 0 the
+      4s/3d split comes out 1.09114/6.90886 against cc-pVDZ's
+      1.09916/6.90084, so the basis defines that split to about 8e-3
+      while the stationarity conditions settle it to 3e-8.
+    - HelFEM is built from source against this tree, not against an
+      installed copy. HelFEM pins the OpenOrbitalOptimizer it fetches to
+      an explicit commit -- deliberately, so its own history stays
+      bisectable -- and a build made the ordinary way therefore links
+      that snapshot. Ask such a build for the ARH step and it answers
+      "Unknown method 'arh'", which is what a test suite run against it
+      would silently be reporting on.
+    - Built as an ExternalProject rather than a subdirectory, so
+      HelFEM's own fifty-odd tests and its targets stay out of this
+      project's suite; only the driver binary crosses.
+    - Off by default because it is expensive: HelFEM wants BLAS/LAPACK,
+      HDF5, libxc and OpenMP beyond what the rest of the suite needs,
+      and a clean clone plus build plus run is some 23 minutes against
+      64 seconds for everything else.
+* The build tree is consumable in place. ``install(EXPORT)`` writes the
+  targets file only on install, so ``-DOpenOrbitalOptimizer_DIR=<builddir>``
+  found the generated Config and then failed on the missing Targets
+  include; an ``export(EXPORT)`` alongside it fixes that. For a
+  header-only library the build-tree interface points straight at the
+  sources, which is what a consumer asking for a build tree wants.
 * New accessor ``diis_error_norm(ihist=0)``: the norm of the error
   vector that ``converged()`` compares against the threshold. It pairs
   with ``diis_error_vector``, throws on an index past the end as the

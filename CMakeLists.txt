@@ -49,6 +49,32 @@ message(STATUS "Showing option ${ooo}_BUILD_TESTING: ${${ooo}_BUILD_TESTING}")
 option(${ooo}_BUILD_PYTHON "Build Python bindings via pybind11" OFF)
 message(STATUS "Showing option ${ooo}_BUILD_PYTHON: ${${ooo}_BUILD_PYTHON}")
 
+# Fully numerical regression tests, run through HelFEM's finite-element
+# drivers. Off by default: HelFEM wants BLAS/LAPACK, HDF5, libxc and
+# OpenMP on top of what the rest of the suite needs, and building it
+# takes several minutes -- more than the whole of the rest of the
+# suite.
+#
+# HelFEM is built from source against *this* tree rather than against
+# an installed OpenOrbitalOptimizer, and that is the point of the
+# exercise. HelFEM pins the version it fetches to an explicit commit,
+# quite deliberately, so a HelFEM built the ordinary way links whatever
+# snapshot that pin names -- and a test suite run against it would
+# report on a library nobody is editing. Ask a stock HelFEM for the ARH
+# step and it answers "Unknown method 'arh'".
+option(${ooo}_BUILD_HELFEM_TESTS "Build fully numerical tests via HelFEM" OFF)
+message(STATUS "Showing option ${ooo}_BUILD_HELFEM_TESTS: ${${ooo}_BUILD_HELFEM_TESTS}")
+
+set(${ooo}_HELFEM_SOURCE_DIR "" CACHE PATH
+    "Local HelFEM checkout to build the numerical tests from; fetched from GitHub when empty")
+# Pinned to a commit rather than to master, for the reason HelFEM gives
+# for pinning us: with a floating branch two builds of identical sources
+# can link different dependencies and produce different numbers, with
+# nothing in the history to explain it, which makes bisection
+# meaningless. Bump this deliberately, in its own commit.
+set(${ooo}_HELFEM_GIT_TAG "b01dacb1b744cfc1e7f0b345eaf7441d67e5e7f6" CACHE STRING
+    "HelFEM commit to fetch when no local checkout is given")
+
 # ====  Build  ==================================================================
 add_library(libooo INTERFACE)
 
@@ -135,6 +161,23 @@ install(
     "${PROJECT_NAME}::"
   DESTINATION
     ${${ooo}_INSTALL_CMAKEDIR}
+  )
+
+# Make the build tree consumable in place, not just the install tree.
+# install(EXPORT) writes the targets file only when the project is
+# installed, so -DOpenOrbitalOptimizer_DIR=<builddir> finds the
+# generated Config but then fails on the missing Targets include. A
+# consumer that wants to build against a working tree -- rather than
+# against whatever snapshot was last installed -- needs this, and for a
+# header-only library the build-tree interface points straight at the
+# sources, which is exactly what such a consumer is asking for.
+export(
+  EXPORT
+    ho_interface
+  FILE
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
+  NAMESPACE
+    "${PROJECT_NAME}::"
   )
 
 include(CMakePackageConfigHelpers)
