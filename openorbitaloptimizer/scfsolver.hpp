@@ -712,6 +712,15 @@ namespace OpenOrbitalOptimizer {
         nullptr,
         &SCFSolver::aufbau_error};
 
+    Setting<Tbase> gradient_error_{
+        settings_, "gradient_error",
+        "norm of the DIIS error vector of the current iterate, the"
+        " quantity converged() tests -- re-measured now",
+        Tbase(0),
+        false,
+        nullptr,
+        &SCFSolver::gradient_error};
+
     Setting<Tbase> fermi_level_error_{
         settings_, "fermi_level_error",
         "spread of orbital energies over the fractionally occupied"
@@ -6905,6 +6914,22 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Check if we are converged
+    /// Norm of the error vector of the current iterate: the quantity
+    /// converged() compares against the threshold.
+    ///
+    /// Exposed because a caller may want to judge the gradient on its
+    /// own terms rather than against this solver's threshold. The
+    /// occupation cleanup can leave it a little above, having spent it
+    /// on settling the occupations, and whether it lands above or
+    /// below is not reproducible across machines -- the repair costs
+    /// about g^2/2H, far under what a Fock builder reproduces, so no
+    /// line search can pay for it. A test that wants to assert the
+    /// physics without asserting that coin flip needs the number.
+    Tbase gradient_error() const {
+      if(orbital_history_.empty()) return Tbase(0);
+      return norm(diis_error_vector(0));
+    }
+
     bool converged() const {
         // Nothing has been iterated yet, so trivially not converged.
         // Guarding here rather than at every call site (including

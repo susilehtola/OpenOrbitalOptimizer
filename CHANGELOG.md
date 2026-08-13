@@ -8,6 +8,22 @@
 #### New Features
 
 #### Enhancements
+* New read-only diagnostic ``gradient_error``: the norm of the error
+  vector of the current iterate, which is the quantity ``converged()``
+  compares against the threshold. A caller may want to judge the
+  gradient on its own terms rather than against this solver's verdict,
+  and until now had no way to read it.
+* ``atomtest`` gained ``--max-gradient``, which asserts that bound
+  instead of requiring the solver's own convergence verdict.
+    - The iron test at M = 0 uses it. Settling the occupations perturbs
+      the orbitals, and winning that back is worth about g^2/2H --
+      around 1e-12 there, three orders under what the Fock builder
+      reproduces -- so no line search can pay for it and where the
+      gradient lands is decided by the arithmetic. It does not
+      reproduce between machines: 5.0e-7 and 1.1e-6 on the two kinds of
+      core on one workstation, 2.26e-6 on CI, which is how a threshold
+      chosen from the first two came to fail on the third while the
+      occupations settled to 5.7e-11.
 * ``atomtest`` tabulates its two-electron radial integrals on first
   use instead of recomputing them inside every Fock build. They depend
   only on the basis exponents and quantum numbers, so they are the
