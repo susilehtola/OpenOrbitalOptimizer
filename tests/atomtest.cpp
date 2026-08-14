@@ -1965,7 +1965,7 @@ int main(int argc, char **argv) {
       // bound the case can actually hold keeps the physics under test
       // without testing the coin flip.
       if(max_gradient > 0.0) {
-        const double gradient = (double) scfsolver.get_real("gradient_error");
+        const double gradient = (double) scfsolver.get_real("diis_error_norm");
         printf("Gradient % .10e, tolerance %e\n", gradient, max_gradient);
         if(gradient > max_gradient) {
           printf("Gradient exceeds the tolerance.\n");
