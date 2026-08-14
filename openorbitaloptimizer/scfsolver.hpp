@@ -712,15 +712,6 @@ namespace OpenOrbitalOptimizer {
         nullptr,
         &SCFSolver::aufbau_error};
 
-    Setting<Tbase> diis_error_norm_{
-        settings_, "diis_error_norm",
-        "norm of the DIIS error vector of the current iterate, the"
-        " quantity converged() tests -- re-measured now",
-        Tbase(0),
-        false,
-        nullptr,
-        &SCFSolver::diis_error_norm};
-
     Setting<Tbase> fermi_level_error_{
         settings_, "fermi_level_error",
         "spread of orbital energies over the fractionally occupied"
@@ -6925,27 +6916,10 @@ namespace OpenOrbitalOptimizer {
     /// spend gradient on settling the occupations and the repair --
     /// worth about g^2/2H, far under what a Fock builder reproduces --
     /// cannot be verified by any line search.
-    Tbase diis_error_norm(size_t ihist) const {
-      if(ihist >= orbital_history_.size())
+    Tbase diis_error_norm(size_t ihist=0) const {
+      if(ihist>=orbital_history_.size())
         throw std::logic_error("Invalid entry!\n");
       return norm(diis_error_vector(ihist));
-    }
-
-    /// The same for the current iterate, zero before there is one.
-    ///
-    /// An overload rather than a default argument, because the settings
-    /// façade takes its address as a nullary Source and a default
-    /// argument does not change a function's type.
-    ///
-    /// The empty history is not an error here, where it is for the
-    /// indexed form above: naming an entry that does not exist is a
-    /// mistake in the caller, while asking a diagnostic what it reads
-    /// before anything has been computed is what print_settings and
-    /// the settings catalogue do on a freshly constructed solver. The
-    /// occupation diagnostics beside it answer the same way.
-    Tbase diis_error_norm() const {
-      if(orbital_history_.empty()) return Tbase(0);
-      return diis_error_norm(size_t(0));
     }
 
     /// Check if we are converged

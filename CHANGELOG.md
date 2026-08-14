@@ -8,13 +8,13 @@
 #### New Features
 
 #### Enhancements
-* New read-only diagnostic ``diis_error_norm``, taking a history index
-  that defaults to the current iterate: the norm of the error vector
-  that ``converged()`` compares against the threshold. It pairs with
-  ``diis_error_vector`` -- vector and norm -- and the seven places that
-  had been taking that norm by hand now go through it, including the
-  stall recovery, which had also open-coded the per-entry form to rank
-  stored iterates.
+* New accessor ``diis_error_norm(ihist=0)``: the norm of the error
+  vector that ``converged()`` compares against the threshold. It pairs
+  with ``diis_error_vector``, throws on an index past the end as the
+  other entry accessors do, and the seven places that had been taking
+  that norm by hand now go through it -- including the stall recovery,
+  which had also open-coded the per-entry form to rank stored
+  iterates.
 * ``atomtest`` gained ``--max-gradient``, which asserts that bound
   instead of requiring the solver's own convergence verdict.
     - The iron test at M = 0 uses it. Settling the occupations perturbs
