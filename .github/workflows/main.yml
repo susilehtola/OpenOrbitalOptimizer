@@ -109,13 +109,26 @@ jobs:
 
     - name: Build & Install OpenOrbitalOptimizer
       run: |
+        # Name the compiler only if the environment named one. CXX comes
+        # from the conda compiler activation scripts, and cxx-compiler
+        # 2.0.0 stopped exporting it -- whereupon "-D
+        # CMAKE_CXX_COMPILER=${CXX}" expands to an empty assignment,
+        # which is worse than omitting the flag: it tells CMake the
+        # compiler is the empty string, and every lane died at configure
+        # with "No CMAKE_CXX_COMPILER could be found". Left unset, CMake
+        # finds the activated compiler on PATH.
+        compiler_args=()
+        if [[ -n "${CXX:-}" ]]; then
+          compiler_args+=(-D "CMAKE_CXX_COMPILER=${CXX}")
+        fi
+        echo "CXX='${CXX:-}', c++ resolves to '$(command -v c++ || echo none)'"
         cmake \
           -S . \
           -B build \
           -G "Ninja" \
           -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
-          -D CMAKE_CXX_COMPILER=${CXX} \
+          "${compiler_args[@]}" \
           -D CMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library" \
           ${{ matrix.cfg.cmargs }}
         cmake --build build --target install
@@ -224,6 +237,13 @@ jobs:
 
     - name: Build OpenOrbitalOptimizer Python bindings
       run: |
+        # See the repo lane: an unset CXX must not become an empty
+        # -D CMAKE_CXX_COMPILER=.
+        compiler_args=()
+        if [[ -n "${CXX:-}" ]]; then
+          compiler_args+=(-D "CMAKE_CXX_COMPILER=${CXX}")
+        fi
+        echo "CXX='${CXX:-}', c++ resolves to '$(command -v c++ || echo none)'"
         cmake \
           -S . \
           -B build-py \
@@ -231,7 +251,7 @@ jobs:
           -D CMAKE_BUILD_TYPE=Release \
           -D OpenOrbitalOptimizer_BUILD_PYTHON=ON \
           -D OpenOrbitalOptimizer_BUILD_TESTING=OFF \
-          -D CMAKE_CXX_COMPILER=${CXX} \
+          "${compiler_args[@]}" \
           -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}"
         cmake --build build-py
 
