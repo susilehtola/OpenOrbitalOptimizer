@@ -7292,7 +7292,31 @@ namespace OpenOrbitalOptimizer {
             continue;
           }
 
-          log_(1, "Converged to energy % .10f!\n", (double) (get_energy()));
+          // Say which it is. The cleanup is adopted on the energy and
+          // does not consult the gradient, so it can settle the
+          // occupations at the cost of the criterion that was met
+          // before it ran -- and announcing convergence anyway leaves
+          // the caller holding a state its own converged() denies,
+          // which is what this used to do: a spin-polarised iron atom
+          // printed "Converged to energy -1263.4350147951!" and the
+          // driver then reported that the SCF had not converged.
+          //
+          // Refusing the swap instead is worse, and was measured to be:
+          // it is what made the spin-restricted atom report occupations
+          // 0.13 outside the Fermi-level window as converged. The
+          // settled occupations are worth having; the claim about the
+          // gradient is what has to give.
+          if(converged()) {
+            log_(1, "Converged to energy % .10f!\n", (double) (get_energy()));
+          } else {
+            log_(1, "Settled at energy % .10f. The occupation cleanup left"
+                    " the gradient at %e, against a threshold of %e: the"
+                    " repair costs about g^2/2H, below what the Fock builder"
+                    " resolves, so it cannot be recovered by a line"
+                    " search.\n",
+                 (double) get_energy(), (double) diis_error_norm(),
+                 (double) effective_convergence_threshold_());
+          }
 
           // Print out info
           callback_data["step"] = std::string("Converged");

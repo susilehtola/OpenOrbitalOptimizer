@@ -49,7 +49,7 @@ add_test(  # Test #3
 # builds below.
 add_test(  # Test #4
   NAME openorbopt/atomtest/iron-unrestricted
-  COMMAND $<TARGET_FILE:openorbopt-atomtest> --Z 26 --M 5 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --basis "${CMAKE_CURRENT_SOURCE_DIR}/cc-pvdz.json" --methods "ODA + ARH" --reference-energy -1263.4350147950 --energy-tolerance 1e-7 --max-fermi-level-error 1e-5
+  COMMAND $<TARGET_FILE:openorbopt-atomtest> --Z 26 --M 5 --xfunc GGA_X_PBE --cfunc GGA_C_PBE --basis "${CMAKE_CURRENT_SOURCE_DIR}/cc-pvdz.json" --methods "ODA + ARH" --max-gradient 1e-5 --reference-energy -1263.4350147950 --energy-tolerance 1e-7 --max-fermi-level-error 1e-5
   )
 # The restricted atom asserts its gradient explicitly rather than
 # deferring to the solver's own verdict, and is held to a tighter

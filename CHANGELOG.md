@@ -15,6 +15,19 @@
   that norm by hand now go through it -- including the stall recovery,
   which had also open-coded the per-entry form to rank stored
   iterates.
+* A run no longer announces convergence it cannot back. The Aufbau
+  cleanup is adopted on the energy and does not consult the gradient,
+  so it can settle the occupations at the cost of the criterion that
+  was met before it ran -- and the convergence message was printed
+  regardless, leaving the caller holding a state the solver's own
+  ``converged()`` denied. A spin-polarised iron atom printed
+  "Converged to energy -1263.4350147951!" and the driver then reported
+  that the SCF had not converged.
+    - The message now says which it is, and names the gradient and the
+      threshold when the cleanup has spent it.
+    - Refusing the swap instead is the worse trade, and was measured to
+      be: it is what made the spin-restricted atom report occupations
+      0.13 outside the Fermi-level window as converged.
 * ``atomtest`` gained ``--max-gradient``, which asserts that bound
   instead of requiring the solver's own convergence verdict.
     - The iron test at M = 0 uses it. Settling the occupations perturbs
