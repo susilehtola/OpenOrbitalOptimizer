@@ -32,6 +32,7 @@ _SCF solver class._
 
 | Type | Name |
 | ---: | :--- |
+| struct | [**HistorySnapshot**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot.md) <br> |
 | struct | [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) <br>_Descriptor for a single option in the catalog._  |
 
 
@@ -39,6 +40,11 @@ _SCF solver class._
 
 
 
+## Public Attributes
+
+| Type | Name |
+| ---: | :--- |
+|  bool | [**relocating\_iterate\_**](#variable-relocating_iterate_)   = `false`<br> |
 
 
 
@@ -73,6 +79,8 @@ _SCF solver class._
 |  size\_t | [**degenerate\_cluster\_end\_**](#function-degenerate_cluster_end_) (size\_t start, size\_t n, EnergyAt && energy\_at) const<br> |
 |  Tbase | [**density\_matrix\_difference**](#function-density_matrix_difference) (size\_t ihist, size\_t jhist) const<br>_Density matrix difference norm._  |
 |  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; | [**determine\_number\_of\_particles\_by\_aufbau**](#function-determine_number_of_particles_by_aufbau) (const [**OrbitalEnergies**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalenergies)&lt; Tbase &gt; & orbital\_energies) const<br>_Determine number of particles in each block._  |
+|  Tbase | [**diis\_error\_norm**](#function-diis_error_norm) (size\_t ihist=0) const<br> |
+|  Tbase | [**fermi\_level\_error**](#function-fermi_level_error) () const<br> |
 |  void | [**fixed\_number\_of\_particles\_per\_block**](#function-fixed_number_of_particles_per_block) (const [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; & number\_of\_particles\_per\_block) <br>_Fix the number of occupied orbitals per block._  |
 |  Tbase | [**get\_energy**](#function-get_energy) (size\_t ihist=0) const<br>_Get the energy for the n:th entry._  |
 |  [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; | [**get\_fock\_build**](#function-get_fock_build) (size\_t ihist=0) const<br>_Get the Fock matrix builder return._  |
@@ -87,6 +95,8 @@ _SCF solver class._
 |  bool | [**has\_logger**](#function-has_logger) () const<br>_True iff a caller-supplied log sink is currently installed._  |
 |  void | [**initialize\_with\_fock**](#function-initialize_with_fock) (const FockMatrix&lt; Torb &gt; & fock\_guess) <br>_Initialize the solver with a guess Fock matrix._  |
 |  void | [**initialize\_with\_orbitals**](#function-initialize_with_orbitals) (const [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; & orbitals, const OrbitalOccupations&lt; Tbase &gt; & orbital\_occupations) <br>_Initialize with precomputed orbitals and occupations._  |
+|  bool | [**kkt\_occupation\_refinement\_**](#function-kkt_occupation_refinement_) (const AllowedMethods & allowed) <br> |
+|  void | [**log\_occupation\_iterate\_**](#function-log_occupation_iterate_) (const char \* tag, int step, Tbase energy\_change) <br> |
 |  void | [**logger**](#function-logger) (std::function&lt; void(int, const std::string &)&gt; sink=nullptr) <br> |
 |  [**OrbitalHistoryEntry**](namespaceOpenOrbitalOptimizer.md#typedef-orbitalhistoryentry)&lt; Torb, Tbase &gt; | [**make\_history\_entry**](#function-make_history_entry) (const [**DensityMatrix**](namespaceOpenOrbitalOptimizer.md#typedef-densitymatrix)&lt; Torb, Tbase &gt; & density\_matrix, const [**FockBuilderReturn**](namespaceOpenOrbitalOptimizer.md#typedef-fockbuilderreturn)&lt; Torb, Tbase &gt; & fock) const<br> |
 |  Tbase | [**norm**](#function-norm) (const [**Matrix**](namespaceOpenOrbitalOptimizer.md#typedef-matrix)&lt; Tbase &gt; & mat, std::string norm="") const<br>_Evaluate the norm._  |
@@ -102,7 +112,9 @@ _SCF solver class._
 |  [**Vector**](namespaceOpenOrbitalOptimizer.md#typedef-vector)&lt; Tbase &gt; | [**relaxed\_occupation\_gradient\_**](#function-relaxed_occupation_gradient_) (const SkeletonOccupations & skeletons, const std::vector&lt; std::pair&lt; size\_t, size\_t &gt; &gt; & axis) const<br> |
 |  Tbase | [**relaxed\_occupation\_search\_**](#function-relaxed_occupation_search_) (const AllowedMethods & allowed, const SkeletonOccupations & skeletons, const [**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals)&lt; Torb &gt; & orbitals, int & fock\_evaluations) <br> |
 |  void | [**reset\_history**](#function-reset_history) () <br>_Reset the DIIS history._  |
+|  void | [**restore\_history\_**](#function-restore_history_) (const [**HistorySnapshot**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot.md) & snapshot) <br> |
 |  void | [**run**](#function-run) () <br> |
+|  [**HistorySnapshot**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot.md) | [**save\_history\_**](#function-save_history_) () const<br> |
 |  void | [**set**](#function-set-14) (const std::string & key, T value) <br> |
 |  void | [**set**](#function-set-14) (const std::string & key, T value) <br> |
 |  void | [**set**](#function-set-34) (const std::string & key, const std::string & value) <br> |
@@ -148,6 +160,31 @@ _SCF solver class._
 
 
 
+## Public Attributes Documentation
+
+
+
+
+### variable relocating\_iterate\_ 
+
+```C++
+bool OpenOrbitalOptimizer::SCFSolver< Torb, Tbase >::relocating_iterate_;
+```
+
+
+
+How far the occupations are from Aufbau: the largest occupation sitting above the Fermi level, or missing from below it, measured against the Aufbau filling of the current orbital energies.
+
+
+[**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals) inside the degenerate cluster the Fermi level lands in are exempt, since that is where fractional occupation is legitimate; the window is the same `optimal_damping_degeneracy_threshold_` the ODA skeleton walk uses. The comparison is against the whole particle type's energy ordering rather than each block's, because the Fermi level is filled across blocks and its degeneracies routinely span them.
+
+
+Unlike the particle-number error this _is_ a convergence measure: the iterate is a mixed density whose occupations are only Aufbau once the mixing has collapsed onto the minimiser, so this falls as the SCF converges. Returns 0 when the occupations are not the solver's to choose. Set while a routine is moving the iterate to trial points and back rather than starting a fresh calculation. Consulted by initialize\_with\_orbitals, which otherwise resets the Fock-evaluation counter. 
+
+
+        
+
+<hr>
 ## Public Functions Documentation
 
 
@@ -265,16 +302,6 @@ inline Tbase OpenOrbitalOptimizer::SCFSolver::aufbau_error () const
 
 
 
-How far the occupations are from Aufbau: the largest occupation sitting above the Fermi level, or missing from below it, measured against the Aufbau filling of the current orbital energies.
-
-
-[**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals) inside the degenerate cluster the Fermi level lands in are exempt, since that is where fractional occupation is legitimate; the window is the same `optimal_damping_degeneracy_threshold_` the ODA skeleton walk uses. The comparison is against the whole particle type's energy ordering rather than each block's, because the Fermi level is filled across blocks and its degeneracies routinely span them.
-
-
-Unlike the particle-number error this _is_ a convergence measure: the iterate is a mixed density whose occupations are only Aufbau once the mixing has collapsed onto the minimiser, so this falls as the SCF converges. Returns 0 when the occupations are not the solver's to choose. 
-
-
-        
 
 <hr>
 
@@ -410,6 +437,57 @@ inline Vector < Tbase > OpenOrbitalOptimizer::SCFSolver::determine_number_of_par
 
 
 
+
+<hr>
+
+
+
+### function diis\_error\_norm 
+
+```C++
+inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_error_norm (
+    size_t ihist=0
+) const
+```
+
+
+
+Norm of the error vector of the ihist:th history entry  the quantity [**converged()**](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-converged) compares against the threshold.
+
+
+Defaults to the current iterate. The index is there because picking among stored iterates on their gradients is something the solver already does when a walk stalls, and something a caller may want for the same reason: whether the gradient of a given entry clears the threshold is not always a question the solver's own verdict answers, since the occupation cleanup can spend gradient on settling the occupations and the repair  worth about g^2/2H, far under what a Fock builder reproduces  cannot be verified by any line search. 
+
+
+        
+
+<hr>
+
+
+
+### function fermi\_level\_error 
+
+```C++
+inline Tbase OpenOrbitalOptimizer::SCFSolver::fermi_level_error () const
+```
+
+
+
+Residual of the conditions the occupations have to satisfy at a minimum, in energy units.
+
+
+Minimising the energy over the occupations subject to a fixed particle number and 0 &lt;= n &lt;= n\_max gives, with a chemical potential mu and Janak's dE/dn\_k = eps\_k, 
+
+
+This returns the largest violation of any of the three over the particle types. `aufbau_error` tests the two inequalities in occupation units and exempts everything inside the Fermi-level cluster, fractional occupation being legitimate exactly there  so the equality, which is the condition that fixes _where_ inside the cluster the fractions sit, went unmeasured.
+
+
+Measuring it in energy units rather than occupation units is the point. Near a stationary point the energy is quadratic in the occupation displacement while these residuals are linear, so a criterion built on energy decrease is insensitive to exactly the displacements this catches. Measured on a spin-restricted iron atom, two runs of the same command settled at 4s/3d fractions 0.005 apart, 2e-6 Eh apart, both reporting convergence by every other diagnostic the solver carries.
+
+
+mu is taken as the mean orbital energy over the fractionally occupied orbitals. Where there are none it is not determined by the equality at all, and any value between the highest full and the lowest empty orbital satisfies the inequalities, so the residual is how far those two have crossed. 
+
+
+        
 
 <hr>
 
@@ -631,6 +709,61 @@ inline void OpenOrbitalOptimizer::SCFSolver::initialize_with_orbitals (
 
 
 
+
+<hr>
+
+
+
+### function kkt\_occupation\_refinement\_ 
+
+```C++
+inline bool OpenOrbitalOptimizer::SCFSolver::kkt_occupation_refinement_ (
+    const AllowedMethods & allowed
+) 
+```
+
+
+
+Drive the occupations onto the conditions fermi\_level\_error measures, by Newton on the residual rather than by minimising the energy.
+
+
+The distinction is the whole point. Every occupation move the solver otherwise makes is accepted on an energy decrease, and near a stationary point the energy is quadratic in the displacement while the residual is linear  so an energy test cannot resolve displacements this one settles directly. On a spin-restricted iron atom the optimal-damping step stopped with a predicted gain of 9.9e-8, just under the 1e-7 below which it refuses to churn, leaving 2e-6 Eh and 0.005 electrons on the table with every other diagnostic reporting convergence.
+
+
+The unknowns are the fractionally occupied occupations and the chemical potential. Transfers between them conserve particle number by construction, so the step is expressed in the differences d\_m = e\_{k\_m} - e\_{k\_0}: the gradient along one is eps\_{k\_m} - eps\_{k\_0}, free, and the curvature comes from second differences of the perturbatively relaxed energy, one Fock build per point rather than one orbital optimisation.
+
+
+[**Orbitals**](namespaceOpenOrbitalOptimizer.md#typedef-orbitals) pinned full or empty enter through an active set. A pinned orbital on the wrong side of the chemical potential has a descent direction into the fractional region, so it joins the set and the step is re-solved; one that stays on its own side is at a legitimate bound and is left alone.
+
+
+The step is chosen by the residual and only _checked_ against the energy: a step that raises it is rejected, so the rule that nothing is adopted unless it lowers the energy survives. 
+
+
+        
+
+<hr>
+
+
+
+### function log\_occupation\_iterate\_ 
+
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::log_occupation_iterate_ (
+    const char * tag,
+    int step,
+    Tbase energy_change
+) 
+```
+
+
+
+Report the iterate the way [**run()**](classOpenOrbitalOptimizer_1_1SCFSolver.md#function-run) reports an SCF iteration.
+
+
+The cleanup and the occupation refinement move the occupations around after the SCF loop has stopped printing, so without this the phase that decides how a fractionally filled shell is divided is the one phase with no iteration history to read. Same quantities, same order, so the two can be followed as one trace. 
+
+
+        
 
 <hr>
 
@@ -943,6 +1076,21 @@ inline void OpenOrbitalOptimizer::SCFSolver::reset_history ()
 
 
 
+### function restore\_history\_ 
+
+```C++
+inline void OpenOrbitalOptimizer::SCFSolver::restore_history_ (
+    const HistorySnapshot & snapshot
+) 
+```
+
+
+
+
+<hr>
+
+
+
 ### function run 
 
 ```C++
@@ -954,16 +1102,29 @@ inline void OpenOrbitalOptimizer::SCFSolver::run ()
 Run the SCF
 
 
-Consumes the `methods` string setting, a `+`-separated case-insensitive list drawn from `"DIIS"` (Pulay's A/EDIIS-bracketed direct inversion in the iterative subspace), `"LCIIS"` (Li & Yaron's least-squares commutator variant of the same extrapolation step  it replaces the CDIIS coefficients and implies `"DIIS"`, so asking for both is an error rather than a silent preference), `"ODA"` (optimal-damping polytope step on the skeleton density matrices), and `"CG"` (preconditioned PR+ scaled steepest descent on orbital rotations at fixed occupations). Configure via `set ("methods", ...)`; default is `"DIIS + ODA + LBFGS"`. Examples:
+Consumes the `methods` string setting, a `+`-separated case-insensitive list drawn from `"DIIS"` (Pulay's A/EDIIS-bracketed direct inversion in the iterative subspace), `"LCIIS"` (Li & Yaron's least-squares commutator variant of the same extrapolation step  it replaces the CDIIS coefficients and implies `"DIIS"`, so asking for both is an error rather than a silent preference), `"ODA"` (optimal-damping polytope step on the skeleton density matrices), and `"CG"` (preconditioned PR+ scaled steepest descent on orbital rotations at fixed occupations). The orbital-rotation slot also accepts `"LBFGS"` and `"ARH"` (augmented Roothaan-Hall: the Roothaan-Hall diagonal made exact on the directions the density history spans). Configure via `set ("methods", ...)`; default is `"DIIS + ODA + LBFGS"`. Examples:
 
 
-`"DIIS"` pure A/EDIIS extrapolation `"LCIIS"` least-squares commutator extrapolation `"ODA"` standalone polytope minimisation `"DIIS + ODA + LBFGS"` full compound algorithm (default) `"DIIS + ODA + CG"` PR+ CG in place of L-BFGS `"ODA + CG"` DIIS-less compound
+`"DIIS"` pure A/EDIIS extrapolation `"LCIIS"` least-squares commutator extrapolation `"ODA"` standalone polytope minimisation `"DIIS + ODA + LBFGS"` full compound algorithm (default) `"DIIS + ODA + CG"` PR+ CG in place of L-BFGS `"DIIS + ODA + ARH"` augmented Roothaan-Hall rotations `"ODA + CG"` DIIS-less compound
 
 
 State-transition rules: from DIIS we leave to ODA (or to CG when ODA is not allowed) on stall or large error; from ODA we hand to DIIS on integer occupations or to CG on fractional / failed occupations; from CG we burst `orbital_rotation_steps_after_oda_` (or the polytope dimension when that is left at zero) steps and then hand back to DIIS. The state-machine collapses gracefully when only a subset of the methods is allowed: `"DIIS"` alone keeps retrying DIIS until `maximum_iterations_` runs out; other subsets terminate early when every allowed method has failed in succession. 
 
 
         
+
+<hr>
+
+
+
+### function save\_history\_ 
+
+```C++
+inline HistorySnapshot OpenOrbitalOptimizer::SCFSolver::save_history_ () const
+```
+
+
+
 
 <hr>
 

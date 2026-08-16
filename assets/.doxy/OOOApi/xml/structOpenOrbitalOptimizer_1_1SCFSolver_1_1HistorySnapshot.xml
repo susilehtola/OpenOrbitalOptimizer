@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
+  <compounddef id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot" kind="struct" language="C++" prot="public">
+    <compoundname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</compoundname>
+    <includes refid="scfsolver_8hpp" local="no">scfsolver.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1aa674e927a66fd590b999224dcde350a1" prot="public" static="no" mutable="no">
+        <type>OrbitalHistory&lt; Torb, Tbase &gt;</type>
+        <definition>OrbitalHistory&lt;Torb, Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::history</definition>
+        <argsstring></argsstring>
+        <name>history</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::history</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6179" column="22" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6179" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1adf243135644313bcfd48f5eeef9e21bf" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::next_index</definition>
+        <argsstring></argsstring>
+        <name>next_index</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::next_index</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6180" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6180" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1aa083abefceefb590b9949b4ee667b580" prot="public" static="no" mutable="no">
+        <type>std::map&lt; size_t, std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a3f0484d3fc919ef5f4fef9ed1271cea0" kindref="member">Matrix</ref>&lt; Torb &gt; &gt; &gt;</type>
+        <definition>std::map&lt;size_t, std::vector&lt;Matrix&lt;Torb&gt; &gt; &gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::commutators</definition>
+        <argsstring></argsstring>
+        <name>commutators</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::commutators</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6181" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6181" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a46668a18022f28178e3a9c0577b6374b" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::pair&lt; size_t, size_t &gt;, Tbase &gt;</type>
+        <definition>std::map&lt;std::pair&lt;size_t, size_t&gt;, Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::trace_DF</definition>
+        <argsstring></argsstring>
+        <name>trace_DF</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::trace_DF</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6182" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6182" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1acb61a4f97a3e9e6a6e2e212e8c295b5c" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::pair&lt; size_t, size_t &gt;, Tbase &gt;</type>
+        <definition>std::map&lt;std::pair&lt;size_t, size_t&gt;, Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::diis_matrix</definition>
+        <argsstring></argsstring>
+        <name>diis_matrix</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::diis_matrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6183" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6183" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a977181d4632ee5a404f960540535d411" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::pair&lt; size_t, size_t &gt;, Tbase &gt;</type>
+        <definition>std::map&lt;std::pair&lt;size_t, size_t&gt;, Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::density_diff</definition>
+        <argsstring></argsstring>
+        <name>density_diff</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::density_diff</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6184" column="16" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6184" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a9a499a0c68675fb3ab311464f960508c" prot="public" static="no" mutable="no">
+        <type>LBFGSState</type>
+        <definition>LBFGSState OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::lbfgs</definition>
+        <argsstring></argsstring>
+        <name>lbfgs</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::lbfgs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6185" column="18" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6185" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a3e69c7e161c1673d7982f06e09cb9312" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
+        <definition>Vector&lt;Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::previous_gradient</definition>
+        <argsstring></argsstring>
+        <name>previous_gradient</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::previous_gradient</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6186" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6186" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a1740c3ff2b7624136defb57a35ab06c0" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceOpenOrbitalOptimizer_1a46b4f99efd161f0e9d8a40140b5ab97a" kindref="member">Vector</ref>&lt; Tbase &gt;</type>
+        <definition>Vector&lt;Tbase&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::previous_direction</definition>
+        <argsstring></argsstring>
+        <name>previous_direction</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::previous_direction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6187" column="14" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1adb04a8bb8cc0e3c158ec359fed1f72eb" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceOpenOrbitalOptimizer_1a1c526d91037dc0333914ab09df6b10f9" kindref="member">OrbitalRotation</ref> &gt;</type>
+        <definition>std::vector&lt;OrbitalRotation&gt; OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::previous_dofs</definition>
+        <argsstring></argsstring>
+        <name>previous_dofs</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::previous_dofs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6188" column="19" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a72e3452905ab701325a16769aeb3cd2c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::last_oda_collapsed</definition>
+        <argsstring></argsstring>
+        <name>last_oda_collapsed</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::last_oda_collapsed</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6189" column="12" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6189" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a22300be0b7bd4efaa850a0a1fed544ba" prot="public" static="no" mutable="no">
+        <type>Tbase</type>
+        <definition>Tbase OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot::old_energy</definition>
+        <argsstring></argsstring>
+        <name>old_energy</name>
+        <qualifiedname>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot::old_energy</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="openorbitaloptimizer/scfsolver.hpp" line="6190" column="13" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6190" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Everything the history-based methods carry between steps.</para>
+<para>initialize_with_orbitals clears the orbital history and the DIIS caches and starts again from the state it is handed, which is what a routine wanting to move the iterate has to use. At the end of a run that costs nothing. Called from inside the SCF it leaves the state machine running on extrapolation and curvature histories that no longer describe where the iterate has been <ndash/> measured, that segfaulted on the next rotation step. Saving and restoring around such a routine keeps the relocation local to it. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::LBFGSState</label>
+      </node>
+      <node id="1">
+        <label>OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::HistorySnapshot</label>
+        <link refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>lbfgs</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="openorbitaloptimizer/scfsolver.hpp" line="6178" column="5" bodyfile="openorbitaloptimizer/scfsolver.hpp" bodystart="6178" bodyend="6191"/>
+    <listofallmembers>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1aa083abefceefb590b9949b4ee667b580" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>commutators</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a977181d4632ee5a404f960540535d411" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>density_diff</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1acb61a4f97a3e9e6a6e2e212e8c295b5c" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>diis_matrix</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1aa674e927a66fd590b999224dcde350a1" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>history</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a72e3452905ab701325a16769aeb3cd2c" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>last_oda_collapsed</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a9a499a0c68675fb3ab311464f960508c" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>lbfgs</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1adf243135644313bcfd48f5eeef9e21bf" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>next_index</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a22300be0b7bd4efaa850a0a1fed544ba" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>old_energy</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a1740c3ff2b7624136defb57a35ab06c0" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>previous_direction</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1adb04a8bb8cc0e3c158ec359fed1f72eb" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>previous_dofs</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a3e69c7e161c1673d7982f06e09cb9312" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>previous_gradient</name></member>
+      <member refid="structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot_1a46668a18022f28178e3a9c0577b6374b" prot="public" virt="non-virtual"><scope>OpenOrbitalOptimizer::SCFSolver::HistorySnapshot</scope><name>trace_DF</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

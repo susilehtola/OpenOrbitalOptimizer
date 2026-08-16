@@ -7,6 +7,12 @@
 * [**AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md)
 
 
+## h
+
+* [**HistorySnapshot**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot.md)
+([**OpenOrbitalOptimizer::SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md))
+
+
 ## l
 
 * [**LBFGSState**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState.md)

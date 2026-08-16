@@ -60,6 +60,7 @@
 | Type | Name |
 | ---: | :--- |
 | class | [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md) &lt;typename Torb, typename Tbase&gt;<br>_SCF solver class._  |
+| struct | [**HistorySnapshot**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot.md) <br> |
 | struct | [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) <br>_Descriptor for a single option in the catalog._  |
 
 

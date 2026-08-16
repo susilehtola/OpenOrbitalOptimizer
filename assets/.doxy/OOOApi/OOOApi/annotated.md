@@ -11,6 +11,7 @@ Here are the classes, structs, unions and interfaces with brief descriptions:
         * **class** [**SCFSolver**](classOpenOrbitalOptimizer_1_1Armadillo_1_1SCFSolver.md)     
     * **namespace** [**HelperRoutines**](namespaceOpenOrbitalOptimizer_1_1HelperRoutines.md)     
     * **class** [**SCFSolver**](classOpenOrbitalOptimizer_1_1SCFSolver.md) _SCF solver class._     
+        * **struct** [**HistorySnapshot**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot.md)     
         * **struct** [**OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) _Descriptor for a single option in the catalog._     
 * **struct** [**AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md)     
 * **struct** [**LBFGSState**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState.md)     

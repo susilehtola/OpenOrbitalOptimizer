@@ -1337,6 +1337,37 @@
 #### New Features
 
 #### Enhancements
+* New accessor ``diis_error_norm(ihist=0)``: the norm of the error
+  vector that ``converged()`` compares against the threshold. It pairs
+  with ``diis_error_vector``, throws on an index past the end as the
+  other entry accessors do, and the seven places that had been taking
+  that norm by hand now go through it -- including the stall recovery,
+  which had also open-coded the per-entry form to rank stored
+  iterates.
+* A run no longer announces convergence it cannot back. The Aufbau
+  cleanup is adopted on the energy and does not consult the gradient,
+  so it can settle the occupations at the cost of the criterion that
+  was met before it ran -- and the convergence message was printed
+  regardless, leaving the caller holding a state the solver's own
+  ``converged()`` denied. A spin-polarised iron atom printed
+  "Converged to energy -1263.4350147951!" and the driver then reported
+  that the SCF had not converged.
+    - The message now says which it is, and names the gradient and the
+      threshold when the cleanup has spent it.
+    - Refusing the swap instead is the worse trade, and was measured to
+      be: it is what made the spin-restricted atom report occupations
+      0.13 outside the Fermi-level window as converged.
+* ``atomtest`` gained ``--max-gradient``, which asserts that bound
+  instead of requiring the solver's own convergence verdict.
+    - The iron test at M = 0 uses it. Settling the occupations perturbs
+      the orbitals, and winning that back is worth about g^2/2H --
+      around 1e-12 there, three orders under what the Fock builder
+      reproduces -- so no line search can pay for it and where the
+      gradient lands is decided by the arithmetic. It does not
+      reproduce between machines: 5.0e-7 and 1.1e-6 on the two kinds of
+      core on one workstation, 2.26e-6 on CI, which is how a threshold
+      chosen from the first two came to fail on the third while the
+      occupations settled to 5.7e-11.
 * ``atomtest`` tabulates its two-electron radial integrals on first
   use instead of recomputing them inside every Fock build. They depend
   only on the basis exponents and quantum numbers, so they are the
@@ -1354,6 +1385,339 @@
       kinds of CPU core.
     - This is test-driver work; the library does not have the
       integrals.
+
+#### Enhancements (continued)
+* The Aufbau cleanup is adopted on the energy alone. A rise smaller
+  than the convergence threshold is not evidence of a preference for
+  the mixed density, so it no longer blocks the swap, and the gradient
+  is not consulted at all.
+    - Making the swap conditional on keeping ``converged()`` meant
+      refusing an occupation state five orders better because it left
+      the gradient eight per cent over its threshold. On a
+      spin-restricted iron atom the cleanup reached a Fermi-level
+      residual of 4.3e-7 at a gradient of 1.08e-6, and what was
+      reported instead was the mixed density it started from, whose
+      residual is 0.13. That is not a safer answer, it is a wrong one
+      in the other variable, reported as converged.
+    - The cost is that a run can finish with the occupations right and
+      the gradient a little short, and say so. Settling the
+      occupations perturbs the orbitals, and winning that back is
+      worth about g^2/2H -- around 1e-12 at the gradients in question,
+      three orders under what a Fock builder in double reproduces --
+      so no line search can pay for it. The iron test at M = 0 is
+      therefore held to a gradient of 2e-6 and a Fermi-level residual
+      of 1e-5, which is what the case can actually reach.
+    - Attempting the cleanup *earlier*, while the SCF still has
+      descent to spend on the repair, was tried and does not work. On
+      four cases -- iron and a La+ cation, each spin-restricted and
+      spin-polarised -- no trigger gradient succeeds everywhere, and
+      several converge to different and higher minima: La+ restricted
+      lands 2.6e-4 Eh high at one setting and La+ polarised 3.8e-2 Eh
+      high at another. The conditions are written in orbital energies,
+      and imposing them before the orbitals are converged imposes them
+      on numbers that do not yet mean anything.
+* The relaxed polytope search no longer walks by default. New setting
+  ``relaxed_occupation_refinements`` (default 0, was effectively 4)
+  says how many times it re-anchors its quadratic model and steps on
+  it.
+    - Measured on iron at M = 0 and M = 5 and on a La+ cation with
+      PBE, the walk changes neither the energy nor the Fermi-level
+      residual in any digit, and costs one, one and sixty Fock
+      evaluations respectively. What settles the occupations is the
+      initial projected sample, which fixes which orbitals are
+      fractional, and the KKT refinement, which fixes where inside
+      them the occupations sit; the walk between them arrives where
+      both ends already are.
+    - The measurement was only possible once the relaxation estimate
+      feeding its curvature was gated: before that the walk never took
+      a step on any case, so there was nothing to compare against.
+    - Kept rather than removed. All three cases have a polytope of one
+      or two dimensions, and a system with several coupled fractional
+      shells may still need it; the setting makes that a discoverable
+      regression rather than a silent one.
+* The perturbative estimate of the orbital relaxation declines to
+  answer where it cannot. It is second order in the rotation, so it
+  is worth something only while the step it predicts stays inside the
+  radius a quadratic describes; new setting
+  ``perturbative_relaxation_max_step`` (default 0.1) is the largest
+  rotation it will extrapolate over, and past that it returns zero and
+  leaves the caller the uncorrected energy.
+    - The polytope search asked it for an estimate at skeleton
+      *vertices*, which sit up to a hartree above the relaxed point and
+      are where the orbitals are furthest from stationary in the whole
+      calculation. What came back was not a rough number but a
+      meaningless one, and it was then differenced to build the
+      curvature the search steps on.
+    - The effect is visible: the refinement walk in
+      ``relaxed_occupation_search_`` had never taken a step on any case
+      in the test suite -- its quadratic programme returned the anchor
+      it was given, so the loop broke on its first pass every time.
+      With the estimate gated it walks, once on a spin-restricted iron
+      atom and through all four of its refinements on a La+ cation.
+    - It buys no accuracy on either: the answers are unchanged to the
+      last digit, the occupation refinement having reached them
+      anyway. It costs iron one Fock evaluation and La+ sixty, the
+      latter being four relaxations the walk now pays for. Whether
+      that walk earns its keep is a separate question, and one that
+      could not be asked while it was not running.
+* A stalled SCF stands on the best iterate it computed rather than
+  the one it happened to be holding. The history is ordered by energy
+  and the iterate is its head, but convergence is judged on the
+  gradient, and the two part company exactly where the run stops: the
+  step stalls because the energy has gone flat to the arithmetic, and
+  among iterates whose energies are then indistinguishable the
+  gradients still differ.
+    - A spin-restricted La+ cation with PBE in the AHGBS-7 basis
+      stalled at a head gradient of 1.06e-6 against a threshold of
+      1e-6 -- six per cent short -- while holding an entry at 9.6e-7.
+      It reported that it had not converged, and the driver exited
+      non-zero, over a fraction of a microhartree of energy separating
+      two iterates it had already paid for.
+    - No step is taken and nothing is recomputed: the choice is among
+      entries in hand, and only once the walk has stopped anyway, so a
+      run that still had somewhere to go is unaffected.
+    - The cleanup that follows a stall is now entered whether or not
+      that choice recovered the convergence, with its guard set to
+      whatever is being claimed. Gating it on having failed meant that
+      recovering convergence silently skipped the occupation cleanup,
+      which left the same case reporting success with its occupations
+      unsettled.
+* The KKT occupation refinement solves the stationarity conditions
+  rather than creeping toward them. On the iron atoms it now reaches
+  a Fermi-level residual of 2e-11 to 2e-7 where it used to stop at
+  1e-5 to 1e-6, lands on the reference energy of the M = 5 atom to
+  1e-10 from either of this machine's two kinds of CPU core, and
+  costs 13 to 29 per cent fewer Fock evaluations.
+    - The step is expressed in the occupations with the particle
+      number carried by an explicit multiplier, not as transfers
+      against one chosen active orbital. The chemical potential then
+      comes out of the solve instead of being averaged over the
+      fractional orbitals, and taking an orbital out of the active set
+      is the deletion of a row and a column.
+    - Which is what makes the bound handling expressible: a step that
+      drives an occupation to zero or to its maximum is taken as far
+      as the bound, that orbital is pinned there, and the reduced
+      problem is solved again. The previous code scaled the whole step
+      back and stopped just short, so an orbital the model wanted
+      empty stayed in the active set indefinitely.
+    - The curvature is the derivative of the orbital energies,
+      ``d eps_k / d n_l``, which by Janak's theorem is the same matrix
+      as the second derivative of the energy but is read from a first
+      difference rather than a second -- an error of order delta/h
+      instead of delta/h^2, three orders better at the probe size used
+      here.
+    - And it is corrected between sweeps by a symmetric rank-one
+      update on the secant pair. The probes measure the curvature at
+      fixed orbitals, while every step is judged after the orbitals
+      have relaxed, and relaxation screens it: on the M = 5 atom the
+      fixed-orbital value is four times too stiff, so every Newton
+      step came out four times too short and the residual contracted
+      by a constant 0.758 a sweep -- linear convergence, which ran out
+      of sweeps at 1e-5 instead of arriving. Both halves of the pair
+      are already computed, so the correction is free, and it also
+      retires the per-sweep probes.
+    - The trust radius shrinks below the step it rejected rather than
+      by a blind factor. The Newton step is usually shorter than the
+      radius, so dividing the radius alone left the next sweep
+      proposing and rejecting the identical step: one trace repeated a
+      step five times while the radius fell from 5e-3 to 2e-5, some
+      seventy-five Fock evaluations spent re-deriving a verdict
+      already in hand.
+    - A step is allowed to climb, but only by less than the scale the
+      solver treats as a real energy difference, and the budget is
+      spent against where the refinement began rather than per step.
+      The residual is first order in the occupation step where the
+      energy is second, so near the solution the energy comparison is
+      reading its own noise while the residual still carries thousands
+      of times its own: one trace refused a step offering 2.9e-6 ->
+      3.4e-8, eighty-five fold, over an energy rise of 1e-10.
+    - The accepted iterate is handed back on its own. The history is
+      ordered by energy and the iterate is its head, so an accepted
+      uphill move was filed behind the entry it climbed away from and
+      that entry became the iterate again -- the refinement undone by
+      its own bookkeeping, and with it the whole cleanup, which the
+      caller then refused for costing the convergence criterion.
+    - Settled occupations are an orbital perturbation, so the
+      orbitals are relaxed at them before the result is handed back.
+* ``atomtest`` can carry the whole SCF -- the Fock builder and the
+  solver together -- at a precision chosen on the command line:
+  ``--precision double``, ``longdouble`` or ``quad``. The radial
+  integrals, the orthogonaliser, the core Hamiltonian, the Coulomb
+  build and the quadrature are all templated on the scalar type.
+  Libxc alone stays in double, being a smooth function of a density
+  rounded to double and so contributing a systematic 1e-15 rather
+  than noise.
+    - It exists to separate an algorithm from its arithmetic. In
+      double the Fock builder reproduces its own answer only to about
+      1e-9 -- the two kinds of CPU core in a hybrid processor differ
+      by that much -- while the occupation refinement has to tell
+      iterates apart by 1e-10. Raising the precision says what the
+      algorithm does when nothing is masked, and it said two useful
+      things: the spin-restricted iron atom was indeed blinded, its
+      residual improving by two orders once the noise was lifted,
+      while the M = 5 atom was not, giving the same 1e-5 in double, in
+      long double and in quadruple precision. That pointed at the
+      curvature rather than the arithmetic.
+    - The orthogonaliser has to be templated with the rest. Built from
+      a double overlap matrix it is orthonormal only to double, and
+      that error enters every later matrix element as though it were
+      noise.
+* The occupation curvature used by the KKT refinement is taken from
+  the energy at fixed orbitals, not from the energy plus the
+  perturbative estimate of the orbital relaxation. Adding the
+  estimate inverted it. The estimate vanishes at the centre of the
+  probe, where the orbitals are already relaxed, and is negative at
+  both displaced points, so the second difference measured almost
+  nothing but that artefact: on a spin-restricted iron atom the
+  4s-3d transfer came out at -0.54 where the fixed-orbital value is
+  +0.31, and the fully relaxed energies say the positive one is
+  right.
+    - The wrong sign cost speed, not accuracy. A negative eigenvalue
+      is floored onto the positive cone before the Newton solve,
+      which makes the step unboundedly long, and it was then clipped
+      to the trust radius. Every sweep therefore proposed the longest
+      step permitted, overshot, was rejected on a worsened residual
+      and quartered the radius, so the refinement crept in over the
+      noise. Iron at M = 0 settles in 302 Fock evaluations rather
+      than 327 on a performance core, and 239 rather than 258 on an
+      efficiency one.
+* The Aufbau cleanup prints an iteration history of its own at
+  verbosity 5, in the same shape as the one ``run()`` prints: the
+  running Fock count, the energy and its change, the
+  particle-number, Aufbau and Fermi-level errors, the occupations of
+  every block, and a line naming the fractionally occupied orbitals
+  with their occupations and orbital energies. On a spin-restricted
+  iron atom that last line is the interesting one -- it shows the 4s
+  and 3d occupations settling with their orbital energies equal to
+  six digits, which is the stationarity condition the cleanup is
+  there to reach, and it was previously invisible.
+* The Fock-evaluation counter no longer restarts inside the Aufbau
+  cleanup. The cleanup relocates the iterate -- it samples trial
+  occupations, relaxes the orbitals at them and moves back -- and
+  each relocation went through ``initialize_with_orbitals``, which
+  zeroes the counter. The cleanup therefore reported a fraction of
+  the work it had done: on a spin-restricted iron atom it printed 71
+  Fock builds where it had spent about 210. Since that phase is the
+  larger part of the run on such a case, the number is worth having
+  right.
+* The Aufbau cleanup's relaxed occupation Hessian is estimated from
+  perturbation theory rather than built by relaxing the orbitals at
+  each polytope vertex. New setting
+  ``perturbative_occupation_hessian`` (default 1; 0 restores the
+  relaxations).
+    - ``relaxed_occupation_search_`` needs the curvature of the energy
+      *after* the orbitals have re-relaxed, and obtained it by
+      performing that relaxation at every vertex -- tens of Fock
+      builds each. The second-order estimate costs one build per
+      point: a quadratic model along the rotations is minimised at
+      ``d = -(H + sigma)^-1 g``, lowering the energy by
+      ``-1/2 g^T (H + sigma)^-1 g``. With the Roothaan-Hall diagonal
+      for ``H`` that is the familiar expression -- semicanonicalise,
+      then sum the squared off-diagonal Fock elements over their
+      orbital-energy denominators; the ARH curvature model is used in
+      its place where the history has something to say.
+    - It goes through energies rather than gradients, by second
+      differences over the polytope axes.
+      ``relaxed_occupation_gradient_`` reads the orbital energies of
+      whatever iterate the solver stands on, so at an unrelaxed point
+      it returns the *bare* occupation Hessian rather than the relaxed
+      one, and the two differ by exactly the orbital response the
+      search exists to account for. The energy correction carries that
+      response; the gradient at an unrelaxed point does not.
+    - The level shift is kept in the denominator, damping the estimate
+      toward zero on the near-degenerate pairs where second-order
+      perturbation theory is least reliable. That is the conservative
+      direction: understating the gain costs a relaxation that would
+      have paid, overstating it sends the search to a point that does
+      not exist.
+    - Only the Hessian is estimated. Candidate steps are still
+      accepted on a measured relaxed energy, so the rule that a step
+      is adopted only if it demonstrably lowers the energy is
+      untouched.
+    - Measured on iron at M = 5 with ``"ODA + ARH"`` in the AHGBS-9
+      basis, spin-restricted so that the 4s and 3d shells share
+      electrons fractionally: the cleanup takes 95 Fock builds against
+      176, to the same energy to eleven digits, with the refinement
+      walk needing no relaxations at all against four. On cc-pVDZ,
+      where the cleanup is trivial, it changes nothing -- oxygen at
+      M = 1 and M = 3 and iron at M = 5 are identical with it on and
+      off.
+
+* The occupations are settled onto their stationarity conditions at
+  the end of the Aufbau cleanup, by root-finding on the residual
+  rather than by minimising the energy. New diagnostic
+  ``fermi_level_error`` and three settings,
+  ``kkt_occupation_refinement_steps`` (12),
+  ``kkt_occupation_threshold`` (1e-7) and
+  ``kkt_occupation_trust_radius`` (5e-3).
+    - Minimising the energy over the occupations subject to a fixed
+      particle number and ``0 <= n <= n_max`` gives, with a chemical
+      potential ``mu`` and Janak's ``dE/dn_k = eps_k``,
+      ``eps_k = mu`` where the occupation is fractional, ``eps_k >= mu``
+      where it is zero and ``eps_k <= mu`` where it is maximal.
+      ``aufbau_error`` tests the two inequalities and exempts the
+      Fermi-level cluster, fractional occupation being legitimate
+      exactly there -- so the equality, which is what decides *where*
+      inside that cluster the fractions sit, went unmeasured.
+      ``fermi_level_error`` is the largest violation of any of the
+      three, in energy units.
+    - Why an energy criterion could not find this: near a stationary
+      point the energy is quadratic in the occupation displacement
+      while these residuals are linear. The optimal-damping step
+      stopped on a spin-restricted iron atom with a predicted gain of
+      9.9e-8, just under the 1e-7 below which it declines to churn at
+      the arithmetic floor, and the residual left behind was 1.2e-4.
+    - Measured on iron at M = 5 in cc-pVDZ, the same command
+      reproducibly gave two answers: 224 Fock builds ending at
+      -1263.4350125736 and 300 ending at -1263.4350145596, 2e-6 Eh
+      apart, both reporting convergence, differing only in the beta
+      4s/3d split (0.6501 against 0.6547 electrons). Their Fermi-level
+      residuals were 2.7e-4 and 1.2e-4 -- the higher-energy answer the
+      further from stationarity. With the refinement both paths reach
+      -1263.435014795, agreeing to eleven digits.
+    - The step is chosen by the residual and only checked against the
+      energy: a step that raises it is rejected and the previous state
+      restored, so the rule that nothing is adopted unless it lowers
+      the energy is untouched.
+    - Orbitals pinned full or empty enter through an active set. One
+      on the wrong side of the chemical potential has a descent
+      direction into the fractional region and joins the set; one on
+      its own side is at a legitimate bound and is left alone.
+    - The curvature is a second difference of perturbatively relaxed
+      energies, which agree to nine decimals, so it is too noisy to
+      set a step length; a trust region bounds the step instead. It
+      doubles on success and quarters on failure. Tying it to the
+      length actually accepted, so that it contracts as the problem
+      does, measured worse on both counts -- the residual ended 6 to
+      50 times higher with *more* rejections -- because the rejections
+      are not about the length. A shorter step in a direction taken
+      from noisy curvature is still a poor step.
+    - Costs nothing where there is nothing to settle: oxygen at M = 1
+      and M = 3 and krypton are identical in energy and Fock count
+      with the refinement on and off.
+    - The refinement saves and restores the orbital history, the DIIS
+      caches and the rotation-step state around itself, handing back
+      only the improved iterate as one new entry. It moves the iterate
+      with ``initialize_with_orbitals``, which restarts all of that,
+      and a routine that does so from inside an SCF leaves the state
+      machine running on histories that no longer describe where the
+      iterate has been -- measured, that segfaulted on the next
+      rotation step.
+    - Running it after every optimal-damping step rather than once at
+      the end, gated on the residual being in a range where the
+      orbital energies mean something, is safe with that in place and
+      costs about three and a half times more: on iron at M = 5 it
+      reached the same energy with 272 energy evaluations against 75.
+      The refinement is cheap once, where the orbitals have converged
+      and a single relaxation settles the fractions; run while they
+      are still moving it re-relaxes repeatedly and the next rotation
+      step discards the result.
+    - ``initialize_with_orbitals`` no longer zeroes
+      ``number_of_fock_evaluations`` when a caller is relocating the
+      iterate rather than starting a calculation. It did, so the
+      counter restarted every time the refinement moved to a trial
+      point, and the cost of the in-loop experiment above read as 18
+      Fock builds against the true 272.
 
 #### Bug Fixes
 
@@ -1438,6 +1802,193 @@
 <li><code>atomtest</code> gained a <code>--methods</code> flag that overrides the
   driver's default method mix, so any token combination can be
   exercised from the command line.</li>
+<li><code>atomtest</code> can now fail. It gained <code>--reference-energy</code> with
+  <code>--energy-tolerance</code>, <code>--max-fermi-level-error</code>, and a check
+  that the SCF converged at all; any of them failing exits non-zero.
+  Until now the regression tests asserted only that the driver did
+  not crash, so a run could converge to the wrong answer, or not
+  converge, and still be recorded as a pass. The two oxygen tests
+  now carry reference energies.</li>
+<li>Two transition-metal regression tests, iron at M = 5 and at M = 0,
+  the latter spin-restricted so that the valence is shared
+  fractionally between the 4s and 3d shells. They run without DIIS,
+  the extrapolation otherwise converging these cases on its own and
+  leaving the orbital-rotation step barely exercised, and take three
+  to five minutes each.<ul>
+<li>They are only assertable now. Before the occupations were held
+  to their stationarity conditions the same command reproducibly
+  gave two answers 2e-6 Eh apart, both reporting convergence, so
+  there was no stable energy to compare against.</li>
+<li>Each bounds the occupation stationarity residual as well as the
+  energy, which is the check that matters here: the two answers
+  the M = 5 case used to give differ by 2e-6 Eh, so an energy
+  tolerance loose enough to be robust would have accepted either.
+  The residuals differed by a factor of two and say plainly which
+  one is converged.</li>
+<li>The bounds are what the cases reach rather than round numbers.
+  M = 5 settles at a residual of 2e-7 to 8e-7 and is held to
+  1e-5; M = 0 stalls at 3e-6, an occupation there sitting against
+  a bound where the equality condition no longer applies, and is
+  held to 1e-4.</li>
+</ul>
+</li>
+<li>New <code>"ARH"</code> method token implementing the augmented Roothaan-Hall
+  step of Høst, Olsen, Jansík, Thøgersen, Jørgensen and Helgaker,
+  J. Chem. Phys. <strong>128</strong>, 124106 (2008),
+  doi:<a href="https://doi.org/10.1063/1.2884588">10.1063/1.2884588</a>,
+  generalised to several particle types following Feldmann, Baiardi
+  and Reiher, J. Chem. Theory Comput. <strong>19</strong>, 856 (2023),
+  doi:<a href="https://doi.org/10.1021/acs.jctc.2c01035">10.1021/acs.jctc.2c01035</a>.
+  ARH is a third way of taking the orbital-rotation step, alongside
+  <code>"CG"</code> and <code>"LBFGS"</code>, and like them exactly one may be
+  requested.<ul>
+<li>The Hessian model is exact on the directions the density
+  history spans and equal to the Roothaan-Hall diagonal on the
+  orthogonal complement. That split is the point: the RH diagonal
+  is accurate <em>except</em> between near-degenerate orbitals, and the
+  density-difference history spans primarily those directions, so
+  the subspace made exact is the subspace where the diagonal is
+  worst.</li>
+<li>The curvature comes from the quasi-Newton condition
+  <code>H (D_i - D_0) = 2 (F_i - F_0)</code>, read off matrices the
+  history already holds: no additional Fock builds, and a
+  rejected trial step still leaves its pair behind as free
+  curvature. Exact for Hartree-Fock, where <code>F</code> is linear in
+  <code>D</code>; approximate for Kohn-Sham, with the line search
+  absorbing the difference.</li>
+<li>The two pieces of the Hessian add rather than replace. The
+  energy Hessian in the rotation parameters is
+  <code>tr(dD/dx_a . dF/dD . dD/dx_b) + tr(F . d2D/dx_a dx_b)</code>, and
+  the quasi-Newton condition measures only the first: a Fock
+  difference reports how the density-space gradient responded and
+  says nothing about the curvature of the parametrisation itself.
+  The second piece is the Roothaan-Hall diagonal, exactly -- along
+  one rotation a one-electron energy is
+  <code>const + (n_j - n_i)(eps_i - eps_j) sin^2 x</code>.</li>
+<li>Solved by the Woodbury identity: one diagonal division, two
+  <code>n_par x 2k</code> products and a <code>2k x 2k</code> solve, with no Krylov
+  loop and nothing of the size of a Fock build. With an empty
+  subspace it reduces exactly to the existing preconditioned
+  steepest-descent direction, so it is a refinement of that step
+  rather than a replacement for it.</li>
+<li>The subspace is joint over particle types and symmetry blocks
+  rather than one per particle. The Fock matrix of one particle
+  type responds linearly to the density of every other, so the
+  curvature coupling them exists only in the joint space -- one
+  subspace, one level shift, one line search.</li>
+<li>Carries no state between calls, the curvature being rebuilt from
+  the orbital history each step. A history entry another method
+  contributed counts as much as one the rotation step made, and
+  nothing needs invalidating when an ODA or extrapolation step
+  relocates the iterate.</li>
+<li>Entries taken at different occupations count too, which on the
+  ODA path is most of them. The curvature pairs carry occupation
+  coordinates alongside the rotation ones: writing
+  <code>D = C n C^dag</code>, an occupation change is diagonal in the
+  reference MO basis and a rotation is off-diagonal, so the two
+  read off disjoint parts of the very same matrices -- the
+  displacement is the diagonal of the density difference and the
+  paired gradient change the diagonal of the Fock difference, the
+  derivative of the energy with respect to an occupation being
+  that orbital's energy (Janak), which is what the ODA occupation
+  gradient already uses. Nothing new is computed.</li>
+<li>Those coordinates are what make a pair <em>consistent</em> when the
+  occupations moved. A Fock difference responds to the whole move,
+  so pairing it with a displacement that described only the
+  rotation would charge occupation-driven curvature to rotation
+  directions. The check on the relative normalisation is that the
+  extended inner product reproduces the density-space one,
+  <code>s . y = tr(dD dF)</code>, with off-diagonal pairs counted twice and
+  the diagonal once -- which is where the factor of 2 on the
+  rotation coordinates comes from. The test verifies this to
+  round-off.</li>
+<li>The step itself is still taken in the rotation coordinates
+  alone: the model is orthonormalised and the secant imposed in
+  the extended space, then restricted to the rotation rows of
+  <code>Q</code> and <code>W</code>, leaving <code>B</code> -- built from the full inner
+  products, and so carrying what the occupation coordinates
+  contributed -- alone. Occupations remain ODA's to move.</li>
+<li>What this recovers is large. On iron at M = 5 with
+  <code>"ODA + ARH"</code>, the calls that found no usable curvature at all
+  fall from 29 to 7, and the typical subspace goes from two
+  directions to the full nine the history holds.</li>
+<li>The occupation and rotation coordinates are measured in one
+  Euclidean metric when the directions are orthonormalised, so
+  their relative scale decides which combinations of history
+  entries form the basis the model is fitted in. This is not a
+  free choice: sweeping a fixed weight over four decades moves
+  oxygen's Fock count by up to a factor of two, and the best fixed
+  value is system-dependent -- 0.1 is the best constant on oxygen
+  and among the worst on iron (317 Fock builds against 241 at 1).</li>
+<li>So the scale is fitted per call from the curvature the pairs
+  themselves report. For a block of coordinates,
+  <code>c = sum_i s_i . y_i / sum_i |s_i|^2</code> is its average curvature
+  in energy per squared displacement, and scaling the occupation
+  coordinates by <code>sqrt(c_occupation / c_rotation)</code> leaves both
+  blocks at the same average curvature, so the singular values
+  being compared measure the same thing. It is a change of
+  coordinates rather than a reweighting -- displacement multiplied,
+  paired gradient change divided -- so <code>s . y = tr(dD dF)</code> and
+  the rotation-rotation block the step is taken in are both
+  untouched. It falls back to leaving the coordinates alone when
+  either block reports non-positive curvature.</li>
+<li>Measured against the best fixed weight, on <code>"ODA + ARH"</code>:
+  iron 202 Fock builds against 241, chromium at M = 7 45 against
+  48, krypton 30 against 33, oxygen 24 against 21 at M = 1 and 26
+  against 23 at M = 3. It wins on the three hard cases, by 39
+  builds on iron, and costs three on each oxygen. The setting
+  <code>arh_occupation_scale</code> pins the weight to a positive value
+  instead, which is what the sweep used.</li>
+<li>The displacement and the gradient change are weighted by the
+  occupation differences of the <em>entry</em>, not of the reference.
+  Writing <code>U = C_0^dag C_i = exp(kappa)</code>, the density difference
+  in the reference MO basis is <code>(U n_i U^dag)_ij ~ kappa_ij
+  (n_i,j - n_i,i)</code> off the diagonal, and in the reference chart
+  the derivative at the displaced point is
+  <code>tr(F_i . C_0 [T_a, n_i] C_0^dag)</code>: both carry the entry's
+  occupations. Using the reference's instead scales every rotation
+  coordinate by the ratio of the two, an error that does not
+  vanish as the step shrinks -- measured at 90%, flat in the step
+  length, against an error linear in it for the entry's. The two
+  agree whenever the occupations do, which is why this only
+  matters once entries taken at different occupations are
+  admitted.</li>
+<li>Note that <code>s . y = tr(dD dF)</code> consequently holds only at fixed
+  occupations. It is a pairing in density space; the quasi-Newton
+  condition needs the one in the chart the model works in, and the
+  two coincide exactly while the map between them is the identity.
+  The test checks the identity at fixed occupations and the
+  displacement against a known <code>kappa</code> when they move.</li>
+<li>Two new settings: <code>arh_subspace_threshold</code> (default 1e-6), the
+  relative singular-value cutoff below which a history direction
+  is dropped, and <code>arh_occupation_scale</code> (default 0, meaning
+  fitted as above).</li>
+<li><code>atomtest</code> gained a <code>--set key=value[,key=value]</code> flag that
+  applies arbitrary solver settings, dispatching on the type the
+  solver's own catalog reports. Unknown keys throw, so a typo in a
+  benchmark sweep fails loudly rather than silently measuring the
+  default.</li>
+<li>Measured on the DIIS-free path, where the rotation step does the
+  optimising rather than assisting an extrapolation. Oxygen with
+  PBE/cc-pVDZ converges in 21 Fock builds against 27 for both CG
+  and L-BFGS at M = 1, and 23 against 50 and 61 at M = 3. Iron at
+  M = 5, the case the occupation coordinates were built for, takes
+  241 against 564 for both -- a factor of 2.3, and 315 with the
+  rotation-only pairs, so a quarter of that gain is the occupation
+  coordinates alone. Within the DIIS mixes the counts are equal or
+  a few lower, the extrapolation having already done most of the
+  work.</li>
+<li>Krypton is the interesting case: <code>"ODA + LBFGS"</code> reaches the
+  converged energy there but never satisfies the gradient
+  criterion, its line search stalling with the DIIS error at
+  3.0e-6 because every trial raises the energy by around 1e-10 --
+  the energy signal has gone below the arithmetic noise while the
+  gradient is still above threshold. <code>"ODA + ARH"</code> converges in
+  31 Fock builds, taking the error from 4.0e-6 to 2.9e-7 on a step
+  worth 1e-10 in energy. Curvature is what is left to steer by
+  once the energy differences are noise.</li>
+</ul>
+</li>
 </ul>
 <h4 id="breaking-changes">Breaking Changes</h4>
 <ul>

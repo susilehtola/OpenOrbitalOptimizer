@@ -35,6 +35,7 @@
 
 | Type | Name |
 | ---: | :--- |
+|  bool | [**arh**](#variable-arh)   = `false`<br> |
 |  bool | [**cg**](#variable-cg)   = `false`<br> |
 |  bool | [**diis**](#variable-diis)   = `false`<br> |
 |  bool | [**lbfgs**](#variable-lbfgs)   = `false`<br> |
@@ -92,6 +93,19 @@
 
 ## Public Attributes Documentation
 
+
+
+
+### variable arh 
+
+```C++
+bool OpenOrbitalOptimizer::SCFSolver< Torb, Tbase >::AllowedMethods::arh;
+```
+
+
+
+
+<hr>
 
 
 

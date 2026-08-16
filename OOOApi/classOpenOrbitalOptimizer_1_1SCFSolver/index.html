@@ -974,6 +974,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#public-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Attributes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#public-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -992,6 +1003,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-attributes-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Attributes Documentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Public Attributes Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variable-relocating_iterate_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        variable relocating_iterate_
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1162,6 +1201,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-diis_error_norm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function diis_error_norm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-fermi_level_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function fermi_level_error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-fixed_number_of_particles_per_block" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1309,6 +1370,28 @@
     <span class="md-ellipsis">
       
         function initialize_with_orbitals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-kkt_occupation_refinement_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function kkt_occupation_refinement_
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-log_occupation_iterate_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function log_occupation_iterate_
       
     </span>
   </a>
@@ -1481,10 +1564,32 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-restore_history_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function restore_history_
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-run" class="md-nav__link">
     <span class="md-ellipsis">
       
         function run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-save_history_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        function save_history_
       
     </span>
   </a>
@@ -1691,7 +1796,26 @@
 <tbody>
 <tr>
 <td style="text-align: right;">struct</td>
+<td style="text-align: left;"><a href="../structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot/"><strong>HistorySnapshot</strong></a> <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">struct</td>
 <td style="text-align: left;"><a href="../structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo/"><strong>OptionInfo</strong></a> <br><em>Descriptor for a single option in the catalog.</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="public-attributes">Public Attributes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#variable-relocating_iterate_"><strong>relocating_iterate_</strong></a>   = <code>false</code><br></td>
 </tr>
 </tbody>
 </table>
@@ -1761,6 +1885,14 @@
 <td style="text-align: left;"><a href="#function-determine_number_of_particles_by_aufbau"><strong>determine_number_of_particles_by_aufbau</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitalenergies"><strong>OrbitalEnergies</strong></a>&lt; Tbase &gt; &amp; orbital_energies) const<br><em>Determine number of particles in each block.</em></td>
 </tr>
 <tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-diis_error_norm"><strong>diis_error_norm</strong></a> (size_t ihist=0) const<br></td>
+</tr>
+<tr>
+<td style="text-align: right;">Tbase</td>
+<td style="text-align: left;"><a href="#function-fermi_level_error"><strong>fermi_level_error</strong></a> () const<br></td>
+</tr>
+<tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-fixed_number_of_particles_per_block"><strong>fixed_number_of_particles_per_block</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-vector"><strong>Vector</strong></a>&lt; Tbase &gt; &amp; number_of_particles_per_block) <br><em>Fix the number of occupied orbitals per block.</em></td>
 </tr>
@@ -1815,6 +1947,14 @@
 <tr>
 <td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-initialize_with_orbitals"><strong>initialize_with_orbitals</strong></a> (const <a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitals"><strong>Orbitals</strong></a>&lt; Torb &gt; &amp; orbitals, const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations) <br><em>Initialize with precomputed orbitals and occupations.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">bool</td>
+<td style="text-align: left;"><a href="#function-kkt_occupation_refinement_"><strong>kkt_occupation_refinement_</strong></a> (const AllowedMethods &amp; allowed) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-log_occupation_iterate_"><strong>log_occupation_iterate_</strong></a> (const char * tag, int step, Tbase energy_change) <br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
@@ -1878,7 +2018,15 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
+<td style="text-align: left;"><a href="#function-restore_history_"><strong>restore_history_</strong></a> (const <a href="../structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot/"><strong>HistorySnapshot</strong></a> &amp; snapshot) <br></td>
+</tr>
+<tr>
+<td style="text-align: right;">void</td>
 <td style="text-align: left;"><a href="#function-run"><strong>run</strong></a> () <br></td>
+</tr>
+<tr>
+<td style="text-align: right;"><a href="../structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot/"><strong>HistorySnapshot</strong></a></td>
+<td style="text-align: left;"><a href="#function-save_history_"><strong>save_history_</strong></a> () const<br></td>
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
@@ -1945,6 +2093,14 @@
 </tr>
 </tbody>
 </table>
+<h2 id="public-attributes-documentation">Public Attributes Documentation</h2>
+<h3 id="variable-relocating_iterate_">variable relocating_iterate_</h3>
+<pre><code class="language-C++">bool OpenOrbitalOptimizer::SCFSolver&lt; Torb, Tbase &gt;::relocating_iterate_;
+</code></pre>
+<p>How far the occupations are from Aufbau: the largest occupation sitting above the Fermi level, or missing from below it, measured against the Aufbau filling of the current orbital energies.</p>
+<p><a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitals"><strong>Orbitals</strong></a> inside the degenerate cluster the Fermi level lands in are exempt, since that is where fractional occupation is legitimate; the window is the same <code>optimal_damping_degeneracy_threshold_</code> the ODA skeleton walk uses. The comparison is against the whole particle type's energy ordering rather than each block's, because the Fermi level is filled across blocks and its degeneracies routinely span them.</p>
+<p>Unlike the particle-number error this <em>is</em> a convergence measure: the iterate is a mixed density whose occupations are only Aufbau once the mixing has collapsed onto the minimiser, so this falls as the SCF converges. Returns 0 when the occupations are not the solver's to choose. Set while a routine is moving the iterate to trial points and back rather than starting a fresh calculation. Consulted by initialize_with_orbitals, which otherwise resets the Fock-evaluation counter. </p>
+<hr>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
 <h3 id="function-scfsolver-12">function SCFSolver [1/2]</h3>
 <pre><code class="language-C++">OpenOrbitalOptimizer::SCFSolver::SCFSolver () = default
@@ -1997,9 +2153,6 @@
 <h3 id="function-aufbau_error">function aufbau_error</h3>
 <pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::aufbau_error () const
 </code></pre>
-<p>How far the occupations are from Aufbau: the largest occupation sitting above the Fermi level, or missing from below it, measured against the Aufbau filling of the current orbital energies.</p>
-<p><a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitals"><strong>Orbitals</strong></a> inside the degenerate cluster the Fermi level lands in are exempt, since that is where fractional occupation is legitimate; the window is the same <code>optimal_damping_degeneracy_threshold_</code> the ODA skeleton walk uses. The comparison is against the whole particle type's energy ordering rather than each block's, because the Fermi level is filled across blocks and its degeneracies routinely span them.</p>
-<p>Unlike the particle-number error this <em>is</em> a convergence measure: the iterate is a mixed density whose occupations are only Aufbau once the mixing has collapsed onto the minimiser, so this falls as the SCF converges. Returns 0 when the occupations are not the solver's to choose. </p>
 <hr>
 
 <h3 id="function-brute_force_search_for_lowest_configuration">function brute_force_search_for_lowest_configuration</h3>
@@ -2064,6 +2217,25 @@ inline size_t OpenOrbitalOptimizer::SCFSolver::degenerate_cluster_end_ (
     const OrbitalEnergies &lt; Tbase &gt; &amp; orbital_energies
 ) const
 </code></pre>
+<hr>
+
+<h3 id="function-diis_error_norm">function diis_error_norm</h3>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::diis_error_norm (
+    size_t ihist=0
+) const
+</code></pre>
+<p>Norm of the error vector of the ihist:th history entry  the quantity <a href="./#function-converged"><strong>converged()</strong></a> compares against the threshold.</p>
+<p>Defaults to the current iterate. The index is there because picking among stored iterates on their gradients is something the solver already does when a walk stalls, and something a caller may want for the same reason: whether the gradient of a given entry clears the threshold is not always a question the solver's own verdict answers, since the occupation cleanup can spend gradient on settling the occupations and the repair  worth about g^2/2H, far under what a Fock builder reproduces  cannot be verified by any line search. </p>
+<hr>
+
+<h3 id="function-fermi_level_error">function fermi_level_error</h3>
+<pre><code class="language-C++">inline Tbase OpenOrbitalOptimizer::SCFSolver::fermi_level_error () const
+</code></pre>
+<p>Residual of the conditions the occupations have to satisfy at a minimum, in energy units.</p>
+<p>Minimising the energy over the occupations subject to a fixed particle number and 0 &lt;= n &lt;= n_max gives, with a chemical potential mu and Janak's dE/dn_k = eps_k, </p>
+<p>This returns the largest violation of any of the three over the particle types. <code>aufbau_error</code> tests the two inequalities in occupation units and exempts everything inside the Fermi-level cluster, fractional occupation being legitimate exactly there  so the equality, which is the condition that fixes <em>where</em> inside the cluster the fractions sit, went unmeasured.</p>
+<p>Measuring it in energy units rather than occupation units is the point. Near a stationary point the energy is quadratic in the occupation displacement while these residuals are linear, so a criterion built on energy decrease is insensitive to exactly the displacements this catches. Measured on a spin-restricted iron atom, two runs of the same command settled at 4s/3d fractions 0.005 apart, 2e-6 Eh apart, both reporting convergence by every other diagnostic the solver carries.</p>
+<p>mu is taken as the mean orbital energy over the fractionally occupied orbitals. Where there are none it is not determined by the equality at all, and any value between the highest full and the lowest empty orbital satisfies the inequalities, so the residual is how far those two have crossed. </p>
 <hr>
 
 <h3 id="function-fixed_number_of_particles_per_block">function fixed_number_of_particles_per_block</h3>
@@ -2173,6 +2345,29 @@ inline size_t OpenOrbitalOptimizer::SCFSolver::degenerate_cluster_end_ (
     const OrbitalOccupations&lt; Tbase &gt; &amp; orbital_occupations
 ) 
 </code></pre>
+<hr>
+
+<h3 id="function-kkt_occupation_refinement_">function kkt_occupation_refinement_</h3>
+<pre><code class="language-C++">inline bool OpenOrbitalOptimizer::SCFSolver::kkt_occupation_refinement_ (
+    const AllowedMethods &amp; allowed
+) 
+</code></pre>
+<p>Drive the occupations onto the conditions fermi_level_error measures, by Newton on the residual rather than by minimising the energy.</p>
+<p>The distinction is the whole point. Every occupation move the solver otherwise makes is accepted on an energy decrease, and near a stationary point the energy is quadratic in the displacement while the residual is linear  so an energy test cannot resolve displacements this one settles directly. On a spin-restricted iron atom the optimal-damping step stopped with a predicted gain of 9.9e-8, just under the 1e-7 below which it refuses to churn, leaving 2e-6 Eh and 0.005 electrons on the table with every other diagnostic reporting convergence.</p>
+<p>The unknowns are the fractionally occupied occupations and the chemical potential. Transfers between them conserve particle number by construction, so the step is expressed in the differences d_m = e_{k_m} - e_{k_0}: the gradient along one is eps_{k_m} - eps_{k_0}, free, and the curvature comes from second differences of the perturbatively relaxed energy, one Fock build per point rather than one orbital optimisation.</p>
+<p><a href="../namespaceOpenOrbitalOptimizer/#typedef-orbitals"><strong>Orbitals</strong></a> pinned full or empty enter through an active set. A pinned orbital on the wrong side of the chemical potential has a descent direction into the fractional region, so it joins the set and the step is re-solved; one that stays on its own side is at a legitimate bound and is left alone.</p>
+<p>The step is chosen by the residual and only <em>checked</em> against the energy: a step that raises it is rejected, so the rule that nothing is adopted unless it lowers the energy survives. </p>
+<hr>
+
+<h3 id="function-log_occupation_iterate_">function log_occupation_iterate_</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::log_occupation_iterate_ (
+    const char * tag,
+    int step,
+    Tbase energy_change
+) 
+</code></pre>
+<p>Report the iterate the way <a href="./#function-run"><strong>run()</strong></a> reports an SCF iteration.</p>
+<p>The cleanup and the occupation refinement move the occupations around after the SCF loop has stopped printing, so without this the phase that decides how a fractionally filled shell is divided is the one phase with no iteration history to read. Same quantities, same order, so the two can be followed as one trace. </p>
 <hr>
 
 <h3 id="function-logger">function logger</h3>
@@ -2309,13 +2504,25 @@ inline size_t OpenOrbitalOptimizer::SCFSolver::degenerate_cluster_end_ (
 </code></pre>
 <hr>
 
+<h3 id="function-restore_history_">function restore_history_</h3>
+<pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::restore_history_ (
+    const HistorySnapshot &amp; snapshot
+) 
+</code></pre>
+<hr>
+
 <h3 id="function-run">function run</h3>
 <pre><code class="language-C++">inline void OpenOrbitalOptimizer::SCFSolver::run () 
 </code></pre>
 <p>Run the SCF</p>
-<p>Consumes the <code>methods</code> string setting, a <code>+</code>-separated case-insensitive list drawn from <code>"DIIS"</code> (Pulay's A/EDIIS-bracketed direct inversion in the iterative subspace), <code>"LCIIS"</code> (Li &amp; Yaron's least-squares commutator variant of the same extrapolation step  it replaces the CDIIS coefficients and implies <code>"DIIS"</code>, so asking for both is an error rather than a silent preference), <code>"ODA"</code> (optimal-damping polytope step on the skeleton density matrices), and <code>"CG"</code> (preconditioned PR+ scaled steepest descent on orbital rotations at fixed occupations). Configure via <code>set ("methods", ...)</code>; default is <code>"DIIS + ODA + LBFGS"</code>. Examples:</p>
-<p><code>"DIIS"</code> pure A/EDIIS extrapolation <code>"LCIIS"</code> least-squares commutator extrapolation <code>"ODA"</code> standalone polytope minimisation <code>"DIIS + ODA + LBFGS"</code> full compound algorithm (default) <code>"DIIS + ODA + CG"</code> PR+ CG in place of L-BFGS <code>"ODA + CG"</code> DIIS-less compound</p>
+<p>Consumes the <code>methods</code> string setting, a <code>+</code>-separated case-insensitive list drawn from <code>"DIIS"</code> (Pulay's A/EDIIS-bracketed direct inversion in the iterative subspace), <code>"LCIIS"</code> (Li &amp; Yaron's least-squares commutator variant of the same extrapolation step  it replaces the CDIIS coefficients and implies <code>"DIIS"</code>, so asking for both is an error rather than a silent preference), <code>"ODA"</code> (optimal-damping polytope step on the skeleton density matrices), and <code>"CG"</code> (preconditioned PR+ scaled steepest descent on orbital rotations at fixed occupations). The orbital-rotation slot also accepts <code>"LBFGS"</code> and <code>"ARH"</code> (augmented Roothaan-Hall: the Roothaan-Hall diagonal made exact on the directions the density history spans). Configure via <code>set ("methods", ...)</code>; default is <code>"DIIS + ODA + LBFGS"</code>. Examples:</p>
+<p><code>"DIIS"</code> pure A/EDIIS extrapolation <code>"LCIIS"</code> least-squares commutator extrapolation <code>"ODA"</code> standalone polytope minimisation <code>"DIIS + ODA + LBFGS"</code> full compound algorithm (default) <code>"DIIS + ODA + CG"</code> PR+ CG in place of L-BFGS <code>"DIIS + ODA + ARH"</code> augmented Roothaan-Hall rotations <code>"ODA + CG"</code> DIIS-less compound</p>
 <p>State-transition rules: from DIIS we leave to ODA (or to CG when ODA is not allowed) on stall or large error; from ODA we hand to DIIS on integer occupations or to CG on fractional / failed occupations; from CG we burst <code>orbital_rotation_steps_after_oda_</code> (or the polytope dimension when that is left at zero) steps and then hand back to DIIS. The state-machine collapses gracefully when only a subset of the methods is allowed: <code>"DIIS"</code> alone keeps retrying DIIS until <code>maximum_iterations_</code> runs out; other subsets terminate early when every allowed method has failed in succession. </p>
+<hr>
+
+<h3 id="function-save_history_">function save_history_</h3>
+<pre><code class="language-C++">inline HistorySnapshot OpenOrbitalOptimizer::SCFSolver::save_history_ () const
+</code></pre>
 <hr>
 
 <h3 id="function-set-14">function set [1/4]</h3>

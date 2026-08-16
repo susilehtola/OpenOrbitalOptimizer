@@ -12,6 +12,7 @@ This inheritance list is sorted roughly, but not completely, alphabetically:
     * **class** [**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md) 
     * **class** [**OpenOrbitalOptimizer::SCFSolver::Setting**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1Setting.md) 
 * **class** [**OpenOrbitalOptimizer::SCFSolver::SettingRegistry**](classOpenOrbitalOptimizer_1_1SCFSolver_1_1SettingRegistry.md) 
+* **struct** [**OpenOrbitalOptimizer::SCFSolver::HistorySnapshot**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1HistorySnapshot.md) 
 * **struct** [**OpenOrbitalOptimizer::SCFSolver::OptionInfo**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1OptionInfo.md) _Descriptor for a single option in the catalog._ 
 * **struct** [**OpenOrbitalOptimizer::SCFSolver::AllowedMethods**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1AllowedMethods.md) 
 * **struct** [**OpenOrbitalOptimizer::SCFSolver::LBFGSState**](structOpenOrbitalOptimizer_1_1SCFSolver_1_1LBFGSState.md) 
