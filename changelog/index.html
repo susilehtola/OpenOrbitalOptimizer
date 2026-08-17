@@ -1417,6 +1417,27 @@
       integrals.
 
 #### Enhancements (continued)
+* The Aufbau cleanup no longer runs when there is nothing for it to
+  do, and finding that out is now cheap.
+    - Asking about the shape of the occupation polytope cost a full
+      ODA step -- reference vertex, trial loop, Fock builds -- whose
+      energy verdict was then discarded, because enumeration and
+      evaluation were the same code path.
+      ``optimal_damping_step_`` takes an enumerate-only flag and
+      returns once the skeletons are in hand, before any density is
+      evaluated, so the question costs one diagonalisation.
+    - A polytope with zero parameters means no degenerate cluster is
+      fractionally filled: the occupations are already the only Aufbau
+      filling available and the relaxation cannot move them. The
+      cleanup returns early instead of relaxing anyway. Measured on
+      integer-occupied atoms (Ne, Ar, Kr, O at M = 3), this takes the
+      cleanup from dozens of evaluations to zero.
+    - The cleanup runs on a converged exit and on a stalled one, and
+      not on the ``maximum_iterations`` exit. The useful distinction
+      is proximity to a fixed point, not convergence: a run cut off at
+      the iteration cap is nowhere near one, and the relaxation the
+      cleanup performs is only meaningful near one. ``--maxiter 1`` on
+      iron costs one Fock build.
 * The Aufbau cleanup is adopted on the energy alone. A rise smaller
   than the convergence threshold is not evidence of a preference for
   the mixed density, so it no longer blocks the swap, and the gradient
@@ -1434,9 +1455,12 @@
       occupations perturbs the orbitals, and winning that back is
       worth about g^2/2H -- around 1e-12 at the gradients in question,
       three orders under what a Fock builder in double reproduces --
-      so no line search can pay for it. The iron test at M = 0 is
-      therefore held to a gradient of 2e-6 and a Fermi-level residual
-      of 1e-5, which is what the case can actually reach.
+      so no line search can pay for it. Both iron tests are therefore
+      held to a gradient of 1e-5 and a Fermi-level residual of 1e-5,
+      which is what the cases can actually reach. Pinning the bound to
+      the two trajectories a single machine produces does not survive
+      a third: 2e-6, read off a pair of local runs at M = 0, was
+      exceeded at 2.26e-6 by CI.
     - Attempting the cleanup *earlier*, while the SCF still has
       descent to spend on the repair, was tried and does not work. On
       four cases -- iron and a La+ cation, each spin-restricted and
@@ -1750,6 +1774,20 @@
       Fock builds against the true 272.
 
 #### Bug Fixes
+* ``run()`` no longer announces a convergence the Aufbau cleanup has
+  spent. The cleanup is adopted on the energy and says nothing about
+  the commutator, so it can settle the occupations at the cost of the
+  gradient criterion that was met before it ran; the closing message
+  was printed regardless, and a spin-polarised iron atom would report
+  ``Converged to energy -1263.4350147951!`` and then be told by the
+  driver that the SCF had not converged. The message now reports which
+  of the two happened, and names the gradient it settled at against
+  the threshold it missed.
+    - Restoring the veto on the swap is the worse trade and was
+      measured as such -- it is what makes the spin-restricted atom
+      report occupations 0.13 outside the Fermi-level window as
+      converged. What the cleanup buys is worth keeping; the claim
+      about the gradient is what gives.
 
 #### Misc.
 -->

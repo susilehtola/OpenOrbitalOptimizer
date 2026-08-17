@@ -4803,9 +4803,8 @@ namespace OpenOrbitalOptimizer {
         // the new one. It relaxes at every trial it takes, but hands
         // back a single history entry, so the state the caller sees
         // has never had its gradient minimised from where it now
-        // stands -- and the caller refuses a swap that costs the
-        // convergence criterion, so the whole cleanup was being
-        // dropped over it, a gain of 7e-7 Eh on iron going with it.
+        // stands. A few passes here recover most of it, which is
+        // worth having when the caller arrived converged.
         log_(5, "Aufbau cleanup: the refined occupations leave the gradient"
                 " at %e; relaxing the orbitals at them.\n",
              (double) diis_error_norm());
@@ -4847,31 +4846,24 @@ namespace OpenOrbitalOptimizer {
       // scale on which the whole calculation is being decided -- so a
       // rise inside it is not a reason to refuse.
       //
-      // The gradient is not consulted, and that is the change. Making
-      // the swap conditional on keeping converged() meant refusing an
-      // occupation state five orders better because it left the
-      // gradient eight per cent over its threshold: on a
-      // spin-restricted iron atom the cleanup reached a Fermi-level
-      // residual of 4.3e-7 at a gradient of 1.08e-6, and what was
-      // reported instead was the mixed density it started from, whose
-      // residual is 0.13. Defending the gradient criterion that way
-      // does not make the answer better, it makes it wrong in the
-      // other variable and hides the fact.
+      // The gradient is deliberately not consulted. Conditioning the
+      // swap on keeping converged() costs more than it protects: on a
+      // spin-restricted iron atom the cleanup reaches a Fermi-level
+      // residual of 4.3e-7 at a gradient of 1.08e-6, eight per cent
+      // over its threshold, and refusing it on that ground reports
+      // the mixed density it started from instead -- whose residual
+      // is 0.13. That is not a safer answer, it is a wrong one in the
+      // other variable, reported as converged.
       //
-      // The consequence is that a run can now finish with the
-      // occupations right and the gradient a little short, and say so.
-      // That is a more honest report than the reverse.
+      // The price is that a run can finish with the occupations right
+      // and the gradient a little short. run() says so rather than
+      // announcing a convergence the cleanup has spent.
       const Tbase tolerance = effective_convergence_threshold_();
       if(aufbau_energy <= reference_energy + tolerance) {
         log_(5, "Aufbau cleanup accepted, energy change %e\n",
              (double) (aufbau_energy - reference_energy));
         return true;
       }
-
-      if(must_stay_converged && aufbau_energy <= reference_energy + tolerance)
-        log_(5, "Aufbau cleanup would cost the convergence criterion; "
-                "keeping the converged density.\n");
-      else
 
       log_(1, "Aufbau cleanup rejected: the relaxed Aufbau state lies %e Eh "
               "above the converged density, whose mixed occupations are "
@@ -5893,17 +5885,16 @@ namespace OpenOrbitalOptimizer {
           // Say which it is. The cleanup is adopted on the energy and
           // does not consult the gradient, so it can settle the
           // occupations at the cost of the criterion that was met
-          // before it ran -- and announcing convergence anyway leaves
-          // the caller holding a state its own converged() denies,
-          // which is what this used to do: a spin-polarised iron atom
-          // printed "Converged to energy -1263.4350147951!" and the
-          // driver then reported that the SCF had not converged.
+          // before it ran. Announcing convergence regardless would
+          // leave the caller holding a state its own converged()
+          // denies, a contradiction the driver sees as an SCF that
+          // both converged and did not.
           //
-          // Refusing the swap instead is worse, and was measured to be:
-          // it is what made the spin-restricted atom report occupations
-          // 0.13 outside the Fermi-level window as converged. The
-          // settled occupations are worth having; the claim about the
-          // gradient is what has to give.
+          // Refusing the swap instead is the worse trade, measured:
+          // it is what makes the spin-restricted atom report
+          // occupations 0.13 outside the Fermi-level window as
+          // converged. The settled occupations are worth having; the
+          // claim about the gradient is what gives.
           if(converged()) {
             log_(1, "Converged to energy % .10f!\n", (double) (get_energy()));
           } else {
