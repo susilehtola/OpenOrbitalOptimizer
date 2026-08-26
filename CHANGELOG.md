@@ -445,6 +445,27 @@
       Fock builds against the true 272.
 
 #### Bug Fixes
+* ``cleanup()`` no longer reads past the end of an empty vector when the
+  orbital history holds a single entry, which segfaulted every SCF that
+  reached it. It assumed at least two entries: it sized its
+  ``density_differences`` vector as ``orbital_history_.size()-1`` -- an
+  unsigned expression that wraps on an empty history -- and then
+  indexed both that vector and the sorted-index vector at 0. The
+  ``idx(0)`` read is the one that crashes, and it is unconditional, so
+  the failure does not depend on the verbosity.
+    - Reachable only without DIIS in the method set, i.e. exactly
+      ``"ODA + CG"`` and ``"ODA + LBFGS"``, which is why the defaults
+      never showed it. The stall exit is not the trigger; it ``break``s
+      before ``cleanup()`` runs. A history falls to one entry in
+      ``cleanup()``'s own erase loop, and the crash comes on the next
+      iteration if the step taken there declines to evaluate any
+      density -- ``add_entry`` appends before judging the energy, so any
+      step that evaluates leaves at least two.
+    - Pruning a history of fewer than two entries is a no-op by
+      definition, so the guard changes no converging calculation.
+      Reported against HelFEM's ``gensap``, where a hydrogen atom with
+      ``--lmax=0 --nelem=3 --method=HF --scfmethods="ODA + CG"`` died at
+      iteration 2 and now converges to -0.4999999941.
 * ``run()`` no longer announces a convergence the Aufbau cleanup has
   spent. The cleanup is adopted on the energy and says nothing about
   the commutator, so it can settle the occupations at the cost of the

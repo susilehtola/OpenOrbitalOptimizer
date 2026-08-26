@@ -3301,6 +3301,19 @@ namespace OpenOrbitalOptimizer {
 
     /// Clean up history from incorrect occupations
     void cleanup() {
+      // Pruning compares every entry against the lowest-energy one, so
+      // with fewer than two there is nothing to compare and nothing to
+      // remove. Leaving early also keeps the unsigned ``size()-1``
+      // below from wrapping on an empty history, and the reads of
+      // ``density_differences(0)`` and ``idx(0)`` from running off the
+      // end of a vector that would have no entries. A one-entry
+      // history reaches here whenever a step declines to evaluate any
+      // density -- which needs the method set to leave the stall exit
+      // unreachable, as ``ODA + CG`` and ``ODA + LBFGS`` do, DIIS
+      // being absent.
+      if(orbital_history_.size() < 2)
+        return;
+
       Vector<Tbase> density_differences = Vector<Tbase>::Zero(orbital_history_.size()-1);
       for(size_t ihist=1;ihist<orbital_history_.size();ihist++) {
         density_differences(ihist-1)=density_matrix_difference(ihist, 0);
