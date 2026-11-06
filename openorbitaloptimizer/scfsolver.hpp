@@ -497,19 +497,6 @@ namespace OpenOrbitalOptimizer {
         "ARH curvature-subspace relative singular-value cutoff",
         Tbase(1e-6)};
 
-    /// Relative weight of the occupation coordinates against the
-    /// rotation ones when the ARH curvature directions are
-    /// orthonormalised.
-    ///
-    /// The two kinds of coordinate are measured in one Euclidean
-    /// metric, so their relative scale decides which combinations of
-    /// history entries form the orthonormal basis the model is fitted
-    /// in, and which directions the singular-value cutoff discards.
-    /// Zero or negative selects the scale fitted from the curvature
-    /// the pairs themselves report, which is the default and what
-    /// ``rescale_occupation_coordinates_`` documents; a positive value
-    /// pins it instead, which is what the sweep that motivated the
-    /// fit used.
     /// Whether the relaxed occupation Hessian is built from second
     /// differences of perturbatively relaxed energies (nonzero) or by
     /// relaxing the orbitals at each polytope vertex (zero).
@@ -562,10 +549,74 @@ namespace OpenOrbitalOptimizer {
         "largest occupation change a KKT refinement step may make",
         Tbase(5e-3)};
 
+    /// Relative weight of the occupation coordinates against the
+    /// rotation ones when the ARH curvature directions are
+    /// orthonormalised.
+    ///
+    /// The two kinds of coordinate are measured in one Euclidean
+    /// metric, so their relative scale decides which combinations of
+    /// history entries form the orthonormal basis the model is fitted
+    /// in, and which directions the singular-value cutoff discards.
+    /// Zero or negative selects the scale fitted from the curvature
+    /// the pairs themselves report, which is the default and what
+    /// ``rescale_occupation_coordinates_`` documents; a positive value
+    /// pins it instead, which is what the sweep that motivated the
+    /// fit used.
     Setting<Tbase> arh_occupation_scale_{
         settings_, "arh_occupation_scale",
         "ARH occupation-coordinate weight (<= 0 fits it from the history)",
         Tbase(0)};
+
+    /// Whether the ARH step moves the occupations along with the
+    /// rotations (nonzero) or holds them fixed (zero).
+    ///
+    /// The curvature pairs are built in the joint space either way,
+    /// see ``arh_curvature_pairs_``, so this decides only whether the
+    /// step uses the occupation half of the model or discards it.
+    ///
+    /// Using it is what the coupling between the two blocks asks for.
+    /// At a Fock-diagonal iterate the rotation gradient vanishes
+    /// identically, whatever the occupations are, because [F, P] does;
+    /// and the Janak gradient eps_k - mu vanishes across a set of
+    /// degenerate orbitals, because that is what degenerate means. So
+    /// over a degenerate set there is no first-order information at
+    /// all about where the electrons belong, and the whole answer sits
+    /// in the curvature. Holding the occupations fixed through the
+    /// rotation step and moving them separately makes the solver
+    /// alternate between two coupled blocks, which converges at a rate
+    /// set by how strongly they are coupled -- measured on a
+    /// spin-restricted iron atom, the occupation residual stalls three
+    /// orders of magnitude above the rotation one and the rotation
+    /// step cannot reduce it.
+    Setting<int> arh_joint_occupations_{
+        settings_, "arh_joint_occupations",
+        "ARH step moves occupations with the rotations (0 or 1)", 1};
+
+    /// Largest occupation change the joint ARH direction may ask for
+    /// at unit step length.
+    ///
+    /// The occupation curvature the model reports is fitted from
+    /// history entries whose occupations differ in the third decimal,
+    /// so it is noisy, and a Newton step on a curvature that comes out
+    /// too small is enormous: measured on open-shell oxygen, a raw
+    /// step asked for 470 electrons in one orbital, and the only thing
+    /// that stopped it was the occupation hitting its bound -- which
+    /// cut the step length to 1e-9 and took the rotations down with
+    /// it, since both travel along one t. The radius bounds the
+    /// occupation block without needing the curvature to be right,
+    /// and the line search is free to shorten the step further.
+    ///
+    /// It also keeps the joint step to the job it is for. The bulk of
+    /// the occupation optimisation belongs to the optimal-damping
+    /// step, which searches a polytope of whole Aufbau fillings and is
+    /// good at it; what ODA cannot do is move occupations and orbitals
+    /// together, which is what matters once the two are within a few
+    /// thousandths of an electron of the solution. Sized for that
+    /// regime, this step refines rather than competes.
+    Setting<Tbase> arh_occupation_trust_radius_{
+        settings_, "arh_occupation_trust_radius",
+        "largest occupation change the joint ARH step may ask for",
+        Tbase(1e-2)};
 
     /// Level shift diminution factor
     Setting<Tbase> level_shift_factor_{
@@ -3387,6 +3438,26 @@ namespace OpenOrbitalOptimizer {
       size_t n_dof = 0;
       size_t n_par = 0;
       bool is_complex = false;
+
+      /// Occupation coordinates, laid out after the n_par rotation
+      /// amplitudes: one per orbital of every block that has any, in
+      /// block order. ``occupation_offset`` indexes the start of each
+      /// block and ``occupation_block`` names the block a coordinate
+      /// belongs to. The curvature pairs and the joint step share the
+      /// layout, so a displacement and the gradient change paired with
+      /// it describe the same coordinate.
+      std::vector<size_t> occupation_offset;
+      std::vector<size_t> occupation_block;
+      size_t n_occ = 0;
+      /// Janak gradient dE/dn_k = eps_k on those coordinates.
+      ///
+      /// The chemical potential is deliberately not subtracted: it is
+      /// the multiplier of the particle-number constraint, and
+      /// ``arh_joint_direction_`` recovers it from the constrained
+      /// solve rather than estimating it. Since every feasible
+      /// occupation direction conserves the particle number of each
+      /// type, sum_k eps_k d_k and sum_k (eps_k - mu) d_k agree.
+      Vector<Tbase> g_occ;
     };
 
     /// Build the rotation-step context from the current iterate.
@@ -3449,7 +3520,38 @@ namespace OpenOrbitalOptimizer {
           ctx.h(ctx.n_dof + a) = ctx.h(a);
         }
       }
+
+      // Step 4: occupation coordinates and the Janak gradient on
+      // them. Cheap, and built whether or not the step will use them,
+      // so that the curvature pairs can be laid out the same way
+      // without asking which step is being taken.
+      ctx.occupation_offset.assign(nblocks, 0);
+      ctx.n_occ = 0;
+      for(size_t b = 0; b < nblocks; b++) {
+        ctx.occupation_offset[b] = ctx.n_occ;
+        const Index n_b = ctx.C_pseudo[b].cols();
+        for(Index k = 0; k < n_b; k++)
+          ctx.occupation_block.push_back(b);
+        ctx.n_occ += (size_t) n_b;
+      }
+      ctx.g_occ = Vector<Tbase>::Zero((Index) ctx.n_occ);
+      for(size_t b = 0; b < nblocks; b++)
+        for(Index k = 0; k < ctx.C_pseudo[b].cols(); k++)
+          ctx.g_occ((Index) ctx.occupation_offset[b] + k) = ctx.eps[b](k);
       return true;
+    }
+
+    /// Particle type the given orbital block belongs to. The inverse
+    /// of ``particle_block_offset``.
+    size_t particle_type_of_block_(size_t iblock) const {
+      size_t offset = 0;
+      for(Index p = 0; p < number_of_blocks_per_particle_type_.size(); p++) {
+        offset += (size_t) number_of_blocks_per_particle_type_(p);
+        if(iblock < offset) return (size_t) p;
+      }
+      std::ostringstream oss;
+      oss << "Block " << iblock << " belongs to no particle type!\n";
+      throw std::logic_error(oss.str());
     }
 
     /// Wrong-sign-safe preconditioned-SD direction at level shift sigma:
@@ -3517,11 +3619,12 @@ namespace OpenOrbitalOptimizer {
     }
 
     /// Evaluate the Fock builder at the rotated iterate
-    /// C_pseudo * exp(t K) with the same occupations as the reference
-    /// iterate. Increments the global Fock-evaluation counter.
+    /// C_pseudo * exp(t K) with the given occupations. Increments the
+    /// global Fock-evaluation counter.
     std::pair<DensityMatrix<Torb, Tbase>, FockBuilderReturn<Torb, Tbase>>
     evaluate_rotation_at_(const Orbitals<Torb> & K, Tbase t,
-                          const RotationStepContext & ctx) {
+                          const RotationStepContext & ctx,
+                          const OrbitalOccupations<Tbase> & occupations) {
       size_t nblocks = ctx.C_pseudo.size();
       Orbitals<Torb> C_new(nblocks);
       for(size_t b = 0; b < nblocks; b++) {
@@ -3532,44 +3635,121 @@ namespace OpenOrbitalOptimizer {
         Matrix<Torb> tK = t * K[b];
         C_new[b] = ctx.C_pseudo[b] * expm_antihermitian(tK);
       }
-      DensityMatrix<Torb, Tbase> dm = std::make_pair(C_new, ctx.n_ref);
+      DensityMatrix<Torb, Tbase> dm = std::make_pair(C_new, occupations);
       auto fock = fock_builder_(dm);
       number_of_fock_evaluations_++;
       return std::make_pair(dm, fock);
     }
 
-    /// Directional gradient at a trial iterate, computed from F^MO at
-    /// that iterate: g_trial_a = 2 Re[(C_trial^dag F_trial C_trial)_{i,j}](n_j - n_i).
-    /// F^MO is computed once per block and reused across DOFs.
-    Vector<Tbase> directional_gradient_at_trial_(
-        const RotationStepContext & ctx,
-        const Orbitals<Torb> & C_trial,
-        const FockMatrix<Torb> & F_trial) const {
+    /// Gradient at a trial iterate, computed from F^MO at that
+    /// iterate. On the rotations
+    ///     g_a = 2 Re[(C_trial^dag F_trial C_trial)_{i,j}](n_j - n_i),
+    /// and on the occupations the diagonal of the same matrix, Janak's
+    /// dE/dn_k. F^MO is computed once per block and reused.
+    ///
+    /// The occupation weights come from the trial point's own
+    /// occupations rather than the reference's, which is what makes
+    /// this the gradient at the trial point when the step moved them.
+    /// The trial orbitals are not pseudo-canonical, so the diagonal
+    /// elements are not orbital energies; they are still exactly the
+    /// derivative with respect to the occupation of the orbital whose
+    /// coordinate they sit on, which is what the slope needs.
+    void gradient_at_trial_(const RotationStepContext & ctx,
+                            const Orbitals<Torb> & C_trial,
+                            const FockMatrix<Torb> & F_trial,
+                            const OrbitalOccupations<Tbase> & n_trial,
+                            Vector<Tbase> & g_rot,
+                            Vector<Tbase> & g_occ) const {
       std::vector<Matrix<Torb>> F_MO(C_trial.size());
       for(size_t b = 0; b < C_trial.size(); b++) {
         if(C_trial[b].cols() == 0) continue;
         F_MO[b] = C_trial[b].adjoint() * F_trial[b] * C_trial[b];
       }
-      Vector<Tbase> g_trial = Vector<Tbase>::Zero(ctx.n_par);
+      g_rot = Vector<Tbase>::Zero(ctx.n_par);
       for(size_t a = 0; a < ctx.n_dof; a++) {
         const auto & dof = ctx.dofs[a];
         size_t b = std::get<0>(dof);
         Index i = std::get<1>(dof);
         Index j = std::get<2>(dof);
         Torb Fij = F_MO[b](i, j);
-        Tbase dn = ctx.n_ref[b](j) - ctx.n_ref[b](i);
-        g_trial(a) = 2 * std::real(Fij) * dn;
+        Tbase dn = n_trial[b](j) - n_trial[b](i);
+        g_rot(a) = 2 * std::real(Fij) * dn;
         if(ctx.is_complex)
-          g_trial(ctx.n_dof + a) = 2 * std::imag(Fij) * dn;
+          g_rot(ctx.n_dof + a) = 2 * std::imag(Fij) * dn;
       }
-      return g_trial;
+      g_occ = Vector<Tbase>::Zero((Index) ctx.n_occ);
+      for(size_t k = 0; k < ctx.n_occ; k++) {
+        const size_t b = ctx.occupation_block[k];
+        const Index i = (Index) (k - ctx.occupation_offset[b]);
+        g_occ((Index) k) = std::real(F_MO[b](i, i));
+      }
     }
 
-    /// Line search along the unitary curve C(t) = C_pseudo * exp(t K)
-    /// at fixed occupations. trial_0_direction(sigma) returns the
-    /// initial descent direction at sigma = initial_level_shift_,
-    /// including whatever curvature correction the caller applies
-    /// (PR+ CG, L-BFGS, ...).
+    /// Energy slope along a joint direction, dE/dt at t = 0. An empty
+    /// occupation direction is a rotation-only step.
+    Tbase joint_slope_(const RotationStepContext & ctx,
+                       const Vector<Tbase> & d_rot,
+                       const Vector<Tbase> & g_rot,
+                       const Vector<Tbase> & d_occ,
+                       const Vector<Tbase> & g_occ) const {
+      Tbase slope = d_rot.dot(g_rot);
+      if(d_occ.size() > 0) slope += d_occ.dot(g_occ);
+      return slope;
+    }
+
+    /// Largest step along ``d_occ`` that keeps every occupation inside
+    /// [0, n_max] of its block.
+    ///
+    /// The bound is where an orbital fills or empties completely,
+    /// which is a kink in the energy rather than a point the quadratic
+    /// model describes, so the step stops at the face instead of
+    /// crossing it and the next iteration re-solves with that orbital
+    /// in the active set. That is what keeps the number of Fock builds
+    /// bounded: a crossing is priced by the multiplier of the bound it
+    /// reaches rather than searched for.
+    Tbase occupation_step_limit_(const RotationStepContext & ctx,
+                                 const Vector<Tbase> & d_occ) const {
+      Tbase t_max = std::numeric_limits<Tbase>::max();
+      for(size_t k = 0; k < ctx.n_occ; k++) {
+        const Tbase step = d_occ((Index) k);
+        if(!(std::abs(step) > 0)) continue;
+        const size_t b = ctx.occupation_block[k];
+        const Index i = (Index) (k - ctx.occupation_offset[b]);
+        const Tbase room = step > 0
+          ? maximum_occupation_((Index) b) - ctx.n_ref[b](i)
+          : ctx.n_ref[b](i);
+        t_max = std::min(t_max, std::max(Tbase(0), room) / std::abs(step));
+      }
+      return t_max;
+    }
+
+    /// Occupations at step length t along the occupation direction.
+    /// Clamped to the box, which the step length already respects, so
+    /// that round-off cannot hand the Fock builder a negative
+    /// occupation.
+    OrbitalOccupations<Tbase> occupations_at_(const RotationStepContext & ctx,
+                                              const Vector<Tbase> & d_occ,
+                                              Tbase t) const {
+      if(d_occ.size() == 0) return ctx.n_ref;
+      OrbitalOccupations<Tbase> n = ctx.n_ref;
+      for(size_t k = 0; k < ctx.n_occ; k++) {
+        const size_t b = ctx.occupation_block[k];
+        const Index i = (Index) (k - ctx.occupation_offset[b]);
+        n[b](i) = std::min(maximum_occupation_((Index) b),
+                           std::max(Tbase(0),
+                                    n[b](i) + t * d_occ((Index) k)));
+      }
+      return n;
+    }
+
+    /// Line search along the curve C(t) = C_pseudo * exp(t K),
+    /// n(t) = n_ref + t * d_occ. trial_0_direction(sigma, d_occ)
+    /// returns the initial rotation direction at
+    /// sigma = initial_level_shift_, including whatever curvature
+    /// correction the caller applies (PR+ CG, L-BFGS, ARH), and writes
+    /// the occupation direction to d_occ if it has one. Leaving d_occ
+    /// empty, which is what every step but the joint ARH one does,
+    /// gives a search at fixed occupations.
     ///
     /// Two nested loops:
     ///   * Inner t-walk: at fixed (direction, K, t_max) start at
@@ -3586,7 +3766,10 @@ namespace OpenOrbitalOptimizer {
     ///   * Outer sigma fallback: if the t-walk exhausts trials, the
     ///     direction itself is suspect; raise sigma (geometric or
     ///     cubic-Hermite-in-sigma when first-trial slope data is on
-    ///     hand) and rebuild the preconditioned SD direction.
+    ///     hand) and rebuild the preconditioned SD direction. That
+    ///     direction is a rotation, so a fallback holds the
+    ///     occupations: the model that proposed moving them is the
+    ///     thing under suspicion.
     /// Returns true on success, writing the accepted direction to
     /// d_accepted and the step length taken along it to t_accepted.
     /// The two are reported separately because callers want different
@@ -3614,11 +3797,12 @@ namespace OpenOrbitalOptimizer {
 
       bool success = false;
       for(int sigma_trial = 0; sigma_trial < max_sigma_trials && !success; sigma_trial++) {
+        Vector<Tbase> d_occ;
         Vector<Tbase> d = first_sigma
-          ? trial_0_direction(sigma)
+          ? trial_0_direction(sigma, d_occ)
           : preconditioned_sd_direction_(ctx, sigma);
 
-        Tbase slope_0 = d.dot(ctx.g);  // dE/dt at t = 0
+        Tbase slope_0 = joint_slope_(ctx, d, ctx.g, d_occ, ctx.g_occ);
         if(!std::isfinite(slope_0) || slope_0 >= 0) {
           log_(5, "%s: direction at sigma = %e is not descent (g.d = %e).\n",
                  tag, (double) (sigma), (double) (slope_0));
@@ -3629,6 +3813,8 @@ namespace OpenOrbitalOptimizer {
 
         Orbitals<Torb> K = build_K_(d, ctx);
         Tbase t_max = t_max_for_K_(K);
+        if(d_occ.size() > 0)
+          t_max = std::min(t_max, occupation_step_limit_(ctx, d_occ));
         if(!std::isfinite(t_max) || t_max <= 0) {
           log_(5, "%s: t_max not well-defined at sigma = %e.\n", tag, (double) (sigma));
           sigma *= 2;
@@ -3641,7 +3827,8 @@ namespace OpenOrbitalOptimizer {
         const Tbase t_floor = t_max * t_floor_ratio;
         bool first_t_trial_in_sigma = true;
         for(int t_trial = 0; t_trial < max_t_trials && !success; t_trial++) {
-          auto trial_result = evaluate_rotation_at_(K, t, ctx);
+          const OrbitalOccupations<Tbase> n_t = occupations_at_(ctx, d_occ, t);
+          auto trial_result = evaluate_rotation_at_(K, t, ctx, n_t);
           Tbase E_t = trial_result.second.first;
           log_(5, "%s: trial sigma %e t %e, energy % .10f, change %e\n",
                  tag, (double) (sigma), (double) (t), (double) (E_t), (double) (E_t - ctx.E_ref));
@@ -3657,9 +3844,10 @@ namespace OpenOrbitalOptimizer {
           // Failed t-trial: gather slope at the trial point so we can
           // predict either where the slope flips sign (overshoot) or
           // where the interior minimum of a non-monotonic profile sits.
-          Vector<Tbase> g_t = directional_gradient_at_trial_(
-              ctx, trial_result.first.first, trial_result.second.second);
-          Tbase slope_t = g_t.dot(d);
+          Vector<Tbase> g_t, g_occ_t;
+          gradient_at_trial_(ctx, trial_result.first.first,
+                             trial_result.second.second, n_t, g_t, g_occ_t);
+          Tbase slope_t = joint_slope_(ctx, d, g_t, d_occ, g_occ_t);
 
           // Record info for the outer sigma cubic Hermite (only the
           // very first trial in this sigma-trial provides it).
@@ -3777,7 +3965,7 @@ namespace OpenOrbitalOptimizer {
       Tbase t_accepted = 0;
       bool success = sigma_line_search_(
           ctx,
-          [&](Tbase sigma) {
+          [&](Tbase sigma, Vector<Tbase> &) {
             Vector<Tbase> d = preconditioned_sd_direction_(ctx, sigma);
             apply_pr_plus_cg_mix_(d, ctx);
             return d;
@@ -3929,7 +4117,7 @@ namespace OpenOrbitalOptimizer {
       Tbase t_accepted = 0;
       bool success = sigma_line_search_(
           ctx,
-          [&](Tbase sigma) {
+          [&](Tbase sigma, Vector<Tbase> &) {
             Vector<Tbase> d = preconditioned_sd_direction_(ctx, sigma);
             apply_lbfgs_correction_(d, ctx);
             return d;
@@ -3951,6 +4139,42 @@ namespace OpenOrbitalOptimizer {
       }
       return success;
     }
+
+    /// Low-rank factors of the augmented Roothaan-Hall Hessian model,
+    ///     H = Omega + W Q^T + Q W^T - Q B Q^T,
+    /// in the joint rotation-occupation coordinates the curvature
+    /// pairs are built in.
+    struct ARHModel {
+      Matrix<Tbase> Q, W, B;
+      size_t n_rotation = 0;
+      size_t n_occupation = 0;
+      /// Metric factor the occupation coordinates carry, from
+      /// rescale_occupation_coordinates_: a displacement reads
+      /// occupation_scale * dn in these coordinates, so a gradient
+      /// handed to the solve is divided by it and a step that comes
+      /// back is divided by it again to return to electrons.
+      Tbase occupation_scale = 1;
+      /// Average curvature the rotation directions report, which after
+      /// the scaling is what the occupation ones carry too, and is
+      /// therefore the diagonal both halves add the level shift to.
+      /// Zero where the history reported none.
+      Tbase rotation_curvature = 0;
+
+      /// The rotation-rotation block of the model. Q and W are
+      /// restricted to their rotation rows and B -- built from the
+      /// full inner products, and so carrying what the occupation
+      /// coordinates contributed -- is left alone.
+      ARHModel rotation_block() const {
+        ARHModel block;
+        block.Q = Q.topRows((Index) n_rotation);
+        block.W = W.topRows((Index) n_rotation);
+        block.B = B;
+        block.n_rotation = n_rotation;
+        block.occupation_scale = occupation_scale;
+        block.rotation_curvature = rotation_curvature;
+        return block;
+      }
+    };
 
     /// Curvature pairs for the augmented Roothaan-Hall Hessian model,
     /// projected from the orbital history onto the current rotation
@@ -3977,8 +4201,12 @@ namespace OpenOrbitalOptimizer {
     /// search cover it.
     size_t arh_curvature_pairs_(const RotationStepContext & ctx,
                                 Matrix<Tbase> & S, Matrix<Tbase> & Y,
-                                size_t & skipped_incommensurate) const {
+                                size_t & skipped_incommensurate,
+                                Tbase & occupation_scale,
+                                Tbase & rotation_curvature) const {
       skipped_incommensurate = 0;
+      occupation_scale = 1;
+      rotation_curvature = 0;
       const size_t nhist = orbital_history_.size();
       const size_t nblocks = ctx.C_pseudo.size();
       if(nhist < 2) return 0;
@@ -3991,18 +4219,13 @@ namespace OpenOrbitalOptimizer {
         F0_mo[b] = ctx.C_pseudo[b].adjoint() * F0[b] * ctx.C_pseudo[b];
       }
 
-      // Coordinate layout: the rotation amplitudes the step works in,
-      // followed by one occupation coordinate per orbital. The extra
-      // coordinates exist only so that the curvature pairs are
-      // consistent; the step itself is taken in the rotation
-      // coordinates alone, arh_model_ truncating back to them.
-      std::vector<size_t> occupation_offset(nblocks, 0);
-      size_t n_occupation = 0;
-      for(size_t b = 0; b < nblocks; b++) {
-        occupation_offset[b] = n_occupation;
-        if(ctx.C_pseudo[b].cols() > 0)
-          n_occupation += (size_t) ctx.C_pseudo[b].cols();
-      }
+      // Coordinate layout: the rotation amplitudes, followed by one
+      // occupation coordinate per orbital, as
+      // build_rotation_step_context_ laid them out. Sharing the layout
+      // is what lets the joint step solve the model the pairs are
+      // built in without a second accounting of which coordinate is
+      // which.
+      const size_t n_occupation = ctx.n_occ;
       const size_t n_extended = ctx.n_par + n_occupation;
 
       const size_t max_pairs =
@@ -4106,7 +4329,7 @@ namespace OpenOrbitalOptimizer {
         for(size_t b = 0; b < nblocks; b++) {
           if(ctx.C_pseudo[b].cols() == 0) continue;
           for(Index k = 0; k < ctx.C_pseudo[b].cols(); k++) {
-            const size_t idx = ctx.n_par + occupation_offset[b] + (size_t) k;
+            const size_t idx = ctx.n_par + ctx.occupation_offset[b] + (size_t) k;
             s(idx) = std::real(dD[b](k, k));
             y(idx) = std::real(dF[b](k, k));
           }
@@ -4121,7 +4344,8 @@ namespace OpenOrbitalOptimizer {
       S.conservativeResize(n_extended, npairs);
       Y.conservativeResize(n_extended, npairs);
       if(npairs > 0 && n_occupation > 0)
-        rescale_occupation_coordinates_(ctx.n_par, S, Y);
+        rescale_occupation_coordinates_(ctx.n_par, S, Y, occupation_scale,
+                                        rotation_curvature);
       return npairs;
     }
 
@@ -4148,39 +4372,55 @@ namespace OpenOrbitalOptimizer {
     /// This is a change of coordinates rather than a reweighting: the
     /// displacement is multiplied and the paired gradient change
     /// divided, so the pairing s . y = tr(dD dF) -- the one quantity
-    /// that does not depend on the metric -- is untouched, and so is
-    /// the rotation-rotation block the step is taken in.
+    /// that does not depend on the metric -- is untouched.
+    ///
+    /// Both outputs are what the joint step needs to work in these
+    /// coordinates and report its answer in electrons.
+    /// ``scale_out`` is the factor applied, so that a gradient handed
+    /// to the solve is divided by it and a step that comes back is
+    /// divided by it again; ``rotation_curvature`` is c_rotation,
+    /// which after the scaling is what the occupation coordinates
+    /// carry as well and is therefore the diagonal the level shift is
+    /// added to on both halves.
     ///
     /// Falls back to leaving the coordinates alone when either block
     /// reports non-positive curvature, which is what a history that
     /// has not yet seen a minimum looks like.
     void rescale_occupation_coordinates_(size_t n_rotation,
                                          Matrix<Tbase> & S,
-                                         Matrix<Tbase> & Y) const {
-      Tbase scale = arh_occupation_scale_;
-      if(!(scale > 0)) {
-        const Index n_occ = S.rows() - (Index) n_rotation;
-        const auto S_rot = S.topRows((Index) n_rotation);
-        const auto Y_rot = Y.topRows((Index) n_rotation);
-        const auto S_occ = S.bottomRows(n_occ);
-        const auto Y_occ = Y.bottomRows(n_occ);
-        const Tbase norm_rot = S_rot.squaredNorm();
-        const Tbase norm_occ = S_occ.squaredNorm();
-        if(!(norm_rot > 0) || !(norm_occ > 0)) return;
+                                         Matrix<Tbase> & Y,
+                                         Tbase & scale_out,
+                                         Tbase & rotation_curvature) const {
+      scale_out = 1;
+      rotation_curvature = 0;
+      const Index n_occ = S.rows() - (Index) n_rotation;
+      const auto S_rot = S.topRows((Index) n_rotation);
+      const auto Y_rot = Y.topRows((Index) n_rotation);
+      const Tbase norm_rot = S_rot.squaredNorm();
+      if(norm_rot > 0) {
         const Tbase curvature_rot =
           S_rot.cwiseProduct(Y_rot).sum() / norm_rot;
+        if(curvature_rot > 0) rotation_curvature = curvature_rot;
+      }
+
+      Tbase scale = arh_occupation_scale_;
+      if(!(scale > 0)) {
+        const auto S_occ = S.bottomRows(n_occ);
+        const auto Y_occ = Y.bottomRows(n_occ);
+        const Tbase norm_occ = S_occ.squaredNorm();
+        if(!(rotation_curvature > 0) || !(norm_occ > 0)) return;
         const Tbase curvature_occ =
           S_occ.cwiseProduct(Y_occ).sum() / norm_occ;
-        if(!(curvature_rot > 0) || !(curvature_occ > 0)) return;
-        scale = std::sqrt(curvature_occ / curvature_rot);
+        if(!(curvature_occ > 0)) return;
+        scale = std::sqrt(curvature_occ / rotation_curvature);
         if(!std::isfinite((double) scale) || !(scale > 0)) return;
         log_(5, "ARH: occupation coordinates scaled by %e"
                 " (curvature %e against %e).\n", (double) scale,
-             (double) curvature_occ, (double) curvature_rot);
+             (double) curvature_occ, (double) rotation_curvature);
       }
-      const Index n_occ = S.rows() - (Index) n_rotation;
       S.bottomRows(n_occ) *= scale;
       Y.bottomRows(n_occ) /= scale;
+      scale_out = scale;
     }
 
     /// Low-rank factors of the ARH Hessian model. Returns false when
@@ -4218,11 +4458,12 @@ namespace OpenOrbitalOptimizer {
     /// history spans primarily those directions -- so the subspace
     /// where the model is made exact is the subspace where the
     /// diagonal is worst.
-    bool arh_model_(const RotationStepContext & ctx, Matrix<Tbase> & Q,
-                    Matrix<Tbase> & W, Matrix<Tbase> & B) const {
+    bool arh_model_(const RotationStepContext & ctx, ARHModel & model) const {
       Matrix<Tbase> S, Y;
       size_t skipped = 0;
-      const size_t npairs = arh_curvature_pairs_(ctx, S, Y, skipped);
+      const size_t npairs =
+        arh_curvature_pairs_(ctx, S, Y, skipped, model.occupation_scale,
+                             model.rotation_curvature);
       if(skipped > 0)
         log_(5, "ARH: %zu history entries skipped, their orbital counts"
                 " differing from the current ones.\n", skipped);
@@ -4265,62 +4506,401 @@ namespace OpenOrbitalOptimizer {
       // so that a history entry whose occupations moved contributes
       // the curvature it actually carries rather than a rotation-only
       // caricature of it.
-      const Matrix<Tbase> Q_extended = S * scale;
-      const Matrix<Tbase> W_extended = Y * scale;
-      const Matrix<Tbase> QtW = Q_extended.transpose() * W_extended;
-      B = Tbase(0.5) * (QtW + QtW.transpose());
-
-      // The step is taken in the rotation coordinates, so what it
-      // needs is the rotation-rotation block of the model. For
-      // H = Omega + W Q^T + Q W^T - Q B Q^T that block is obtained by
-      // restricting Q and W to their rotation rows and leaving B --
-      // built from the full inner products, and therefore carrying
-      // what the occupation coordinates contributed -- alone.
-      Q = Q_extended.topRows(ctx.n_par);
-      W = W_extended.topRows(ctx.n_par);
+      model.Q = S * scale;
+      model.W = Y * scale;
+      const Matrix<Tbase> QtW = model.Q.transpose() * model.W;
+      model.B = Tbase(0.5) * (QtW + QtW.transpose());
+      model.n_rotation = ctx.n_par;
+      model.n_occupation = ctx.n_occ;
 
       log_(5, "ARH: %zu curvature pairs, %i subspace directions retained.\n",
            npairs, (int) nkeep);
       return true;
     }
 
-    /// ARH search direction at level shift sigma: the solution of
-    ///     (H_ARH + sigma) d = -g
-    /// by the Woodbury identity. Writing the correction as U M U^T
-    /// with U = [Q W] and M = [[-B, I], [I, 0]] costs one diagonal
-    /// division, two n_par x 2k products and one 2k x 2k solve -- no
-    /// Krylov loop, and nothing remotely the size of a Fock build.
-    /// M^{-1} = [[0, I], [I, B]] is written down rather than computed,
-    /// so B is never inverted and may be singular.
+    /// Solve (H + sigma) x = rhs for the model, by the Woodbury
+    /// identity. Writing the correction as U M U^T with U = [Q W] and
+    /// M = [[-B, I], [I, 0]] costs one diagonal division, two
+    /// n x 2k products and one 2k x 2k solve -- no Krylov loop, and
+    /// nothing remotely the size of a Fock build. M^{-1} = [[0, I],
+    /// [I, B]] is written down rather than computed, so B is never
+    /// inverted and may be singular.
+    ///
+    /// ``diagonal_inverse`` holds 1/(sigma + Omega) for every
+    /// coordinate the solve may move and zero for every coordinate
+    /// pinned out of it. A zero entry is not a large level shift but
+    /// an exact removal: it zeroes that row of both the right-hand
+    /// side and D^-1 U, so the component comes back as zero and
+    /// contributes nothing to the small system either. That is how the
+    /// active set of the occupation bounds is imposed without
+    /// rebuilding the model.
+    bool solve_arh_model_(const ARHModel & model,
+                          const Vector<Tbase> & diagonal_inverse,
+                          const Vector<Tbase> & rhs,
+                          Vector<Tbase> & solution) const {
+      const Vector<Tbase> Dirhs = diagonal_inverse.cwiseProduct(rhs);
+      const Index nk = model.Q.cols();
+      if(nk == 0) { solution = Dirhs; return true; }
+
+      Matrix<Tbase> U(diagonal_inverse.size(), 2 * nk);
+      U.leftCols(nk) = model.Q;
+      U.rightCols(nk) = model.W;
+      Matrix<Tbase> Minv = Matrix<Tbase>::Zero(2 * nk, 2 * nk);
+      Minv.topRightCorner(nk, nk).setIdentity();
+      Minv.bottomLeftCorner(nk, nk).setIdentity();
+      Minv.bottomRightCorner(nk, nk) = model.B;
+
+      const Matrix<Tbase> DiU = diagonal_inverse.asDiagonal() * U;
+      const Matrix<Tbase> core = Minv + U.transpose() * DiU;
+      const Vector<Tbase> w = core.partialPivLu().solve(U.transpose() * Dirhs);
+      if(!w.allFinite()) return false;
+      solution = Dirhs - DiU * w;
+      return solution.allFinite();
+    }
+
+    /// Level-shifted Roothaan-Hall diagonal, inverted, on the rotation
+    /// coordinates.
+    Vector<Tbase> rotation_diagonal_inverse_(const RotationStepContext & ctx,
+                                             Tbase sigma) const {
+      Vector<Tbase> Dinv(ctx.n_par);
+      for(size_t k = 0; k < ctx.n_par; k++)
+        Dinv(k) = Tbase(1) / (sigma + std::max(Tbase(0), ctx.h(k)));
+      return Dinv;
+    }
+
+    /// ARH search direction on the rotations at level shift sigma:
+    /// the solution of (H_ARH + sigma) d = -g over the rotation block
+    /// of the model.
     ///
     /// With an empty subspace this reduces exactly to
     /// preconditioned_sd_direction_, which is what makes the model a
     /// refinement of the existing step rather than a replacement.
     Vector<Tbase> arh_direction_(const RotationStepContext & ctx, Tbase sigma,
-                                 const Matrix<Tbase> & Q,
-                                 const Matrix<Tbase> & W,
-                                 const Matrix<Tbase> & B) const {
-      Vector<Tbase> Dinv(ctx.n_par);
-      for(size_t k = 0; k < ctx.n_par; k++)
-        Dinv(k) = Tbase(1) / (sigma + std::max(Tbase(0), ctx.h(k)));
-      const Vector<Tbase> Dig = Dinv.cwiseProduct(ctx.g);
+                                 const ARHModel & model) const {
+      const Vector<Tbase> Dinv = rotation_diagonal_inverse_(ctx, sigma);
+      Vector<Tbase> step;
+      if(!solve_arh_model_(model.rotation_block(), Dinv, ctx.g, step))
+        return -Dinv.cwiseProduct(ctx.g);
+      return -step;
+    }
 
-      const Index nk = Q.cols();
-      if(nk == 0) return -Dig;
+    /// Which bound, if any, an occupation coordinate is held at.
+    enum class OccupationBound { free, lower, upper };
 
-      Matrix<Tbase> U(ctx.n_par, 2 * nk);
-      U.leftCols(nk) = Q;
-      U.rightCols(nk) = W;
-      Matrix<Tbase> Minv = Matrix<Tbase>::Zero(2 * nk, 2 * nk);
-      Minv.topRightCorner(nk, nk).setIdentity();
-      Minv.bottomLeftCorner(nk, nk).setIdentity();
-      Minv.bottomRightCorner(nk, nk) = B;
+    /// The bound the KKT inequalities already hold each occupation
+    /// coordinate at, one entry per coordinate of the joint layout.
+    ///
+    /// A bound is a legitimate place for an occupation to sit: an
+    /// empty orbital above the chemical potential and a full orbital
+    /// below it are both stationary, the only feasible direction out
+    /// of the bound being uphill. Starting the solve from that set
+    /// rather than from every coordinate free is not an optimisation
+    /// but a correctness requirement: solved with the core orbitals
+    /// free, the multiplier of the particle-number constraint comes
+    /// out near the mean orbital energy of the whole block -- tens of
+    /// hartrees below the Fermi level on a transition metal -- and
+    /// valence orbitals that belong in the free set are pinned on the
+    /// strength of it. Pinning only ever adds, so such a mistake would
+    /// never be undone.
+    ///
+    /// mu is read off the occupations exactly as fermi_level_error
+    /// reads it: the mean orbital energy over the fractionally
+    /// occupied orbitals of the particle type, or, where there are
+    /// none, the midpoint of the gap between the highest full and the
+    /// lowest empty orbital, any value in which satisfies the
+    /// inequalities.
+    std::vector<OccupationBound>
+    initial_occupation_active_set_(const RotationStepContext & ctx) const {
+      const size_t n_types =
+        (size_t) number_of_blocks_per_particle_type_.size();
+      const Tbase tol = occupation_change_threshold_;
 
-      const Matrix<Tbase> DiU = Dinv.asDiagonal() * U;
-      const Matrix<Tbase> core = Minv + U.transpose() * DiU;
-      const Vector<Tbase> w = core.partialPivLu().solve(U.transpose() * Dig);
-      if(!w.allFinite()) return -Dig;
-      return -Dig + DiU * w;
+      // Chemical potential of every particle type.
+      std::vector<Tbase> mu(n_types, 0);
+      std::vector<size_t> n_fractional(n_types, 0);
+      std::vector<Tbase> highest_full(n_types,
+                                      -std::numeric_limits<Tbase>::max());
+      std::vector<Tbase> lowest_empty(n_types,
+                                      std::numeric_limits<Tbase>::max());
+      for(size_t k = 0; k < ctx.n_occ; k++) {
+        const size_t b = ctx.occupation_block[k];
+        const size_t p = particle_type_of_block_(b);
+        const Tbase n_k = ctx.n_ref[b]((Index) (k - ctx.occupation_offset[b]));
+        const Tbase eps_k = ctx.g_occ((Index) k);
+        if(n_k <= tol) {
+          lowest_empty[p] = std::min(lowest_empty[p], eps_k);
+        } else if(n_k >= maximum_occupation_((Index) b) - tol) {
+          highest_full[p] = std::max(highest_full[p], eps_k);
+        } else {
+          mu[p] += eps_k;
+          n_fractional[p]++;
+        }
+      }
+      for(size_t p = 0; p < n_types; p++) {
+        if(n_fractional[p] > 0) {
+          mu[p] /= Tbase(n_fractional[p]);
+        } else if(highest_full[p] > -std::numeric_limits<Tbase>::max()
+                  && lowest_empty[p] < std::numeric_limits<Tbase>::max()) {
+          mu[p] = (Tbase(1) / Tbase(2)) * (highest_full[p] + lowest_empty[p]);
+        } else if(highest_full[p] > -std::numeric_limits<Tbase>::max()) {
+          mu[p] = highest_full[p];
+        } else {
+          mu[p] = lowest_empty[p];
+        }
+      }
+
+      std::vector<OccupationBound> held(ctx.n_occ, OccupationBound::free);
+      for(size_t k = 0; k < ctx.n_occ; k++) {
+        const size_t b = ctx.occupation_block[k];
+        const size_t p = particle_type_of_block_(b);
+        const Tbase n_k = ctx.n_ref[b]((Index) (k - ctx.occupation_offset[b]));
+        const Tbase reduced = ctx.g_occ((Index) k) - mu[p];
+        if(n_k <= tol && reduced >= 0)
+          held[k] = OccupationBound::lower;
+        else if(n_k >= maximum_occupation_((Index) b) - tol && reduced <= 0)
+          held[k] = OccupationBound::upper;
+      }
+      return held;
+    }
+
+    /// Joint rotation-occupation ARH direction at level shift sigma.
+    ///
+    /// Solves the same level-shifted model the rotation-only step
+    /// solves, in the coordinates the curvature pairs were built in,
+    /// under the two constraints the occupations carry: the particle
+    /// number of every type is fixed, and every occupation stays
+    /// within [0, n_max] of its block.
+    ///
+    /// The equality is imposed exactly rather than penalised. Writing
+    /// a_p for the indicator of the free occupation coordinates of
+    /// particle type p, the constrained step is
+    ///     d   = d_0 - sum_p lambda_p z_p,
+    ///     d_0 = -(H+sigma)^-1 g,   z_p = (H+sigma)^-1 a_p,
+    /// with lambda solving (a_p . z_q) lambda_q = a_p . d_0. That is
+    /// one extra Woodbury solve per particle type and one P x P solve,
+    /// P being one for a spin-restricted calculation and two for an
+    /// unrestricted one. lambda_p is the chemical potential of that
+    /// particle type, which is why ctx.g_occ need not have it
+    /// subtracted: the constraint produces it.
+    ///
+    /// The bounds enter as an active set. A coordinate sitting at a
+    /// bound whose step would leave the box is pinned out of the solve
+    /// and the solve repeated; pinning only ever adds, so the loop
+    /// ends. A coordinate that stays pinned is exactly the KKT
+    /// inequality eps_k >= mu (empty) or eps_k <= mu (full) holding,
+    /// so the active set the step settles on is an answer to which
+    /// orbitals are fractionally occupied rather than an assumption
+    /// imposed on it -- and with symmetry used by the caller, that
+    /// answer is the one orbital per block at the Fermi level.
+    ///
+    /// Because the rotation rows of z_p are not zero, the constraint
+    /// moves the rotations too. That is the coupling block of the
+    /// Hessian acting, and it is the whole point: holding the
+    /// occupations fixed through the rotation step leaves the solver
+    /// alternating between two blocks that are not independent.
+    bool arh_joint_direction_at_shift_(const RotationStepContext & ctx,
+                                       Tbase sigma, Tbase sigma_occupation,
+                                       const ARHModel & model,
+                                       Vector<Tbase> & d_rot,
+                                       Vector<Tbase> & d_occ) const {
+      const Index n_ext = (Index) (ctx.n_par + ctx.n_occ);
+      const Tbase alpha = model.occupation_scale;
+      if(ctx.n_occ == 0 || !(alpha > 0)) return false;
+
+      // Extended gradient, the occupation half expressed in the
+      // model's coordinates.
+      Vector<Tbase> g_ext(n_ext);
+      g_ext.head((Index) ctx.n_par) = ctx.g;
+      g_ext.tail((Index) ctx.n_occ) = ctx.g_occ / alpha;
+
+      // Extended level-shifted diagonal. After the metric has
+      // equalised the two blocks' average curvature, the occupation
+      // coordinates carry the rotation block's -- which is what makes
+      // one level shift mean the same thing on both halves. Where the
+      // history reported no curvature the level shift stands alone,
+      // which is the occupation analogue of a steepest-descent step.
+      Vector<Tbase> Dinv(n_ext);
+      Dinv.head((Index) ctx.n_par) = rotation_diagonal_inverse_(ctx, sigma);
+      Dinv.tail((Index) ctx.n_occ)
+        .setConstant(Tbase(1)
+                     / (sigma_occupation
+                        + std::max(Tbase(0), model.rotation_curvature)));
+
+      const Index n_types =
+        (Index) number_of_blocks_per_particle_type_.size();
+
+      // Active set. A fixed coordinate does not merely stop moving: it
+      // is placed *on* the bound it is being driven to and held there,
+      // ``fixed_step`` recording the displacement that takes it the
+      // rest of the way. Holding it at its current value instead is
+      // what makes the step unusable on an optimal-damping iterate,
+      // whose mixing leaves a core orbital at 0.998 of its capacity
+      // with an orbital energy twenty hartrees below the chemical
+      // potential: as a free coordinate it asks for twenty electrons
+      // it has room for a thousandth of, and the bound it runs into
+      // cuts the step length -- and with it the rotations, which
+      // travel along the same t -- by four orders of magnitude.
+      // Snapped to its bound it costs one thousandth of an electron
+      // and leaves the conditioning to the Fermi-level cluster, which
+      // is the only place a fractional occupation belongs.
+      std::vector<bool> fixed(ctx.n_occ, false);
+      Vector<Tbase> fixed_step = Vector<Tbase>::Zero((Index) ctx.n_occ);
+      auto fix_at_bound = [&](size_t k, bool upper) {
+        const size_t b = ctx.occupation_block[k];
+        const Index i = (Index) (k - ctx.occupation_offset[b]);
+        fixed[k] = true;
+        fixed_step((Index) k) = upper
+          ? maximum_occupation_((Index) b) - ctx.n_ref[b](i)
+          : -ctx.n_ref[b](i);
+        Dinv((Index) ctx.n_par + (Index) k) = 0;
+      };
+      const std::vector<OccupationBound> initial =
+        initial_occupation_active_set_(ctx);
+      for(size_t k = 0; k < ctx.n_occ; k++)
+        if(initial[k] != OccupationBound::free)
+          fix_at_bound(k, initial[k] == OccupationBound::upper);
+
+      for(size_t pass = 0; pass <= ctx.n_occ; pass++) {
+        // Constraint indicators over the coordinates still free, and
+        // the particle number the fixed ones have already spent.
+        Matrix<Tbase> A = Matrix<Tbase>::Zero(n_ext, n_types);
+        Vector<Tbase> spent = Vector<Tbase>::Zero(n_types);
+        for(size_t k = 0; k < ctx.n_occ; k++) {
+          const Index q =
+            (Index) particle_type_of_block_(ctx.occupation_block[k]);
+          if(fixed[k])
+            spent(q) += fixed_step((Index) k);
+          else
+            A((Index) ctx.n_par + (Index) k, q) = 1;
+        }
+
+        Vector<Tbase> d;
+        if(!solve_arh_model_(model, Dinv, g_ext, d)) return false;
+        d = -d;
+
+        // Impose the particle-number constraints on the free
+        // coordinates. A type whose coordinates are all fixed
+        // contributes no constraint, there being nothing left of it to
+        // conserve -- and if what the fixed ones spent does not then
+        // balance, the model has nothing feasible to offer.
+        std::vector<Index> live;
+        Matrix<Tbase> Z(n_ext, n_types);
+        for(Index q = 0; q < n_types; q++) {
+          if(!(A.col(q).squaredNorm() > 0)) {
+            if(std::abs(spent(q)) > occupation_change_threshold_) return false;
+            continue;
+          }
+          Vector<Tbase> z;
+          if(!solve_arh_model_(model, Dinv, A.col(q), z)) return false;
+          Z.col(q) = z;
+          live.push_back(q);
+        }
+        if(!live.empty()) {
+          const Index nlive = (Index) live.size();
+          Matrix<Tbase> M(nlive, nlive);
+          Vector<Tbase> r(nlive);
+          for(Index i = 0; i < nlive; i++) {
+            // The free coordinates have to absorb what the fixed ones
+            // spent, so the constraint is inhomogeneous.
+            r(i) = A.col(live[i]).dot(d) + spent(live[i]) * alpha;
+            for(Index j = 0; j < nlive; j++)
+              M(i, j) = A.col(live[i]).dot(Z.col(live[j]));
+          }
+          const Vector<Tbase> lambda = M.partialPivLu().solve(r);
+          if(!lambda.allFinite()) return false;
+          for(Index i = 0; i < nlive; i++)
+            d -= lambda(i) * Z.col(live[i]);
+        }
+        if(!d.allFinite()) return false;
+
+        // Back to electrons, the fixed coordinates taking the step
+        // that puts them on their bound.
+        d_rot = d.head((Index) ctx.n_par);
+        d_occ = d.tail((Index) ctx.n_occ) / alpha;
+        for(size_t k = 0; k < ctx.n_occ; k++)
+          if(fixed[k]) d_occ((Index) k) = fixed_step((Index) k);
+
+        bool added = false;
+        for(size_t k = 0; k < ctx.n_occ; k++) {
+          if(fixed[k]) continue;
+          const size_t b = ctx.occupation_block[k];
+          const Index i = (Index) (k - ctx.occupation_offset[b]);
+          const Tbase reached = ctx.n_ref[b](i) + d_occ((Index) k);
+          if(reached < 0) { fix_at_bound(k, false); added = true; }
+          else if(reached > maximum_occupation_((Index) b)) {
+            fix_at_bound(k, true);
+            added = true;
+          }
+        }
+        if(!added) {
+          if(verbosity_ >= 15) {
+            log_(15, "ARH joint: free occupation coordinates at"
+                     " occupation shift %e:\n", (double) sigma_occupation);
+            for(size_t k = 0; k < ctx.n_occ; k++) {
+              const size_t b = ctx.occupation_block[k];
+              const Index i = (Index) (k - ctx.occupation_offset[b]);
+              if(fixed[k] && !(std::abs(d_occ((Index) k)) > 0)) continue;
+              log_(15, "  block %zu orbital %i%s: n %e eps %e step %e\n",
+                   b, (int) i, fixed[k] ? " (on its bound)" : "",
+                   (double) ctx.n_ref[b](i),
+                   (double) ctx.g_occ((Index) k),
+                   (double) d_occ((Index) k));
+            }
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /// Joint rotation-occupation ARH direction, with the occupation
+    /// block's level shift raised until the step it asks for fits the
+    /// trust radius.
+    ///
+    /// Raising the shift rather than scaling the step keeps the
+    /// direction a solution of a level-shifted model: the occupation
+    /// curvature is simply trusted less, and as the shift grows the
+    /// direction tends continuously to the rotation-only one, whose
+    /// occupation rows are removed from the solve altogether. Scaling
+    /// a finished step instead leaves a direction that solves nothing,
+    /// and measured on open-shell oxygen it was an ascent direction
+    /// often enough to be rejected on the spot.
+    ///
+    /// The first shift is predicted rather than searched for: the
+    /// diagonal part of the step goes as 1/(sigma + Omega), so the
+    /// shift that shrinks it by a given factor follows directly, and
+    /// the doublings are only there for the low-rank part the
+    /// prediction does not describe.
+    bool arh_joint_direction_(const RotationStepContext & ctx, Tbase sigma,
+                              const ARHModel & model,
+                              Vector<Tbase> & d_rot,
+                              Vector<Tbase> & d_occ) const {
+      const Tbase radius = arh_occupation_trust_radius_;
+      const Tbase omega = std::max(Tbase(0), model.rotation_curvature);
+      const int max_trims = 12;
+      Tbase sigma_occupation = sigma;
+      for(int trim = 0; trim < max_trims; trim++) {
+        if(!arh_joint_direction_at_shift_(ctx, sigma, sigma_occupation, model,
+                                          d_rot, d_occ))
+          return false;
+        const Tbase longest = d_occ.cwiseAbs().maxCoeff();
+        if(!(longest > radius)) {
+          if(trim > 0)
+            log_(5, "ARH: occupation level shift %e brings the step to %e"
+                    " electrons, inside the %e trust radius.\n",
+                 (double) sigma_occupation, (double) longest,
+                 (double) radius);
+          return true;
+        }
+        const Tbase predicted =
+          (sigma_occupation + omega) * (longest / radius) - omega;
+        sigma_occupation = std::max(predicted, 2 * sigma_occupation);
+        if(!std::isfinite((double) sigma_occupation)) return false;
+      }
+      log_(5, "ARH: occupation step still above the %e trust radius after"
+              " %i level-shift raises; holding the occupations.\n",
+           (double) radius, max_trims);
+      return false;
     }
 
     /// Replace the preconditioned-SD direction d with the ARH
@@ -4332,23 +4912,91 @@ namespace OpenOrbitalOptimizer {
     /// guard costs two dot products.
     void apply_arh_correction_(Vector<Tbase> & d,
                                const RotationStepContext & ctx, Tbase sigma,
-                               const Matrix<Tbase> & Q,
-                               const Matrix<Tbase> & W,
-                               const Matrix<Tbase> & B) const {
-      const Vector<Tbase> d_arh = arh_direction_(ctx, sigma, Q, W, B);
+                               const ARHModel & model) const {
+      const Vector<Tbase> d_arh = arh_direction_(ctx, sigma, model);
       const Tbase norm_arh = d_arh.norm();
       if(!(norm_arh > 0) || !d_arh.allFinite()) return;
       const Tbase rate_arh = -d_arh.dot(ctx.g) / norm_arh;
       const Tbase rate_sd = -d.dot(ctx.g) / d.norm();
       if(rate_arh >= lbfgs_minimum_relative_descent_ * rate_sd) {
         log_(5, "ARH: applying augmented Roothaan-Hall direction"
-                " (subspace dimension %i).\n", (int) Q.cols());
+                " (subspace dimension %i).\n", (int) model.Q.cols());
         d = d_arh;
       } else if(verbosity_ >= 5) {
         log_(5, "ARH: direction descends at %e per unit length against"
                 " preconditioned SD's %e, keeping SD.\n",
              (double) (rate_arh), (double) (rate_sd));
       }
+    }
+
+    /// Replace the rotation-only ARH direction with the joint
+    /// rotation-occupation one when the latter descends at least as
+    /// steeply per unit step length.
+    ///
+    /// Same guard and same threshold as apply_arh_correction_, and for
+    /// the same reason: the occupation half of the model is fitted
+    /// from the same history and can be as wrong, so a direction that
+    /// descends less steeply than the one already in hand is not worth
+    /// the occupations moving for.
+    ///
+    /// Length is measured in the model's own metric, with the
+    /// occupation displacement scaled, so that the two rates compare
+    /// radians against radians rather than radians against electrons.
+    /// That metric is the one rescale_occupation_coordinates_ fitted
+    /// to give both blocks the same average curvature, which is what
+    /// makes the comparison mean anything.
+    void apply_joint_occupation_correction_(Vector<Tbase> & d,
+                                            Vector<Tbase> & d_occ,
+                                            const RotationStepContext & ctx,
+                                            Tbase sigma,
+                                            const ARHModel & model) const {
+      Vector<Tbase> d_joint, occ;
+      if(!arh_joint_direction_(ctx, sigma, model, d_joint, occ)) {
+        log_(5, "ARH: no joint rotation-occupation direction at sigma = %e;"
+                " holding the occupations.\n", (double) sigma);
+        return;
+      }
+      // An occupation move the solver would not call a move is not
+      // worth a Fock build. Every coordinate on the bound it belongs
+      // on is the KKT inequalities all holding, and what is left is
+      // the round-off between an occupation and its capacity -- 1e-15
+      // electrons, measured on open-shell oxygen, which cost a Fock
+      // build apiece for nothing. Below the threshold at which the
+      // solver treats two occupations as equal there is nothing to
+      // gain, and the joint solve has in any case already reduced to
+      // the rotation-only one, a zero diagonal entry removing those
+      // coordinates rather than merely damping them.
+      const Tbase longest = occ.cwiseAbs().maxCoeff();
+      if(!(longest > occupation_change_threshold_)) {
+        log_(10, "ARH: largest occupation move %e is below the %e at which"
+                 " occupations count as equal; holding them.\n",
+             (double) longest, (double) occupation_change_threshold_.get());
+        return;
+      }
+      const Tbase alpha = model.occupation_scale;
+      const Tbase length =
+        std::sqrt(d_joint.squaredNorm() + alpha * alpha * occ.squaredNorm());
+      const Tbase norm_d = d.norm();
+      if(!(length > 0) || !(norm_d > 0)) return;
+      const Tbase rate_joint =
+        -joint_slope_(ctx, d_joint, ctx.g, occ, ctx.g_occ) / length;
+      const Tbase rate_rotation = -d.dot(ctx.g) / norm_d;
+      log_(15, "ARH joint: slope %e on the rotations, %e on the"
+               " occupations, joint length %e.\n",
+           (double) d_joint.dot(ctx.g), (double) occ.dot(ctx.g_occ),
+           (double) length);
+      if(!(rate_joint >= lbfgs_minimum_relative_descent_ * rate_rotation)) {
+        log_(5, "ARH: joint direction descends at %e per unit length against"
+                " the rotation-only %e, holding the occupations.\n",
+             (double) rate_joint, (double) rate_rotation);
+        return;
+      }
+      log_(5, "ARH: joint step carries %e electrons, the largest single"
+              " occupation moving by %e.\n",
+           (double) occ.template lpNorm<1>(),
+           (double) occ.cwiseAbs().maxCoeff());
+      d = d_joint;
+      d_occ = occ;
     }
 
     /// Augmented Roothaan-Hall step on the orbital rotations. Sibling
@@ -4366,20 +5014,30 @@ namespace OpenOrbitalOptimizer {
       RotationStepContext ctx;
       if(!build_rotation_step_context_(ctx)) return false;
 
-      Matrix<Tbase> Q, W, B;
-      const bool have_model = arh_model_(ctx, Q, W, B);
+      ARHModel model;
+      const bool have_model = arh_model_(ctx, model);
       if(!have_model)
         log_(5, "ARH: no usable curvature in the history, taking a"
                 " preconditioned steepest-descent step.\n");
+      // The occupations move with the rotations only where there is a
+      // model to move them by: without one there is no curvature at
+      // all on a coordinate that carries no first-order information
+      // either, and the step would be arbitrary.
+      const bool joint = have_model && arh_joint_occupations_ != 0
+        && !frozen_occupations_ && ctx.n_occ > 0;
+      const ARHModel rotation_only =
+        have_model ? model.rotation_block() : ARHModel();
 
       Vector<Tbase> d_accepted;
       Tbase t_accepted = 0;
       return sigma_line_search_(
           ctx,
-          [&](Tbase sigma) {
+          [&](Tbase sigma, Vector<Tbase> & d_occ) {
             Vector<Tbase> d = preconditioned_sd_direction_(ctx, sigma);
             if(have_model)
-              apply_arh_correction_(d, ctx, sigma, Q, W, B);
+              apply_arh_correction_(d, ctx, sigma, rotation_only);
+            if(joint)
+              apply_joint_occupation_correction_(d, d_occ, ctx, sigma, model);
             return d;
           },
           d_accepted,
@@ -4420,12 +5078,14 @@ namespace OpenOrbitalOptimizer {
         return Tbase(0);
       if(ctx.n_par == 0) return Tbase(0);
 
-      Matrix<Tbase> Q, W, B;
+      ARHModel model;
       Vector<Tbase> step;
-      const bool have_model = arh_model_(ctx, Q, W, B);
+      const bool have_model = arh_model_(ctx, model);
       if(!have_model
-         || !solve_rotation_block_(ctx, initial_level_shift_, Q, W, B,
-                                   ctx.g, step)) {
+         || !solve_arh_model_(model.rotation_block(),
+                              rotation_diagonal_inverse_(ctx,
+                                                         initial_level_shift_),
+                              ctx.g, step)) {
         // Diagonal fallback: the Roothaan-Hall denominators alone.
         step.resize(ctx.n_par);
         for(size_t k = 0; k < ctx.n_par; k++)
@@ -4463,40 +5123,6 @@ namespace OpenOrbitalOptimizer {
       const Tbase lowering = Tbase(-0.5) * ctx.g.dot(step);
       if(!std::isfinite((double) lowering) || lowering > 0) return Tbase(0);
       return lowering;
-    }
-
-    /// Solve (H_kappa,kappa + sigma) x = rhs for the ARH model's
-    /// rotation block, by the same Woodbury identity arh_direction_
-    /// uses. Factored out because the Schur complement needs the
-    /// solve applied to something other than the gradient.
-    bool solve_rotation_block_(const RotationStepContext & ctx, Tbase sigma,
-                               const Matrix<Tbase> & Q,
-                               const Matrix<Tbase> & W,
-                               const Matrix<Tbase> & B,
-                               const Vector<Tbase> & rhs,
-                               Vector<Tbase> & solution) const {
-      Vector<Tbase> Dinv(ctx.n_par);
-      for(size_t k = 0; k < ctx.n_par; k++)
-        Dinv(k) = Tbase(1) / (sigma + std::max(Tbase(0), ctx.h(k)));
-      const Vector<Tbase> Dirhs = Dinv.cwiseProduct(rhs);
-
-      const Index nk = Q.cols();
-      if(nk == 0) { solution = Dirhs; return true; }
-
-      Matrix<Tbase> U(ctx.n_par, 2 * nk);
-      U.leftCols(nk) = Q;
-      U.rightCols(nk) = W;
-      Matrix<Tbase> Minv = Matrix<Tbase>::Zero(2 * nk, 2 * nk);
-      Minv.topRightCorner(nk, nk).setIdentity();
-      Minv.bottomLeftCorner(nk, nk).setIdentity();
-      Minv.bottomRightCorner(nk, nk) = B;
-
-      const Matrix<Tbase> DiU = Dinv.asDiagonal() * U;
-      const Matrix<Tbase> core = Minv + U.transpose() * DiU;
-      const Vector<Tbase> w = core.partialPivLu().solve(U.transpose() * Dirhs);
-      if(!w.allFinite()) return false;
-      solution = Dirhs - DiU * w;
-      return solution.allFinite();
     }
 
     /// Take the orbital-rotation step the method mix selected.
