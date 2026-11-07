@@ -3210,6 +3210,19 @@ namespace OpenOrbitalOptimizer {
         // and only a single Fock build runs per ODA step. Rejected
         // candidates still feed the orbital history via add_entry, so
         // subsequent DIIS iterations see the trial densities.
+        //
+        // The loop is deliberately not gated on the model's own
+        // predicted gain, the way the refit below is. It looks like it
+        // should be: near convergence a polytope whose quadratic model
+        // predicts 3.5e-10 Eh can run eight candidates over six
+        // backoff scales and spend 67 Fock builds to arrive back at
+        // the energy it started from. But those builds are not idle --
+        // the rejected trials enter the history, and the extrapolation
+        // then has iterates to work with that it otherwise would not.
+        // Gating the loop on a predicted gain below
+        // minimum_useful_descent_() saved a third of the builds on La+
+        // M=3 and cost convergence on Fe M=5 and La+ M=3 outright, on
+        // both core types.
         bool succ = false;
         Vector<Tbase> x_accepted;
         std::pair<DensityMatrix<Torb,Tbase>,FockBuilderReturn<Torb,Tbase>> eval_accepted;
@@ -8148,6 +8161,26 @@ namespace OpenOrbitalOptimizer {
                 clear_diis_caches_();
                 add_entry(density, fock);
                 diis_error = best_gradient;
+
+                // The entry taken may be a converged one. Reporting
+                // failure then would throw away the answer the solver
+                // is standing on: measured on a spin-unrestricted La+
+                // cation with PBE, the rescue adopted an entry at
+                // 4.9e-7 against a threshold of 1e-6 and then
+                // announced that every method had failed. Hand it back
+                // to the loop so the convergence path judges it on the
+                // same terms as any other iterate -- cleanup,
+                // occupations and all.
+                //
+                // This terminates. The rescue leaves a one-entry
+                // history, so it cannot fire again until the steps
+                // have added entries, and adding one means they made
+                // progress; if they fail again from here there is
+                // nothing better to find and the report below stands.
+                if(converged()) {
+                  log_(1, "The entry taken is converged; resuming.\n");
+                  continue;
+                }
               }
             }
             log_(1, "All allowed SCF methods failed at iteration %i; stopping with DIIS error vector %s norm %e.\n",
