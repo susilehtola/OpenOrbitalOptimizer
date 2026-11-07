@@ -3710,36 +3710,14 @@ namespace OpenOrbitalOptimizer {
       return slope;
     }
 
-    /// Largest step along ``d_occ`` that keeps every occupation inside
-    /// [0, n_max] of its block.
-    ///
-    /// The bound is where an orbital fills or empties completely,
-    /// which is a kink in the energy rather than a point the quadratic
-    /// model describes, so the step stops at the face instead of
-    /// crossing it and the next iteration re-solves with that orbital
-    /// in the active set. That is what keeps the number of Fock builds
-    /// bounded: a crossing is priced by the multiplier of the bound it
-    /// reaches rather than searched for.
-    Tbase occupation_step_limit_(const RotationStepContext & ctx,
-                                 const Vector<Tbase> & d_occ) const {
-      Tbase t_max = std::numeric_limits<Tbase>::max();
-      for(size_t k = 0; k < ctx.n_occ; k++) {
-        const Tbase step = d_occ((Index) k);
-        if(!(std::abs(step) > 0)) continue;
-        const size_t b = ctx.occupation_block[k];
-        const Index i = (Index) (k - ctx.occupation_offset[b]);
-        const Tbase room = step > 0
-          ? maximum_occupation_((Index) b) - ctx.n_ref[b](i)
-          : ctx.n_ref[b](i);
-        t_max = std::min(t_max, std::max(Tbase(0), room) / std::abs(step));
-      }
-      return t_max;
-    }
-
     /// Occupations at step length t along the occupation direction.
-    /// Clamped to the box, which the step length already respects, so
-    /// that round-off cannot hand the Fock builder a negative
-    /// occupation.
+    ///
+    /// The direction itself already respects the box: the joint ARH
+    /// step fixes any coordinate that would leave it exactly on the
+    /// bound it reaches, so every occupation is inside [0, n_max] at
+    /// t = 1 and the line search only ever shortens t. The clamp here
+    /// is the one guard against round-off handing the Fock builder a
+    /// negative occupation.
     OrbitalOccupations<Tbase> occupations_at_(const RotationStepContext & ctx,
                                               const Vector<Tbase> & d_occ,
                                               Tbase t) const {
@@ -3825,9 +3803,7 @@ namespace OpenOrbitalOptimizer {
         }
 
         Orbitals<Torb> K = build_K_(d, ctx);
-        Tbase t_max = t_max_for_K_(K);
-        if(d_occ.size() > 0)
-          t_max = std::min(t_max, occupation_step_limit_(ctx, d_occ));
+        const Tbase t_max = t_max_for_K_(K);
         if(!std::isfinite(t_max) || t_max <= 0) {
           log_(5, "%s: t_max not well-defined at sigma = %e.\n", tag, (double) (sigma));
           sigma *= 2;
